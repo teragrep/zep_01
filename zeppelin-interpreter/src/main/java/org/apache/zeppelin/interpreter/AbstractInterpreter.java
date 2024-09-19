@@ -17,22 +17,14 @@
 
 package org.apache.zeppelin.interpreter;
 
+import org.apache.commons.text.StringSubstitutor;
 import org.apache.zeppelin.interpreter.thrift.InterpreterCompletion;
-import org.apache.zeppelin.resource.Resource;
 import org.apache.zeppelin.resource.ResourcePool;
+import org.apache.zeppelin.resource.ResourcePoolMap;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Properties;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
+import java.util.*;
 
 public abstract class AbstractInterpreter extends Interpreter {
-
-  private static final Pattern VARIABLES = Pattern.compile("([^{}]*)([{]+[^{}]*[}]+)(.*)", Pattern.DOTALL);
-  private static final Pattern VARIABLE_IN_BRACES = Pattern.compile("[{][^{}]+[}]");
-  private static final Pattern VARIABLE_IN_DOUBLE_BRACES = Pattern.compile("[{]{2}[^{}]+[}]{2}");
-
   public AbstractInterpreter(Properties properties) {
     super(properties);
   }
@@ -56,32 +48,24 @@ public abstract class AbstractInterpreter extends Interpreter {
   }
 
   static String interpolate(String cmd, ResourcePool resourcePool) {
+    // StringSubstitutor wants Map so convert ResourcePool to it
+    ResourcePoolMap map = new ResourcePoolMap(resourcePool);
 
-    StringBuilder sb = new StringBuilder();
-    Matcher m;
-    String st = cmd;
-    while ((m = VARIABLES.matcher(st)).matches()) {
-      sb.append(m.group(1));
-      String varPat = m.group(2);
-      if (VARIABLE_IN_BRACES.matcher(varPat).matches()) {
-        // substitute {variable} only if 'variable' has a value ...
-        Resource resource = resourcePool.get(varPat.substring(1, varPat.length() - 1));
-        Object variableValue = resource == null ? null : resource.get();
-        if (variableValue != null)
-          sb.append(variableValue);
-        else
-          return cmd;
-      } else if (VARIABLE_IN_DOUBLE_BRACES.matcher(varPat).matches()) {
-        // escape {{text}} ...
-        sb.append("{").append(varPat, 2, varPat.length() - 2).append("}");
-      } else {
-        // mismatched {{ }} or more than 2 braces ...
-        return cmd;
-      }
-      st = m.group(3);
+    StringSubstitutor substitutor = new StringSubstitutor(map);
+    // Recursive substitution is always disabled as that can lead to infinite recursion
+    substitutor.setEnableSubstitutionInVariables(false);
+    // Fail fast on undefined variables
+    substitutor.setEnableUndefinedVariableException(true);
+    // Try replacing, re-throw exception rewritten in more user-friendly way
+    try {
+      return substitutor.replace(cmd);
     }
-    sb.append(st);
-    return sb.toString();
+    catch (IllegalArgumentException e) {
+      throw new IllegalArgumentException(
+              "Failure in interpolating variables. Ensure that all variables are resolvable or escape them as $${literal}.\n" +
+              "Original error message: " + e.getMessage()
+      );
+    }
   }
 
   public abstract ZeppelinContext getZeppelinContext();

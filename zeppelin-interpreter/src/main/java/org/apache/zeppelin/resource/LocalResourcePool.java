@@ -16,6 +16,10 @@
  */
 package org.apache.zeppelin.resource;
 
+import org.apache.zeppelin.conf.ZeppelinConfiguration;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
@@ -27,7 +31,10 @@ public class LocalResourcePool implements ResourcePool {
   private final String resourcePoolId;
   private final Map<ResourceId, Resource> resources = Collections.synchronizedMap(
       new HashMap<ResourceId, Resource>());
-
+  private static final int maximumObjectSize = ZeppelinConfiguration.create().getResourcePoolMaximumObjectSize();
+  private static final int maximumResourcesCount = ZeppelinConfiguration.create().getResourcePoolMaximumObjectCount();
+  private static final int maximumKeyLength = 255; // Hardcoded and unconfigurable by choice, this should never be reached
+  private static final Logger LOGGER = LoggerFactory.getLogger(LocalResourcePool.class);
   /**
    * @param id unique id
    */
@@ -75,6 +82,7 @@ public class LocalResourcePool implements ResourcePool {
    */
   @Override
   public void put(String name, Object object) {
+    checkSize(name, object);
     ResourceId resourceId = new ResourceId(resourcePoolId, name);
 
     Resource resource = new Resource(this, resourceId, object);
@@ -83,6 +91,7 @@ public class LocalResourcePool implements ResourcePool {
 
   @Override
   public void put(String noteId, String paragraphId, String name, Object object) {
+    checkSize(name, object);
     ResourceId resourceId = new ResourceId(resourcePoolId, noteId, paragraphId, name);
 
     Resource resource = new Resource(this, resourceId, object);
@@ -97,5 +106,22 @@ public class LocalResourcePool implements ResourcePool {
   @Override
   public Resource remove(String noteId, String paragraphId, String name) {
     return resources.remove(new ResourceId(resourcePoolId, noteId, paragraphId, name));
+  }
+
+  // Check if we are approaching resource storage limits
+  private void checkSize(String name, Object object) {
+    int objectSize = object.toString().length();
+    if (name.length() > maximumKeyLength) {
+      throw new ResourcePoolManipulationException("Resource '" + name.substring(0, 16) + "...' can't be added: Name is too long (size " + name.length() + ", maximum " + maximumKeyLength + ")");
+    }
+    LOGGER.debug("Registering object " + name + " with size of " + objectSize);
+    if(objectSize > maximumObjectSize) {
+      throw new ResourcePoolManipulationException("Resource " + name + " can't be added: Resource is too big (size " + objectSize + ", maximum " + maximumObjectSize + ")\n" +
+              "Edit zeppelin.resourcepool.max.object.size in zeppelin-site.xml to increase the limits.");
+    }
+    if(resources.size() >= maximumResourcesCount) {
+      throw new ResourcePoolManipulationException("Resource " + name + " can't be added: Too many resources stored, maximum " + maximumResourcesCount + " objects)\n" +
+              "Edit zeppelin.resourcepool.max.object.count in zeppelin-site.xml to increase the limits.");
+    }
   }
 }
