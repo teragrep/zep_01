@@ -139,11 +139,6 @@ You can also find the below community managed interpreter list in `conf/interpre
     <td>BigQuery interpreter</td>
   </tr>
   <tr>
-    <td>cassandra</td>
-    <td>org.apache.zeppelin:zeppelin-cassandra:0.9.0</td>
-    <td>Cassandra interpreter</td>
-  </tr>
-  <tr>
     <td>elasticsearch</td>
     <td>org.apache.zeppelin:zeppelin-elasticsearch:0.9.0</td>
     <td>Elasticsearch interpreter</td>

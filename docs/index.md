@@ -137,7 +137,6 @@ limitations under the License.
   * [Alluxio](./interpreter/alluxio.html)
   * [Beam](./interpreter/beam.html)
   * [BigQuery](./interpreter/bigquery.html)
-  * [Cassandra](./interpreter/cassandra.html)
   * [Elasticsearch](./interpreter/elasticsearch.html)
   * [Geode](./interpreter/geode.html)
   * [Groovy](./interpreter/groovy.html)

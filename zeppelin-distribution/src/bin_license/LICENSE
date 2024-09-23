@@ -31,7 +31,6 @@ The following components are provided under Apache License.
     (Apache 2.0) Apache Hadoop (http://hadoop.apache.org)
     (Apache 2.0) Apache Avro (org.apache.avro:avro:1.7.7 - http://avro.apache.org)
     (Apache 2.0) Apache Curator (org.apache.curator:curator:2.4.0 - http://curator.apache.org/)
-    (Apache 2.0) Apache Cassandra (http://cassandra.apache.org/)
     (Apache 2.0) Apache HBase (http://hbase.apache.org/)
     (Apache 2.0) Apache Ignite (http://ignite.apache.org/)
     (Apache 2.0) Apache Kylin (http://kylin.apache.org/)
