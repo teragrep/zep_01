@@ -70,7 +70,6 @@
     <module>file</module>
     <module>influxdb</module>
     <module>python</module>
-    <module>lens</module>
     <module>neo4j</module>
     <module>sap</module>
     <module>java</module>
