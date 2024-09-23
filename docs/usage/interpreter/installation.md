@@ -110,11 +110,6 @@ You can also find the below community managed interpreter list in `conf/interpre
     <th>Description</th>
   </tr>
   <tr>
-    <td>alluxio</td>
-    <td>org.apache.zeppelin:zeppelin-alluxio:0.9.0</td>
-    <td>Alluxio interpreter</td>
-  </tr>
-  <tr>
     <td>angular</td>
     <td>org.apache.zeppelin:zeppelin-angular:0.9.0</td>
     <td>HTML and AngularJS view rendering</td>

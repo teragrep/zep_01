@@ -134,7 +134,6 @@ limitations under the License.
   * [How to Contribute (website)](./development/contribution/how_to_contribute_website.html)
 
 #### Available Interpreters 
-  * [Alluxio](./interpreter/alluxio.html)
   * [BigQuery](./interpreter/bigquery.html)
   * [Elasticsearch](./interpreter/elasticsearch.html)
   * [Geode](./interpreter/geode.html)

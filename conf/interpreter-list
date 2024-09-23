@@ -17,7 +17,6 @@
 #
 # [name]  [maven artifact]  [description]
 
-alluxio         org.apache.zeppelin:zeppelin-alluxio:0.11.0-SANPSHOT              Alluxio interpreter
 angular         org.apache.zeppelin:zeppelin-angular:0.11.0-SANPSHOT              HTML and AngularJS view rendering
 bigquery        org.apache.zeppelin:zeppelin-bigquery:0.11.0-SANPSHOT             BigQuery interpreter
 elasticsearch   org.apache.zeppelin:zeppelin-elasticsearch:0.11.0-SANPSHOT        Elasticsearch interpreter
