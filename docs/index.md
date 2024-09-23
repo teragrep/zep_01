@@ -136,7 +136,6 @@ limitations under the License.
   * [HBase](./interpreter/hbase.html)
   * [HDFS](./interpreter/hdfs.html)
   * [Hive](./interpreter/hive.html)
-  * [influxDB](./interpreter/influxdb.html)
   * [Java](./interpreter/java.html)
   * [JDBC](./interpreter/jdbc.html)
   * [Jupyter](./interpreter/jupyter.html)

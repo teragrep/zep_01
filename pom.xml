@@ -67,7 +67,6 @@
     <module>hbase</module>
     <module>jdbc</module>
     <module>file</module>
-    <module>influxdb</module>
     <module>python</module>
     <module>java</module>
     <module>ksql</module>
