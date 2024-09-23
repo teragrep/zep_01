@@ -130,11 +130,6 @@ You can also find the below community managed interpreter list in `conf/interpre
     <td>Hbase interpreter</td>
   </tr>
   <tr>
-    <td>ignite</td>
-    <td>org.apache.zeppelin:zeppelin-ignite:0.9.0</td>
-    <td>Ignite interpreter</td>
-  </tr>
-  <tr>
     <td>java</td>
     <td>org.apache.zeppelin:zeppelin-java:0.9.0</td>
     <td>Java interpreter</td>

@@ -178,12 +178,6 @@ mvn clean package -Pspark-1.6 -Pspark-scala-2.10 -DskipTests
 mvn clean package -Pspark-1.6 -Pspark-scala-2.10 -Dhadoop.version=2.6.0-cdh5.5.0 -Pvendor-repo -DskipTests
 ```
 
-Ignite Interpreter
-
-```bash
-mvn clean package -Dignite.version=1.9.0 -DskipTests
-```
-
 ### Optional configurations
 
 Here are additional configurations that could be optionally tuned using the trailing `-D` option for maven commands
