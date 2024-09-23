@@ -69,7 +69,6 @@
     <module>file</module>
     <module>influxdb</module>
     <module>python</module>
-    <module>sap</module>
     <module>java</module>
     <module>ksql</module>
     <module>sparql</module>
