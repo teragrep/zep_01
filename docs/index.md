@@ -139,7 +139,6 @@ limitations under the License.
   * [Java](./interpreter/java.html)
   * [JDBC](./interpreter/jdbc.html)
   * [Jupyter](./interpreter/jupyter.html)
-  * [KSQL](./interpreter/ksql.html)
   * [Mahout](./interpreter/mahout.html)
   * [Markdown](./interpreter/markdown.html)
   * [Postgresql, HAWQ](./interpreter/postgresql.html)
