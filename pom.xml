@@ -78,7 +78,6 @@
     <module>lens</module>
     <module>elasticsearch</module>
     <module>bigquery</module>
-    <module>scio</module>
     <module>neo4j</module>
     <module>sap</module>
     <module>java</module>
