@@ -153,7 +153,6 @@ limitations under the License.
   * [Mahout](./interpreter/mahout.html)
   * [Markdown](./interpreter/markdown.html)
   * [Neo4j](./interpreter/neo4j.html)
-  * [Pig](./interpreter/pig.html)
   * [Postgresql, HAWQ](./interpreter/postgresql.html)
   * [Python](./interpreter/python.html)
   * [R](./interpreter/r.html)
