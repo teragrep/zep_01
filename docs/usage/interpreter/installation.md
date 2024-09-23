@@ -145,11 +145,6 @@ You can also find the below community managed interpreter list in `conf/interpre
     <td>Markdown support</td>
   </tr>
   <tr>
-    <td>neo4j</td>
-    <td>org.apache.zeppelin:zeppelin-neo4j:0.9.0</td>
-    <td>Neo4j interpreter</td>
-  </tr>
-  <tr>
     <td>python</td>
     <td>org.apache.zeppelin:zeppelin-python:0.9.0</td>
     <td>Python interpreter</td>

@@ -143,7 +143,6 @@ limitations under the License.
   * [KSQL](./interpreter/ksql.html)
   * [Mahout](./interpreter/mahout.html)
   * [Markdown](./interpreter/markdown.html)
-  * [Neo4j](./interpreter/neo4j.html)
   * [Postgresql, HAWQ](./interpreter/postgresql.html)
   * [Python](./interpreter/python.html)
   * [R](./interpreter/r.html)
