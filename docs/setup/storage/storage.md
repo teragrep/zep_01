@@ -35,7 +35,6 @@ There are few notebook storage systems available for a use out of the box:
   * storage using Azure service - `AzureNotebookRepo`
   * storage using Google Cloud Storage - `GCSNotebookRepo`
   * storage using Aliyun OSS - `OSSNotebookRepo`
-  * storage using MongoDB - `MongoNotebookRepo`
   * storage using GitHub - `GitHubNotebookRepo`
 
 Multiple storage systems can be used at the same time by providing a comma-separated list of the class-names in the configuration.
@@ -496,47 +495,6 @@ export ZEPPELINHUB_API_ADDRESS=address of ZeppelinHub service (e.g. https://www.
 ```
 
 You can get more information on generating `token` and using authentication on the corresponding [help page](http://help.zeppelinhub.com/zeppelin_integration/#add-a-new-zeppelin-instance-and-generate-a-token).
-
-
-## Notebook Storage in MongoDB <a name="MongoDB"></a>
-Using `MongoNotebookRepo`, you can store your notebook in [MongoDB](https://www.mongodb.com/).
-
-### Why MongoDB?
-* **[High Availability (HA)](https://en.wikipedia.org/wiki/High_availability)** by a [replica set](https://docs.mongodb.com/manual/reference/glossary/#term-replica-set)
-* Seperation of storage from server
-
-### How to use
-You can use MongoDB as notebook storage by editting `zeppelin-env.sh` or `zeppelin-site.xml`.
-
-#### (Method 1) by editting `zeppelin-env.sh`
-Add a line below to `$ZEPPELIN_HOME/conf/zeppelin-env.sh`:
-
-```bash
-export ZEPPELIN_NOTEBOOK_STORAGE=org.apache.zeppelin.notebook.repo.MongoNotebookRepo
-```
-
-> *NOTE:* The default MongoDB connection URI is `mongodb://localhost`
-
-#### (Method 2) by editting `zeppelin-site.xml`
-Or, **uncomment** lines below at `$ZEPPELIN_HOME/conf/zeppelin-site.xml`:
-
-```xml
-<property>
-  <name>zeppelin.notebook.storage</name>
-  <value>org.apache.zeppelin.notebook.repo.MongoNotebookRepo</value>
-  <description>notebook persistence layer implementation</description>
-</property>
-```
-
-And **comment** lines below:
-
-```xml
-<property>
-  <name>zeppelin.notebook.storage</name>
-  <value>org.apache.zeppelin.notebook.repo.GitNotebookRepo</value>
-  <description>versioned notebook persistence layer implementation</description>
-</property>
-```
 
 ### Configurable Options
 

@@ -65,7 +65,6 @@
     <module>spark</module>
     <module>spark-submit</module>
     <module>markdown</module>
-    <module>mongodb</module>
     <module>shell</module>
     <module>livy</module>
     <module>hbase</module>

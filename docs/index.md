@@ -111,7 +111,6 @@ limitations under the License.
   * [Azure Storage](./setup/storage/storage.html#notebook-storage-in-azure)
   * [Google Cloud Storage](./setup/storage/storage.html#notebook-storage-in-gcs)
   * [ZeppelinHub Storage](./setup/storage/storage.html#notebook-storage-in-zeppelinhub)
-  * [MongoDB Storage](./setup/storage/storage.html#notebook-storage-in-mongodb)
 * Operation 
   * [Configuration](./setup/operation/configuration.html): lists for Apache Zeppelin
   * [Monitoring](./setup/operation/monitoring.html): monitoring instructions for Apache Zeppelin
@@ -154,7 +153,6 @@ limitations under the License.
   * [Livy](./interpreter/livy.html)
   * [Mahout](./interpreter/mahout.html)
   * [Markdown](./interpreter/markdown.html)
-  * [MongoDB](./interpreter/mongodb.html)
   * [Neo4j](./interpreter/neo4j.html)
   * [Pig](./interpreter/pig.html)
   * [Postgresql, HAWQ](./interpreter/postgresql.html)
