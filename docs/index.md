@@ -133,7 +133,6 @@ limitations under the License.
   * [How to Contribute (website)](./development/contribution/how_to_contribute_website.html)
 
 #### Available Interpreters 
-  * [Groovy](./interpreter/groovy.html)
   * [HBase](./interpreter/hbase.html)
   * [HDFS](./interpreter/hdfs.html)
   * [Hive](./interpreter/hive.html)
