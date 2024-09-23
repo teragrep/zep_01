@@ -62,7 +62,3 @@ For the further information about SQL support in Zeppelin, please check
 - [Spark Interpreter](../interpreter/spark.html)
 - [Flink Interpreter](../interpreter/flink.html)
 - [Python Interpreter](../interpreter/python.html)
-- [Kylin Interpreter](../interpreter/kylin.html) for [Apache Kylin](http://kylin.apache.org/)
-
-
-
