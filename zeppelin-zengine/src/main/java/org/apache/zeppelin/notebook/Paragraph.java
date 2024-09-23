@@ -412,7 +412,7 @@ public class Paragraph extends JobWithProgressPoller<InterpreterResult> implemen
         throw new RuntimeException("Can not find interpreter for " + intpText);
       }
       LOGGER.info("Run paragraph [paragraph_id: {}, interpreter: {}, note_id: {}, user: {}]",
-              getId(), this.interpreter.getClassName(), note.getId(), subject.getUser());
+              getId(), this.interpreter.getClassName(), note.getId(), this.user);
       InterpreterSetting interpreterSetting = ((ManagedInterpreterGroup)
               interpreter.getInterpreterGroup()).getInterpreterSetting();
       if (interpreterSetting.getStatus() != InterpreterSetting.Status.READY) {

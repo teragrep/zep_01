@@ -249,13 +249,19 @@ public class NotebookServer extends WebSocketServlet
   public void onMessage(NotebookSocket conn, String msg) {
     try {
       Message receivedMessage = deserializeMessage(msg);
-      if (receivedMessage.op != OP.PING) {
-        LOG.debug("RECEIVE: " + receivedMessage.op +
-            ", RECEIVE PRINCIPAL: " + receivedMessage.principal +
-            ", RECEIVE TICKET: " + receivedMessage.ticket +
-            ", RECEIVE ROLES: " + receivedMessage.roles +
-            ", RECEIVE DATA: " + receivedMessage.data);
+
+      // Send pong back regardless of logged in status and stop processing
+      if (receivedMessage.op == OP.PING) {
+        sendPong(conn, receivedMessage);
+        return;
       }
+
+      LOG.debug("RECEIVE: " + receivedMessage.op +
+          ", RECEIVE PRINCIPAL: " + receivedMessage.principal +
+          ", RECEIVE TICKET: " + receivedMessage.ticket +
+          ", RECEIVE ROLES: " + receivedMessage.roles +
+          ", RECEIVE DATA: " + receivedMessage.data);
+
       if (LOG.isTraceEnabled()) {
         LOG.trace("RECEIVE MSG = " + receivedMessage);
       }
@@ -396,7 +402,7 @@ public class NotebookServer extends WebSocketServlet
           completion(conn, context, receivedMessage);
           break;
         case PING:
-          break; //do nothing
+          throw new IllegalArgumentException("Ping must be handled separately");
         case ANGULAR_OBJECT_UPDATED:
           angularObjectUpdated(conn, context, receivedMessage);
           break;
@@ -1326,6 +1332,10 @@ public class NotebookServer extends WebSocketServlet
             conn.send(serializeMessage(resp));
           }
         });
+  }
+
+  private void sendPong(NotebookSocket conn, Message fromMessage) throws IOException {
+    conn.send(serializeMessage(new Message(OP.PONG).put("msgId", fromMessage.msgId)));
   }
 
   /**

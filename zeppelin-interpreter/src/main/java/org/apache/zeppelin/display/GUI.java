@@ -188,7 +188,11 @@ public class GUI implements Serializable {
     Input convertedInput = null;
 
     if (oldInput.options == null || oldInput instanceof OldInput.OldTextBox) {
-      convertedInput = new TextBox(oldInput.name, oldInput.defaultValue.toString());
+      String defaultValue = "";
+      if(oldInput.defaultValue != null) {
+        defaultValue = oldInput.getDefaultValue().toString();
+      }
+      convertedInput = new TextBox(oldInput.name, defaultValue);
     } else if (oldInput instanceof OldInput.OldCheckBox) {
       convertedInput = new CheckBox(oldInput.name, (List) oldInput.defaultValue, oldInput.options);
     } else if (oldInput instanceof OldInput && oldInput.options != null) {

@@ -59,6 +59,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.shiro.web.env.EnvironmentLoaderListener;
 import org.apache.shiro.web.servlet.ShiroFilter;
 import org.apache.zeppelin.cluster.ClusterManagerServer;
+import org.apache.zeppelin.common.Message;
 import org.apache.zeppelin.conf.ZeppelinConfiguration;
 import org.apache.zeppelin.conf.ZeppelinConfiguration.ConfVars;
 import org.apache.zeppelin.display.AngularObjectRegistryListener;
@@ -313,6 +314,11 @@ public class ZeppelinServer extends ResourceConfig {
   private static Thread shutdown(ZeppelinConfiguration conf) {
     return new Thread(
             () -> {
+              NotebookServer notebookServer = sharedServiceLocator.getService(NotebookServer.class);
+              notebookServer.getConnectionManager().forAllUsers((user, userAndRoles) -> {
+                notebookServer.getConnectionManager().multicastToUser(user,
+                  new Message(Message.OP.SERVER_SHUTDOWN).put("goodbye", true));
+              });
               LOG.info("Shutting down Zeppelin Server ... ");
               try {
                 if (jettyWebServer != null) {

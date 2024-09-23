@@ -117,18 +117,18 @@ public class SparkInterpreterLauncher extends StandardInterpreterLauncher {
       sparkProperties.put("spark.yarn.maxAppAttempts", "1");
     }
 
-
-    String scalaVersion = null;
-    try {
-      scalaVersion = detectSparkScalaVersion(getEnv("SPARK_HOME"), env);
-      LOGGER.info("Scala version: {}", scalaVersion);
-      context.getProperties().put("zeppelin.spark.scala.version", scalaVersion);
-    } catch (Exception e) {
-      throw new IOException("Fail to detect scala version, the reason is:"+ e.getMessage());
-    }
-
     if (isYarnMode()
         && getDeployMode().equals("cluster")) {
+
+      String scalaVersion = null;
+      try {
+        scalaVersion = detectSparkScalaVersion(getEnv("SPARK_HOME"), env);
+        LOGGER.info("Scala version: {}", scalaVersion);
+        context.getProperties().put("zeppelin.spark.scala.version", scalaVersion);
+      } catch (Exception e) {
+        throw new IOException("Fail to detect scala version, the reason is:"+ e.getMessage());
+      }
+
       try {
         List<String> additionalJars = new ArrayList<>();
         Path localRepoPath =
