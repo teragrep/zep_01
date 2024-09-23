@@ -57,7 +57,6 @@
     <module>zeppelin-interpreter-shaded</module>
     <module>zeppelin-zengine</module>
     <module>zeppelin-display</module>
-    <module>rlang</module>
     <module>zeppelin-jupyter-interpreter</module>
     <module>zeppelin-jupyter-interpreter-shaded</module>
     <module>spark</module>
