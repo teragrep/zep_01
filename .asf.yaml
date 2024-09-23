@@ -22,7 +22,6 @@ github:
   homepage: https://zeppelin.apache.org/
   labels:
     - spark
-    - flink
     - database
     - nosql
     - scala

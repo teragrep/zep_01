@@ -97,7 +97,6 @@ limitations under the License.
   * [Spark Cluster Mode: Standalone](./setup/deployment/spark_cluster_mode.html#spark-standalone-mode)
   * [Spark Cluster Mode: YARN](./setup/deployment/spark_cluster_mode.html#spark-on-yarn-mode)
   * [Spark Cluster Mode: Mesos](./setup/deployment/spark_cluster_mode.html#spark-on-mesos-mode)
-  * [Zeppelin with Flink and Spark Cluster](./setup/deployment/flink_and_spark_cluster.html)
   * [Zeppelin on CDH](./setup/deployment/cdh.html)
   * [Zeppelin on VM: Vagrant](./setup/deployment/virtual_machine.html)
 * Security: available security support in Apache Zeppelin
@@ -140,7 +139,6 @@ limitations under the License.
   * [BigQuery](./interpreter/bigquery.html)
   * [Cassandra](./interpreter/cassandra.html)
   * [Elasticsearch](./interpreter/elasticsearch.html)
-  * [Flink](./interpreter/flink.html)
   * [Geode](./interpreter/geode.html)
   * [Groovy](./interpreter/groovy.html)
   * [Hazelcast Jet](./interpreter/hazelcastjet.html)

@@ -50,7 +50,6 @@
         <module>launcher/cluster</module>
         <module>launcher/docker</module>
         <module>launcher/yarn</module>
-        <module>launcher/flink</module>
     </modules>
 
     <dependencies>
