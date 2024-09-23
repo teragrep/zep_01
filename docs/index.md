@@ -133,8 +133,6 @@ limitations under the License.
   * [How to Contribute (website)](./development/contribution/how_to_contribute_website.html)
 
 #### Available Interpreters 
-  * [BigQuery](./interpreter/bigquery.html)
-  * [Elasticsearch](./interpreter/elasticsearch.html)
   * [Geode](./interpreter/geode.html)
   * [Groovy](./interpreter/groovy.html)
   * [HBase](./interpreter/hbase.html)
