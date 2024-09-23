@@ -23,7 +23,6 @@ elasticsearch   org.apache.zeppelin:zeppelin-elasticsearch:0.11.0-SANPSHOT      
 file            org.apache.zeppelin:zeppelin-file:0.11.0-SANPSHOT                 HDFS file interpreter
 geode           org.apache.zeppelin:zeppelin-geode:0.11.0-SANPSHOT                Apache Geode interpreter
 groovy          org.apache.zeppelin:zeppelin-groovy:0.11.0-SANPSHOT               Groovy interpreter
-hazelcastjet    org.apache.zeppelin:zeppelin-hazelcastjet:0.11.0-SANPSHOT         Hazelcast Jet interpreter
 hbase           org.apache.zeppelin:zeppelin-hbase:0.11.0-SANPSHOT                Hbase interpreter
 ignite          org.apache.zeppelin:zeppelin-ignite:0.11.0-SANPSHOT               Ignite interpreter
 java            org.apache.zeppelin:zeppelin-java:0.11.0-SANPSHOT                 Java interpreter
