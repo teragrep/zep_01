@@ -64,7 +64,6 @@
     <module>spark-submit</module>
     <module>markdown</module>
     <module>shell</module>
-    <module>livy</module>
     <module>hbase</module>
     <module>jdbc</module>
     <module>file</module>
