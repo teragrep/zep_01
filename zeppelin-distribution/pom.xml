@@ -79,12 +79,6 @@
       <artifactId>zeppelin-server</artifactId>
       <version>${project.version}</version>
     </dependency>
-    <dependency>
-      <groupId>${project.groupId}</groupId>
-      <artifactId>zeppelin-web</artifactId>
-      <version>${project.version}</version>
-      <type>war</type>
-    </dependency>
   </dependencies>
 
   <build>
@@ -133,18 +127,6 @@
           </dependency>
         </dependencies>
       </dependencyManagement>
-    </profile>
-
-    <profile>
-      <id>web-angular</id>
-      <dependencies>
-        <dependency>
-          <groupId>${project.groupId}</groupId>
-          <artifactId>zeppelin-web-angular</artifactId>
-          <version>${project.version}</version>
-          <type>war</type>
-        </dependency>
-      </dependencies>
     </profile>
 
     <profile>
