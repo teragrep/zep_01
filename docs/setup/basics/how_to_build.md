@@ -82,7 +82,7 @@ You can directly start Zeppelin by running the following command after successfu
 
 #### Scala profile
 
-To be noticed, this scala profile affect the modules (e.g. cassandra, scalding) that use scala except Spark interpreter (Spark interpreter use other profiles to control its scala version, see the doc below).
+To be noticed, this scala profile affect the modules that use scala except Spark interpreter (Spark interpreter use other profiles to control its scala version, see the doc below).
 
 Set scala version (default 2.10). Available profiles are
 
@@ -182,12 +182,6 @@ Ignite Interpreter
 
 ```bash
 mvn clean package -Dignite.version=1.9.0 -DskipTests
-```
-
-Scalding Interpreter
-
-```bash
-mvn clean package -Pscalding -DskipTests
 ```
 
 ### Optional configurations
