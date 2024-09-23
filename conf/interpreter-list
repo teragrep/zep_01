@@ -45,4 +45,3 @@ scalding        org.apache.zeppelin:zeppelin-scalding_2.0.10:0.11.0-SANPSHOT    
 scio            org.apache.zeppelin:zeppelin-scio:0.11.0-SANPSHOT                 Scio interpreter
 shell           org.apache.zeppelin:zeppelin-shell:0.11.0-SANPSHOT                Shell command
 sparql          org.apache.zeppelin:zeppelin-sparql:0.11.0-SANPSHOT               Sparql interpreter
-submarine       org.apache.zeppelin:zeppelin-submarine:0.11.0-SANPSHOT            Submarine interpreter
