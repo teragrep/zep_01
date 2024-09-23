@@ -24,4 +24,3 @@ jdbc            org.apache.zeppelin:zeppelin-jdbc:0.11.0-SANPSHOT               
 md              org.apache.zeppelin:zeppelin-markdown:0.11.0-SANPSHOT             Markdown support
 python          org.apache.zeppelin:zeppelin-python:0.11.0-SANPSHOT               Python interpreter
 shell           org.apache.zeppelin:zeppelin-shell:0.11.0-SANPSHOT                Shell command
-sparql          org.apache.zeppelin:zeppelin-sparql:0.11.0-SANPSHOT               Sparql interpreter

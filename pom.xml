@@ -71,7 +71,6 @@
     <module>python</module>
     <module>java</module>
     <module>ksql</module>
-    <module>sparql</module>
     <module>zeppelin-common</module>
     <module>zeppelin-client</module>
     <module>zeppelin-client-examples</module>

@@ -148,7 +148,6 @@ limitations under the License.
   * [R](./interpreter/r.html)
   * [Shell](./interpreter/shell.html)
   * [Spark](./interpreter/spark.html)
-  * [Sparql](./interpreter/sparql.html)
 
 #### External Resources
   * [Mailing List](https://zeppelin.apache.org/community.html)

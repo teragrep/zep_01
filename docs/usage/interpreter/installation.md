@@ -154,9 +154,4 @@ You can also find the below community managed interpreter list in `conf/interpre
     <td>org.apache.zeppelin:zeppelin-shell:0.9.0</td>
     <td>Shell command</td>
   </tr>
-  <tr>
-    <td>sparql</td>
-    <td>org.apache.zeppelin:zeppelin-sparql:0.9.0</td>
-    <td>Sparql interpreter</td>
-  </tr>
 </table>
