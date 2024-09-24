@@ -26,7 +26,6 @@ import org.apache.zeppelin.interpreter.InterpreterContext;
 import org.apache.zeppelin.interpreter.InterpreterException;
 import org.apache.zeppelin.interpreter.InterpreterResult;
 import org.apache.zeppelin.interpreter.util.InterpreterOutputStream;
-import org.apache.zeppelin.python.IPythonInterpreter;
 import org.apache.zeppelin.python.PythonInterpreter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -60,7 +59,6 @@ public class PySparkInterpreter extends PythonInterpreter {
 
   @Override
   public void open() throws InterpreterException {
-    setProperty("zeppelin.python.useIPython", getProperty("zeppelin.pyspark.useIPython", "true"));
     URL [] urls = new URL[0];
     List<URL> urlList = new LinkedList<>();
     String localRepo = getProperty("zeppelin.interpreter.localRepo");
@@ -96,14 +94,12 @@ public class PySparkInterpreter extends PythonInterpreter {
       Thread.currentThread().setContextClassLoader(oldCl);
     }
 
-    if (!useIPython()) {
-      // Initialize Spark in Python Process
-      try {
-        bootstrapInterpreter("python/zeppelin_pyspark.py");
-      } catch (IOException e) {
-        LOGGER.error("Fail to bootstrap pyspark", e);
-        throw new InterpreterException("Fail to bootstrap pyspark", e);
-      }
+    // Initialize Spark in Python Process
+    try {
+      bootstrapInterpreter("python/zeppelin_pyspark.py");
+    } catch (IOException e) {
+      LOGGER.error("Fail to bootstrap pyspark", e);
+      throw new InterpreterException("Fail to bootstrap pyspark", e);
     }
   }
 
@@ -111,11 +107,6 @@ public class PySparkInterpreter extends PythonInterpreter {
   public void close() throws InterpreterException {
     LOGGER.info("Close PySparkInterpreter");
     super.close();
-  }
-
-  @Override
-  protected IPythonInterpreter getIPythonInterpreter() throws InterpreterException {
-    return getInterpreterInTheSameSessionByClassName(IPySparkInterpreter.class, false);
   }
 
   @Override
