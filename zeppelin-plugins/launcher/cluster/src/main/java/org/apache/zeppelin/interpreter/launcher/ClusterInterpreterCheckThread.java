@@ -60,10 +60,7 @@ public class ClusterInterpreterCheckThread extends Thread {
             String intpTSrvHost = (String) result.get(INTP_TSERVER_HOST);
             int intpTSrvPort = (int) result.get(INTP_TSERVER_PORT);
             LOGGER.info("Found cluster interpreter {}:{}", intpTSrvHost, intpTSrvPort);
-
-            if (intpProcess instanceof DockerInterpreterProcess) {
-              ((DockerInterpreterProcess) intpProcess).processStarted(intpTSrvPort, intpTSrvHost);
-            } else if (intpProcess instanceof ClusterInterpreterProcess) {
+            if (intpProcess instanceof ClusterInterpreterProcess) {
               ((ClusterInterpreterProcess) intpProcess).processStarted(intpTSrvPort, intpTSrvHost);
             } else {
               LOGGER.error("Unknown type !");
