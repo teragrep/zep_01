@@ -57,8 +57,6 @@
     <module>zeppelin-interpreter-shaded</module>
     <module>zeppelin-zengine</module>
     <module>zeppelin-display</module>
-    <module>zeppelin-jupyter-interpreter</module>
-    <module>zeppelin-jupyter-interpreter-shaded</module>
     <module>kotlin</module>
     <module>spark</module>
     <module>markdown</module>
@@ -69,7 +67,6 @@
     <module>zeppelin-client</module>
     <module>zeppelin-client-examples</module>
     <module>zeppelin-server</module>
-    <module>zeppelin-jupyter</module>
     <module>zeppelin-plugins</module>
     <module>zeppelin-distribution</module>
   </modules>
@@ -1735,7 +1732,6 @@
               <!-- package.json -->
               <exclude>**/package.json</exclude>
 
-              <exclude>zeppelin-jupyter-interpreter/src/main/resources/grpc/jupyter/*.py</exclude>
             </excludes>
           </configuration>
 

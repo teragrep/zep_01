@@ -60,7 +60,6 @@ import org.apache.zeppelin.interpreter.remote.RemoteInterpreterProcessListener;
 import org.apache.zeppelin.interpreter.thrift.InterpreterCompletion;
 import org.apache.zeppelin.interpreter.thrift.ParagraphInfo;
 import org.apache.zeppelin.interpreter.thrift.ServiceException;
-import org.apache.zeppelin.jupyter.JupyterUtil;
 import org.apache.zeppelin.notebook.Note;
 import org.apache.zeppelin.notebook.NoteEventListener;
 import org.apache.zeppelin.notebook.NoteInfo;
@@ -351,8 +350,7 @@ public class NotebookServer extends WebSocketServlet
           importNote(conn, context,  receivedMessage);
           break;
         case CONVERT_NOTE_NBFORMAT:
-          convertNote(conn, receivedMessage);
-          break;
+          throw new UnsupportedOperationException("CONVERT_NOTE_NBFORMAT no longer supported");
         case COMMIT_PARAGRAPH:
           updateParagraph(conn, context, receivedMessage);
           break;
@@ -1229,19 +1227,6 @@ public class NotebookServer extends WebSocketServlet
         });
   }
 
-  protected void convertNote(NotebookSocket conn, Message fromMessage) throws IOException {
-    String noteId = fromMessage.get("noteId").toString();
-    Note note = getNotebook().getNote(noteId);
-    if (note == null) {
-      throw new IOException("No such note: " + noteId);
-    } else {
-      Message resp = new Message(OP.CONVERTED_NOTE_NBFORMAT)
-              .put("nbformat", new JupyterUtil().getNbformat(note.toJson()))
-              .put("noteName", fromMessage.get("noteName"));
-      conn.send(serializeMessage(resp));
-    }
-  }
-
   protected Note importNote(NotebookSocket conn, ServiceContext context, Message fromMessage) throws IOException {
     String noteJson = null;
     String noteName = (String) ((Map) fromMessage.get("note")).get("name");
@@ -1250,9 +1235,9 @@ public class NotebookServer extends WebSocketServlet
     if (((Map) fromMessage.get("note")).get("cells") == null) {
       noteJson = gson.toJson(fromMessage.get("note"));
     } else {
-      noteJson = new JupyterUtil().getJson(
-              gson.toJson(fromMessage.get("note")), IdHashes.generateId(), "%python", "%md");
+      throw new UnsupportedOperationException("importNote using this method is not supported");
     }
+
     Note note = getNotebookService().importNote(noteName, noteJson, context,
         new WebSocketServiceCallback<Note>(conn) {
           @Override
