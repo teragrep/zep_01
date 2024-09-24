@@ -59,6 +59,7 @@
     <module>zeppelin-display</module>
     <module>zeppelin-jupyter-interpreter</module>
     <module>zeppelin-jupyter-interpreter-shaded</module>
+    <module>kotlin</module>
     <module>spark</module>
     <module>spark-submit</module>
     <module>markdown</module>

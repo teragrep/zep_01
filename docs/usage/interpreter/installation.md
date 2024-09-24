@@ -140,6 +140,26 @@ You can also find the below community managed interpreter list in `conf/interpre
     <td>Jdbc interpreter</td>
   </tr>
   <tr>
+    <td>kotlin</td>
+    <td>org.apache.zeppelin:zeppelin-kotlin:0.7.0</td>
+    <td>Kotlin interpreter</td>
+  </tr>
+  <tr>
+    <td>kylin</td>
+    <td>org.apache.zeppelin:zeppelin-kylin:0.9.0</td>
+    <td>Kylin interpreter</td>
+  </tr>
+  <tr>
+    <td>lens</td>
+    <td>org.apache.zeppelin:zeppelin-lens:0.9.0</td>
+    <td>Lens interpreter</td>
+  </tr>
+  <tr>
+    <td>livy</td>
+    <td>org.apache.zeppelin:zeppelin-livy:0.9.0</td>
+    <td>Livy interpreter</td>
+  </tr>
+  <tr>
     <td>md</td>
     <td>org.apache.zeppelin:zeppelin-markdown:0.9.0</td>
     <td>Markdown support</td>

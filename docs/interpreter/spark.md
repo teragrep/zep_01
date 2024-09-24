@@ -64,6 +64,16 @@ Apache Spark is supported in Zeppelin with Spark interpreter group which consist
     <td>SparkShinyInterpreter</td>
     <td>Used to create R shiny app with SparkR support</td>
   </tr>
+  <tr>
+    <td>%spark.sql</td>
+    <td>SparkSQLInterpreter</td>
+    <td>Provides a SQL environment</td>
+  </tr>
+  <tr>
+    <td>%spark.kotlin</td>
+    <td>KotlinSparkInterpreter</td>
+    <td>Provides a Kotlin environment</td>
+  </tr>
 </table>
 
 ## Main Features
