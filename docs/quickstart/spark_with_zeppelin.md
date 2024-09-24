@@ -35,7 +35,6 @@ For a brief overview of Apache Spark fundamentals with Apache Zeppelin, see the 
 - Dependency management
 - Supports [different context per user / note](../usage/interpreter/interpreter_binding_mode.html) 
 - Sharing variables among PySpark, SparkR and Spark through [ZeppelinContext](../interpreter/spark.html#zeppelincontext)
-- [Livy Interpreter](../interpreter/livy.html)
 
 <br/>
 

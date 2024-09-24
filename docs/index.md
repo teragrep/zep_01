@@ -51,7 +51,6 @@ limitations under the License.
 * [Tutorial](./quickstart/tutorial.html)
 * [Spark with Zeppelin](./quickstart/spark_with_zeppelin.html)
 * [SQL with Zeppelin](./quickstart/sql_with_zeppelin.html)
-* [Python with Zeppelin](./quickstart/python_with_zeppelin.html)
 
 #### Usage 
 * Dynamic Form 
@@ -97,7 +96,6 @@ limitations under the License.
   * [Spark Cluster Mode: Standalone](./setup/deployment/spark_cluster_mode.html#spark-standalone-mode)
   * [Spark Cluster Mode: YARN](./setup/deployment/spark_cluster_mode.html#spark-on-yarn-mode)
   * [Spark Cluster Mode: Mesos](./setup/deployment/spark_cluster_mode.html#spark-on-mesos-mode)
-  * [Zeppelin with Flink and Spark Cluster](./setup/deployment/flink_and_spark_cluster.html)
   * [Zeppelin on CDH](./setup/deployment/cdh.html)
   * [Zeppelin on VM: Vagrant](./setup/deployment/virtual_machine.html)
 * Security: available security support in Apache Zeppelin
@@ -112,7 +110,6 @@ limitations under the License.
   * [Azure Storage](./setup/storage/storage.html#notebook-storage-in-azure)
   * [Google Cloud Storage](./setup/storage/storage.html#notebook-storage-in-gcs)
   * [ZeppelinHub Storage](./setup/storage/storage.html#notebook-storage-in-zeppelinhub)
-  * [MongoDB Storage](./setup/storage/storage.html#notebook-storage-in-mongodb)
 * Operation 
   * [Configuration](./setup/operation/configuration.html): lists for Apache Zeppelin
   * [Monitoring](./setup/operation/monitoring.html): monitoring instructions for Apache Zeppelin
@@ -135,43 +132,19 @@ limitations under the License.
   * [How to Contribute (website)](./development/contribution/how_to_contribute_website.html)
 
 #### Available Interpreters 
-  * [Alluxio](./interpreter/alluxio.html)
-  * [Beam](./interpreter/beam.html)
-  * [BigQuery](./interpreter/bigquery.html)
-  * [Cassandra](./interpreter/cassandra.html)
-  * [Elasticsearch](./interpreter/elasticsearch.html)
-  * [Flink](./interpreter/flink.html)
-  * [Geode](./interpreter/geode.html)
-  * [Groovy](./interpreter/groovy.html)
-  * [Hazelcast Jet](./interpreter/hazelcastjet.html)
   * [HBase](./interpreter/hbase.html)
   * [HDFS](./interpreter/hdfs.html)
   * [Hive](./interpreter/hive.html)
-  * [Ignite](./interpreter/ignite.html)
-  * [influxDB](./interpreter/influxdb.html)
   * [Java](./interpreter/java.html)
   * [JDBC](./interpreter/jdbc.html)
   * [Jupyter](./interpreter/jupyter.html)
   * [Kotlin](./interpreter/kotlin.html)
-  * [KSQL](./interpreter/ksql.html)
-  * [Kylin](./interpreter/kylin.html)
-  * [Lens](./interpreter/lens.html)
-  * [Livy](./interpreter/livy.html)
   * [Mahout](./interpreter/mahout.html)
   * [Markdown](./interpreter/markdown.html)
-  * [MongoDB](./interpreter/mongodb.html)
-  * [Neo4j](./interpreter/neo4j.html)
-  * [Pig](./interpreter/pig.html)
   * [Postgresql, HAWQ](./interpreter/postgresql.html)
-  * [Python](./interpreter/python.html)
   * [R](./interpreter/r.html)
-  * [SAP](./interpreter/sap.html)
-  * [Scalding](./interpreter/scalding.html)
-  * [Scio](./interpreter/scio.html)
   * [Shell](./interpreter/shell.html)
   * [Spark](./interpreter/spark.html)
-  * [Sparql](./interpreter/sparql.html)
-  * [Submarine](./interpreter/submarine.html)
 
 #### External Resources
   * [Mailing List](https://zeppelin.apache.org/community.html)

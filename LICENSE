@@ -257,14 +257,12 @@ The following components are provided under the Apache License. See project link
 The text of each license is also included at licenses/LICENSE-[project]-[version].txt.
 
     (Apache 2.0) Bootstrap v3.0.2 (http://getbootstrap.com/) - https://github.com/twbs/bootstrap/blob/v3.0.2/LICENSE
-    (Apache 2.0) Software under ./bigquery/*  was developed at Google (http://www.google.com/). Licensed under the Apache v2.0 License.
     (Apache 2.0) Roboto Font (https://github.com/google/roboto/)
     (Apache 2.0) Gson extra (https://github.com/DanySK/gson-extras)
     (Apache 2.0) Nimbus JOSE+JWT (https://bitbucket.org/connect2id/nimbus-jose-jwt/wiki/Home)
     (Apache 2.0) jarchivelib (https://github.com/thrau/jarchivelib)
     (Apache 2.0) Google Cloud Client Library for Java (https://github.com/GoogleCloudPlatform/google-cloud-java)
     (Apache 2.0) concurrentunit (https://github.com/jhalterman/concurrentunit)
-    (Apache 2.0) Embedded MongoDB (https://github.com/flapdoodle-oss/de.flapdoodle.embed.mongo)
     (Apache 2.0) Kotlin (https://github.com/JetBrains/kotlin)
     (Apache 2.0) s3proxy (https://github.com/gaul/s3proxy)
     (Apache 2.0) kubernetes-client (https://github.com/fabric8io/kubernetes-client)

@@ -16,8 +16,6 @@ spark/metastore_db
 spark-1.*-bin-hadoop*
 .spark-dist
 
-lens/lens-cli-hist.log
-
 # Zeppelin server
 zeppelin-server/local-repo
 zeppelin-server/src/main/resources/zeppelin-site.xml
@@ -55,9 +53,6 @@ zeppelin-web/yarn.lock
 /r/lib/
 .Rhistory
 /R/
-
-# scio
-.bigquery/
 
 # project level
 /logs/

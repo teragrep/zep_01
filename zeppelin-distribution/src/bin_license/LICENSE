@@ -31,11 +31,7 @@ The following components are provided under Apache License.
     (Apache 2.0) Apache Hadoop (http://hadoop.apache.org)
     (Apache 2.0) Apache Avro (org.apache.avro:avro:1.7.7 - http://avro.apache.org)
     (Apache 2.0) Apache Curator (org.apache.curator:curator:2.4.0 - http://curator.apache.org/)
-    (Apache 2.0) Apache Cassandra (http://cassandra.apache.org/)
     (Apache 2.0) Apache HBase (http://hbase.apache.org/)
-    (Apache 2.0) Apache Ignite (http://ignite.apache.org/)
-    (Apache 2.0) Apache Kylin (http://kylin.apache.org/)
-    (Apache 2.0) Apache Lens (http://lens.apache.org/)
     (Apache 2.0) Apache Flink (http://flink.apache.org/)
     (Apache 2.0) Apache Jena (https://jena.apache.org/)
     (Apache 2.0) Apache Beam (http://beam.apache.org/)
@@ -87,8 +83,6 @@ The following components are provided under Apache License.
     (Apache 2.0) Lucene Sandbox (org.apache.lucene:lucene-sandbox:8.7.0 https://github.com/apache/lucene)
     (Apache 2.0) Lucene Highlighter (org.apache.lucene:lucene-highlighter:8.7.0 https://github.com/apache/lucene)
     (Apache 2.0) Lucene Memory (org.apache.lucene:lucene-memory:8.7.0 https://github.com/apache/lucene)
-    (Apache 2.0) Elasticsearch: Core (org.elasticsearch:elasticsearch:2.4.3 - https://github.com/elastic/elasticsearch)
-    Apache Lucene via elasticsearch interpreter
     (Apache 2.0) Lucene Core (org.apache.lucene:lucene-core:5.5.2 https://github.com/apache/lucene)
     (Apache 2.0) Lucene Backward Codes (org.apache.lucene:lucene-backward-codecs:5.5.2 https://github.com/apache/lucene)
     (Apache 2.0) Lucene Common Analyzers (org.apache.lucene:lucene-analyzers-common:5.5.2 - https://github.com/apache/lucene)
@@ -108,10 +102,6 @@ The following components are provided under Apache License.
     (Apache 2.0) Shiro Web (org.apache.shiro:shiro-web:1.7.0 - https://shiro.apache.org)
     (Apache 2.0) SnakeYAML (org.yaml:snakeyaml:1.15 - http://www.snakeyaml.org)
     (Apache 2.0) Protocol Buffers (com.google.protobuf:protobuf-java:2.5.0 - https://github.com/google/protobuf/releases)
-    (Apache 2.0) Alluxio Shell (org.alluxio:alluxio-shell:1.0.0 - http://alluxio.org)
-    (Apache 2.0) Alluxio Servers (org.alluxio:alluxio-core-server:1.0.0 - http://alluxio.org)
-    (Apache 2.0) Alluxio Minicluster (org.alluxio:alluxio-minicluster:1.0.0 - http://alluxio.org)
-    (Apache 2.0) Alluxio Underfs Local (org.alluxio:alluxio-underfs-local:1.0.0 - http://alluxio.org)
     (Apache 2.0) Microsoft Azure Storage Library for Java (com.microsoft.azure:azure-storage:4.0.0 - https://github.com/Azure/azure-storage-java)
     (Apache 2.0) stream (com.clearspring.analytics:stream:2.7.0) - https://github.com/addthis/stream-lib/blob/v2.7.0/LICENSE.txt
     (Apache 2.0) io.dropwizard.metrics:3.1.2 - https://github.com/dropwizard/metrics/blob/v3.1.2/LICENSE
@@ -168,7 +158,6 @@ The following components are provided under Apache License.
     (Apache 2.0) Tachyon Project Core (org.tachyonproject:tachyon:0.6.4 - http://tachyonproject.org/tachyon/)
     (Apache 2.0) Tachyon Project Client (org.tachyonproject:tachyon-client:0.6.4 - http://tachyonproject.org/tachyon-client/)
     (Apache 2.0) javax.inject (javax.inject:javax.inject:1 - http://code.google.com/p/atinject/)
-    (Apache 2.0) Apache Pig (org.apache.pig:0.16 - http://pig.apache.org)
     (Apache 2.0) tez-api (org.apache.tez:tez-api:0.7.0 - http://tez.apache.org)
     (Apache 2.0) tez-common (org.apache.tez:tez-common:0.7.0 - http://tez.apache.org)
     (Apache 2.0) tez-dag (org.apache.tez:tez-dag:0.7.0 - http://tez.apache.org)
@@ -178,11 +167,6 @@ The following components are provided under Apache License.
     (Apache 2.0) tez-yarn-timeline-history-with-acls (org.apache.tez:tez-yarn-timeline-history-with-acls:0.7.0 - http://tez.apache.org)
     (Apache 2.0) jna (net.java.dev.jna:jna:4.1.0 https://github.com/java-native-access/jna)
     (Apache 2.0) MathJax v2.7.0 - https://github.com/mathjax/MathJax/blob/2.7.0/LICENSE
-    (Apache 2.0) Scio REPL 0.2.4 (com.spotify:scio-repl:0.2.4 - https://github.com/spotify/scio)
-    (Apache 2.0) Scio BigQuery 0.2.4 (com.spotify:scio-bigquery:0.2.4 - https://github.com/spotify/scio)
-    (Apache 2.0) Scio Core 0.2.4 (com.spotify:scio-core:0.2.4 - https://github.com/spotify/scio)
-    (Apache 2.0) Scio Extra 0.2.4 (com.spotify:scio-extra:0.2.4 - https://github.com/spotify/scio)
-    (Apache 2.0) Scio Test 0.2.4 (com.spotify:scio-test:0.2.4 - https://github.com/spotify/scio)
     (Apache 2.0) Netty Http2 Codec 4.1.0.CR1 (io.netty:netty-codec-http2:4.1.0.CR1 - https://github.com/netty/netty)
     (Apache 2.0) Netty Http Codec 4.1.0.CR1 (io.netty:netty-codec-http:4.1.0.CR1 - https://github.com/netty/netty)
     (Apache 2.0) Netty Handler 4.1.0.CR1 (io.netty:netty-handler:4.1.0.CR1 - https://github.com/netty/netty)
@@ -225,8 +209,6 @@ The following components are provided under Apache License.
     (Apache 2.0) Scalatest 2.2.4 (org.scalatest:scalatest_2.10:2.2.4 - https://github.com/scalatest/scalatest)
     (Apache 2.0) frontend-maven-plugin 1.3 (com.github.eirslett:frontend-maven-plugin:1.3 - https://github.com/eirslett/frontend-maven-plugin/blob/frontend-plugins-1.3/LICENSE
     (Apache 2.0) frontend-plugin-core 1.3 (com.github.eirslett:frontend-plugin-core) - https://github.com/eirslett/frontend-maven-plugin/blob/frontend-plugins-1.3/LICENSE
-    (Apache 2.0) mongo-java-driver 3.4.1 (org.mongodb:mongo-java-driver:3.4.1) - https://github.com/mongodb/mongo-java-driver/blob/master/LICENSE.txt
-    (Apache 2.0) Neo4j Java Driver (https://github.com/neo4j/neo4j-java-driver) - https://github.com/neo4j/neo4j-java-driver/blob/1.4.3/LICENSE.txt
     (Apache 2.0) Hazelcast Jet (http://jet.hazelcast.org) - https://github.com/hazelcast/hazelcast-jet/blob/master/LICENSE
     (Apache 2.0) RxJava (io.reactivex.rxjava2:rxjava:2.2.17) - https://github.com/ReactiveX/RxJava/blob/2.x/LICENSE
     (Apache 2.0) Application monitoring instrumentation facade (io.micrometer:micrometer-core:1.6.0) - https://github.com/micrometer-metrics/micrometer/blob/master/LICENSE
@@ -296,7 +278,6 @@ The text of each license is also included at licenses/LICENSE-[project]-[version
     (The MIT License) angular-viewport-watch 0.135 (https://github.com/wix/angular-viewport-watch) - https://github.com/wix/angular-viewport-watch/blob/master/LICENSE
     (The MIT License) ansi-up 2.0.2 (https://github.com/drudru/ansi_up) - https://github.com/drudru/ansi_up#license
     (The MIT License) bcpkix-jdk15on 1.60 (org.bouncycastle:bcpkix-jdk15on:1.60 https://github.com/bcgit/bc-java) - https://github.com/bcgit/bc-java/blob/master/LICENSE.html
-    (The MIT License) influxdb-client-java 1.4.0 (com.influxdb:influxdb-client-java:1.4.0 https://github.com/influxdata/influxdb-client-java) - https://github.com/influxdata/influxdb-client-java/blob/master/LICENSE
 
 ========================================================================
 BSD-style licenses
