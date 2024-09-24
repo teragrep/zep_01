@@ -23,4 +23,4 @@ java            org.apache.zeppelin:zeppelin-java:0.11.0-SANPSHOT               
 jdbc            org.apache.zeppelin:zeppelin-jdbc:0.11.0-SANPSHOT                 Jdbc interpreter
 kotlin          org.apache.zeppelin:zeppelin-kotlin:0.11.0-SANPSHOT               Kotlin interpreter
 md              org.apache.zeppelin:zeppelin-markdown:0.11.0-SANPSHOT             Markdown support
-shell           org.apache.zeppelin:zeppelin-shell:0.11.0-SANPSHOT                Shell command
+

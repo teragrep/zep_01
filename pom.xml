@@ -62,7 +62,6 @@
     <module>kotlin</module>
     <module>spark</module>
     <module>markdown</module>
-    <module>shell</module>
     <module>hbase</module>
     <module>jdbc</module>
     <module>java</module>
