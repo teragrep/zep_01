@@ -66,7 +66,6 @@
     <module>hbase</module>
     <module>jdbc</module>
     <module>file</module>
-    <module>python</module>
     <module>java</module>
     <module>zeppelin-common</module>
     <module>zeppelin-client</module>

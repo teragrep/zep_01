@@ -22,5 +22,4 @@ hbase           org.apache.zeppelin:zeppelin-hbase:0.11.0-SANPSHOT              
 java            org.apache.zeppelin:zeppelin-java:0.11.0-SANPSHOT                 Java interpreter
 jdbc            org.apache.zeppelin:zeppelin-jdbc:0.11.0-SANPSHOT                 Jdbc interpreter
 md              org.apache.zeppelin:zeppelin-markdown:0.11.0-SANPSHOT             Markdown support
-python          org.apache.zeppelin:zeppelin-python:0.11.0-SANPSHOT               Python interpreter
 shell           org.apache.zeppelin:zeppelin-shell:0.11.0-SANPSHOT                Shell command

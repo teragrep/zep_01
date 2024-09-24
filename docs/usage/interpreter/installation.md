@@ -38,7 +38,7 @@ If you downloaded `netinst` binary package, you need to install by using below c
 #### Install specific interpreters
 
 ```bash
-./bin/install-interpreter.sh --name md,shell,jdbc,python
+./bin/install-interpreter.sh --name md,shell,jdbc
 ```
 
 You can get full list of community managed interpreters by running
@@ -143,11 +143,6 @@ You can also find the below community managed interpreter list in `conf/interpre
     <td>md</td>
     <td>org.apache.zeppelin:zeppelin-markdown:0.9.0</td>
     <td>Markdown support</td>
-  </tr>
-  <tr>
-    <td>python</td>
-    <td>org.apache.zeppelin:zeppelin-python:0.9.0</td>
-    <td>Python interpreter</td>
   </tr>
   <tr>
     <td>shell</td>

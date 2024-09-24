@@ -51,7 +51,6 @@ limitations under the License.
 * [Tutorial](./quickstart/tutorial.html)
 * [Spark with Zeppelin](./quickstart/spark_with_zeppelin.html)
 * [SQL with Zeppelin](./quickstart/sql_with_zeppelin.html)
-* [Python with Zeppelin](./quickstart/python_with_zeppelin.html)
 
 #### Usage 
 * Dynamic Form 
@@ -142,7 +141,6 @@ limitations under the License.
   * [Mahout](./interpreter/mahout.html)
   * [Markdown](./interpreter/markdown.html)
   * [Postgresql, HAWQ](./interpreter/postgresql.html)
-  * [Python](./interpreter/python.html)
   * [R](./interpreter/r.html)
   * [Shell](./interpreter/shell.html)
   * [Spark](./interpreter/spark.html)
