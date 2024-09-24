@@ -1,0 +1,12 @@
+[Unit]
+Description=com.teragrep-zep_01
+
+[Service]
+ExecStart=/opt/teragrep/zep_01/bin/zeppelin-daemon.sh upstart
+ExecStop=/opt/teragrep/zep_01/bin/zeppelin-daemon.sh stop
+User=srv-zpln
+WorkingDirectory=/opt/teragrep/zep_01
+UMask=0027
+
+[Install]
+WantedBy=multi-user.target

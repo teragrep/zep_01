@@ -57,8 +57,6 @@
     <module>zeppelin-interpreter-shaded</module>
     <module>zeppelin-zengine</module>
     <module>zeppelin-display</module>
-    <module>zeppelin-jupyter-interpreter</module>
-    <module>zeppelin-jupyter-interpreter-shaded</module>
     <module>kotlin</module>
     <module>spark</module>
     <module>markdown</module>
@@ -69,7 +67,6 @@
     <module>zeppelin-client</module>
     <module>zeppelin-client-examples</module>
     <module>zeppelin-server</module>
-    <module>zeppelin-jupyter</module>
     <module>zeppelin-plugins</module>
     <module>zeppelin-distribution</module>
   </modules>
@@ -79,7 +76,7 @@
     <java.version>1.8</java.version>
     <scala.2.10.version>2.10.5</scala.2.10.version>
     <scala.version>${scala.2.10.version}</scala.version>
-    <scala.binary.version>2.10</scala.binary.version>
+    <scala.binary.version>2.11</scala.binary.version>
     <scala.2.11.version>2.11.8</scala.2.11.version>
     <scalatest.version>3.0.7</scalatest.version>
     <scalacheck.version>1.12.5</scalacheck.version>
@@ -1515,13 +1512,6 @@
     </profile>
 
     <profile>
-      <id>helium-dev</id>
-      <modules>
-        <module>helium-dev</module>
-      </modules>
-    </profile>
-
-    <profile>
       <id>include-hadoop</id>
       <properties>
         <hadoop.deps.scope>compile</hadoop.deps.scope>
@@ -1687,7 +1677,6 @@
               <exclude>conf/notebook-authorization.json</exclude>
               <exclude>conf/credentials.json</exclude>
               <exclude>conf/zeppelin-env.sh</exclude>
-              <exclude>conf/helium.json</exclude>
               <exclude>spark-*-bin*/**</exclude>
               <exclude>.spark-dist/**</exclude>
               <exclude>**/interpreter-setting.json</exclude>
@@ -1743,7 +1732,6 @@
               <!-- package.json -->
               <exclude>**/package.json</exclude>
 
-              <exclude>zeppelin-jupyter-interpreter/src/main/resources/grpc/jupyter/*.py</exclude>
             </excludes>
           </configuration>
 
