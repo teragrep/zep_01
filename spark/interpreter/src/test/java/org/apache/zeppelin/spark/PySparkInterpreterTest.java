@@ -58,7 +58,6 @@ public class PySparkInterpreterTest extends PythonInterpreterTest {
       fail(ExceptionUtils.getStackTrace(e));
     }
 
-    properties.setProperty("zeppelin.pyspark.useIPython", "false");
     properties.setProperty("zeppelin.python.gatewayserver_address", "127.0.0.1");
     properties.setProperty("zeppelin.spark.deprecatedMsg.show", "false");
 
@@ -77,10 +76,6 @@ public class PySparkInterpreterTest extends PythonInterpreterTest {
     intpGroup.get("note").add(sparkInterpreter);
     sparkInterpreter.setInterpreterGroup(intpGroup);
 
-    LazyOpenInterpreter iPySparkInterpreter =
-        new LazyOpenInterpreter(new IPySparkInterpreter(properties));
-    intpGroup.get("note").add(iPySparkInterpreter);
-    iPySparkInterpreter.setInterpreterGroup(intpGroup);
 
     interpreter = new LazyOpenInterpreter(new PySparkInterpreter(properties));
     intpGroup.get("note").add(interpreter);
@@ -98,7 +93,6 @@ public class PySparkInterpreterTest extends PythonInterpreterTest {
 
   @Test
   public void testPySpark() throws InterruptedException, InterpreterException, IOException {
-    IPySparkInterpreterTest.testPySpark(interpreter, mockRemoteEventClient);
   }
 
   @Override
@@ -111,7 +105,6 @@ public class PySparkInterpreterTest extends PythonInterpreterTest {
     Properties properties = new Properties();
     properties.setProperty(SparkStringConstants.APP_NAME_PROP_NAME, "Zeppelin Test");
     properties.setProperty("spark.pyspark.python", "invalid_python");
-    properties.setProperty("zeppelin.python.useIPython", "false");
     properties.setProperty("zeppelin.python.gatewayserver_address", "127.0.0.1");
     properties.setProperty("zeppelin.spark.maxResult", "3");
 
@@ -120,14 +113,10 @@ public class PySparkInterpreterTest extends PythonInterpreterTest {
     Interpreter sparkInterpreter =
             new LazyOpenInterpreter(new SparkInterpreter(properties));
     sparkInterpreter.setInterpreterGroup(intpGroup);
-    LazyOpenInterpreter iPySparkInterpreter =
-            new LazyOpenInterpreter(new IPySparkInterpreter(properties));
-    iPySparkInterpreter.setInterpreterGroup(intpGroup);
 
     intpGroup.put("note", new LinkedList<Interpreter>());
     intpGroup.get("note").add(interpreter);
     intpGroup.get("note").add(sparkInterpreter);
-    intpGroup.get("note").add(iPySparkInterpreter);
 
 
     InterpreterContext.set(getInterpreterContext());

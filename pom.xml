@@ -62,6 +62,7 @@
     <module>markdown</module>
     <module>hbase</module>
     <module>jdbc</module>
+    <module>python</module>
     <module>java</module>
     <module>zeppelin-common</module>
     <module>zeppelin-client</module>

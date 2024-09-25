@@ -34,6 +34,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
+import java.io.UnsupportedEncodingException;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -224,9 +225,7 @@ public class ClusterInterpreterLauncher extends StandardInterpreterLauncher
 
     InterpreterClient intpProcess = null;
     if (isRunningOnDocker(zConf)) {
-      DockerInterpreterLauncher dockerIntpLauncher = new DockerInterpreterLauncher(zConf, null);
-      dockerIntpLauncher.setProperties(context.getProperties());
-      intpProcess = dockerIntpLauncher.launch(context);
+      throw new UnsupportedEncodingException("Docker launch is no longer supported");
     } else {
       intpProcess = createClusterIntpProcess();
     }

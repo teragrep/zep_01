@@ -37,14 +37,6 @@
   <properties>
     <plugin.name>Launcher/ClusterInterpreterLauncher</plugin.name>
   </properties>
-  
-  <dependencies>
-    <dependency>
-      <groupId>org.apache.zeppelin</groupId>
-      <artifactId>launcher-docker</artifactId>
-      <version>0.10.1</version>
-    </dependency>
-  </dependencies>
 
   <build>
     <testResources>
