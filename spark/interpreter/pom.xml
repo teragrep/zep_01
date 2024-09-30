@@ -303,21 +303,6 @@
               <outputDirectory>${project.build.directory}</outputDirectory>
             </configuration>
           </execution>
-          <!-- include sparkr by default -->
-          <execution>
-            <id>download-sparkr-files</id>
-            <phase>validate</phase>
-            <goals>
-              <goal>wget</goal>
-            </goals>
-            <configuration>
-              <readTimeOut>60000</readTimeOut>
-              <retries>5</retries>
-              <url>${spark.bin.download.url}</url>
-              <unpack>true</unpack>
-              <outputDirectory>${project.build.directory}</outputDirectory>
-            </configuration>
-          </execution>
         </executions>
       </plugin>
 
