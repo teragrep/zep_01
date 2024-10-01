@@ -69,12 +69,6 @@
 
     <dependency>
       <groupId>org.apache.zeppelin</groupId>
-      <artifactId>spark1-shims</artifactId>
-      <version>${project.version}</version>
-    </dependency>
-
-    <dependency>
-      <groupId>org.apache.zeppelin</groupId>
       <artifactId>spark2-shims</artifactId>
       <version>${project.version}</version>
     </dependency>
@@ -320,7 +314,7 @@
               <target>
                 <delete dir="../../interpreter/spark/pyspark" />
                 <!-- FIXME: TODO: THIS IS FRAGILE HARDCODED VERSION! https://github.com/teragrep/zep_01-migrate/issues/14 -->
-                <copy file="${project.build.directory}/${spark.archive}/python/lib/py4j-0.10.7-src.zip" todir="${project.build.directory}/../../../interpreter/spark/pyspark" />
+                <copy file="${project.build.directory}/../../../python/src/main/resources/python/py4j-src-0.10.9.7.zip" todir="${project.build.directory}/../../../interpreter/spark/pyspark" />
                 <zip basedir="${project.build.directory}/${spark.archive}/python" destfile="${project.build.directory}/../../../interpreter/spark/pyspark/pyspark.zip" includes="pyspark/*.py,pyspark/**/*.py" />
               </target>
             </configuration>
