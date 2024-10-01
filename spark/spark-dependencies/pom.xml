@@ -262,9 +262,8 @@
             <configuration>
               <target>
                 <delete dir="../../interpreter/spark/pyspark"/>
-                <!-- FIXME: TODO: THIS IS FRAGILE HARDCODED VERSION! https://github.com/teragrep/zep_01-migrate/issues/14 -->
                 <copy todir="../../interpreter/spark/pyspark"
-                      file="${project.build.directory}/${spark.archive}/python/lib/py4j-0.10.7-src.zip"/>
+                      file="${project.build.directory}/${spark.archive}/python/lib/py4j-${py4j.version}-src.zip"/>
                 <zip destfile="${project.build.directory}/../../../interpreter/spark/pyspark/pyspark.zip"
                      basedir="${project.build.directory}/${spark.archive}/python"
                      includes="pyspark/*.py,pyspark/**/*.py"/>

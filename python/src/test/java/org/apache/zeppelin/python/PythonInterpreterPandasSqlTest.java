@@ -27,6 +27,7 @@ import org.apache.zeppelin.interpreter.InterpreterResult.Type;
 import org.apache.zeppelin.interpreter.remote.RemoteInterpreterEventClient;
 import org.junit.After;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
@@ -117,6 +118,7 @@ public class PythonInterpreterPandasSqlTest {
     pandasSqlInterpreter.close();
   }
 
+  @Ignore("Requires external dependency Pandas")
   @Test
   public void dependenciesAreInstalled() throws InterpreterException {
     InterpreterResult ret =
@@ -124,6 +126,7 @@ public class PythonInterpreterPandasSqlTest {
     assertEquals(ret.message().toString(), InterpreterResult.Code.SUCCESS, ret.code());
   }
 
+  @Ignore("Requires external dependency Pandas")
   @Test
   public void errorMessageIfDependenciesNotInstalled() throws InterpreterException {
     context = getInterpreterContext();
@@ -134,6 +137,7 @@ public class PythonInterpreterPandasSqlTest {
     assertTrue(ret.toString(), ret.toString().contains("no such table: something"));
   }
 
+  @Ignore("Requires external dependency Pandas")
   @Test
   public void sqlOverTestDataPrintsTable() throws IOException, InterpreterException {
     InterpreterResult ret = pythonInterpreter.interpret("import pandas as pd\nimport numpy as np", context);
@@ -161,6 +165,7 @@ public class PythonInterpreterPandasSqlTest {
                 context).code());
   }
 
+  @Ignore("Requires external dependency Pandas")
   @Test
   public void badSqlSyntaxFails() throws InterpreterException {
     //when
@@ -172,6 +177,7 @@ public class PythonInterpreterPandasSqlTest {
     assertEquals(context.out.toString(), InterpreterResult.Code.ERROR, ret.code());
   }
 
+  @Ignore("Requires external dependency Pandas")
   @Test
   public void showDataFrame() throws IOException, InterpreterException {
     pythonInterpreter.interpret("import pandas as pd", context);

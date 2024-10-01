@@ -237,6 +237,7 @@ public abstract class BasePythonInterpreterTest extends ConcurrentTestCase {
     assertEquals("count", completions.get(0).getValue());
   }
 
+  @Ignore("Contains pandas and such tests that are not available")
   @Test
   public void testZeppelinContext() throws InterpreterException, InterruptedException, IOException {
     // TextBox
