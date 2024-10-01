@@ -120,3 +120,7 @@ tramp
 
 # Git properties
 **/git.properties
+
+# Should not be necessary, temporary hack
+conf_*Test/
+interpreter_*Test/
