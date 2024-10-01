@@ -262,8 +262,9 @@
             <configuration>
               <target>
                 <delete dir="../../interpreter/spark/pyspark"/>
+                <!-- FIXME: TODO: Path is a hack at best -->
                 <copy todir="../../interpreter/spark/pyspark"
-                      file="${project.build.directory}/${spark.archive}/python/lib/py4j-${py4j.version}-src.zip"/>
+                      file="${project.build.directory}/../../../python/src/main/resources/python/py4j-src-0.10.9.7.zip"/>
                 <zip destfile="${project.build.directory}/../../../interpreter/spark/pyspark/pyspark.zip"
                      basedir="${project.build.directory}/${spark.archive}/python"
                      includes="pyspark/*.py,pyspark/**/*.py"/>
