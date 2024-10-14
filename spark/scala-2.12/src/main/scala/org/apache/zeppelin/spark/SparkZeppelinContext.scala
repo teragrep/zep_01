@@ -20,7 +20,6 @@ package org.apache.zeppelin.spark
 import java.util
 
 import org.apache.spark.SparkContext
-import org.apache.spark.sql.DataFrame
 import org.apache.zeppelin.annotation.ZeppelinApi
 import org.apache.zeppelin.display.AngularObjectWatcher
 import org.apache.zeppelin.display.ui.OptionInput.ParamOption
@@ -42,7 +41,8 @@ class SparkZeppelinContext(val sc: SparkContext,
     "spark" -> "org.apache.zeppelin.spark.SparkInterpreter",
     "sql" -> "org.apache.zeppelin.spark.SparkSqlInterpreter",
     "pyspark" -> "org.apache.zeppelin.spark.PySparkInterpreter",
-    "kotlin" -> "org.apache.zeppelin.spark.KotlinSparkInterpreter"
+    "ipyspark" -> "org.apache.zeppelin.spark.IPySparkInterpreter",
+    "r" -> "org.apache.zeppelin.spark.SparkRInterpreter"
   )
 
   private val supportedClasses = scala.collection.mutable.ArrayBuffer[Class[_]]()
