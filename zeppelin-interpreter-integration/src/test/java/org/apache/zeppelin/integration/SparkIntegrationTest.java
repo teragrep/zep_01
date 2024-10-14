@@ -132,11 +132,6 @@ public abstract class SparkIntegrationTest {
     interpreterResult = pySparkInterpreter.interpret("sqlContext.createDataFrame([(1,'a'),(2,'b')], ['id','name']).registerTempTable('test')", context);
     assertEquals(interpreterResult.toString(), InterpreterResult.Code.SUCCESS, interpreterResult.code());
 
-    // test IPySparkInterpreter
-    Interpreter ipySparkInterpreter = interpreterFactory.getInterpreter("spark.ipyspark", new ExecutionContext("user1", "note1", "test"));
-    interpreterResult = ipySparkInterpreter.interpret("sqlContext.table('test').show()", context);
-    assertEquals(interpreterResult.toString(), InterpreterResult.Code.SUCCESS, interpreterResult.code());
-
     // test SparkSQLInterpreter
     Interpreter sqlInterpreter = interpreterFactory.getInterpreter("spark.sql", new ExecutionContext("user1", "note1", "test"));
     interpreterResult = sqlInterpreter.interpret("select count(1) as c from test", context);
@@ -163,7 +158,6 @@ public abstract class SparkIntegrationTest {
     sparkInterpreterSetting.setProperty("SPARK_HOME", sparkHome);
     sparkInterpreterSetting.setProperty("ZEPPELIN_CONF_DIR", zeppelin.getZeppelinConfDir().getAbsolutePath());
     sparkInterpreterSetting.setProperty("zeppelin.spark.useHiveContext", "false");
-    sparkInterpreterSetting.setProperty("zeppelin.pyspark.useIPython", "false");
     sparkInterpreterSetting.setProperty("zeppelin.spark.scala.color", "false");
     sparkInterpreterSetting.setProperty("zeppelin.spark.deprecatedMsg.show", "false");
     sparkInterpreterSetting.setProperty("spark.user.name", "#{user}");
@@ -189,7 +183,6 @@ public abstract class SparkIntegrationTest {
     sparkInterpreterSetting.setProperty("SPARK_HOME", sparkHome);
     sparkInterpreterSetting.setProperty("ZEPPELIN_CONF_DIR", zeppelin.getZeppelinConfDir().getAbsolutePath());
     sparkInterpreterSetting.setProperty("zeppelin.spark.useHiveContext", "false");
-    sparkInterpreterSetting.setProperty("zeppelin.pyspark.useIPython", "false");
     sparkInterpreterSetting.setProperty("PYSPARK_PYTHON", getPythonExec());
     sparkInterpreterSetting.setProperty("spark.driver.memory", "512m");
     sparkInterpreterSetting.setProperty("zeppelin.spark.scala.color", "false");
@@ -239,7 +232,6 @@ public abstract class SparkIntegrationTest {
     sparkInterpreterSetting.setProperty("SPARK_HOME", sparkHome);
     sparkInterpreterSetting.setProperty("ZEPPELIN_CONF_DIR", zeppelin.getZeppelinConfDir().getAbsolutePath());
     sparkInterpreterSetting.setProperty("zeppelin.spark.useHiveContext", "false");
-    sparkInterpreterSetting.setProperty("zeppelin.pyspark.useIPython", "false");
     sparkInterpreterSetting.setProperty("PYSPARK_PYTHON", getPythonExec());
     sparkInterpreterSetting.setProperty("spark.driver.memory", "512m");
     sparkInterpreterSetting.setProperty("zeppelin.spark.scala.color", "false");
@@ -290,7 +282,6 @@ public abstract class SparkIntegrationTest {
       sparkInterpreterSetting.setProperty("SPARK_HOME", sparkHome);
       sparkInterpreterSetting.setProperty("ZEPPELIN_CONF_DIR", zeppelin.getZeppelinConfDir().getAbsolutePath());
       sparkInterpreterSetting.setProperty("zeppelin.spark.useHiveContext", "false");
-      sparkInterpreterSetting.setProperty("zeppelin.pyspark.useIPython", "false");
       sparkInterpreterSetting.setProperty("zeppelin.spark.scala.color", "false");
       sparkInterpreterSetting.setProperty("zeppelin.spark.deprecatedMsg.show", "false");
       sparkInterpreterSetting.getOption().setPerNote(InterpreterOption.SCOPED);

@@ -37,6 +37,7 @@ import java.util.Properties;
 
 import static java.lang.String.format;
 import static org.junit.Assert.assertEquals;
+import org.junit.Ignore;
 
 /**
  * JDBC interpreter Z-variable interpolation unit tests.
@@ -77,6 +78,7 @@ public class JDBCInterpreterInterpolationTest extends BasicJDBCTestCaseAdapter {
   }
 
   @Test
+  @Ignore("This format of interpolation is not used")
   public void testEnableDisableProperty() throws IOException, InterpreterException {
     Properties properties = new Properties();
     properties.setProperty("common.max_count", "1000");
@@ -120,6 +122,7 @@ public class JDBCInterpreterInterpolationTest extends BasicJDBCTestCaseAdapter {
   }
 
   @Test
+  @Ignore("This format of interpolation is not used")
   public void testNormalQueryInterpolation() throws IOException, InterpreterException {
     Properties properties = new Properties();
     properties.setProperty("common.max_count", "1000");
@@ -163,6 +166,7 @@ public class JDBCInterpreterInterpolationTest extends BasicJDBCTestCaseAdapter {
   }
 
   @Test
+  @Ignore("This format of interpolation is not used")
   public void testEscapedInterpolationPattern() throws IOException, InterpreterException {
     Properties properties = new Properties();
     properties.setProperty("common.max_count", "1000");

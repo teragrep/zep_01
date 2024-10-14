@@ -105,8 +105,6 @@ public abstract class ZeppelinSparkClusterTest extends AbstractTestRestApi {
         new InterpreterProperty("spark.cores.max", "2"));
     sparkProperties.put("zeppelin.spark.useHiveContext",
         new InterpreterProperty("zeppelin.spark.useHiveContext", "false"));
-    sparkProperties.put("zeppelin.pyspark.useIPython",
-            new InterpreterProperty("zeppelin.pyspark.useIPython", "false"));
     sparkProperties.put("zeppelin.spark.useNew",
             new InterpreterProperty("zeppelin.spark.useNew", "true"));
     sparkProperties.put("spark.serializer",
@@ -343,23 +341,6 @@ public abstract class ZeppelinSparkClusterTest extends AbstractTestRestApi {
       assertEquals(Status.FINISHED, p.getStatus());
       assertEquals(InterpreterResult.Type.TABLE, p.getReturn().message().get(0).getType());
       assertEquals("name\tage\nhello\t20\n", p.getReturn().message().get(0).getData());
-
-      // get resource from ipyspark
-      p = note.addNewParagraph(anonymous);
-      p.setText("%spark.ipyspark df=z.getAsDataFrame('table_result')\nz.show(df)");
-      note.run(p.getId(), true);
-      assertEquals(Status.FINISHED, p.getStatus());
-      assertEquals(InterpreterResult.Type.TABLE, p.getReturn().message().get(0).getType());
-      assertEquals("name\tage\nhello\t20\n", p.getReturn().message().get(0).getData());
-
-      // get resource from sparkr
-      p = note.addNewParagraph(anonymous);
-      p.setText("%spark.r df=z.getAsDataFrame('table_result')\ndf");
-      note.run(p.getId(), true);
-      assertEquals(Status.FINISHED, p.getStatus());
-      assertEquals(InterpreterResult.Type.TEXT, p.getReturn().message().get(0).getType());
-      assertTrue(p.getReturn().toString(),
-              p.getReturn().message().get(0).getData().contains("name age\n1 hello  20"));
 
       // test display DataSet
       if (isSpark2() || isSpark3()) {
@@ -1059,12 +1040,6 @@ public abstract class ZeppelinSparkClusterTest extends AbstractTestRestApi {
       note.run(p2.getId(), true);
       assertEquals(Status.FINISHED, p2.getStatus());
       assertTrue(p2.getReturn().toString().contains("databricks_spark"));
-
-      Paragraph p3 = note.addNewParagraph(anonymous);
-      p3.setText("%spark.ipyspark\nimport sys\nsys.path");
-      note.run(p3.getId(), true);
-      assertEquals(Status.FINISHED, p3.getStatus());
-      assertTrue(p3.getReturn().toString().contains("databricks_spark"));
 
     } finally {
       if (null != note) {

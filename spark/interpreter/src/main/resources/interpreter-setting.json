@@ -247,18 +247,6 @@
   },
   {
     "group": "spark",
-    "name": "ipyspark",
-    "className": "org.apache.zeppelin.spark.IPySparkInterpreter",
-    "properties": {},
-    "editor": {
-      "language": "python",
-      "editOnDblClick": false,
-      "completionSupport": true,
-      "completionKey": "TAB"
-    }
-  },
-  {
-    "group": "spark",
     "name": "r",
     "className": "org.apache.zeppelin.spark.SparkRInterpreter",
     "properties": {

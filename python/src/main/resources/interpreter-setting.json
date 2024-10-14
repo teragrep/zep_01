@@ -18,42 +18,11 @@
         "defaultValue": "1000",
         "description": "Max number of dataframe rows to display.",
         "type": "number"
-      },
-      "zeppelin.python.useIPython": {
-        "propertyName": "zeppelin.python.useIPython",
-        "defaultValue": true,
-        "description": "Whether use IPython when it is available in `%python`",
-        "type": "checkbox"
       }
     },
     "editor": {
       "language": "python",
       "editOnDblClick": false,
-      "completionSupport": true
-    }
-  },
-  {
-    "group": "python",
-    "name": "ipython",
-    "className": "org.apache.zeppelin.python.IPythonInterpreter",
-    "properties": {
-      "zeppelin.ipython.launch.timeout": {
-        "propertyName": "zeppelin.ipython.launch.timeout",
-        "defaultValue": "30000",
-        "description": "Time out for ipython launch",
-        "type": "number"
-      },
-      "zeppelin.ipython.grpc.message_size": {
-        "propertyName": "zeppelin.ipython.grpc.message_size",
-        "defaultValue": "33554432",
-        "description": "grpc message size, default is 32M",
-        "type": "number"
-      }
-    },
-    "editor": {
-      "language": "python",
-      "editOnDblClick": false,
-      "completionKey": "TAB",
       "completionSupport": true
     }
   },

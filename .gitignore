@@ -124,3 +124,7 @@ tramp
 # Should not be necessary, temporary hack
 conf_*Test/
 interpreter_*Test/
+notebook_*Test/
+zeppelin-server/conf/
+notebook_ConfigurationsRestApi/
+notebook_HeliumRestApi/
