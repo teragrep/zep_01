@@ -200,7 +200,7 @@
             <require>java-1.8.0-openjdk &gt;= 1.9.0</require>
             <require>java-1.8.0-openjdk-headless &gt;= 1.9.0</require>
             <require>java-1.8.0-openjdk-devel &gt;= 1.9.0</require>
-            <require>python3</require>
+            <require>python3.11</require>
             <require>git</require>
             <require>sudo</require>
             <require>pam</require>
