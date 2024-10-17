@@ -55,10 +55,7 @@
           <defaultGroupname>srv-zpln</defaultGroupname>
           <defaultFilemode>0644</defaultFilemode>
           <defaultDirmode>0755</defaultDirmode>
-          <!-- disable bytecompile as python3 scripts compiled by python2 often causes fatal errors -->
           <defineStatements>
-            <!-- _python_bytecompile_extra 0 doesn't work so we take the original script and just replace what we do not want -->
-            <defineStatement>__os_install_post %(echo '%{__os_install_post}' | sed -e 's!/usr/lib[^[:space:]]*/brp-python-bytecompile[[:space:]].*$!!g')</defineStatement>
             <defineStatement>_build_id_links none</defineStatement>
             <defineStatement>__provides_exclude ^osgi\\(.*$</defineStatement>
             <defineStatement>__requires_exclude ^osgi\\(.*$</defineStatement>
