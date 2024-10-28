@@ -65,7 +65,6 @@
     <module>java</module>
     <module>zeppelin-common</module>
     <module>zeppelin-client</module>
-    <module>zeppelin-client-examples</module>
     <module>zeppelin-server</module>
     <module>zeppelin-plugins</module>
     <module>zeppelin-distribution</module>
@@ -1435,13 +1434,6 @@
       <modules>
         <module>zeppelin-integration</module>
         <module>zeppelin-interpreter-integration</module>
-      </modules>
-    </profile>
-
-    <profile>
-      <id>examples</id>
-      <modules>
-        <module>zeppelin-examples</module>
       </modules>
     </profile>
 
