@@ -109,7 +109,6 @@
                     <exclude>**/*.jar</exclude>
                     <exclude>**/*.war</exclude>
                     <!-- disable interpreters - this copies all non-jar/war files for other interpreters -->
-                    <exclude>**/interpreter/kotlin/**</exclude>
                     <exclude>**/interpreter/spark/**</exclude>
                   </excludes>
                 </source>
@@ -128,7 +127,6 @@
                   <location>${project.basedir}/zeppelin-distribution/target/zeppelin-0.10.1/zeppelin-0.10.1</location>
                   <excludes>
                     <!-- disable interpreters - this copies all jar/war files for other interpreters -->
-                    <exclude>**/interpreter/kotlin/**</exclude>
                     <exclude>**/interpreter/spark/**</exclude>
                   </excludes>
                   <includes>

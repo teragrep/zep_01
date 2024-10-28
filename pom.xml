@@ -56,7 +56,6 @@
     <module>zeppelin-interpreter</module>
     <module>zeppelin-interpreter-shaded</module>
     <module>zeppelin-zengine</module>
-    <module>kotlin</module>
     <module>spark</module>
     <module>markdown</module>
     <module>hbase</module>

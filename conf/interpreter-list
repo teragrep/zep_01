@@ -17,9 +17,7 @@
 #
 # [name]  [maven artifact]  [description]
 
-file            org.apache.zeppelin:zeppelin-file:0.10.1-SNAPSHOT                 HDFS file interpreter
 hbase           org.apache.zeppelin:zeppelin-hbase:0.10.1-SNAPSHOT                Hbase interpreter
 java            org.apache.zeppelin:zeppelin-java:0.10.1-SNAPSHOT                 Java interpreter
 jdbc            org.apache.zeppelin:zeppelin-jdbc:0.10.1-SNAPSHOT                 Jdbc interpreter
-kotlin          org.apache.zeppelin:zeppelin-kotlin:0.10.1-SNAPSHOT               Kotlin interpreter
 md              org.apache.zeppelin:zeppelin-markdown:0.10.1-SNAPSHOT             Markdown support
