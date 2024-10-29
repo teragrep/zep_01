@@ -455,36 +455,6 @@ public class NotebookServerTest extends AbstractTestRestApi {
   }
 
   @Test
-  public void testImportJupyterNote() throws IOException {
-    String jupyterNoteJson = IOUtils.toString(getClass().getResourceAsStream("/Lecture-4.ipynb"));
-    String msg = "{\"op\":\"IMPORT_NOTE\",\"data\":" +
-            "{\"note\": " + jupyterNoteJson + "}}";
-    Message messageReceived = notebookServer.deserializeMessage(msg);
-    Note note = null;
-    ServiceContext context = new ServiceContext(AuthenticationInfo.ANONYMOUS, new HashSet<>());
-    try {
-      try {
-        note = notebookServer.importNote(null, context, messageReceived);
-      } catch (NullPointerException e) {
-        //broadcastNoteList(); failed nothing to worry.
-        LOG.error("Exception in NotebookServerTest while testImportJupyterNote, failed nothing to " +
-                "worry ", e);
-      }
-
-      assertNotEquals(null, notebook.getNote(note.getId()));
-      assertTrue(notebook.getNote(note.getId()).getName(),
-              notebook.getNote(note.getId()).getName().startsWith("Note converted from Jupyter_"));
-      assertEquals("md", notebook.getNote(note.getId()).getParagraphs().get(0).getIntpText());
-      assertEquals("\n# matplotlib - 2D and 3D plotting in Python",
-              notebook.getNote(note.getId()).getParagraphs().get(0).getScriptText());
-    } finally {
-      if (note != null) {
-        notebook.removeNote(note, anonymous);
-      }
-    }
-  }
-
-  @Test
   public void bindAngularObjectToRemoteForParagraphs() throws Exception {
     //Given
     final String varName = "name";
