@@ -273,6 +273,7 @@
     <plugins>
       <plugin>
         <artifactId>maven-surefire-plugin</artifactId>
+        <version>3.5.1</version>
         <configuration>
           <reuseForks>false</reuseForks>
           <forkCount>1</forkCount>

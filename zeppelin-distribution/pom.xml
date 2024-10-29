@@ -111,6 +111,7 @@
         <plugins>
           <plugin>
             <artifactId>maven-surefire-plugin</artifactId>
+            <version>3.5.1</version>
             <configuration>
               <skipTests>true</skipTests>
             </configuration>
