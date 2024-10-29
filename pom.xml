@@ -1429,14 +1429,6 @@
     </profile>
 
     <profile>
-      <id>integration</id>
-      <modules>
-        <module>zeppelin-integration</module>
-        <module>zeppelin-interpreter-integration</module>
-      </modules>
-    </profile>
-
-    <profile>
       <id>include-hadoop</id>
       <properties>
         <hadoop.deps.scope>compile</hadoop.deps.scope>
