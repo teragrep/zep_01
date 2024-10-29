@@ -41,7 +41,6 @@ class FlexmarkParserTest {
   @BeforeEach
   public void setUp() throws Exception {
     Properties props = new Properties();
-    props.put(Markdown.MARKDOWN_PARSER_TYPE, Markdown.PARSER_TYPE_FLEXMARK);
     md = new Markdown(props);
     md.open();
   }
@@ -194,44 +193,6 @@ class FlexmarkParserTest {
     InterpreterResult result = md.interpret(input, null);
 
     assertEquals(wrapWithMarkdownClassDiv(expected), result.message().get(0).getData());
-  }
-
-  @Test
-  void testYumlPlugin() {
-    String input = new StringBuilder()
-        .append("%%% yuml style=nofunky scale=120 format=svg\n")
-        .append("[Customer]<>-orders>[Order]\n")
-        .append("[Order]++-0..>[LineItem]\n")
-        .append("[Order]-[note:Aggregate root.]\n")
-        .append("  %%%  ")
-        .toString();
-
-    InterpreterResult result = md.interpret(input, null);
-    assertTrue(result.message().get(0).getData().contains("<img src=\"http://yuml.me/diagram/"));
-  }
-
-  @Test
-  void testWebsequencePlugin() {
-    String input =
-        new StringBuilder()
-            .append("%%% sequence style=modern-blue\n")
-            .append("title Authentication Sequence\n")
-            .append("Alice->Bob: Authentication Request\n")
-            .append("note right of Bob: Bob thinks about it\n")
-            .append("Bob->Alice: Authentication Response\n")
-            .append("  %%%  ")
-            .toString();
-
-    InterpreterResult result = md.interpret(input, null);
-
-    final String expected = "<img src=\"https://www.websequencediagrams.com/?png=";
-    boolean containsImg = result.message().get(0).getData().contains(expected);
-    if (!containsImg) {
-      LOGGER.error("Expected {} but found {}",
-          expected, result.message().get(0).getData());
-    }
-    // Do not activate, because this test depends on www.websequencediagrams.com
-    //assertTrue(containsImg);
   }
 
   @Test

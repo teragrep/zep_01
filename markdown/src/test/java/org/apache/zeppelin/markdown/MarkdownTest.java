@@ -33,7 +33,6 @@ class MarkdownTest {
   @BeforeEach
   public void setUp() {
     Properties props = new Properties();
-    props.put(Markdown.MARKDOWN_PARSER_TYPE, Markdown.PARSER_TYPE_MARKDOWN4J);
     md = new Markdown(props);
     md.open();
   }

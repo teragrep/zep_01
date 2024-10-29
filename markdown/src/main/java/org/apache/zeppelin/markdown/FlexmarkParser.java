@@ -49,7 +49,6 @@ public class FlexmarkParser implements MarkdownParser {
     MutableDataSet options = new MutableDataSet();
     options.set(Parser.EXTENSIONS, Arrays.asList(StrikethroughExtension.create(),
             TablesExtension.create(),
-            UMLExtension.create(),
             AutolinkExtension.create(),
             WikiLinkExtension.create(),
             TypographicExtension.create(),
