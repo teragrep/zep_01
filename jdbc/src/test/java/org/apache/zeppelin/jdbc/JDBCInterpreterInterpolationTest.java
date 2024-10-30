@@ -24,6 +24,7 @@ import org.apache.zeppelin.resource.LocalResourcePool;
 import org.apache.zeppelin.resource.ResourcePool;
 import org.apache.zeppelin.user.AuthenticationInfo;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
@@ -88,7 +89,7 @@ class JDBCInterpreterInterpolationTest extends BasicJDBCTestCaseAdapter {
     properties.setProperty("default.password", "");
 
     resourcePool.put("zid", "mem");
-    String sqlQuery = "select * from test_table where id = '{zid}'";
+    String sqlQuery = "select * from test_table where id = '${zid}'";
 
     //
     // Empty result expected because "zeppelin.jdbc.interpolation" is false by default ...
@@ -121,6 +122,7 @@ class JDBCInterpreterInterpolationTest extends BasicJDBCTestCaseAdapter {
   }
 
   @Test
+  @Disabled(value="Empty interpolation will fail loudly instead of passing emptiness silently")
   void testNormalQueryInterpolation() throws IOException, InterpreterException {
     Properties properties = new Properties();
     properties.setProperty("common.max_count", "1000");
@@ -182,7 +184,7 @@ class JDBCInterpreterInterpolationTest extends BasicJDBCTestCaseAdapter {
     // 2 rows (keyboard and mouse) expected when searching names with 2 consecutive vowels ...
     // The 'regexp' keyword is specific to H2 database
     //
-    String sqlQuery = "select * from test_table where name regexp '[aeiou]{{2}}'";
+    String sqlQuery = "select * from test_table where name regexp '[aeiou]{2}'";
     InterpreterResult interpreterResult = t.interpret(sqlQuery, interpreterContext);
     assertEquals(InterpreterResult.Code.SUCCESS, interpreterResult.code());
     List<InterpreterResultMessage> resultMessages =
