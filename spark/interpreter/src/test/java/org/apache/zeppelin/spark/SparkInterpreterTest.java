@@ -34,6 +34,7 @@ import org.apache.zeppelin.interpreter.remote.RemoteInterpreterEventClient;
 import org.apache.zeppelin.interpreter.thrift.InterpreterCompletion;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
 
@@ -68,6 +69,7 @@ class SparkInterpreterTest {
   }
 
   @Test
+  @Disabled(value="Won't build because it depends on Spark212 being available")
   void testSparkInterpreter() throws IOException, InterruptedException, InterpreterException {
     Properties properties = new Properties();
     properties.setProperty(SparkStringConstants.MASTER_PROP_NAME, "local");
@@ -395,6 +397,7 @@ class SparkInterpreterTest {
   }
 
   @Test
+  @Disabled(value="Won't build because it depends on Spark212 being available")
   void testDisableReplOutput() throws InterpreterException {
     Properties properties = new Properties();
     properties.setProperty(SparkStringConstants.MASTER_PROP_NAME, "local");
@@ -422,6 +425,7 @@ class SparkInterpreterTest {
   }
 
   @Test
+  @Disabled(value="Won't build because it depends on Spark212 being available")
   void testDisableReplOutputForParagraph() throws InterpreterException {
     Properties properties = new Properties();
     properties.setProperty("spark.master", "local");
@@ -467,6 +471,7 @@ class SparkInterpreterTest {
   }
 
   @Test
+  @Disabled(value="Won't build because it depends on Spark212 being available")
   void testSchedulePool() throws InterpreterException {
     Properties properties = new Properties();
     properties.setProperty(SparkStringConstants.MASTER_PROP_NAME, "local");
@@ -496,6 +501,7 @@ class SparkInterpreterTest {
 
   // spark.ui.enabled: false
   @Test
+  @Disabled(value="Won't build because it depends on Spark212 being available")
   void testDisableSparkUI_1() throws InterpreterException {
     Properties properties = new Properties();
     properties.setProperty(SparkStringConstants.MASTER_PROP_NAME, "local");
@@ -521,6 +527,7 @@ class SparkInterpreterTest {
 
   // zeppelin.spark.ui.hidden: true
   @Test
+  @Disabled(value="Won't build because it depends on Spark212 being available")
   void testDisableSparkUI_2() throws InterpreterException {
     Properties properties = new Properties();
     properties.setProperty(SparkStringConstants.MASTER_PROP_NAME, "local");
@@ -545,6 +552,7 @@ class SparkInterpreterTest {
   }
 
   @Test
+  @Disabled(value="Won't build because it depends on Spark212 being available")
   void testScopedMode() throws Exception {
     Properties properties = new Properties();
     properties.setProperty(SparkStringConstants.MASTER_PROP_NAME, "local");
