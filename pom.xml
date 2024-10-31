@@ -107,12 +107,7 @@
     <dropwizard.version>4.1.14</dropwizard.version>
     <micrometer.version>1.6.0</micrometer.version>
 
-    <hadoop2.7.version>2.7.7</hadoop2.7.version>
-    <hadoop2.6.version>2.6.5</hadoop2.6.version>
-    <hadoop3.0.version>3.0.3</hadoop3.0.version>
-    <hadoop3.1.version>3.1.3</hadoop3.1.version>
-    <hadoop3.2.version>3.2.0</hadoop3.2.version>
-    <hadoop.version>${hadoop2.7.version}</hadoop.version>
+    <hadoop.version>3.3.6</hadoop.version>
 
     <hadoop.deps.scope>provided</hadoop.deps.scope>
     <quartz.scheduler.version>2.3.2</quartz.scheduler.version>
@@ -176,6 +171,9 @@
     <plugin.os.version>1.4.1.Final</plugin.os.version>
     <!-- to be able to exclude some tests using command line -->
     <tests.to.exclude/>
+
+    <curator.version>2.13.0</curator.version>
+    <kerberos-client.version>2.0.0-M15</kerberos-client.version>
   </properties>
 
   <dependencyManagement>
@@ -1416,13 +1414,6 @@
 
   <profiles>
     <profile>
-      <id>include-hadoop</id>
-      <properties>
-        <hadoop.deps.scope>compile</hadoop.deps.scope>
-      </properties>
-    </profile>
-
-    <profile>
       <id>build-distr</id>
       <activation>
         <activeByDefault>false</activeByDefault>
@@ -1457,24 +1448,5 @@
         </pluginManagement>
       </build>
     </profile>
-
-    <profile>
-      <id>hadoop2</id>
-      <properties>
-        <hadoop.version>${hadoop2.7.version}</hadoop.version>
-        <curator.version>2.13.0</curator.version>
-      </properties>
-    </profile>
-
-    <profile>
-      <id>hadoop3</id>
-      <properties>
-        <hadoop.version>${hadoop3.2.version}</hadoop.version>
-        <curator.version>2.13.0</curator.version>
-        <kerberos-client.version>2.0.0-M15</kerberos-client.version>
-      </properties>
-    </profile>
-
   </profiles>
-
 </project>
