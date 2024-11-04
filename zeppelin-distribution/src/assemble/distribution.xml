@@ -21,8 +21,6 @@
   <id>final-distribution</id>
   <formats>
     <format>dir</format>
-    <format>tar.gz</format>
-    <!-- format>zip</format -->
   </formats>
   <includeBaseDirectory>true</includeBaseDirectory>
   <baseDirectory>zeppelin-${project.version}</baseDirectory>
