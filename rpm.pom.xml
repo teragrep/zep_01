@@ -215,7 +215,7 @@
             <mapping>
               <directory>/opt/teragrep/${project.artifactId}/lib</directory>
               <directoryIncluded>true</directoryIncluded>
-              <filemode>644</filemode>
+              <filemode>755</filemode>
               <dirmode>755</dirmode>
               <username>srv-zpln</username>
               <groupname>srv-zpln</groupname>
