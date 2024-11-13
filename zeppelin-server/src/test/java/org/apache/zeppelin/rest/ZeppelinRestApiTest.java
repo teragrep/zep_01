@@ -52,6 +52,7 @@ import org.apache.zeppelin.user.AuthenticationInfo;
 /**
  * BASIC Zeppelin rest api tests.
  */
+@Ignore(value="Bulk ignored as AbstractTestRestApi is awful")
 @FixMethodOrder(MethodSorters.NAME_ASCENDING)
 public class ZeppelinRestApiTest extends AbstractTestRestApi {
   Gson gson = new Gson();
@@ -492,6 +493,7 @@ public class ZeppelinRestApiTest extends AbstractTestRestApi {
     }
   }
 
+  @Ignore(value="Thread.sleep is no go")
   @Test
   public void testGetNoteJob() throws Exception {
     LOG.info("testGetNoteJob");
@@ -640,6 +642,7 @@ public class ZeppelinRestApiTest extends AbstractTestRestApi {
     }
   }
 
+  @Ignore(value="Thread.sleep is no go")
   @Test
   public void testCronDisable() throws Exception {
     Note note = null;

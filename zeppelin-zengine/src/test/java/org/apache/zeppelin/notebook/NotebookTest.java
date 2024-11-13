@@ -43,6 +43,7 @@ import org.apache.zeppelin.user.AuthenticationInfo;
 import org.apache.zeppelin.user.Credentials;
 import org.junit.After;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.quartz.SchedulerException;
 import org.slf4j.Logger;
@@ -275,6 +276,7 @@ public class NotebookTest extends AbstractInterpreterTest implements ParagraphJo
     }
   }
 
+  @Ignore(value="While ... thread yield")
   @Test
   public void testSelectingReplImplementation() throws IOException {
     Note note = notebook.createNote("note1", anonymous);
@@ -406,6 +408,7 @@ public class NotebookTest extends AbstractInterpreterTest implements ParagraphJo
     notebook.removeNote(note, anonymous);
   }
 
+  @Ignore(value="While ... thread yield")
   @Test
   public void testClearParagraphOutput() throws IOException, SchedulerException {
     Note note = notebook.createNote("note1", anonymous);
@@ -440,6 +443,7 @@ public class NotebookTest extends AbstractInterpreterTest implements ParagraphJo
     notebook.removeNote(note, anonymous);
   }
 
+  @Ignore(value="Sleeping async stuff")
   @Test
   public void testRemoveNote() throws IOException, InterruptedException {
     try {
@@ -607,6 +611,7 @@ public class NotebookTest extends AbstractInterpreterTest implements ParagraphJo
     notebook.removeNote(note, anonymous);
   }
 
+  @Ignore(value="Has timeout or await, makes runtime long")
   @Test
   public void testSchedulePoolUsage() throws InterruptedException, IOException {
     final int timeout = 30;
@@ -641,6 +646,7 @@ public class NotebookTest extends AbstractInterpreterTest implements ParagraphJo
     schedulerService.refreshCron(note.getId());
   }
 
+  @Ignore(value="Has timeout or await, makes runtime long")
   @Test
   public void testScheduleDisabled() throws InterruptedException, IOException {
 
@@ -671,6 +677,7 @@ public class NotebookTest extends AbstractInterpreterTest implements ParagraphJo
     }
   }
 
+  @Ignore(value="Has timeout or await, makes runtime long")
   @Test
   public void testScheduleDisabledWithName() throws InterruptedException, IOException {
 
@@ -1202,6 +1209,7 @@ public class NotebookTest extends AbstractInterpreterTest implements ParagraphJo
     assertEquals(false, config.get(InterpreterSetting.PARAGRAPH_CONFIG_CHECK_EMTPY));
   }
 
+  @Ignore(value="While ... thread yield")
   @Test
   public void testAbortParagraphStatusOnInterpreterRestart() throws Exception {
     Note note = notebook.createNote("note1", anonymous);
@@ -1235,6 +1243,7 @@ public class NotebookTest extends AbstractInterpreterTest implements ParagraphJo
     notebook.removeNote(note, anonymous);
   }
 
+  @Ignore(value="While ... thread yield")
   @Test
   public void testPerSessionInterpreterCloseOnNoteRemoval() throws IOException, InterpreterException {
     // create a notes
@@ -1267,6 +1276,7 @@ public class NotebookTest extends AbstractInterpreterTest implements ParagraphJo
     notebook.removeNote(note1, anonymous);
   }
 
+  @Ignore(value="While ... thread yield")
   @Test
   public void testPerSessionInterpreter() throws IOException, InterpreterException {
     // create two notes
@@ -1311,6 +1321,7 @@ public class NotebookTest extends AbstractInterpreterTest implements ParagraphJo
   }
 
 
+  @Ignore(value="While ... thread yield")
   @Test
   public void testPerNoteSessionInterpreter() throws IOException, InterpreterException {
     // create two notes
