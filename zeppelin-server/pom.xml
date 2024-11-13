@@ -323,10 +323,6 @@
           <groupId>ch.qos.reload4j</groupId>
           <artifactId>reload4j</artifactId>
         </exclusion>
-        <exclusion>
-          <groupId>org.codehaus.woodstox</groupId>
-          <artifactId>stax2-api</artifactId>
-        </exclusion>
       </exclusions>
     </dependency>
 

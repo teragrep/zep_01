@@ -211,10 +211,6 @@
       <scope>provided</scope>
       <exclusions>
         <exclusion>
-          <groupId>org.codehaus.woodstox</groupId>
-          <artifactId>stax2-api</artifactId>
-        </exclusion>
-        <exclusion>
           <groupId>ch.qos.reload4j</groupId>
           <artifactId>reload4j</artifactId>
         </exclusion>
