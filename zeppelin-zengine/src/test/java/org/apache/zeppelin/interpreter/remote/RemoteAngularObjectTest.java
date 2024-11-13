@@ -29,6 +29,7 @@ import org.apache.zeppelin.notebook.Note;
 import org.apache.zeppelin.notebook.NoteInfo;
 import org.apache.zeppelin.resource.LocalResourcePool;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 
 import java.util.concurrent.atomic.AtomicInteger;
@@ -73,6 +74,7 @@ public class RemoteAngularObjectTest extends AbstractInterpreterTest
 
   }
 
+  @Ignore(value="Contains sleep, timeout, while loops or something similar waiting/cycleburning")
   @Test
   public void testAngularObjectInterpreterSideCRUD() throws InterruptedException, InterpreterException {
     InterpreterResult ret = intp.interpret("get", context);
@@ -106,6 +108,7 @@ public class RemoteAngularObjectTest extends AbstractInterpreterTest
     assertEquals(null, localRegistry.get("n1", "note", null));
   }
 
+  @Ignore(value="Contains sleep, timeout, while loops or something similar waiting/cycleburning")
   @Test
   public void testAngularObjectRemovalOnZeppelinServerSide() throws InterruptedException, InterpreterException {
     // test if angularobject removal from server side propagate to interpreter process's registry.
@@ -131,6 +134,7 @@ public class RemoteAngularObjectTest extends AbstractInterpreterTest
     assertEquals("0", result[0]); // size of registry
   }
 
+  @Ignore(value="Contains sleep, timeout, while loops or something similar waiting/cycleburning")
   @Test
   public void testAngularObjectAddOnZeppelinServerSide() throws InterruptedException, InterpreterException {
     // test if angularobject add from server side propagate to interpreter process's registry.

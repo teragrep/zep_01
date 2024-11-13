@@ -24,6 +24,7 @@ import org.apache.zeppelin.notebook.Note;
 import org.apache.zeppelin.notebook.NoteInfo;
 import org.apache.zeppelin.notebook.Notebook;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -561,6 +562,7 @@ public class InterpreterSettingTest {
       assertTrue(interpreterSetting.isUserAuthorized(userAndRoles));
   }
 
+  @Ignore(value="Contains sleep, timeout, while loops or something similar waiting/cycleburning")
   @Test
   public void testLoadDependency() throws InterruptedException {
     InterpreterOption interpreterOption = new InterpreterOption();

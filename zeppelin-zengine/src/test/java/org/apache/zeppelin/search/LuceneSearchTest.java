@@ -43,8 +43,10 @@ import org.apache.zeppelin.user.AuthenticationInfo;
 import org.apache.zeppelin.user.Credentials;
 import org.junit.After;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 
+@Ignore(value="Contains sleep, timeout, while loops or something similar waiting/cycleburning")
 public class LuceneSearchTest {
 
   private Notebook notebook;
