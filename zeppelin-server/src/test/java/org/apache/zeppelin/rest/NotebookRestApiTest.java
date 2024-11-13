@@ -53,6 +53,9 @@ import org.apache.zeppelin.user.AuthenticationInfo;
 /**
  * Zeppelin notebook rest api tests.
  */
+@Ignore(value="[ERROR] Crashed tests:\n" +
+        "[ERROR] org.apache.zeppelin.rest.NotebookRestApiTest\n" +
+        "[ERROR] ExecutionException The forked VM terminated without properly saying goodbye. VM crash or System.exit called?\n")
 @FixMethodOrder(MethodSorters.NAME_ASCENDING)
 public class NotebookRestApiTest extends AbstractTestRestApi {
   Gson gson = new Gson();
