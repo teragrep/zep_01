@@ -1408,4 +1408,13 @@
       </plugins>
     </pluginManagement>
   </build>
+  <profiles>
+    <profile>
+      <id>integration</id>
+      <modules>
+        <module>zeppelin-integration</module>
+        <module>zeppelin-interpreter-integration</module>
+      </modules>
+    </profile>
+  </profiles>
 </project>
