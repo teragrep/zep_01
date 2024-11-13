@@ -212,7 +212,7 @@ public class RecoveryTest extends AbstractTestRestApi {
         TestUtils.getInstance(Notebook.class).removeNote(note1, anonymous);
       }
     }
-  }1
+  }
 
   @Test
   public void testRecovery_Finished_Paragraph_python() throws Exception {
