@@ -101,7 +101,7 @@
     <commons.io.version>2.6</commons.io.version>
     <commons.collections.version>3.2.2</commons.collections.version>
     <commons.cli.version>1.4</commons.cli.version>
-    <shiro.version>1.7.0</shiro.version>
+    <shiro.version>1.13.0</shiro.version>
     <bouncycastle.version>1.60</bouncycastle.version>
     <maven.version>3.6.3</maven.version>
     <dropwizard.version>4.1.14</dropwizard.version>
@@ -111,8 +111,8 @@
 
     <hadoop.deps.scope>provided</hadoop.deps.scope>
     <quartz.scheduler.version>2.3.2</quartz.scheduler.version>
+    <jsoup.version>1.15.3</jsoup.version>
     <jettison.version>1.5.4</jettison.version>
-    <jsoup.version>1.13.1</jsoup.version>
     <protoc.version>3.5.0</protoc.version>
     <grpc.version>1.26.0</grpc.version>
 
