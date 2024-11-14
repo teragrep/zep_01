@@ -40,6 +40,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
+@Ignore(value="Depends on old spark 2.x version, requires sparkr that is not being supported")
 public class SparkInterpreterLauncherTest {
 
   private static final Logger LOGGER = LoggerFactory.getLogger(SparkInterpreterLauncher.class);
