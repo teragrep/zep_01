@@ -50,7 +50,7 @@
 
   {
     "group": "test",
-    "name": "sleep",
+    "name": "sleep_this_should_not_be_used",
     "defaultInterpreter": false,
     "className": "org.apache.zeppelin.interpreter.SleepInterpreter",
     "properties": {

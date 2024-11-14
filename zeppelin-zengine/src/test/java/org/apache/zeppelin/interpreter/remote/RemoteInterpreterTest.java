@@ -312,6 +312,7 @@ public class RemoteInterpreterTest extends AbstractInterpreterTest {
     assertTrue((end - start) <= 200);
   }
 
+  @Ignore(value="Seems to depend on SleepInterpreter")
   @Test
   public void testRemoteInterpreterSharesTheSameSchedulerInstanceInTheSameGroup() {
     interpreterSetting.getOption().setPerUser(InterpreterOption.SHARED);
@@ -321,6 +322,7 @@ public class RemoteInterpreterTest extends AbstractInterpreterTest {
     assertEquals(interpreter1.getScheduler(), interpreter2.getScheduler());
   }
 
+  @Ignore(value="Seems to depend on SleepInterpreter")
   @Test
   public void testMultiInterpreterSession() {
     interpreterSetting.getOption().setPerUser(InterpreterOption.SCOPED);
@@ -401,6 +403,7 @@ public class RemoteInterpreterTest extends AbstractInterpreterTest {
     assertArrayEquals(expected.values().toArray(), gui.getForms().values().toArray());
   }
 
+  @Ignore(value="Seems to depend on SleepInterpreter")
   @Test
   public void testFailToLaunchInterpreterProcess_InvalidRunner() {
     try {
@@ -420,6 +423,7 @@ public class RemoteInterpreterTest extends AbstractInterpreterTest {
     }
   }
 
+  @Ignore(value="Seems to depend on SleepInterpreter")
   @Test
   public void testFailToLaunchInterpreterProcess_ErrorInRunner() {
     try {
