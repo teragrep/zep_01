@@ -95,7 +95,7 @@
     <commons.compress.version>1.20</commons.compress.version>
     <commons.lang3.version>3.10</commons.lang3.version>
     <commons.text.version>1.10.0</commons.text.version>
-    <commons.configuration2.version>2.7</commons.configuration2.version>
+    <commons.configuration2.version>2.10.1</commons.configuration2.version>
     <commons.exec.version>1.3</commons.exec.version>
     <commons.codec.version>1.14</commons.codec.version>
     <commons.io.version>2.6</commons.io.version>
@@ -111,8 +111,8 @@
 
     <hadoop.deps.scope>provided</hadoop.deps.scope>
     <quartz.scheduler.version>2.3.2</quartz.scheduler.version>
-    <jettison.version>1.4.0</jettison.version>
     <jsoup.version>1.15.3</jsoup.version>
+    <jettison.version>1.5.4</jettison.version>
     <protoc.version>3.5.0</protoc.version>
     <grpc.version>1.26.0</grpc.version>
 
