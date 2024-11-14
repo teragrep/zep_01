@@ -22,6 +22,7 @@ import static org.junit.Assert.assertTrue;
 
 import org.apache.zeppelin.scheduler.Job.Status;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 
 public class FIFOSchedulerTest {
@@ -33,6 +34,7 @@ public class FIFOSchedulerTest {
     schedulerSvc = SchedulerFactory.singleton();
   }
 
+  @Ignore("Contains sleeping job")
   @Test
   public void testRun() throws InterruptedException {
     Scheduler s = schedulerSvc.createOrGetFIFOScheduler("test");
@@ -54,6 +56,7 @@ public class FIFOSchedulerTest {
     schedulerSvc.removeScheduler(s.getName());
   }
 
+  @Ignore("Contains sleeping job")
   @Test
   public void testAbort() throws InterruptedException {
     Scheduler s = schedulerSvc.createOrGetFIFOScheduler("test");

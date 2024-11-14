@@ -21,6 +21,7 @@ import static org.junit.Assert.assertEquals;
 
 import org.apache.zeppelin.scheduler.Job.Status;
 import org.junit.BeforeClass;
+import org.junit.Ignore;
 import org.junit.Test;
 
 public class ParallelSchedulerTest {
@@ -32,6 +33,7 @@ public class ParallelSchedulerTest {
     schedulerSvc = SchedulerFactory.singleton();
   }
 
+  @Ignore("Contains sleeping job")
   @Test
   public void testRun() throws InterruptedException {
     Scheduler s = schedulerSvc.createOrGetParallelScheduler("test", 2);

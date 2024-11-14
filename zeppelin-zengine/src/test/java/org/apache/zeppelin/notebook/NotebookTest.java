@@ -738,8 +738,8 @@ public class NotebookTest extends AbstractInterpreterTest implements ParagraphJo
     notebook.removeNote(note, anonymous);
   }
 
-
-  // @Test
+  @Ignore(value="Contains sleep")
+  @Test
   public void testAutoRestartInterpreterAfterSchedule() throws InterruptedException, IOException, InterpreterNotFoundException {
     // create a note and a paragraph
     Note note = notebook.createNote("note1", anonymous);
@@ -787,7 +787,8 @@ public class NotebookTest extends AbstractInterpreterTest implements ParagraphJo
     notebook.removeNote(note, anonymous);
   }
 
-//  @Test
+  @Ignore(value="Contains sleep")
+  @Test
   public void testCronWithReleaseResourceClosesOnlySpecificInterpreters()
       throws IOException, InterruptedException, InterpreterNotFoundException {
     // create a cron scheduled note.

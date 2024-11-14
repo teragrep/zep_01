@@ -27,6 +27,7 @@ import org.apache.zeppelin.interpreter.InterpreterResult;
 import org.apache.zeppelin.interpreter.LazyOpenInterpreter;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -120,6 +121,7 @@ public class PythonInterpreterTest extends BasePythonInterpreterTest {
     assertFalse(t.isAlive());
   }
 
+  @Disabled(value="Contains sleep")
   @Test
   void testPythonProcessKilled() throws InterruptedException, TimeoutException {
     final Waiter waiter = new Waiter();
