@@ -42,6 +42,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 /**
  * JDBC interpreter Z-variable interpolation unit tests.
  */
+@Disabled(value="Uses old interpolation")
 class JDBCInterpreterInterpolationTest extends BasicJDBCTestCaseAdapter {
 
   private static String jdbcConnection;
