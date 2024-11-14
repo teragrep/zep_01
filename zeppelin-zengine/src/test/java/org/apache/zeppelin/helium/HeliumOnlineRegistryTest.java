@@ -21,12 +21,14 @@ import static org.junit.Assert.assertTrue;
 import org.apache.commons.io.FileUtils;
 import org.junit.After;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 import java.io.File;
 import java.io.IOException;
 import org.apache.zeppelin.conf.ZeppelinConfiguration;
 
 
+@Ignore(value="Has routable but private network ip, isn't guaranteed to not answer")
 public class HeliumOnlineRegistryTest {
   // ip 192.168.65.17 belongs to private network
   // request will be ended with connection time out error

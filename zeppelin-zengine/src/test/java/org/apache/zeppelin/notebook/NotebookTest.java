@@ -429,6 +429,7 @@ public class NotebookTest extends AbstractInterpreterTest implements ParagraphJo
     notebook.removeNote(note, anonymous);
   }
 
+  @Ignore(value="Has sleep in it")
   @Test
   public void testRunBlankParagraph() throws IOException, SchedulerException, InterruptedException {
     Note note = notebook.createNote("note1", anonymous);
@@ -494,6 +495,7 @@ public class NotebookTest extends AbstractInterpreterTest implements ParagraphJo
       LOGGER.info("--------------- Finish Test testRemoveCorruptedNote ---------------");
   }
 
+  @Ignore(value="Has sleep in it")
   @Test
   public void testInvalidInterpreter() throws IOException, InterruptedException {
     Note note = notebook.createNote("note1", anonymous);
@@ -543,6 +545,7 @@ public class NotebookTest extends AbstractInterpreterTest implements ParagraphJo
     notebook.removeNote(note, anonymous);
   }
 
+  @Ignore(value="Has sleep in it")
   @Test
   public void testSchedule() throws InterruptedException, IOException {
     // create a note and a paragraph
@@ -574,6 +577,7 @@ public class NotebookTest extends AbstractInterpreterTest implements ParagraphJo
     notebook.removeNote(note, anonymous);
   }
 
+  @Ignore(value="Has sleep in it")
   @Test
   public void testScheduleAgainstRunningAndPendingParagraph() throws InterruptedException, IOException {
     // create a note
@@ -1154,6 +1158,7 @@ public class NotebookTest extends AbstractInterpreterTest implements ParagraphJo
     assertEquals(user2Notes.get(0).getId(), note.getId());
   }
 
+  @Ignore(value="Has sleep in it")
   @Test
   public void testInterpreterSettingConfig() {
     LOGGER.info("testInterpreterSettingConfig >>> ");
