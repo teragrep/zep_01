@@ -44,12 +44,15 @@ public class SleepInterpreter extends Interpreter {
 
   @Override
   public InterpreterResult interpret(String st, InterpreterContext context) {
+    throw new RuntimeException("Do not use this");
+    /*
     try {
       Thread.sleep(Long.parseLong(st));
       return new InterpreterResult(InterpreterResult.Code.SUCCESS);
     } catch (Exception e) {
       return new InterpreterResult(InterpreterResult.Code.ERROR, e.getMessage());
     }
+     */
   }
 
   @Override
