@@ -59,7 +59,8 @@ public class JDBCSecurityImpl {
             LOGGER.info("Login successfully via keytab: {} and principal: {}", keytab, principal);
           } else {
             LOGGER.info("The user has already logged in using Keytab and principal, " +
-                "no action required");
+                "will check tgt and whether to re-login");
+            UserGroupInformation.getCurrentUser().checkTGTAndReloginFromKeytab();
           }
         } catch (IOException e) {
           LOGGER.error("Failed to get either keytab location or principal name in the " +

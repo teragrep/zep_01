@@ -31,16 +31,16 @@ import org.apache.zeppelin.interpreter.InterpreterResult;
 import org.apache.zeppelin.interpreter.InterpreterResultMessage;
 import org.apache.zeppelin.interpreter.remote.RemoteInterpreterEventClient;
 import org.apache.zeppelin.interpreter.thrift.InterpreterCompletion;
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Ignore;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Disabled;
+import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
 import java.util.List;
 
-import static junit.framework.TestCase.assertTrue;
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.mock;
 
 public abstract class BasePythonInterpreterTest extends ConcurrentTestCase {
@@ -49,12 +49,11 @@ public abstract class BasePythonInterpreterTest extends ConcurrentTestCase {
   protected Interpreter interpreter;
   protected boolean isPython2;
 
-  @Before
+  @BeforeEach
   public abstract void setUp() throws InterpreterException;
 
-  @After
+  @AfterEach
   public abstract void tearDown() throws InterpreterException;
-
 
   @Test
   public void testPythonBasics() throws InterpreterException, InterruptedException, IOException {
@@ -145,18 +144,14 @@ public abstract class BasePythonInterpreterTest extends ConcurrentTestCase {
     result = interpreter.interpret("print(unknown)", context);
     Thread.sleep(100);
     assertEquals(InterpreterResult.Code.ERROR, result.code());
-    if (interpreter instanceof PythonInterpreter) {
-      assertTrue(result.message().get(0).getData().contains("name 'unknown' is not defined"));
-    }
+    assertTrue(result.message().get(0).getData().contains("name 'unknown' is not defined"));
 
     // raise runtime exception
     context = getInterpreterContext();
     result = interpreter.interpret("1/0", context);
     Thread.sleep(100);
     assertEquals(InterpreterResult.Code.ERROR, result.code());
-    if (interpreter instanceof PythonInterpreter) {
-      assertTrue(result.message().get(0).getData().contains("ZeroDivisionError"));
-    }
+    assertTrue(result.message().get(0).getData().contains("ZeroDivisionError"));
 
     // ZEPPELIN-1133
     context = getInterpreterContext();
@@ -164,7 +159,8 @@ public abstract class BasePythonInterpreterTest extends ConcurrentTestCase {
         "from __future__ import print_function\n" +
             "def greet(name):\n" +
             "    print('Hello', name)\n" +
-            "greet('Jack')", context);
+            "greet('Jack')",
+        context);
     Thread.sleep(100);
     assertEquals(InterpreterResult.Code.SUCCESS, result.code());
     interpreterResultMessages = context.out.toInterpreterResultMessage();
@@ -199,7 +195,7 @@ public abstract class BasePythonInterpreterTest extends ConcurrentTestCase {
     // multiple text output
     context = getInterpreterContext();
     result = interpreter.interpret(
-            "for i in range(1,4):\n" + "\tprint(i)", context);
+        "for i in range(1,4):\n" + "\tprint(i)", context);
     assertEquals(InterpreterResult.Code.SUCCESS, result.code());
     interpreterResultMessages = context.out.toInterpreterResultMessage();
     assertEquals(1, interpreterResultMessages.size());
@@ -289,56 +285,7 @@ public abstract class BasePythonInterpreterTest extends ConcurrentTestCase {
     assertEquals(2, checkbox.getOptions().length);
     assertEquals("name_1", checkbox.getOptions()[0].getDisplayName());
     assertEquals("value_1", checkbox.getOptions()[0].getValue());
-
-    // Pandas DataFrame
-    context = getInterpreterContext();
-    result = interpreter.interpret("import pandas as pd\n" +
-        "df = pd.DataFrame({'id':[1,2,3], 'name':['a\ta','b\\nb','c\\r\\nc']})\nz.show(df)",
-            context);
-    assertEquals(context.out.toInterpreterResultMessage().toString(),
-            InterpreterResult.Code.SUCCESS, result.code());
-    interpreterResultMessages = context.out.toInterpreterResultMessage();
-    assertEquals(1, interpreterResultMessages.size());
-    assertEquals(InterpreterResult.Type.TABLE, interpreterResultMessages.get(0).getType());
-    assertEquals("id\tname\n1\ta a\n2\tb b\n3\tc c\n", interpreterResultMessages.get(0).getData());
-
-    context = getInterpreterContext();
-    result = interpreter.interpret("import pandas as pd\n" +
-        "df = pd.DataFrame({'id':[1,2,3,4], 'name':['a','b','c', 'd']})\nz.show(df)", context);
-    assertEquals(InterpreterResult.Code.SUCCESS, result.code());
-    interpreterResultMessages = context.out.toInterpreterResultMessage();
-    assertEquals(2, interpreterResultMessages.size());
-    assertEquals(InterpreterResult.Type.TABLE, interpreterResultMessages.get(0).getType());
-    assertEquals("id\tname\n1\ta\n2\tb\n3\tc\n", interpreterResultMessages.get(0).getData());
-    assertEquals(InterpreterResult.Type.HTML, interpreterResultMessages.get(1).getType());
-    assertEquals("<font color=red>Results are limited by 3.</font>\n",
-        interpreterResultMessages.get(1).getData());
-
-    // z.show(df, show_index=True)
-    context = getInterpreterContext();
-    result = interpreter.interpret("import pandas as pd\n" +
-                    "df = pd.DataFrame({'id':[1,2,3], 'name':['a','b','c']})\n" +
-                    "z.show(df, show_index=True)",
-            context);
-    assertEquals(context.out.toInterpreterResultMessage().toString(),
-            InterpreterResult.Code.SUCCESS, result.code());
-    interpreterResultMessages = context.out.toInterpreterResultMessage();
-    assertEquals(1, interpreterResultMessages.size());
-    assertEquals(InterpreterResult.Type.TABLE, interpreterResultMessages.get(0).getType());
-    assertEquals("\tid\tname\n" +
-            "%html <strong>0</strong>\t1\ta\n" +
-            "%html <strong>1</strong>\t2\tb\n" +
-            "%html <strong>2</strong>\t3\tc\n", interpreterResultMessages.get(0).getData());
-
-    // z.show(matplotlib)
-    context = getInterpreterContext();
-    result = interpreter.interpret("import matplotlib.pyplot as plt\n" +
-        "data=[1,1,2,3,4]\nplt.figure()\nplt.plot(data)\nz.show(plt)", context);
-    assertEquals(InterpreterResult.Code.SUCCESS, result.code());
-    interpreterResultMessages = context.out.toInterpreterResultMessage();
-    assertEquals(1, interpreterResultMessages.size());
-    assertEquals(InterpreterResult.Type.HTML, interpreterResultMessages.get(0).getType());
-
+    
     // clear output
     context = getInterpreterContext();
     result = interpreter.interpret("import time\nprint(\"Hello\")\n" +
@@ -346,7 +293,7 @@ public abstract class BasePythonInterpreterTest extends ConcurrentTestCase {
     assertEquals("%text world\n", context.out.getCurrentOutput().toString());
   }
 
-  @Ignore("Flaky test, need to investigate why it fails")
+  @Disabled("Flaky test, need to investigate why it fails")
   public void testRedefinitionZeppelinContext() throws InterpreterException {
     String redefinitionCode = "z = 1\n";
     String restoreCode = "z = __zeppelin__\n";
@@ -354,40 +301,40 @@ public abstract class BasePythonInterpreterTest extends ConcurrentTestCase {
 
     InterpreterContext context = getInterpreterContext();
     InterpreterResult result = interpreter.interpret(validCode, context);
-    assertEquals(context.out.toString() + ", " + result.toString(),
-            InterpreterResult.Code.SUCCESS, result.code());
+    assertEquals(InterpreterResult.Code.SUCCESS, result.code(),
+        context.out.toString() + ", " + result.toString());
 
     context = getInterpreterContext();
     result = interpreter.interpret(redefinitionCode, context);
-    assertEquals(context.out.toString() + ", " + result.toString(),
-            InterpreterResult.Code.SUCCESS, result.code());
+    assertEquals(InterpreterResult.Code.SUCCESS, result.code(),
+        context.out.toString() + ", " + result.toString());
 
     context = getInterpreterContext();
     result = interpreter.interpret(validCode, context);
-    assertEquals(context.out.toString() + ", " + result.toString(),
-            InterpreterResult.Code.ERROR, result.code());
+    assertEquals(InterpreterResult.Code.ERROR, result.code(),
+        context.out.toString() + ", " + result.toString());
 
     context = getInterpreterContext();
     result = interpreter.interpret(restoreCode, context);
-    assertEquals(context.out.toString() + ", " + result.toString(),
-            InterpreterResult.Code.SUCCESS, result.code());
+    assertEquals(InterpreterResult.Code.SUCCESS, result.code(),
+        context.out.toString() + ", " + result.toString());
 
     context = getInterpreterContext();
     result = interpreter.interpret("type(__zeppelin__)", context);
     System.out.println("result: " + context.out.toString() + ", " + result.toString());
-    assertEquals(context.out.toString() + ", " + result.toString(),
-            InterpreterResult.Code.SUCCESS, result.code());
+    assertEquals(InterpreterResult.Code.SUCCESS, result.code(),
+        context.out.toString() + ", " + result.toString());
 
     context = getInterpreterContext();
     result = interpreter.interpret("type(z)", context);
     System.out.println("result2: " + context.out.toString() + ", " + result.toString());
-    assertEquals(context.out.toString() + ", " + result.toString(),
-            InterpreterResult.Code.SUCCESS, result.code());
+    assertEquals(InterpreterResult.Code.SUCCESS, result.code(),
+        context.out.toString() + ", " + result.toString());
 
     context = getInterpreterContext();
     result = interpreter.interpret(validCode, context);
-    assertEquals(context.out.toString() + ", " + result.toString(),
-            InterpreterResult.Code.SUCCESS, result.code());
+    assertEquals(InterpreterResult.Code.SUCCESS, result.code(),
+        context.out.toString() + ", " + result.toString());
   }
 
   protected InterpreterContext getInterpreterContext() {

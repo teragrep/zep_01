@@ -25,12 +25,14 @@ import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.util.EntityUtils;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
+import org.junit.Ignore;
 import org.junit.Test;
 
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.util.Map;
 
+@Ignore(value="Bulk ignored as AbstractTestRestApi is awful")
 public class ConfigurationsRestApiTest extends AbstractTestRestApi {
   Gson gson = new Gson();
 

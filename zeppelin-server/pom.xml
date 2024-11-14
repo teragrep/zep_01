@@ -43,6 +43,8 @@
     <!--test library versions-->
     <selenium.java.version>2.48.2</selenium.java.version>
     <xml.apis.version>1.4.01</xml.apis.version>
+
+    <zeppelin.daemon.package.base>../bin</zeppelin.daemon.package.base>
   </properties>
 
   <dependencies>
@@ -290,6 +292,20 @@
     <dependency>
       <groupId>org.apache.hadoop</groupId>
       <artifactId>hadoop-client</artifactId>
+      <exclusions>
+        <exclusion>
+          <groupId>javax.xml.bind</groupId>
+          <artifactId>jaxb-api</artifactId>
+        </exclusion>
+        <exclusion>
+          <groupId>io.dropwizard.metrics</groupId>
+          <artifactId>metrics-core</artifactId>
+        </exclusion>
+        <exclusion>
+          <groupId>org.eclipse.jetty.websocket</groupId>
+          <artifactId>websocket-client</artifactId>
+        </exclusion>
+      </exclusions>
     </dependency>
 
     <!--test libraries-->
@@ -298,6 +314,16 @@
       <artifactId>hadoop-common</artifactId>
       <classifier>tests</classifier>
       <scope>test</scope>
+      <exclusions>
+        <exclusion>
+          <groupId>io.dropwizard.metrics</groupId>
+          <artifactId>metrics-core</artifactId>
+        </exclusion>
+        <exclusion>
+          <groupId>ch.qos.reload4j</groupId>
+          <artifactId>reload4j</artifactId>
+        </exclusion>
+      </exclusions>
     </dependency>
 
     <dependency>
@@ -402,6 +428,13 @@
         <artifactId>diff-match-patch</artifactId>
         <version>1.1</version>
       </dependency>
+
+      <dependency>
+        <groupId>org.apache.directory.server</groupId>
+        <artifactId>kerberos-client</artifactId>
+        <version>${kerberos-client.version}</version>
+        <scope>${hadoop.deps.scope}</scope>
+      </dependency>
   </dependencies>
   <build>
     <plugins>
@@ -422,6 +455,7 @@
 
       <plugin>
         <artifactId>maven-surefire-plugin</artifactId>
+        <version>3.5.1</version>
         <configuration combine.children="append">
           <forkCount>1</forkCount>
           <reuseForks>false</reuseForks>
@@ -454,42 +488,4 @@
       </plugin>
     </plugins>
   </build>
-
-  <profiles>
-    <profile>
-      <id>using-source-tree</id>
-      <activation>
-        <activeByDefault>true</activeByDefault>
-      </activation>
-      <properties>
-        <zeppelin.daemon.package.base>
-	        ../bin
-        </zeppelin.daemon.package.base>
-      </properties>
-    </profile>
-
-    <profile>
-      <id>using-packaged-distr</id>
-      <activation>
-        <activeByDefault>false</activeByDefault>
-      </activation>
-      <properties>
-        <zeppelin.daemon.package.base>
-	        ../zeppelin-distribution/target/zeppelin-${project.version}/zeppelin-${project.version}/bin
-        </zeppelin.daemon.package.base>
-      </properties>
-    </profile>
-    <profile>
-      <id>hadoop3</id>
-      <dependencies>
-        <dependency>
-          <groupId>org.apache.directory.server</groupId>
-          <artifactId>kerberos-client</artifactId>
-          <version>${kerberos-client.version}</version>
-          <scope>${hadoop.deps.scope}</scope>
-        </dependency>
-      </dependencies>
-    </profile>
-  </profiles>
-
 </project>

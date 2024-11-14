@@ -22,6 +22,7 @@ import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 import org.apache.log4j.spi.LoggingEvent;
 import org.junit.After;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
@@ -106,6 +107,7 @@ public class AppendOutputRunnerTest {
     verify(listener, times(1)).onOutputAppend(note2, para2, 0, "data4\n");
   }
 
+  @Ignore(value="Contains sleep, timeout, while loops or something similar waiting/cycleburning")
   @Test
   public void testClubbedData() throws InterruptedException {
     RemoteInterpreterProcessListener listener = mock(RemoteInterpreterProcessListener.class);

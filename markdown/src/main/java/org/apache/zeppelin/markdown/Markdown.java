@@ -42,59 +42,13 @@ public class Markdown extends Interpreter {
 
   private final String[] unsafeTags = new String[]{"script", "object", "iframe", "embed"};
 
-  /**
-   * Markdown Parser Type.
-   */
-  public enum MarkdownParserType {
-    PEGDOWN {
-      @Override
-      public String toString() {
-        return PARSER_TYPE_PEGDOWN;
-      }
-    },
-
-    MARKDOWN4j {
-      @Override
-      public String toString() {
-        return PARSER_TYPE_MARKDOWN4J;
-      }
-    },
-
-    FLEXMARK {
-      @Override
-      public String toString() {
-        return PARSER_TYPE_FLEXMARK;
-      }
-    }
-
-  }
-
-  public static final String MARKDOWN_PARSER_TYPE = "markdown.parser.type";
-  public static final String PARSER_TYPE_PEGDOWN = "pegdown";
-  public static final String PARSER_TYPE_MARKDOWN4J = "markdown4j";
-  public static final String PARSER_TYPE_FLEXMARK = "flexmark";
-
   public Markdown(Properties property) {
     super(property);
   }
 
-  public static MarkdownParser createMarkdownParser(String parserType) {
-    LOGGER.debug("Creating {} markdown interpreter", parserType);
-
-    if (MarkdownParserType.PEGDOWN.toString().equals(parserType)) {
-      return new PegdownParser();
-    } else if (MarkdownParserType.FLEXMARK.toString().equals(parserType)) {
-      return new FlexmarkParser();
-    } else {
-      // default parser
-      return new Markdown4jParser();
-    }
-  }
-
   @Override
   public void open() {
-    String parserType = getProperty(MARKDOWN_PARSER_TYPE);
-    parser = createMarkdownParser(parserType);
+    parser = new FlexmarkParser();
   }
 
   @Override

@@ -17,6 +17,7 @@
 
 package org.apache.zeppelin.notebook;
 
+import org.junit.Ignore;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
@@ -25,6 +26,7 @@ import static junit.framework.TestCase.assertEquals;
 
 public class ParagraphTextParserTest {
 
+  @Ignore(value="Uses interpreter we do not support")
   @Test
   public void testJupyter() {
     ParagraphTextParser.ParseResult parseResult = ParagraphTextParser.parse("%jupyter(kernel=ir)");
@@ -35,6 +37,7 @@ public class ParagraphTextParserTest {
   }
 
 
+  @Ignore(value="Uses interpreter we do not support")
   @Test
   public void testCassandra() {
     ParagraphTextParser.ParseResult parseResult = ParagraphTextParser.parse(

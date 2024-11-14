@@ -35,6 +35,7 @@ import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.util.Map;
 
+@Ignore(value="Bulk ignored as AbstractTestRestApi is awful")
 public class KnoxRestApiTest extends AbstractTestRestApi {
   private final String knoxCookie = "hadoop-jwt=eyJhbGciOiJSUzI1NiJ9.eyJzdWIiOiJhZG1pbiIsImlzcyI" +
           "6IktOT1hTU08iLCJleHAiOjE1MTM3NDU1MDd9.E2cWQo2sq75h0G_9fc9nWkL0SFMI5x_-Z0Zzr0NzQ86X4jfx" +

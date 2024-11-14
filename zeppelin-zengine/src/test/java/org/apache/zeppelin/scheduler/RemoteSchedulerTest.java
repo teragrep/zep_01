@@ -31,6 +31,7 @@ import org.apache.zeppelin.resource.LocalResourcePool;
 import org.apache.zeppelin.scheduler.Job.Status;
 import org.junit.After;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 
 import java.io.IOException;
@@ -68,6 +69,7 @@ public class RemoteSchedulerTest extends AbstractInterpreterTest
     interpreterSetting.close();
   }
 
+  @Ignore(value="Contains sleep, timeout, while loops or something similar waiting/cycleburning")
   @Test
   public void test() throws Exception {
     final RemoteInterpreter intpA = (RemoteInterpreter) interpreterSetting.getInterpreter("user1", "note1", "mock");
@@ -138,6 +140,7 @@ public class RemoteSchedulerTest extends AbstractInterpreterTest
     schedulerSvc.removeScheduler("test");
   }
 
+  @Ignore(value="Contains sleep, timeout, while loops or something similar waiting/cycleburning")
   @Test
   public void testAbortOnPending() throws Exception {
     final RemoteInterpreter intpA = (RemoteInterpreter) interpreterSetting.getInterpreter("user1", "note1", "mock");

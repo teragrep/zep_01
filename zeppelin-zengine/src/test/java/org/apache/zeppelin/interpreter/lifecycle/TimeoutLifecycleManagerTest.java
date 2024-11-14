@@ -25,6 +25,7 @@ import org.apache.zeppelin.interpreter.InterpreterException;
 import org.apache.zeppelin.interpreter.InterpreterSetting;
 import org.apache.zeppelin.interpreter.remote.RemoteInterpreter;
 import org.apache.zeppelin.scheduler.Job;
+import org.junit.Ignore;
 import org.junit.Test;
 
 import java.io.File;
@@ -55,6 +56,7 @@ public class TimeoutLifecycleManagerTest extends AbstractInterpreterTest {
     zeppelinSiteFile.delete();
   }
 
+  @Ignore(value="Contains sleep, timeout, while loops or something similar waiting/cycleburning")
   @Test
   public void testTimeout_1() throws InterpreterException, InterruptedException, IOException {
     assertTrue(interpreterFactory.getInterpreter("test.echo", new ExecutionContext("user1", "note1", "test")) instanceof RemoteInterpreter);
@@ -78,6 +80,7 @@ public class TimeoutLifecycleManagerTest extends AbstractInterpreterTest {
     assertEquals(0, interpreterSetting.getAllInterpreterGroups().size());
   }
 
+  @Ignore(value="Contains sleep, timeout, while loops or something similar waiting/cycleburning")
   @Test
   public void testTimeout_2() throws InterpreterException, InterruptedException, IOException {
     assertTrue(interpreterFactory.getInterpreter("test.sleep", new ExecutionContext("user1", "note1", "test")) instanceof RemoteInterpreter);

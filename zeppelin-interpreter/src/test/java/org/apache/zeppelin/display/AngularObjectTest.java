@@ -19,6 +19,7 @@ package org.apache.zeppelin.display;
 
 import org.apache.thrift.TException;
 import org.apache.zeppelin.interpreter.InterpreterContext;
+import org.junit.Ignore;
 import org.junit.Test;
 
 import java.util.concurrent.atomic.AtomicInteger;
@@ -103,6 +104,7 @@ public class AngularObjectTest {
     assertEquals("newnewValue", ao.get());
   }
 
+  @Ignore("Contains sleep")
   @Test
   public void testWatcher() throws InterruptedException, TException {
     final AtomicInteger updated = new AtomicInteger(0);

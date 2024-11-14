@@ -21,6 +21,7 @@
       <plugin>
 	      <groupId>org.apache.maven.plugins</groupId>
 	      <artifactId>maven-surefire-plugin</artifactId>
+        <version>3.5.1</version>
 	      <configuration>
           <skipTests>true</skipTests>
 	      </configuration>
@@ -55,10 +56,7 @@
           <defaultGroupname>srv-zpln</defaultGroupname>
           <defaultFilemode>0644</defaultFilemode>
           <defaultDirmode>0755</defaultDirmode>
-          <!-- disable bytecompile as python3 scripts compiled by python2 often causes fatal errors -->
           <defineStatements>
-            <!-- _python_bytecompile_extra 0 doesn't work so we take the original script and just replace what we do not want -->
-            <defineStatement>__os_install_post %(echo '%{__os_install_post}' | sed -e 's!/usr/lib[^[:space:]]*/brp-python-bytecompile[[:space:]].*$!!g')</defineStatement>
             <defineStatement>_build_id_links none</defineStatement>
             <defineStatement>__provides_exclude ^osgi\\(.*$</defineStatement>
             <defineStatement>__requires_exclude ^osgi\\(.*$</defineStatement>
@@ -83,7 +81,7 @@
               <recurseDirectories>true</recurseDirectories>
               <sources>
                 <source>
-                  <location>${project.basedir}/zeppelin-distribution/target/zeppelin-0.10.1/zeppelin-0.10.1/bin</location>
+                  <location>${project.basedir}/bin</location>
                 </source>
                 <source>
                   <location>${project.basedir}/rpm/sudo-wrapper.sh</location>
@@ -100,26 +98,19 @@
               <recurseDirectories>true</recurseDirectories>
               <sources>
                 <source>
-                  <location>${project.basedir}/zeppelin-distribution/target/zeppelin-0.10.1/zeppelin-0.10.1</location>
-                  <excludes>
-                    <!-- has explicit mappings -->
-                    <exclude>**/conf/*</exclude>
-                    <exclude>**/bin/*</exclude>
-                    <!-- notebooks are completely ignored in rpm -->
-                    <exclude>**/notebook/**</exclude>
-                    <exclude>**/*.zpln</exclude>
-                    <!-- needs different mapping -->
-                    <exclude>**/*.jar</exclude>
-                    <exclude>**/*.war</exclude>
-                    <!-- disable interpreters - this copies all non-jar/war files for other interpreters -->
-                    <exclude>**/interpreter/kotlin/**</exclude>
-                    <exclude>**/interpreter/spark/**</exclude>
-                  </excludes>
+                  <location>${project.basedir}/</location>
+                  <includes>
+                    <include>README.md</include>
+                    <include>NOTICE</include>
+                    <include>README.md</include>
+                    <include>zeppelin-server/target/zeppelin-server-0.10.1.jar</include>
+                  </includes>
                 </source>
               </sources>
             </mapping>
+            <!-- interpreters except spark -->
             <mapping>
-              <directory>/opt/teragrep/${project.artifactId}</directory>
+              <directory>/opt/teragrep/${project.artifactId}/interpreter</directory>
               <directoryIncluded>true</directoryIncluded>
               <filemode>755</filemode>
               <dirmode>755</dirmode>
@@ -128,16 +119,11 @@
               <recurseDirectories>true</recurseDirectories>
               <sources>
                 <source>
-                  <location>${project.basedir}/zeppelin-distribution/target/zeppelin-0.10.1/zeppelin-0.10.1</location>
+                  <location>${project.basedir}/interpreter</location>
                   <excludes>
                     <!-- disable interpreters - this copies all jar/war files for other interpreters -->
-                    <exclude>**/interpreter/kotlin/**</exclude>
                     <exclude>**/interpreter/spark/**</exclude>
                   </excludes>
-                  <includes>
-                    <include>**/*.jar</include>
-                    <include>**/*.war</include>
-                  </includes>
                 </source>
               </sources>
             </mapping>
@@ -151,7 +137,7 @@
               <recurseDirectories>true</recurseDirectories>
               <sources>
                 <source>
-                  <location>${project.basedir}/zeppelin-distribution/target/zeppelin-0.10.1/zeppelin-0.10.1/interpreter/spark</location>
+                  <location>${project.basedir}/interpreter/spark</location>
                 </source>
               </sources>
             </mapping>
@@ -167,7 +153,7 @@
               <configuration>noreplace</configuration>
               <sources>
                 <source>
-                  <location>${project.basedir}/zeppelin-distribution/target/zeppelin-0.10.1/zeppelin-0.10.1/conf</location>
+                  <location>${project.basedir}/conf</location>
                   <excludes>
                     <exclude>**/zeppelin-env.sh*</exclude>
                     <exclude>**/*.properties*</exclude>
@@ -187,11 +173,56 @@
               <configuration>noreplace</configuration>
               <sources>
                 <source>
-                  <location>${project.basedir}/zeppelin-distribution/target/zeppelin-0.10.1/zeppelin-0.10.1/conf</location>
+                  <location>${project.basedir}/conf</location>
                   <includes>
                     <include>**/zeppelin-env.sh*</include>
                     <include>**/*.properties*</include>
                   </includes>
+                </source>
+              </sources>
+            </mapping>
+            <!-- Licenses -->
+            <mapping>
+              <directory>/opt/teragrep/${project.artifactId}/licenses</directory>
+              <directoryIncluded>true</directoryIncluded>
+              <filemode>644</filemode>
+              <dirmode>755</dirmode>
+              <username>srv-zpln</username>
+              <groupname>srv-zpln</groupname>
+              <recurseDirectories>true</recurseDirectories>
+              <sources>
+                <source>
+                  <location>${project.basedir}/licenses</location>
+                </source>
+              </sources>
+            </mapping>
+            <!-- plugins -->
+            <mapping>
+              <directory>/opt/teragrep/${project.artifactId}/plugins</directory>
+              <directoryIncluded>true</directoryIncluded>
+              <filemode>644</filemode>
+              <dirmode>755</dirmode>
+              <username>srv-zpln</username>
+              <groupname>srv-zpln</groupname>
+              <recurseDirectories>true</recurseDirectories>
+              <sources>
+                <source>
+                  <location>${project.basedir}/plugins</location>
+                </source>
+              </sources>
+            </mapping>
+            <!-- lib -->
+            <mapping>
+              <directory>/opt/teragrep/${project.artifactId}/lib</directory>
+              <directoryIncluded>true</directoryIncluded>
+              <filemode>755</filemode>
+              <dirmode>755</dirmode>
+              <username>srv-zpln</username>
+              <groupname>srv-zpln</groupname>
+              <recurseDirectories>true</recurseDirectories>
+              <sources>
+                <source>
+                  <location>${project.basedir}/zeppelin-distribution/target/zeppelin-0.10.1/zeppelin-0.10.1/lib/</location>
                 </source>
               </sources>
             </mapping>
@@ -200,7 +231,7 @@
             <require>java-1.8.0-openjdk &gt;= 1.9.0</require>
             <require>java-1.8.0-openjdk-headless &gt;= 1.9.0</require>
             <require>java-1.8.0-openjdk-devel &gt;= 1.9.0</require>
-            <require>python3</require>
+            <require>python3.11</require>
             <require>git</require>
             <require>sudo</require>
             <require>pam</require>

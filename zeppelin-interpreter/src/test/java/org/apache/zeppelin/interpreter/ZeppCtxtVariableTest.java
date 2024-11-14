@@ -21,6 +21,7 @@ import org.apache.zeppelin.resource.LocalResourcePool;
 import org.apache.zeppelin.resource.ResourcePool;
 import org.junit.After;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 
 import static org.junit.Assert.assertEquals;
@@ -39,24 +40,28 @@ public class ZeppCtxtVariableTest {
   public void tearDown() throws Exception {
   }
 
+  @Ignore("We don't use this interpolation format anymore")
   @Test
   public void stringWithoutPatterns() {
     String result = AbstractInterpreter.interpolate("The value of PI is not exactly 3.14", resourcePool);
     assertEquals("String without patterns", "The value of PI is not exactly 3.14", result);
   }
 
+  @Ignore("We don't use this interpolation format anymore")
   @Test
   public void substitutionInTheMiddle() {
     String result = AbstractInterpreter.interpolate("The value of {{PI}} is {PI} now", resourcePool);
     assertEquals("Substitution in the middle", "The value of {PI} is 3.1415 now", result);
   }
 
+  @Ignore("We don't use this interpolation format anymore")
   @Test
   public void substitutionAtTheEnds() {
     String result = AbstractInterpreter.interpolate("{{PI}} is now {PI}", resourcePool);
     assertEquals("Substitution at the ends", "{PI} is now 3.1415", result);
   }
 
+  @Ignore("We don't use this interpolation format anymore")
   @Test
   public void multiLineSubstitutionSuccessful1() {
     String result = AbstractInterpreter.interpolate("{{PI}}\n{PI}\n{{PI}}\n{PI}", resourcePool);
@@ -64,6 +69,7 @@ public class ZeppCtxtVariableTest {
   }
 
 
+  @Ignore("We don't use this interpolation format anymore")
   @Test
   public void multiLineSubstitutionSuccessful2() {
     String result = AbstractInterpreter.interpolate("prefix {PI} {{PI\n}} suffix", resourcePool);
@@ -71,6 +77,7 @@ public class ZeppCtxtVariableTest {
   }
 
 
+  @Ignore("We don't use this interpolation format anymore")
   @Test
   public void multiLineSubstitutionSuccessful3() {
     String result = AbstractInterpreter.interpolate("prefix {{\nPI}} {PI} suffix", resourcePool);
@@ -78,6 +85,7 @@ public class ZeppCtxtVariableTest {
   }
 
 
+  @Ignore("We don't use this interpolation format anymore")
   @Test
   public void multiLineSubstitutionFailure2() {
     String result = AbstractInterpreter.interpolate("prefix {PI\n} suffix", resourcePool);
@@ -85,66 +93,77 @@ public class ZeppCtxtVariableTest {
   }
 
 
+  @Ignore("We don't use this interpolation format anymore")
   @Test
   public void multiLineSubstitutionFailure3() {
     String result = AbstractInterpreter.interpolate("prefix {\nPI} suffix", resourcePool);
     assertEquals("multiLineSubstitutionFailure3", "prefix {\nPI} suffix", result);
   }
 
+  @Ignore("We don't use this interpolation format anymore")
   @Test
   public void noUndefinedVariableError() {
     String result = AbstractInterpreter.interpolate("This {pi} will pass silently", resourcePool);
     assertEquals("No partial substitution", "This {pi} will pass silently", result);
   }
 
+  @Ignore("We don't use this interpolation format anymore")
   @Test
   public void noPartialSubstitution() {
     String result = AbstractInterpreter.interpolate("A {PI} and a {PIE} are different", resourcePool);
     assertEquals("No partial substitution", "A {PI} and a {PIE} are different", result);
   }
 
+  @Ignore("We don't use this interpolation format anymore")
   @Test
   public void substitutionAndEscapeMixed() {
     String result = AbstractInterpreter.interpolate("A {PI} is not a {{PIE}}", resourcePool);
     assertEquals("Substitution and escape mixed", "A 3.1415 is not a {PIE}", result);
   }
 
+  @Ignore("We don't use this interpolation format anymore")
   @Test
   public void unbalancedBracesOne() {
     String result = AbstractInterpreter.interpolate("A {PI} and a {{PIE} remain unchanged", resourcePool);
     assertEquals("Unbalanced braces - one", "A {PI} and a {{PIE} remain unchanged", result);
   }
 
+  @Ignore("We don't use this interpolation format anymore")
   @Test
   public void unbalancedBracesTwo() {
     String result = AbstractInterpreter.interpolate("A {PI} and a {PIE}} remain unchanged", resourcePool);
     assertEquals("Unbalanced braces - one", "A {PI} and a {PIE}} remain unchanged", result);
   }
 
+  @Ignore("We don't use this interpolation format anymore")
   @Test
   public void tooManyBraces() {
     String result = AbstractInterpreter.interpolate("This {{{PI}}} remain unchanged", resourcePool);
     assertEquals("Too many braces", "This {{{PI}}} remain unchanged", result);
   }
 
+  @Ignore("We don't use this interpolation format anymore")
   @Test
   public void randomBracesOne() {
     String result = AbstractInterpreter.interpolate("A {{ starts an escaped sequence", resourcePool);
     assertEquals("Random braces - one", "A {{ starts an escaped sequence", result);
   }
 
+  @Ignore("We don't use this interpolation format anymore")
   @Test
   public void randomBracesTwo() {
     String result = AbstractInterpreter.interpolate("A }} ends an escaped sequence", resourcePool);
     assertEquals("Random braces - two", "A }} ends an escaped sequence", result);
   }
 
+  @Ignore("We don't use this interpolation format anymore")
   @Test
   public void randomBracesThree() {
     String result = AbstractInterpreter.interpolate("Paired { begin an escaped sequence", resourcePool);
     assertEquals("Random braces - three", "Paired { begin an escaped sequence", result);
   }
 
+  @Ignore("We don't use this interpolation format anymore")
   @Test
   public void randomBracesFour() {
     String result = AbstractInterpreter.interpolate("Paired } end an escaped sequence", resourcePool);
