@@ -308,6 +308,7 @@ public class NotebookRestApiTest extends AbstractTestRestApi {
     }
   }
 
+  @Ignore(value="This test should not work as %sh should not be available")
   @Test
   public void testRunNoteNonBlocking() throws Exception {
     LOG.info("Running testRunNoteNonBlocking");
