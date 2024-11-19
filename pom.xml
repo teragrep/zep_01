@@ -117,9 +117,9 @@
     <grpc.version>1.26.0</grpc.version>
 
     <!-- test library versions -->
-    <junit.jupiter.version>5.7.1</junit.jupiter.version>
+    <junit.jupiter.version>5.11.3</junit.jupiter.version>
     <awaitility.version>4.2.0</awaitility.version>
-    <junit.version>4.12</junit.version>
+    <junit.version>5.11.3</junit.version>
     <mockito.version>1.10.19</mockito.version>
     <assertj.version>1.7.0</assertj.version>
     <powermock.version>1.6.4</powermock.version>
@@ -876,8 +876,8 @@
 
       <!-- Test libraries -->
       <dependency>
-        <groupId>junit</groupId>
-        <artifactId>junit</artifactId>
+        <groupId>org.junit.vintage</groupId>
+        <artifactId>junit-vintage-engine</artifactId>
         <version>${junit.version}</version>
         <scope>test</scope>
       </dependency>
