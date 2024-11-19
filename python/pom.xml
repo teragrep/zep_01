@@ -35,7 +35,7 @@
     <interpreter.name>python</interpreter.name>
     <python.py4j.version>0.10.7</python.py4j.version>
     <interpreter.jar.name>python-interpreter-with-py4j</interpreter.jar.name>
-    <junit.jupiter.version>5.7.1</junit.jupiter.version>
+    <junit.jupiter.version>5.11.3</junit.jupiter.version>
   </properties>
 
   <dependencies>
