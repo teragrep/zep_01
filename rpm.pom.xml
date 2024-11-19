@@ -228,9 +228,9 @@
             </mapping>
           </mappings>
           <requires>
-            <require>java-1.8.0-openjdk &gt;= 1.9.0</require>
-            <require>java-1.8.0-openjdk-headless &gt;= 1.9.0</require>
-            <require>java-1.8.0-openjdk-devel &gt;= 1.9.0</require>
+            <require>java-11-openjdk</require>
+            <require>java-11-openjdk-headless</require>
+            <require>java-11-openjdk-devel</require>
             <require>python3.11</require>
             <require>git</require>
             <require>sudo</require>
