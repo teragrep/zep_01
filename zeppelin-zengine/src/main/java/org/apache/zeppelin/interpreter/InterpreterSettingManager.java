@@ -39,10 +39,6 @@ import javax.inject.Inject;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.zeppelin.cluster.ClusterManagerServer;
-import org.apache.zeppelin.cluster.event.ClusterEvent;
-import org.apache.zeppelin.cluster.event.ClusterEventListener;
-import org.apache.zeppelin.cluster.event.ClusterMessage;
 import org.apache.zeppelin.conf.ZeppelinConfiguration;
 import org.apache.zeppelin.conf.ZeppelinConfiguration.ConfVars;
 import org.apache.zeppelin.display.AngularObjectRegistry;
@@ -94,8 +90,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-import static org.apache.zeppelin.cluster.ClusterManagerServer.CLUSTER_INTP_SETTING_EVENT_TOPIC;
-
 
 /**
  * InterpreterSettingManager is the component which manage all the interpreter settings.
@@ -103,7 +97,7 @@ import static org.apache.zeppelin.cluster.ClusterManagerServer.CLUSTER_INTP_SETT
  * TODO(zjffdu) We could move it into another separated component.
  */
 @ManagedObject("interpreterSettingManager")
-public class InterpreterSettingManager implements NoteEventListener, ClusterEventListener {
+public class InterpreterSettingManager implements NoteEventListener {
 
   private static final Pattern VALID_INTERPRETER_NAME = Pattern.compile("^[-_a-zA-Z0-9]+$");
   private static final Logger LOGGER = LoggerFactory.getLogger(InterpreterSettingManager.class);
@@ -758,8 +752,6 @@ public class InterpreterSettingManager implements NoteEventListener, ClusterEven
     InterpreterSetting interpreterSetting = null;
     try {
       interpreterSetting = inlineCreateNewSetting(name, group, option, properties);
-
-      broadcastClusterEvent(ClusterEvent.CREATE_INTP_SETTING, interpreterSetting);
     } catch (IOException e) {
       LOGGER.error(e.getMessage(), e);
       throw e;
@@ -859,8 +851,6 @@ public class InterpreterSettingManager implements NoteEventListener, ClusterEven
       throws InterpreterException, IOException {
     try {
       InterpreterSetting intpSetting = inlineSetPropertyAndRestart(id, option, properties, true);
-      // broadcast cluster event
-      broadcastClusterEvent(ClusterEvent.UPDATE_INTP_SETTING, intpSetting);
     } catch (Exception e) {
       throw e;
     }
@@ -921,7 +911,6 @@ public class InterpreterSettingManager implements NoteEventListener, ClusterEven
       // broadcast cluster event
       InterpreterSetting intpSetting = new InterpreterSetting();
       intpSetting.setId(id);
-      broadcastClusterEvent(ClusterEvent.DELETE_INTP_SETTING, intpSetting);
     }
   }
 
@@ -1098,59 +1087,5 @@ public class InterpreterSettingManager implements NoteEventListener, ClusterEven
   @Override
   public void onParagraphStatusChange(Paragraph p, Job.Status status) throws IOException {
 
-  }
-
-  @Override
-  public void onClusterEvent(String msg) {
-    if (LOGGER.isDebugEnabled()) {
-      LOGGER.debug("onClusterEvent : {}", msg);
-    }
-
-    try {
-      ClusterMessage message = ClusterMessage.deserializeMessage(msg);
-      String jsonIntpSetting = message.get("intpSetting");
-      InterpreterSetting intpSetting = InterpreterSetting.fromJson(jsonIntpSetting);
-      String id = intpSetting.getId();
-      String name = intpSetting.getName();
-      String group = intpSetting.getGroup();
-      InterpreterOption option = intpSetting.getOption();
-      HashMap<String, InterpreterProperty> properties
-          = (HashMap<String, InterpreterProperty>) InterpreterSetting
-          .convertInterpreterProperties(intpSetting.getProperties());
-
-      switch (message.clusterEvent) {
-        case CREATE_INTP_SETTING:
-          inlineCreateNewSetting(name, group, option, properties);
-          break;
-        case UPDATE_INTP_SETTING:
-          inlineSetPropertyAndRestart(id, option, properties, false);
-          break;
-        case DELETE_INTP_SETTING:
-          inlineRemove(id, false);
-          break;
-        default:
-          LOGGER.error("Unknown clusterEvent:{}, msg:{} ", message.clusterEvent, msg);
-          break;
-      }
-    } catch (IOException e) {
-      LOGGER.error(e.getMessage(), e);
-    } catch (InterpreterException e) {
-      LOGGER.error(e.getMessage(), e);
-    }
-  }
-
-  // broadcast cluster event
-  private void broadcastClusterEvent(ClusterEvent event, InterpreterSetting intpSetting) {
-    if (!conf.isClusterMode()) {
-      return;
-    }
-
-    String jsonIntpSetting = InterpreterSetting.toJson(intpSetting);
-
-    ClusterMessage message = new ClusterMessage(event);
-    message.put("intpSetting", jsonIntpSetting);
-    String msg = ClusterMessage.serializeMessage(message);
-    ClusterManagerServer.getInstance(conf).broadcastClusterEvent(
-        CLUSTER_INTP_SETTING_EVENT_TOPIC, msg);
   }
 }
