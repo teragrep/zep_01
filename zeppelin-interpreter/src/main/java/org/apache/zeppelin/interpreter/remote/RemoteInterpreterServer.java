@@ -28,7 +28,6 @@ import org.apache.thrift.transport.TTransportException;
 import org.apache.zeppelin.cluster.ClusterManagerClient;
 import org.apache.zeppelin.cluster.meta.ClusterMeta;
 import org.apache.zeppelin.conf.ZeppelinConfiguration;
-import org.apache.zeppelin.dep.DependencyResolver;
 import org.apache.zeppelin.display.AngularObject;
 import org.apache.zeppelin.display.AngularObjectRegistry;
 import org.apache.zeppelin.display.GUI;
@@ -124,7 +123,6 @@ public class RemoteInterpreterServer extends Thread
   private int port;
   private TThreadPoolServer server;
   RemoteInterpreterEventClient intpEventClient;
-  private DependencyResolver depLoader;
   private LifecycleManager lifecycleManager;
 
   private final Map<String, RunningApplication> runningApplications =
@@ -372,8 +370,7 @@ public class RemoteInterpreterServer extends Thread
                   properties.get("zeppelin.interpreter.output.limit"));
         }
 
-        depLoader = new DependencyResolver(localRepoPath);
-        appLoader = new ApplicationLoader(resourcePool, depLoader);
+        appLoader = new ApplicationLoader(resourcePool);
 
         resultCacheInSeconds =
                 Integer.parseInt(properties.getOrDefault("zeppelin.interpreter.result.cache", "0"));

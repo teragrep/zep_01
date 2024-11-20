@@ -342,50 +342,6 @@
 </property>
 
 <property>
-  <name>zeppelin.interpreter.localRepo</name>
-  <value>local-repo</value>
-  <description>Local repository for interpreter's additional dependency loading</description>
-</property>
-
-<property>
-  <name>zeppelin.interpreter.dep.mvnRepo</name>
-  <value>https://repo1.maven.org/maven2/</value>
-  <description>Remote principal repository for interpreter's additional dependency loading</description>
-</property>
-
-<property>
-  <name>zeppelin.dep.localrepo</name>
-  <value>local-repo</value>
-  <description>Local repository for dependency loader</description>
-</property>
-
-<property>
-  <name>zeppelin.helium.node.installer.url</name>
-  <value>https://nodejs.org/dist/</value>
-  <description>Remote Node installer url for Helium dependency loader</description>
-</property>
-
-<property>
-  <name>zeppelin.helium.npm.installer.url</name>
-  <value>https://registry.npmjs.org/</value>
-  <description>Remote Npm installer url for Helium dependency loader</description>
-</property>
-
-<property>
-  <name>zeppelin.helium.yarnpkg.installer.url</name>
-  <value>https://github.com/yarnpkg/yarn/releases/download/</value>
-  <description>Remote Yarn package installer url for Helium dependency loader</description>
-</property>
-
-<!--
-<property>
-  <name>zeppelin.helium.registry</name>
-  <value>helium,https://s3.amazonaws.com/helium-package/helium.json</value>
-  <description>Location of external Helium Registry</description>
-</property>
--->
-
-<property>
   <name>zeppelin.interpreter.group.default</name>
   <value>spark</value>
   <description></description>

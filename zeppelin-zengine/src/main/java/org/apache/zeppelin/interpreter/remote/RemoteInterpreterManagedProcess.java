@@ -35,7 +35,6 @@ public abstract class RemoteInterpreterManagedProcess extends RemoteInterpreterP
   private String host = null;
   private int port = -1;
   private final String interpreterDir;
-  private final String localRepoDir;
   private final String interpreterSettingName;
   private final String interpreterGroupId;
   private final boolean isUserImpersonated;
@@ -48,7 +47,6 @@ public abstract class RemoteInterpreterManagedProcess extends RemoteInterpreterP
       String intpEventServerHost,
       String interpreterPortRange,
       String intpDir,
-      String localRepoDir,
       Map<String, String> env,
       int connectTimeout,
       int connectionPoolSize,
@@ -59,7 +57,6 @@ public abstract class RemoteInterpreterManagedProcess extends RemoteInterpreterP
     this.interpreterPortRange = interpreterPortRange;
     this.env = env;
     this.interpreterDir = intpDir;
-    this.localRepoDir = localRepoDir;
     this.interpreterSettingName = interpreterSettingName;
     this.interpreterGroupId = interpreterGroupId;
     this.isUserImpersonated = isUserImpersonated;
@@ -104,10 +101,6 @@ public abstract class RemoteInterpreterManagedProcess extends RemoteInterpreterP
 
   public Map<String, String> getEnv() {
     return env;
-  }
-
-  public String getLocalRepoDir() {
-    return localRepoDir;
   }
 
   public String getInterpreterDir() {

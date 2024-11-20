@@ -65,9 +65,6 @@ import org.apache.zeppelin.conf.ZeppelinConfiguration.ConfVars;
 import org.apache.zeppelin.display.AngularObjectRegistryListener;
 import org.apache.zeppelin.healthcheck.HealthChecks;
 import org.apache.zeppelin.helium.ApplicationEventListener;
-import org.apache.zeppelin.helium.Helium;
-import org.apache.zeppelin.helium.HeliumApplicationFactory;
-import org.apache.zeppelin.helium.HeliumBundleFactory;
 import org.apache.zeppelin.interpreter.InterpreterFactory;
 import org.apache.zeppelin.interpreter.InterpreterOutput;
 import org.apache.zeppelin.interpreter.InterpreterSetting;
@@ -180,7 +177,6 @@ public class ZeppelinServer extends ResourceConfig {
             Credentials credentials = new Credentials(conf);
             bindAsContract(InterpreterFactory.class).in(Singleton.class);
             bindAsContract(NotebookRepoSync.class).to(NotebookRepo.class).in(Immediate.class);
-            bindAsContract(Helium.class).in(Singleton.class);
             bind(conf).to(ZeppelinConfiguration.class);
             bindAsContract(InterpreterSettingManager.class).in(Singleton.class);
             bindAsContract(InterpreterService.class).in(Singleton.class);
@@ -198,8 +194,6 @@ public class ZeppelinServer extends ResourceConfig {
               // TODO(jl): Will be added more type
               bind(NoAuthenticationService.class).to(AuthenticationService.class).in(Singleton.class);
             }
-            bindAsContract(HeliumBundleFactory.class).in(Singleton.class);
-            bindAsContract(HeliumApplicationFactory.class).in(Singleton.class);
             bindAsContract(ConfigurationService.class).in(Singleton.class);
             bindAsContract(NotebookService.class).in(Singleton.class);
             bindAsContract(JobManagerService.class).in(Singleton.class);

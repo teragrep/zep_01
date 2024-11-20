@@ -566,54 +566,14 @@ public class RemoteInterpreterEventServer implements RemoteInterpreterEventServi
 
   @Override
   public List<LibraryMetadata> getAllLibraryMetadatas(String interpreter) throws TException {
-    if (StringUtils.isBlank(interpreter)) {
-      LOGGER.warn("Interpreter is blank");
-      return Collections.emptyList();
-    }
-    File interpreterLocalRepo = new File(
-        zConf.getAbsoluteDir(ZeppelinConfiguration.ConfVars.ZEPPELIN_DEP_LOCALREPO)
-            + File.separator
-            + interpreter);
-    if (!interpreterLocalRepo.exists()) {
-      LOGGER.warn("Local interpreter repository {} for interpreter {} doesn't exists", interpreterLocalRepo,
-          interpreter);
-      return Collections.emptyList();
-    }
-    if (!interpreterLocalRepo.isDirectory()) {
-      LOGGER.warn("Local interpreter repository {} is no folder", interpreterLocalRepo);
-      return Collections.emptyList();
-    }
-    Collection<File> files = FileUtils.listFiles(interpreterLocalRepo, new String[] { "jar" }, false);
-    List<LibraryMetadata> metaDatas = new ArrayList<>(files.size());
-    for (File file : files) {
-      try {
-        metaDatas.add(new LibraryMetadata(file.getName(), FileUtils.checksumCRC32(file)));
-      } catch (IOException e) {
-        LOGGER.warn(e.getMessage(), e);
-      }
-    }
-    return metaDatas;
+    // FIXME: Look what this function is actually about and restore data if necessary
+    return Collections.emptyList();
   }
 
 
   @Override
   public ByteBuffer getLibrary(String interpreter, String libraryName) throws TException {
-    if (StringUtils.isAnyBlank(interpreter, libraryName)) {
-      LOGGER.warn("Interpreter \"{}\" or libraryName \"{}\" is blank", interpreter, libraryName);
-      return null;
-    }
-    File library = new File(zConf.getAbsoluteDir(ZeppelinConfiguration.ConfVars.ZEPPELIN_DEP_LOCALREPO)
-        + File.separator + interpreter + File.separator + libraryName);
-    if (!library.exists()) {
-      LOGGER.warn("Library {} doesn't exists", library);
-      return null;
-    }
-
-    try {
-      return ByteBuffer.wrap(FileUtils.readFileToByteArray(library));
-    } catch (IOException e) {
-      LOGGER.error("Unable to read library {}", library, e);
-    }
+    // FIXME: Look what this function is actually about and restore data if necessary
     return null;
   }
 

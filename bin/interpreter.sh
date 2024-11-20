@@ -20,16 +20,7 @@ bin="$(dirname "${BASH_SOURCE-$0}")"
 bin="$(cd "${bin}">/dev/null; pwd)"
 
 function usage() {
-    echo "usage) $0 -p <port> -r <intp_port> -d <interpreter dir to load> -l <local interpreter repo dir to load> -g <interpreter group name>"
-}
-
-function downloadInterpreterLibraries() {
-    mkdir -p ${LOCAL_INTERPRETER_REPO}
-    IFS=' ' read -r -a JAVA_INTP_OPTS_ARRAY <<< "${JAVA_INTP_OPTS}"
-    ZEPPELIN_DOWNLOADER="org.apache.zeppelin.interpreter.remote.RemoteInterpreterDownloader"
-    INTERPRETER_DOWNLOAD_COMMAND+=("${ZEPPELIN_RUNNER}" "${JAVA_INTP_OPTS_ARRAY[@]}" "-cp" "${ZEPPELIN_INTP_CLASSPATH_OVERRIDES}:${ZEPPELIN_INTP_CLASSPATH}" "${ZEPPELIN_DOWNLOADER}" "${CALLBACK_HOST}" "${PORT}" "${INTERPRETER_SETTING_NAME}" "${LOCAL_INTERPRETER_REPO}")
-    echo "Interpreter download command: ${INTERPRETER_DOWNLOAD_COMMAND[@]}"
-    eval "${INTERPRETER_DOWNLOAD_COMMAND[@]}"
+    echo "usage) $0 -p <port> -r <intp_port> -d <interpreter dir to load> -g <interpreter group name>"
 }
 
 # pre-requisites for checking that we're running in container
@@ -55,7 +46,7 @@ if [ -f /proc/self/cgroup ] && [ -n "$(command -v getent)" ]; then
     fi
 fi
 
-while getopts "hc:p:r:i:d:l:v:u:g:" o; do
+while getopts "hc:p:r:i:d:v:u:g:" o; do
     case ${o} in
         h)
             usage
@@ -75,9 +66,6 @@ while getopts "hc:p:r:i:d:l:v:u:g:" o; do
             ;;
         i)
             INTP_GROUP_ID=${OPTARG} # This will be used for interpreter group id
-            ;;
-        l)
-            LOCAL_INTERPRETER_REPO=${OPTARG}
             ;;
         v)
             . "${bin}/common.sh"
@@ -279,9 +267,6 @@ elif [[ "${INTERPRETER_ID}" == "flink" ]]; then
   fi
 
 fi
-
-downloadInterpreterLibraries
-addJarInDirForIntp "${LOCAL_INTERPRETER_REPO}"
 
 if [[ -n "$ZEPPELIN_IMPERSONATE_USER" ]]; then
   if [[ "${INTERPRETER_ID}" != "spark" || "$ZEPPELIN_IMPERSONATE_SPARK_PROXY_USER" == "false" ]]; then

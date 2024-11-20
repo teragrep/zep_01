@@ -18,8 +18,6 @@
 package org.apache.zeppelin.interpreter;
 
 import com.google.common.collect.Lists;
-import org.apache.zeppelin.dep.Dependency;
-import org.apache.zeppelin.dep.DependencyResolver;
 import org.apache.zeppelin.notebook.Note;
 import org.apache.zeppelin.notebook.NoteInfo;
 import org.apache.zeppelin.notebook.Notebook;
@@ -560,38 +558,5 @@ public class InterpreterSettingTest {
           .setOption(interpreterOption)
           .create();
       assertTrue(interpreterSetting.isUserAuthorized(userAndRoles));
-  }
-
-  @Ignore(value="Contains sleep, timeout, while loops or something similar waiting/cycleburning")
-  @Test
-  public void testLoadDependency() throws InterruptedException {
-    InterpreterOption interpreterOption = new InterpreterOption();
-    interpreterOption.setUserPermission(true);
-    InterpreterSetting interpreterSetting = new InterpreterSetting.Builder()
-            .setId("id")
-            .setName("id")
-            .setGroup("group")
-            .setOption(interpreterOption)
-            .setIntepreterSettingManager(interpreterSettingManager)
-            .setDependencyResolver(new DependencyResolver("/tmp"))
-            .create();
-
-    // set invalid dependency
-    interpreterSetting.setDependencies(Lists.newArrayList(new Dependency("a:b:0.1")));
-    long start = System.currentTimeMillis();
-    long threshold = 60 * 1000;
-    while(interpreterSetting.getStatus() != InterpreterSetting.Status.ERROR &&
-            (System.currentTimeMillis() - start) < threshold) {
-      Thread.sleep(1000);
-      LOGGER.warn("Downloading dependency");
-    }
-    assertTrue(interpreterSetting.getErrorReason(),
-            interpreterSetting.getErrorReason().contains("Cannot fetch dependencies"));
-
-    // clean dependency
-    interpreterSetting.setDependencies(new ArrayList<>());
-    assertEquals(InterpreterSetting.Status.READY, interpreterSetting.getStatus());
-    assertNull(interpreterSetting.getErrorReason());
-
   }
 }

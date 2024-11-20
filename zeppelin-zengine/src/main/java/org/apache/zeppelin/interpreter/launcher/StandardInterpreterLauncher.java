@@ -69,11 +69,9 @@ public class StandardInterpreterLauncher extends InterpreterLauncher {
           false);
     } else {
       // create new remote process
-      String localRepoPath = zConf.getInterpreterLocalRepoPath() + File.separator
-          + context.getInterpreterSettingId();
       return new ExecRemoteInterpreterProcess(
           context.getIntpEventServerPort(), context.getIntpEventServerHost(), zConf.getInterpreterPortRange(),
-          zConf.getInterpreterDir() + "/" + groupName, localRepoPath,
+          zConf.getInterpreterDir() + "/" + groupName,
           buildEnvFromProperties(context), connectTimeout, connectionPoolSize, name,
           context.getInterpreterGroupId(), option.isUserImpersonate(),
           runner != null ? runner.getPath() : zConf.getInterpreterRemoteRunnerPath());

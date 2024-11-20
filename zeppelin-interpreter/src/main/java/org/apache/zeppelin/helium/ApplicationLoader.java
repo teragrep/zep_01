@@ -16,7 +16,6 @@
  */
 package org.apache.zeppelin.helium;
 
-import org.apache.zeppelin.dep.DependencyResolver;
 import org.apache.zeppelin.resource.DistributedResourcePool;
 import org.apache.zeppelin.resource.Resource;
 import org.apache.zeppelin.resource.ResourcePool;
@@ -40,12 +39,10 @@ import java.util.Map;
 public class ApplicationLoader {
   Logger logger = LoggerFactory.getLogger(ApplicationLoader.class);
 
-  private final DependencyResolver depResolver;
   private final ResourcePool resourcePool;
   private final Map<HeliumPackage, Class<Application>> cached;
 
-  public ApplicationLoader(ResourcePool resourcePool, DependencyResolver depResolver) {
-    this.depResolver = depResolver;
+  public ApplicationLoader(ResourcePool resourcePool) {
     this.resourcePool = resourcePool;
     cached = Collections.synchronizedMap(
         new HashMap<HeliumPackage, Class<Application>>());
@@ -206,17 +203,6 @@ public class ApplicationLoader {
     // Create Application classloader
     List<URL> urlList = new LinkedList<>();
 
-    // load artifact
-    if (packageInfo.getArtifact() != null) {
-      List<File> paths = depResolver.load(packageInfo.getArtifact());
-
-      if (paths != null) {
-
-        for (File path : paths) {
-          urlList.add(path.toURI().toURL());
-        }
-      }
-    }
     URLClassLoader applicationClassLoader =
         new URLClassLoader(
             urlList.toArray(new URL[]{}),

@@ -19,7 +19,6 @@
 package org.apache.zeppelin.interpreter;
 
 import org.apache.zeppelin.conf.ZeppelinConfiguration;
-import org.apache.zeppelin.dep.Dependency;
 import org.apache.zeppelin.display.AngularObjectRegistryListener;
 import org.apache.zeppelin.helium.ApplicationEventListener;
 import org.apache.zeppelin.interpreter.remote.RemoteInterpreterProcessListener;
@@ -69,22 +68,16 @@ public class InterpreterSettingManagerTest extends AbstractInterpreterTest {
     //   * zeppelin.interpreter.output.limit
     //   * zeppelin.interpreter.localRepo
     //   * zeppelin.interpreter.max.poolsize
-    assertEquals(6, interpreterSetting.getJavaProperties().size());
+    assertEquals(5, interpreterSetting.getJavaProperties().size());
     assertEquals("value_1", interpreterSetting.getJavaProperties().getProperty("property_1"));
     assertEquals("new_value_2", interpreterSetting.getJavaProperties().getProperty("property_2"));
     assertEquals("value_3", interpreterSetting.getJavaProperties().getProperty("property_3"));
     assertEquals("shared", interpreterSetting.getOption().perNote);
     assertEquals("shared", interpreterSetting.getOption().perUser);
-    assertEquals(0, interpreterSetting.getDependencies().size());
     assertNotNull(interpreterSetting.getAngularObjectRegistryListener());
     assertNotNull(interpreterSetting.getRemoteInterpreterProcessListener());
     assertNotNull(interpreterSetting.getAppEventListener());
-    assertNotNull(interpreterSetting.getDependencyResolver());
     assertNotNull(interpreterSetting.getInterpreterSettingManager());
-
-    List<RemoteRepository> repositories = interpreterSettingManager.getRepositories();
-    assertEquals(2, repositories.size());
-    assertEquals("central", repositories.get(0).getId());
 
     // Load it again
     InterpreterSettingManager interpreterSettingManager2 = new InterpreterSettingManager(conf,
@@ -94,17 +87,12 @@ public class InterpreterSettingManagerTest extends AbstractInterpreterTest {
     assertEquals("test", interpreterSetting.getName());
     assertEquals("test", interpreterSetting.getGroup());
     assertEquals(8, interpreterSetting.getInterpreterInfos().size());
-    assertEquals(6, interpreterSetting.getJavaProperties().size());
+    assertEquals(5, interpreterSetting.getJavaProperties().size());
     assertEquals("value_1", interpreterSetting.getJavaProperties().getProperty("property_1"));
     assertEquals("new_value_2", interpreterSetting.getJavaProperties().getProperty("property_2"));
     assertEquals("value_3", interpreterSetting.getJavaProperties().getProperty("property_3"));
     assertEquals("shared", interpreterSetting.getOption().perNote);
     assertEquals("shared", interpreterSetting.getOption().perUser);
-    assertEquals(0, interpreterSetting.getDependencies().size());
-
-    repositories = interpreterSettingManager2.getRepositories();
-    assertEquals(2, repositories.size());
-    assertEquals("central", repositories.get(0).getId());
 
   }
 
@@ -118,13 +106,13 @@ public class InterpreterSettingManagerTest extends AbstractInterpreterTest {
     properties.put("property_4", new InterpreterProperty("property_4","value_4"));
 
     try {
-      interpreterSettingManager.createNewSetting("test2", "test", new ArrayList<Dependency>(), option, properties);
+      interpreterSettingManager.createNewSetting("test2", "test", option, properties);
       fail("Should fail due to interpreter already existed");
     } catch (IOException e) {
       assertTrue(e.getMessage().contains("already existed"));
     }
 
-    interpreterSettingManager.createNewSetting("test3", "test", new ArrayList<Dependency>(), option, properties);
+    interpreterSettingManager.createNewSetting("test3", "test", option, properties);
     assertEquals(7, interpreterSettingManager.get().size());
     InterpreterSetting interpreterSetting = interpreterSettingManager.getByName("test3");
     assertEquals("test3", interpreterSetting.getName());
@@ -133,15 +121,13 @@ public class InterpreterSettingManagerTest extends AbstractInterpreterTest {
     //   * zeppelin.interpeter.output.limit
     //   * zeppelin.interpreter.localRepo
     //   * zeppelin.interpreter.max.poolsize
-    assertEquals(4, interpreterSetting.getJavaProperties().size());
+    assertEquals(3, interpreterSetting.getJavaProperties().size());
     assertEquals("value_4", interpreterSetting.getJavaProperties().getProperty("property_4"));
     assertEquals("scoped", interpreterSetting.getOption().perNote);
     assertEquals("scoped", interpreterSetting.getOption().perUser);
-    assertEquals(0, interpreterSetting.getDependencies().size());
     assertNotNull(interpreterSetting.getAngularObjectRegistryListener());
     assertNotNull(interpreterSetting.getRemoteInterpreterProcessListener());
     assertNotNull(interpreterSetting.getAppEventListener());
-    assertNotNull(interpreterSetting.getDependencyResolver());
     assertNotNull(interpreterSetting.getInterpreterSettingManager());
 
     // load it again, it should be saved in interpreter-setting.json. So we can restore it properly
@@ -151,11 +137,10 @@ public class InterpreterSettingManagerTest extends AbstractInterpreterTest {
     interpreterSetting = interpreterSettingManager2.getByName("test3");
     assertEquals("test3", interpreterSetting.getName());
     assertEquals("test", interpreterSetting.getGroup());
-    assertEquals(4, interpreterSetting.getJavaProperties().size());
+    assertEquals(3, interpreterSetting.getJavaProperties().size());
     assertEquals("value_4", interpreterSetting.getJavaProperties().getProperty("property_4"));
     assertEquals("scoped", interpreterSetting.getOption().perNote);
     assertEquals("scoped", interpreterSetting.getOption().perUser);
-    assertEquals(0, interpreterSetting.getDependencies().size());
 
     // update interpreter setting
     InterpreterOption newOption = new InterpreterOption();
@@ -163,21 +148,17 @@ public class InterpreterSettingManagerTest extends AbstractInterpreterTest {
     newOption.setPerUser("isolated");
     Map<String, InterpreterProperty> newProperties = new HashMap<>(properties);
     newProperties.put("property_4", new InterpreterProperty("property_4", "new_value_4"));
-    List<Dependency> newDependencies = new ArrayList<>();
-    newDependencies.add(new Dependency("com.databricks:spark-avro_2.11:3.1.0"));
-    interpreterSettingManager.setPropertyAndRestart(interpreterSetting.getId(), newOption, newProperties, newDependencies);
+    interpreterSettingManager.setPropertyAndRestart(interpreterSetting.getId(), newOption, newProperties);
     interpreterSetting = interpreterSettingManager.get(interpreterSetting.getId());
     assertEquals("test3", interpreterSetting.getName());
     assertEquals("test", interpreterSetting.getGroup());
-    assertEquals(4, interpreterSetting.getJavaProperties().size());
+    assertEquals(3, interpreterSetting.getJavaProperties().size());
     assertEquals("new_value_4", interpreterSetting.getJavaProperties().getProperty("property_4"));
     assertEquals("scoped", interpreterSetting.getOption().perNote);
     assertEquals("isolated", interpreterSetting.getOption().perUser);
-    assertEquals(1, interpreterSetting.getDependencies().size());
     assertNotNull(interpreterSetting.getAngularObjectRegistryListener());
     assertNotNull(interpreterSetting.getRemoteInterpreterProcessListener());
     assertNotNull(interpreterSetting.getAppEventListener());
-    assertNotNull(interpreterSetting.getDependencyResolver());
     assertNotNull(interpreterSetting.getInterpreterSettingManager());
 
     // restart in note page

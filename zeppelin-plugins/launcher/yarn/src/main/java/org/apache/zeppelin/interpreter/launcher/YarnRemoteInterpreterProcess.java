@@ -324,10 +324,6 @@ public class YarnRemoteInterpreterProcess extends RemoteInterpreterProcess {
     vargs.add(zConf.getInterpreterPortRange() + "");
     vargs.add("-i");
     vargs.add(launchContext.getInterpreterGroupId());
-    vargs.add("-l");
-    vargs.add(ApplicationConstants.Environment.PWD.$() + "/zeppelin/" +
-            ZeppelinConfiguration.ConfVars.ZEPPELIN_INTERPRETER_LOCALREPO.getStringValue()
-            + "/" + launchContext.getInterpreterSettingName());
     vargs.add("-g");
     vargs.add(launchContext.getInterpreterSettingName());
 
@@ -500,13 +496,6 @@ public class YarnRemoteInterpreterProcess extends RemoteInterpreterProcess {
 
       File interpreterDir = new File(zeppelinHome, "interpreter/" + launchContext.getInterpreterSettingGroup());
       addFileToZipStream(interpreterZipStream, interpreterDir, "interpreter");
-
-      File localRepoDir = new File(zConf.getInterpreterLocalRepoPath() + File.separator
-              + launchContext.getInterpreterSettingName());
-      if (localRepoDir.exists() && localRepoDir.isDirectory()) {
-        LOGGER.debug("Adding localRepoDir {} to interpreter zip: ", localRepoDir.getAbsolutePath());
-        addFileToZipStream(interpreterZipStream, localRepoDir, "local-repo");
-      }
 
       // add zeppelin-interpreter-shaded jar
       File[] interpreterShadedFiles = new File(zeppelinHome, "interpreter").listFiles(

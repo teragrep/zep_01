@@ -32,8 +32,6 @@ import com.google.gson.stream.JsonWriter;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.zeppelin.conf.ZeppelinConfiguration;
-import org.apache.zeppelin.dep.Dependency;
-import org.apache.zeppelin.dep.DependencyResolver;
 import org.apache.zeppelin.display.AngularObjectRegistry;
 import org.apache.zeppelin.display.AngularObjectRegistryListener;
 import org.apache.zeppelin.helium.ApplicationEventListener;
@@ -113,7 +111,6 @@ public class InterpreterSetting {
   @SerializedName("interpreterGroup")
   private List<InterpreterInfo> interpreterInfos;
 
-  private List<Dependency> dependencies = new ArrayList<>();
   private InterpreterOption option = new InterpreterOption();
 
   @SerializedName("runner")
@@ -131,7 +128,6 @@ public class InterpreterSetting {
   private transient AngularObjectRegistryListener angularObjectRegistryListener;
   private transient RemoteInterpreterProcessListener remoteInterpreterProcessListener;
   private transient ApplicationEventListener appEventListener;
-  private transient DependencyResolver dependencyResolver;
 
   private transient ZeppelinConfiguration conf = ZeppelinConfiguration.create();
 
@@ -192,18 +188,8 @@ public class InterpreterSetting {
       return this;
     }
 
-    public Builder setDependencies(List<Dependency> dependencies) {
-      interpreterSetting.dependencies = dependencies;
-      return this;
-    }
-
     public Builder setConf(ZeppelinConfiguration conf) {
       interpreterSetting.conf = conf;
-      return this;
-    }
-
-    public Builder setDependencyResolver(DependencyResolver dependencyResolver) {
-      interpreterSetting.dependencyResolver = dependencyResolver;
       return this;
     }
 
@@ -284,7 +270,6 @@ public class InterpreterSetting {
         o.getProperties());
     this.interpreterInfos = new ArrayList<>(o.getInterpreterInfos());
     this.option = InterpreterOption.fromInterpreterOption(o.getOption());
-    this.dependencies = new ArrayList<>(o.getDependencies());
     this.interpreterDir = o.getInterpreterDir();
     this.interpreterRunner = o.getInterpreterRunner();
     this.conf = o.getConf();
@@ -307,10 +292,6 @@ public class InterpreterSetting {
     return appEventListener;
   }
 
-  public DependencyResolver getDependencyResolver() {
-    return dependencyResolver;
-  }
-
   public InterpreterSettingManager getInterpreterSettingManager() {
     return interpreterSettingManager;
   }
@@ -329,11 +310,6 @@ public class InterpreterSetting {
   public InterpreterSetting setRemoteInterpreterProcessListener(RemoteInterpreterProcessListener
                                                       remoteInterpreterProcessListener) {
     this.remoteInterpreterProcessListener = remoteInterpreterProcessListener;
-    return this;
-  }
-
-  public InterpreterSetting setDependencyResolver(DependencyResolver dependencyResolver) {
-    this.dependencyResolver = dependencyResolver;
     return this;
   }
 
@@ -643,10 +619,6 @@ public class InterpreterSetting {
           conf.getInt(ZEPPELIN_INTERPRETER_CONNECTION_POOL_SIZE) + "");
     }
 
-    String interpreterLocalRepoPath = conf.getInterpreterLocalRepoPath();
-    //TODO(zjffdu) change it to interpreterDir/{interpreter_name}
-    jProperties.setProperty("zeppelin.interpreter.localRepo",
-        interpreterLocalRepoPath + "/" + id);
     return jProperties;
   }
 
@@ -657,22 +629,6 @@ public class InterpreterSetting {
   public InterpreterSetting setConf(ZeppelinConfiguration conf) {
     this.conf = conf;
     return this;
-  }
-
-  public List<Dependency> getDependencies() {
-    return dependencies;
-  }
-
-  public void setDependencies(List<Dependency> dependencies) {
-    this.dependencies = dependencies;
-    if (!this.dependencies.isEmpty()) {
-      loadInterpreterDependencies();
-    } else {
-      // Interpreter setting may be in ERROR due to download fail,
-      // reset status to be READY when dependency is cleaned.
-      setStatus(Status.READY);
-      setErrorReason(null);
-    }
   }
 
   public InterpreterOption getOption() {
@@ -693,17 +649,6 @@ public class InterpreterSetting {
 
   public List<InterpreterInfo> getInterpreterInfos() {
     return interpreterInfos;
-  }
-
-  void appendDependencies(List<Dependency> dependencies) {
-    for (Dependency dependency : dependencies) {
-      if (!this.dependencies.contains(dependency)) {
-        this.dependencies.add(dependency);
-      }
-    }
-    if (!dependencies.isEmpty()) {
-      loadInterpreterDependencies();
-    }
   }
 
   void setInterpreterOption(InterpreterOption interpreterOption) {
@@ -950,64 +895,6 @@ public class InterpreterSetting {
     }
   }
 
-  private void loadInterpreterDependencies() {
-    setStatus(Status.DOWNLOADING_DEPENDENCIES);
-    setErrorReason(null);
-    Thread t = new Thread() {
-      @Override
-      public void run() {
-        try {
-          // dependencies to prevent library conflict
-          File localRepoDir = new File(conf.getInterpreterLocalRepoPath() + '/' + id);
-          if (localRepoDir.exists()) {
-            try {
-              FileUtils.forceDelete(localRepoDir);
-            } catch (FileNotFoundException e) {
-              LOGGER.info("A file that does not exist cannot be deleted, nothing to worry", e);
-            }
-          }
-
-          // load dependencies
-          List<Dependency> deps = getDependencies();
-          if (deps != null && !deps.isEmpty()) {
-            LOGGER.info("Start to download dependencies for interpreter: {}", name);
-            for (Dependency d : deps) {
-              File destDir = new File(
-                  conf.getAbsoluteDir(ZeppelinConfiguration.ConfVars.ZEPPELIN_DEP_LOCALREPO));
-
-              if (d.getExclusions() != null) {
-                dependencyResolver.load(d.getGroupArtifactVersion(), d.getExclusions(),
-                    new File(destDir, id));
-              } else {
-                dependencyResolver
-                    .load(d.getGroupArtifactVersion(), new File(destDir, id));
-              }
-            }
-            LOGGER.info("Finish downloading dependencies for interpreter: {}", name);
-          }
-
-          setStatus(Status.READY);
-          setErrorReason(null);
-        } catch (Exception e) {
-          LOGGER.error(String.format("Error while downloading repos for interpreter group : %s," +
-                  " go to interpreter setting page click on edit and save it again to make " +
-                  "this interpreter work properly. : %s",
-              getGroup(), e.getLocalizedMessage()), e);
-          setErrorReason(e.getLocalizedMessage());
-          setStatus(Status.ERROR);
-        }
-
-        try {
-          interpreterSettingManager.saveToFile();
-        } catch (IOException e) {
-          LOGGER.error("Fail to save interpreter.json", e);
-        }
-      }
-    };
-
-    t.start();
-  }
-
   //TODO(zjffdu) ugly code, should not use JsonObject as parameter. not readable
   public void convertPermissionsFromUsersToOwners(JsonObject jsonObject) {
     if (jsonObject != null) {
@@ -1122,12 +1009,6 @@ public class InterpreterSetting {
       jsonWriter.name("group");
       jsonWriter.value(intpSetting.getGroup());
 
-      // dependencies
-      jsonWriter.name("dependencies");
-      String jsonDep = gson.toJson(intpSetting.getDependencies(), new TypeToken<List<Dependency>>() {
-      }.getType());
-      jsonWriter.value(jsonDep);
-
       // properties
       jsonWriter.name("properties");
       String jsonProps = gson.toJson(intpSetting.getProperties(), new TypeToken<Map<String, InterpreterProperty>>() {
@@ -1174,10 +1055,6 @@ public class InterpreterSetting {
         } else if (tag.equals("group")) {
           String group = jsonReader.nextString();
           intpSetting.setGroup(group);
-        } else if (tag.equals("dependencies")) {
-          String strDep = jsonReader.nextString();
-          List<Dependency> dependencies = gson.fromJson(strDep, new TypeToken<List<Dependency>>() {}.getType());
-          intpSetting.setDependencies(dependencies);
         } else if (tag.equals("properties")) {
           String strProp = jsonReader.nextString();
           Map<String, InterpreterProperty> properties = gson.fromJson(strProp,
