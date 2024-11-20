@@ -300,14 +300,6 @@ public abstract class SparkIntegrationTest {
     }
   }
 
-  private boolean isSpark2() {
-    return this.sparkVersion.startsWith("2.");
-  }
-
-  private boolean isSpark3() {
-    return this.sparkVersion.startsWith("3.");
-  }
-
   private String getPythonExec() throws IOException, InterruptedException {
     Process process = Runtime.getRuntime().exec(new String[]{"which", "python"});
     if (process.waitFor() != 0) {

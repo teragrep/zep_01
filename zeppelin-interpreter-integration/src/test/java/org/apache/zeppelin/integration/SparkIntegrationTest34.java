@@ -25,16 +25,16 @@ import java.util.Arrays;
 import java.util.List;
 
 @RunWith(value = Parameterized.class)
-public class SparkIntegrationTest32 extends SparkIntegrationTest {
+public class SparkIntegrationTest34 extends SparkIntegrationTest {
 
-  public SparkIntegrationTest32(String sparkVersion, String hadoopVersion) {
+  public SparkIntegrationTest34(String sparkVersion, String hadoopVersion) {
     super(sparkVersion, hadoopVersion);
   }
 
   @Parameterized.Parameters
   public static List<Object[]> data() {
     return Arrays.asList(new Object[][]{
-        {"3.2.0", "2.7"},
+        {"3.4.2", "3.3.6"},
         // TODO(zjffdu) Run integration tests under profile hadoop3
         // {"3.2.0", "3.2"}
     });

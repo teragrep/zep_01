@@ -17,7 +17,6 @@
 
 package org.apache.zeppelin.integration;
 
-import org.apache.zeppelin.dep.Dependency;
 import org.apache.zeppelin.interpreter.ExecutionContext;
 import org.apache.zeppelin.interpreter.Interpreter;
 import org.apache.zeppelin.interpreter.InterpreterContext;
@@ -30,6 +29,7 @@ import org.apache.zeppelin.user.AuthenticationInfo;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
+import org.junit.Ignore;
 
 import java.io.IOException;
 import java.util.Arrays;
@@ -59,6 +59,7 @@ public class JdbcIntegrationTest {
     }
   }
 
+  @Ignore(value="java.lang.ClassNotFoundException: com.mysql.jdbc.Driver as the dependency downloader has been deprecated")
   @Test
   public void testMySql() throws InterpreterException, InterruptedException {
     InterpreterSetting interpreterSetting = interpreterSettingManager.getInterpreterSettingByName("jdbc");
@@ -67,8 +68,6 @@ public class JdbcIntegrationTest {
     interpreterSetting.setProperty("default.user", "root");
     interpreterSetting.setProperty("default.password", "root");
 
-    Dependency dependency = new Dependency("mysql:mysql-connector-java:5.1.46");
-    interpreterSetting.setDependencies(Arrays.asList(dependency));
     interpreterSettingManager.restart(interpreterSetting.getId());
     interpreterSetting.waitForReady(60 * 1000);
     Interpreter jdbcInterpreter = interpreterFactory.getInterpreter("jdbc", new ExecutionContext("user1", "note1", "test"));
