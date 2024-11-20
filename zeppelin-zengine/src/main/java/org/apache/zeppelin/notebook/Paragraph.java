@@ -36,7 +36,6 @@ import org.apache.zeppelin.display.AngularObject;
 import org.apache.zeppelin.display.AngularObjectRegistry;
 import org.apache.zeppelin.display.GUI;
 import org.apache.zeppelin.display.Input;
-import org.apache.zeppelin.helium.HeliumPackage;
 import org.apache.zeppelin.interpreter.Constants;
 import org.apache.zeppelin.interpreter.ExecutionContext;
 import org.apache.zeppelin.interpreter.Interpreter;
@@ -83,7 +82,6 @@ public class Paragraph extends JobWithProgressPoller<InterpreterResult> implemen
   public GUI settings = new GUI();
   private InterpreterResult results;
   // Application states in this paragraph
-  private final List<ApplicationState> apps = new LinkedList<>();
 
   /************** Transient fields which are not serializabled  into note json **************/
   private transient String intpText;
@@ -604,44 +602,6 @@ public class Paragraph extends JobWithProgressPoller<InterpreterResult> implemen
   public void setReturn(InterpreterResult value, Throwable t) {
     setResult(value);
     setException(t);
-  }
-
-  private String getApplicationId(HeliumPackage pkg) {
-    return "app_" + getNote().getId() + "-" + getId() + pkg.getName().replaceAll("\\.", "_");
-  }
-
-  public ApplicationState createOrGetApplicationState(HeliumPackage pkg) {
-    synchronized (apps) {
-      for (ApplicationState as : apps) {
-        if (as.equals(pkg)) {
-          return as;
-        }
-      }
-
-      String appId = getApplicationId(pkg);
-      ApplicationState appState = new ApplicationState(appId, pkg);
-      apps.add(appState);
-      return appState;
-    }
-  }
-
-
-  public ApplicationState getApplicationState(String appId) {
-    synchronized (apps) {
-      for (ApplicationState as : apps) {
-        if (as.getId().equals(appId)) {
-          return as;
-        }
-      }
-    }
-
-    return null;
-  }
-
-  public List<ApplicationState> getAllApplicationStates() {
-    synchronized (apps) {
-      return new LinkedList<>(apps);
-    }
   }
 
   String extractVariablesFromAngularRegistry(String scriptBody, Map<String, Input> inputs,

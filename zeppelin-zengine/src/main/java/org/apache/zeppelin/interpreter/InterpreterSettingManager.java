@@ -47,13 +47,11 @@ import org.apache.zeppelin.conf.ZeppelinConfiguration;
 import org.apache.zeppelin.conf.ZeppelinConfiguration.ConfVars;
 import org.apache.zeppelin.display.AngularObjectRegistry;
 import org.apache.zeppelin.display.AngularObjectRegistryListener;
-import org.apache.zeppelin.helium.ApplicationEventListener;
 import org.apache.zeppelin.interpreter.Interpreter.RegisteredInterpreter;
 import org.apache.zeppelin.interpreter.recovery.RecoveryStorage;
 import org.apache.zeppelin.interpreter.remote.RemoteAngularObjectRegistry;
 import org.apache.zeppelin.interpreter.remote.RemoteInterpreterProcess;
 import org.apache.zeppelin.interpreter.remote.RemoteInterpreterProcessListener;
-import org.apache.zeppelin.notebook.ApplicationState;
 import org.apache.zeppelin.notebook.Note;
 import org.apache.zeppelin.notebook.NoteEventListener;
 import org.apache.zeppelin.notebook.Notebook;
@@ -138,7 +136,6 @@ public class InterpreterSettingManager implements NoteEventListener, ClusterEven
   private Notebook notebook;
   private AngularObjectRegistryListener angularObjectRegistryListener;
   private RemoteInterpreterProcessListener remoteInterpreterProcessListener;
-  private ApplicationEventListener appEventListener;
   private RecoveryStorage recoveryStorage;
   private ConfigStorage configStorage;
   private RemoteInterpreterEventServer interpreterEventServer;
@@ -150,13 +147,11 @@ public class InterpreterSettingManager implements NoteEventListener, ClusterEven
   public InterpreterSettingManager(ZeppelinConfiguration zeppelinConfiguration,
                                    AngularObjectRegistryListener angularObjectRegistryListener,
                                    RemoteInterpreterProcessListener
-                                       remoteInterpreterProcessListener,
-                                   ApplicationEventListener appEventListener)
+                                       remoteInterpreterProcessListener)
       throws IOException {
     this(zeppelinConfiguration, new InterpreterOption(),
         angularObjectRegistryListener,
         remoteInterpreterProcessListener,
-        appEventListener,
         ConfigStorage.getInstance(zeppelinConfiguration));
   }
 
@@ -164,7 +159,6 @@ public class InterpreterSettingManager implements NoteEventListener, ClusterEven
       InterpreterOption defaultOption,
       AngularObjectRegistryListener angularObjectRegistryListener,
       RemoteInterpreterProcessListener remoteInterpreterProcessListener,
-      ApplicationEventListener appEventListener,
       ConfigStorage configStorage)
       throws IOException {
     this.conf = conf;
@@ -176,7 +170,6 @@ public class InterpreterSettingManager implements NoteEventListener, ClusterEven
 
     this.angularObjectRegistryListener = angularObjectRegistryListener;
     this.remoteInterpreterProcessListener = remoteInterpreterProcessListener;
-    this.appEventListener = appEventListener;
 
     this.interpreterEventServer = new RemoteInterpreterEventServer(conf, this);
     this.interpreterEventServer.start();
@@ -219,7 +212,6 @@ public class InterpreterSettingManager implements NoteEventListener, ClusterEven
         .setInterpreterSettingManager(this)
         .setAngularObjectRegistryListener(angularObjectRegistryListener)
         .setRemoteInterpreterProcessListener(remoteInterpreterProcessListener)
-        .setAppEventListener(appEventListener)
         .setRecoveryStorage(recoveryStorage)
         .setInterpreterEventServer(interpreterEventServer)
         .postProcessing();
@@ -430,10 +422,6 @@ public class InterpreterSettingManager implements NoteEventListener, ClusterEven
 
   public RemoteInterpreterProcessListener getRemoteInterpreterProcessListener() {
     return remoteInterpreterProcessListener;
-  }
-
-  public ApplicationEventListener getAppEventListener() {
-    return appEventListener;
   }
 
   private boolean registerInterpreterFromResource(ClassLoader cl, String interpreterDir,
@@ -1065,15 +1053,6 @@ public class InterpreterSettingManager implements NoteEventListener, ClusterEven
           // remove paragraph scope object
           for (Paragraph p : note.getParagraphs()) {
             ((RemoteAngularObjectRegistry) registry).removeAllAndNotifyRemoteProcess(note.getId(), p.getId());
-
-            // remove app scope object
-            List<ApplicationState> appStates = p.getAllApplicationStates();
-            if (appStates != null) {
-              for (ApplicationState app : appStates) {
-                ((RemoteAngularObjectRegistry) registry)
-                    .removeAllAndNotifyRemoteProcess(note.getId(), app.getId());
-              }
-            }
           }
           // remove note scope object
           ((RemoteAngularObjectRegistry) registry).removeAllAndNotifyRemoteProcess(note.getId(), null);
@@ -1081,14 +1060,6 @@ public class InterpreterSettingManager implements NoteEventListener, ClusterEven
           // remove paragraph scope object
           for (Paragraph p : note.getParagraphs()) {
             registry.removeAll(note.getId(), p.getId());
-
-            // remove app scope object
-            List<ApplicationState> appStates = p.getAllApplicationStates();
-            if (appStates != null) {
-              for (ApplicationState app : appStates) {
-                registry.removeAll(note.getId(), app.getId());
-              }
-            }
           }
           // remove note scope object
           registry.removeAll(note.getId(), null);

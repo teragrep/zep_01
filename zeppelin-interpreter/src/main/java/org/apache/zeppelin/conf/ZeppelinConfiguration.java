@@ -535,10 +535,6 @@ public class ZeppelinConfiguration {
     return getConfigFSDir(absolute) + "/interpreter.json";
   }
 
-  public String getHeliumConfPath() {
-    return getAbsoluteDir(String.format("%s/helium.json", getConfDir()));
-  }
-
   public String getNotebookAuthorizationPath(boolean absolute) {
     return getConfigFSDir(absolute) + "/notebook-authorization.json";
   }

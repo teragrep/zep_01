@@ -28,7 +28,6 @@ import org.apache.thrift.transport.TServerSocket;
 import org.apache.thrift.transport.TTransportException;
 import org.apache.zeppelin.conf.ZeppelinConfiguration;
 import org.apache.zeppelin.display.AngularObject;
-import org.apache.zeppelin.helium.ApplicationEventListener;
 import org.apache.zeppelin.interpreter.remote.AppendOutputRunner;
 import org.apache.zeppelin.interpreter.remote.InvokeResourceMethodEventMessage;
 import org.apache.zeppelin.interpreter.remote.RemoteAngularObject;
@@ -90,7 +89,6 @@ public class RemoteInterpreterEventServer implements RemoteInterpreterEventServi
   private ScheduledFuture<?> appendFuture;
   private AppendOutputRunner runner;
   private final RemoteInterpreterProcessListener listener;
-  private final ApplicationEventListener appListener;
 
 
   public RemoteInterpreterEventServer(ZeppelinConfiguration zConf,
@@ -99,7 +97,6 @@ public class RemoteInterpreterEventServer implements RemoteInterpreterEventServi
     this.portRange = zConf.getZeppelinServerRPCPortRange();
     this.interpreterSettingManager = interpreterSettingManager;
     this.listener = interpreterSettingManager.getRemoteInterpreterProcessListener();
-    this.appListener = interpreterSettingManager.getAppEventListener();
   }
 
   public void start() throws IOException {
@@ -219,9 +216,6 @@ public class RemoteInterpreterEventServer implements RemoteInterpreterEventServi
     if (event.getAppId() == null) {
       runner.appendBuffer(
           event.getNoteId(), event.getParagraphId(), event.getIndex(), event.getData());
-    } else {
-      appListener.onOutputAppend(event.getNoteId(), event.getParagraphId(), event.getIndex(),
-          event.getAppId(), event.getData());
     }
   }
 
@@ -230,9 +224,6 @@ public class RemoteInterpreterEventServer implements RemoteInterpreterEventServi
     if (event.getAppId() == null) {
       listener.onOutputUpdated(event.getNoteId(), event.getParagraphId(), event.getIndex(),
           InterpreterResult.Type.valueOf(event.getType()), event.getData());
-    } else {
-      appListener.onOutputUpdated(event.getNoteId(), event.getParagraphId(), event.getIndex(),
-          event.getAppId(), InterpreterResult.Type.valueOf(event.getType()), event.getData());
     }
   }
 
@@ -244,23 +235,6 @@ public class RemoteInterpreterEventServer implements RemoteInterpreterEventServi
       listener.onOutputUpdated(event.getNoteId(), event.getParagraphId(), i,
           InterpreterResult.Type.valueOf(msg.getType()), msg.getData());
     }
-  }
-
-  @Override
-  public void appendAppOutput(AppOutputAppendEvent event) throws InterpreterRPCException, TException {
-    appListener.onOutputAppend(event.noteId, event.paragraphId, event.index, event.appId,
-        event.data);
-  }
-
-  @Override
-  public void updateAppOutput(AppOutputUpdateEvent event) throws InterpreterRPCException, TException {
-    appListener.onOutputUpdated(event.noteId, event.paragraphId, event.index, event.appId,
-        InterpreterResult.Type.valueOf(event.type), event.data);
-  }
-
-  @Override
-  public void updateAppStatus(AppStatusUpdateEvent event) throws InterpreterRPCException, TException {
-    appListener.onStatusChange(event.noteId, event.paragraphId, event.appId, event.status);
   }
 
   @Override

@@ -68,13 +68,6 @@ public class RemoteInterpreterService {
     public void angularObjectRemove(java.lang.String name, java.lang.String sessionId, java.lang.String paragraphId) throws InterpreterRPCException, org.apache.thrift.TException;
 
     public void angularRegistryPush(java.lang.String registry) throws InterpreterRPCException, org.apache.thrift.TException;
-
-    public RemoteApplicationResult loadApplication(java.lang.String applicationInstanceId, java.lang.String packageInfo, java.lang.String sessionId, java.lang.String paragraphId) throws InterpreterRPCException, org.apache.thrift.TException;
-
-    public RemoteApplicationResult unloadApplication(java.lang.String applicationInstanceId) throws InterpreterRPCException, org.apache.thrift.TException;
-
-    public RemoteApplicationResult runApplication(java.lang.String applicationInstanceId) throws InterpreterRPCException, org.apache.thrift.TException;
-
   }
 
   public interface AsyncIface {
@@ -1640,9 +1633,6 @@ public class RemoteInterpreterService {
       processMap.put("angularObjectAdd", new angularObjectAdd());
       processMap.put("angularObjectRemove", new angularObjectRemove());
       processMap.put("angularRegistryPush", new angularRegistryPush());
-      processMap.put("loadApplication", new loadApplication());
-      processMap.put("unloadApplication", new unloadApplication());
-      processMap.put("runApplication", new runApplication());
       return processMap;
     }
 
@@ -2223,94 +2213,6 @@ public class RemoteInterpreterService {
         return result;
       }
     }
-
-    public static class loadApplication<I extends Iface> extends org.apache.thrift.ProcessFunction<I, loadApplication_args> {
-      public loadApplication() {
-        super("loadApplication");
-      }
-
-      public loadApplication_args getEmptyArgsInstance() {
-        return new loadApplication_args();
-      }
-
-      protected boolean isOneway() {
-        return false;
-      }
-
-      @Override
-      protected boolean rethrowUnhandledExceptions() {
-        return false;
-      }
-
-      public loadApplication_result getResult(I iface, loadApplication_args args) throws org.apache.thrift.TException {
-        loadApplication_result result = new loadApplication_result();
-        try {
-          result.success = iface.loadApplication(args.applicationInstanceId, args.packageInfo, args.sessionId, args.paragraphId);
-        } catch (InterpreterRPCException ex) {
-          result.ex = ex;
-        }
-        return result;
-      }
-    }
-
-    public static class unloadApplication<I extends Iface> extends org.apache.thrift.ProcessFunction<I, unloadApplication_args> {
-      public unloadApplication() {
-        super("unloadApplication");
-      }
-
-      public unloadApplication_args getEmptyArgsInstance() {
-        return new unloadApplication_args();
-      }
-
-      protected boolean isOneway() {
-        return false;
-      }
-
-      @Override
-      protected boolean rethrowUnhandledExceptions() {
-        return false;
-      }
-
-      public unloadApplication_result getResult(I iface, unloadApplication_args args) throws org.apache.thrift.TException {
-        unloadApplication_result result = new unloadApplication_result();
-        try {
-          result.success = iface.unloadApplication(args.applicationInstanceId);
-        } catch (InterpreterRPCException ex) {
-          result.ex = ex;
-        }
-        return result;
-      }
-    }
-
-    public static class runApplication<I extends Iface> extends org.apache.thrift.ProcessFunction<I, runApplication_args> {
-      public runApplication() {
-        super("runApplication");
-      }
-
-      public runApplication_args getEmptyArgsInstance() {
-        return new runApplication_args();
-      }
-
-      protected boolean isOneway() {
-        return false;
-      }
-
-      @Override
-      protected boolean rethrowUnhandledExceptions() {
-        return false;
-      }
-
-      public runApplication_result getResult(I iface, runApplication_args args) throws org.apache.thrift.TException {
-        runApplication_result result = new runApplication_result();
-        try {
-          result.success = iface.runApplication(args.applicationInstanceId);
-        } catch (InterpreterRPCException ex) {
-          result.ex = ex;
-        }
-        return result;
-      }
-    }
-
   }
 
   public static class AsyncProcessor<I extends AsyncIface> extends org.apache.thrift.TBaseAsyncProcessor<I> {

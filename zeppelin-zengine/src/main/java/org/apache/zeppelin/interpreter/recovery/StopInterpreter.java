@@ -41,7 +41,7 @@ public class StopInterpreter {
   public static void main(String[] args) throws IOException {
     ZeppelinConfiguration zConf = ZeppelinConfiguration.create();
     InterpreterSettingManager interpreterSettingManager =
-            new InterpreterSettingManager(zConf, null, null, null);
+            new InterpreterSettingManager(zConf, null, null);
 
     RecoveryStorage recoveryStorage  = ReflectionUtils.createClazzInstance(zConf.getRecoveryStorageClass(),
         new Class[] {ZeppelinConfiguration.class, InterpreterSettingManager.class},

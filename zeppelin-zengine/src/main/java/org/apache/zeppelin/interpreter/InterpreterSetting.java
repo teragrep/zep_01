@@ -34,7 +34,6 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.zeppelin.conf.ZeppelinConfiguration;
 import org.apache.zeppelin.display.AngularObjectRegistry;
 import org.apache.zeppelin.display.AngularObjectRegistryListener;
-import org.apache.zeppelin.helium.ApplicationEventListener;
 import org.apache.zeppelin.interpreter.launcher.InterpreterLaunchContext;
 import org.apache.zeppelin.interpreter.launcher.InterpreterLauncher;
 import org.apache.zeppelin.interpreter.recovery.NullRecoveryStorage;
@@ -127,7 +126,6 @@ public class InterpreterSetting {
 
   private transient AngularObjectRegistryListener angularObjectRegistryListener;
   private transient RemoteInterpreterProcessListener remoteInterpreterProcessListener;
-  private transient ApplicationEventListener appEventListener;
 
   private transient ZeppelinConfiguration conf = ZeppelinConfiguration.create();
 
@@ -221,11 +219,6 @@ public class InterpreterSetting {
       return this;
     }
 
-    public Builder setApplicationEventListener(ApplicationEventListener applicationEventListener) {
-      interpreterSetting.appEventListener = applicationEventListener;
-      return this;
-    }
-
     public Builder setRecoveryStorage(RecoveryStorage recoveryStorage) {
       interpreterSetting.recoveryStorage = recoveryStorage;
       return this;
@@ -288,10 +281,6 @@ public class InterpreterSetting {
     return remoteInterpreterProcessListener;
   }
 
-  public ApplicationEventListener getAppEventListener() {
-    return appEventListener;
-  }
-
   public InterpreterSettingManager getInterpreterSettingManager() {
     return interpreterSettingManager;
   }
@@ -299,11 +288,6 @@ public class InterpreterSetting {
   public InterpreterSetting setAngularObjectRegistryListener(AngularObjectRegistryListener
                                                    angularObjectRegistryListener) {
     this.angularObjectRegistryListener = angularObjectRegistryListener;
-    return this;
-  }
-
-  public InterpreterSetting setAppEventListener(ApplicationEventListener appEventListener) {
-    this.appEventListener = appEventListener;
     return this;
   }
 

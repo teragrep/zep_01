@@ -20,7 +20,6 @@ package org.apache.zeppelin.interpreter;
 
 import org.apache.zeppelin.conf.ZeppelinConfiguration;
 import org.apache.zeppelin.display.AngularObjectRegistryListener;
-import org.apache.zeppelin.helium.ApplicationEventListener;
 import org.apache.zeppelin.interpreter.remote.RemoteInterpreterProcessListener;
 import org.apache.zeppelin.notebook.Note;
 import org.apache.zeppelin.notebook.NoteInfo;
@@ -76,12 +75,11 @@ public class InterpreterSettingManagerTest extends AbstractInterpreterTest {
     assertEquals("shared", interpreterSetting.getOption().perUser);
     assertNotNull(interpreterSetting.getAngularObjectRegistryListener());
     assertNotNull(interpreterSetting.getRemoteInterpreterProcessListener());
-    assertNotNull(interpreterSetting.getAppEventListener());
     assertNotNull(interpreterSetting.getInterpreterSettingManager());
 
     // Load it again
     InterpreterSettingManager interpreterSettingManager2 = new InterpreterSettingManager(conf,
-        mock(AngularObjectRegistryListener.class), mock(RemoteInterpreterProcessListener.class), mock(ApplicationEventListener.class));
+        mock(AngularObjectRegistryListener.class), mock(RemoteInterpreterProcessListener.class));
     assertEquals(6, interpreterSettingManager2.get().size());
     interpreterSetting = interpreterSettingManager2.getByName("test");
     assertEquals("test", interpreterSetting.getName());
@@ -127,12 +125,11 @@ public class InterpreterSettingManagerTest extends AbstractInterpreterTest {
     assertEquals("scoped", interpreterSetting.getOption().perUser);
     assertNotNull(interpreterSetting.getAngularObjectRegistryListener());
     assertNotNull(interpreterSetting.getRemoteInterpreterProcessListener());
-    assertNotNull(interpreterSetting.getAppEventListener());
     assertNotNull(interpreterSetting.getInterpreterSettingManager());
 
     // load it again, it should be saved in interpreter-setting.json. So we can restore it properly
     InterpreterSettingManager interpreterSettingManager2 = new InterpreterSettingManager(conf,
-        mock(AngularObjectRegistryListener.class), mock(RemoteInterpreterProcessListener.class), mock(ApplicationEventListener.class));
+        mock(AngularObjectRegistryListener.class), mock(RemoteInterpreterProcessListener.class));
     assertEquals(7, interpreterSettingManager2.get().size());
     interpreterSetting = interpreterSettingManager2.getByName("test3");
     assertEquals("test3", interpreterSetting.getName());
@@ -158,7 +155,6 @@ public class InterpreterSettingManagerTest extends AbstractInterpreterTest {
     assertEquals("isolated", interpreterSetting.getOption().perUser);
     assertNotNull(interpreterSetting.getAngularObjectRegistryListener());
     assertNotNull(interpreterSetting.getRemoteInterpreterProcessListener());
-    assertNotNull(interpreterSetting.getAppEventListener());
     assertNotNull(interpreterSetting.getInterpreterSettingManager());
 
     // restart in note page
@@ -179,7 +175,7 @@ public class InterpreterSettingManagerTest extends AbstractInterpreterTest {
 
     // load it again
     InterpreterSettingManager interpreterSettingManager3 = new InterpreterSettingManager(ZeppelinConfiguration.create(),
-        mock(AngularObjectRegistryListener.class), mock(RemoteInterpreterProcessListener.class), mock(ApplicationEventListener.class));
+        mock(AngularObjectRegistryListener.class), mock(RemoteInterpreterProcessListener.class));
     assertEquals(6, interpreterSettingManager3.get().size());
 
   }

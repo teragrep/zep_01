@@ -50,8 +50,6 @@ import org.apache.zeppelin.display.AngularObjectRegistry;
 import org.apache.zeppelin.display.AngularObjectRegistryListener;
 import org.apache.zeppelin.display.GUI;
 import org.apache.zeppelin.display.Input;
-import org.apache.zeppelin.helium.ApplicationEventListener;
-import org.apache.zeppelin.helium.HeliumPackage;
 import org.apache.zeppelin.interpreter.InterpreterGroup;
 import org.apache.zeppelin.interpreter.InterpreterResult;
 import org.apache.zeppelin.interpreter.InterpreterSetting;
@@ -104,7 +102,6 @@ public class NotebookServer extends WebSocketServlet
     implements NotebookSocketListener,
         AngularObjectRegistryListener,
         RemoteInterpreterProcessListener,
-        ApplicationEventListener,
         ParagraphJobListener,
         NoteEventListener,
         ClusterEventListener {
@@ -1776,46 +1773,6 @@ public class NotebookServer extends WebSocketServlet
       LOG.warn("Fail to call onOutputClear", e);
     }
   }
-
-  /**
-   * When application append output.
-   */
-  @Override
-  public void onOutputAppend(String noteId, String paragraphId, int index, String appId,
-                             String output) {
-    Message msg =
-        new Message(OP.APP_APPEND_OUTPUT).put("noteId", noteId).put("paragraphId", paragraphId)
-            .put("index", index).put("appId", appId).put("data", output);
-    getConnectionManager().broadcast(noteId, msg);
-  }
-
-  /**
-   * When application update output.
-   */
-  @Override
-  public void onOutputUpdated(String noteId, String paragraphId, int index, String appId,
-                              InterpreterResult.Type type, String output) {
-    Message msg =
-        new Message(OP.APP_UPDATE_OUTPUT).put("noteId", noteId).put("paragraphId", paragraphId)
-            .put("index", index).put("type", type).put("appId", appId).put("data", output);
-    getConnectionManager().broadcast(noteId, msg);
-  }
-
-  @Override
-  public void onLoad(String noteId, String paragraphId, String appId, HeliumPackage pkg) {
-    Message msg = new Message(OP.APP_LOAD).put("noteId", noteId).put("paragraphId", paragraphId)
-        .put("appId", appId).put("pkg", pkg);
-    getConnectionManager().broadcast(noteId, msg);
-  }
-
-  @Override
-  public void onStatusChange(String noteId, String paragraphId, String appId, String status) {
-    Message msg =
-        new Message(OP.APP_STATUS_CHANGE).put("noteId", noteId).put("paragraphId", paragraphId)
-            .put("appId", appId).put("status", status);
-    getConnectionManager().broadcast(noteId, msg);
-  }
-
 
   @Override
   public void runParagraphs(String noteId,
