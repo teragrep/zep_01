@@ -22,7 +22,6 @@ import javax.inject.Singleton;
 
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.apache.zeppelin.annotation.ZeppelinApi;
-import org.apache.zeppelin.dep.Repository;
 import org.apache.zeppelin.interpreter.InterpreterException;
 import org.apache.zeppelin.interpreter.InterpreterPropertyType;
 import org.apache.zeppelin.interpreter.InterpreterSetting;
@@ -139,7 +138,7 @@ public class InterpreterRestApi {
       }
 
       InterpreterSetting interpreterSetting = interpreterSettingManager
-          .createNewSetting(request.getName(), request.getGroup(), request.getDependencies(),
+          .createNewSetting(request.getName(), request.getGroup(),
               request.getOption(), request.getProperties());
       LOGGER.info("new setting created with {}", interpreterSetting.getId());
       return new JsonResponse<>(Status.OK, "", interpreterSetting).build();
@@ -160,8 +159,7 @@ public class InterpreterRestApi {
       UpdateInterpreterSettingRequest request =
           UpdateInterpreterSettingRequest.fromJson(message);
       interpreterSettingManager
-          .setPropertyAndRestart(settingId, request.getOption(), request.getProperties(),
-              request.getDependencies());
+          .setPropertyAndRestart(settingId, request.getOption(), request.getProperties());
     } catch (InterpreterException e) {
       LOGGER.error("Exception in InterpreterRestApi while updateSetting ", e);
       return new JsonResponse<>(Status.NOT_FOUND, e.getMessage(), ExceptionUtils.getStackTrace(e))
@@ -238,59 +236,6 @@ public class InterpreterRestApi {
   public Response listInterpreter() {
     Map<String, InterpreterSetting> m = interpreterSettingManager.getInterpreterSettingTemplates();
     return new JsonResponse<>(Status.OK, "", m).build();
-  }
-
-  /**
-   * List of dependency resolving repositories.
-   */
-  @GET
-  @Path("repository")
-  @ZeppelinApi
-  public Response listRepositories() {
-    List<RemoteRepository> interpreterRepositories = interpreterSettingManager.getRepositories();
-    return new JsonResponse<>(Status.OK, "", interpreterRepositories).build();
-  }
-
-  /**
-   * Add new repository.
-   *
-   * @param message Repository
-   */
-  @POST
-  @Path("repository")
-  @ZeppelinApi
-  public Response addRepository(String message) {
-    try {
-      Repository request = Repository.fromJson(message);
-      interpreterSettingManager.addRepository(request.getId(), request.getUrl(),
-          request.isSnapshot(), request.getAuthentication(), request.getProxy());
-      LOGGER.info("New repository {} added", request.getId());
-    } catch (Exception e) {
-      LOGGER.error("Exception in InterpreterRestApi while adding repository ", e);
-      return new JsonResponse<>(Status.INTERNAL_SERVER_ERROR, e.getMessage(),
-          ExceptionUtils.getStackTrace(e)).build();
-    }
-    return new JsonResponse<>(Status.OK).build();
-  }
-
-  /**
-   * Delete repository.
-   *
-   * @param repoId ID of repository
-   */
-  @DELETE
-  @Path("repository/{repoId}")
-  @ZeppelinApi
-  public Response removeRepository(@PathParam("repoId") String repoId) {
-    LOGGER.info("Remove repository {}", repoId);
-    try {
-      interpreterSettingManager.removeRepository(repoId);
-    } catch (Exception e) {
-      LOGGER.error("Exception in InterpreterRestApi while removing repository ", e);
-      return new JsonResponse<>(Status.INTERNAL_SERVER_ERROR, e.getMessage(),
-          ExceptionUtils.getStackTrace(e)).build();
-    }
-    return new JsonResponse<>(Status.OK).build();
   }
 
   /**

@@ -21,7 +21,6 @@ package org.apache.zeppelin.interpreter;
 import org.apache.commons.io.FileUtils;
 import org.apache.zeppelin.conf.ZeppelinConfiguration;
 import org.apache.zeppelin.display.AngularObjectRegistryListener;
-import org.apache.zeppelin.helium.ApplicationEventListener;
 import org.apache.zeppelin.interpreter.remote.RemoteInterpreterProcessListener;
 import org.apache.zeppelin.notebook.Note;
 import org.apache.zeppelin.notebook.Notebook;
@@ -80,7 +79,7 @@ public abstract class AbstractInterpreterTest {
 
     conf = ZeppelinConfiguration.create();
     interpreterSettingManager = new InterpreterSettingManager(conf,
-        mock(AngularObjectRegistryListener.class), mock(RemoteInterpreterProcessListener.class), mock(ApplicationEventListener.class));
+        mock(AngularObjectRegistryListener.class), mock(RemoteInterpreterProcessListener.class));
     interpreterFactory = new InterpreterFactory(interpreterSettingManager);
 
     mockNotebook = mock(Notebook.class);

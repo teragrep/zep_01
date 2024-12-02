@@ -57,11 +57,6 @@ class PySparkInterpreterTest extends PythonInterpreterTest {
     properties.setProperty("zeppelin.spark.maxResult", "3");
     properties.setProperty("zeppelin.spark.importImplicit", "true");
     properties.setProperty("zeppelin.pyspark.python", "python");
-    try {
-      properties.setProperty("zeppelin.dep.localrepo", Files.createTempDirectory("localrepo").toAbsolutePath().toString());
-    } catch (IOException e) {
-      fail(ExceptionUtils.getStackTrace(e));
-    }
 
     properties.setProperty("zeppelin.python.gatewayserver_address", "127.0.0.1");
     properties.setProperty("zeppelin.spark.deprecatedMsg.show", "false");

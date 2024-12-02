@@ -98,7 +98,6 @@ public class ClusterInterpreterLauncherTest extends ClusterMockTest {
     ClusterInterpreterProcess interpreterProcess = (ClusterInterpreterProcess) client;
     assertEquals("name", interpreterProcess.getInterpreterSettingName());
     assertEquals(".//interpreter/groupName", interpreterProcess.getInterpreterDir());
-    assertEquals(".//local-repo/groupId", interpreterProcess.getLocalRepoDir());
     assertEquals(5000, interpreterProcess.getConnectTimeout());
     assertEquals(zconf.getInterpreterRemoteRunnerPath(), interpreterProcess.getInterpreterRunner());
     assertTrue(interpreterProcess.getEnv().size() >= 1);

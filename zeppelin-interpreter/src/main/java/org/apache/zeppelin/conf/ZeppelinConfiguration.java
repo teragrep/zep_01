@@ -535,26 +535,6 @@ public class ZeppelinConfiguration {
     return getConfigFSDir(absolute) + "/interpreter.json";
   }
 
-  public String getHeliumConfPath() {
-    return getAbsoluteDir(String.format("%s/helium.json", getConfDir()));
-  }
-
-  public String getHeliumRegistry() {
-    return getAbsoluteDir(ConfVars.ZEPPELIN_HELIUM_REGISTRY);
-  }
-
-  public String getHeliumNodeInstallerUrl() {
-    return getString(ConfVars.ZEPPELIN_HELIUM_NODE_INSTALLER_URL);
-  }
-
-  public String getHeliumNpmInstallerUrl() {
-    return getString(ConfVars.ZEPPELIN_HELIUM_NPM_INSTALLER_URL);
-  }
-
-  public String getHeliumYarnInstallerUrl() {
-    return getString(ConfVars.ZEPPELIN_HELIUM_YARNPKG_INSTALLER_URL);
-  }
-
   public String getNotebookAuthorizationPath(boolean absolute) {
     return getConfigFSDir(absolute) + "/notebook-authorization.json";
   }
@@ -578,14 +558,6 @@ public class ZeppelinConfiguration {
 
   public String getInterpreterRemoteRunnerPath() {
     return getAbsoluteDir(ConfVars.ZEPPELIN_INTERPRETER_REMOTE_RUNNER);
-  }
-
-  public String getInterpreterLocalRepoPath() {
-    return getAbsoluteDir(ConfVars.ZEPPELIN_INTERPRETER_LOCALREPO);
-  }
-
-  public String getInterpreterMvnRepoPath() {
-    return getString(ConfVars.ZEPPELIN_INTERPRETER_DEP_MVNREPO);
   }
 
   public String getAbsoluteDir(ConfVars c) {
@@ -933,9 +905,6 @@ public class ZeppelinConfiguration {
     ZEPPELIN_INTERPRETER_JSON("zeppelin.interpreter.setting", "interpreter-setting.json"),
     ZEPPELIN_INTERPRETER_DIR("zeppelin.interpreter.dir", "interpreter"),
     ZEPPELIN_INTERPRETER_JUPYTER_KERNELS("zeppelin.interpreter.jupyter.kernels", "python:python,ir:r"),
-    ZEPPELIN_INTERPRETER_LOCALREPO("zeppelin.interpreter.localRepo", "local-repo"),
-    ZEPPELIN_INTERPRETER_DEP_MVNREPO("zeppelin.interpreter.dep.mvnRepo",
-        "https://repo1.maven.org/maven2/"),
     ZEPPELIN_INTERPRETER_CONNECT_TIMEOUT("zeppelin.interpreter.connect.timeout", 60000),
     ZEPPELIN_INTERPRETER_CONNECTION_POOL_SIZE("zeppelin.interpreter.connection.poolsize", 100),
     ZEPPELIN_INTERPRETER_GROUP_DEFAULT("zeppelin.interpreter.group.default", "spark"),
@@ -999,14 +968,6 @@ public class ZeppelinConfiguration {
     ZEPPELIN_CONFIG_FS_DIR("zeppelin.config.fs.dir", ""),
     ZEPPELIN_CONFIG_STORAGE_CLASS("zeppelin.config.storage.class",
         "org.apache.zeppelin.storage.LocalConfigStorage"),
-    ZEPPELIN_DEP_LOCALREPO("zeppelin.dep.localrepo", "local-repo"),
-    ZEPPELIN_HELIUM_REGISTRY("zeppelin.helium.registry", "helium"),
-    ZEPPELIN_HELIUM_NODE_INSTALLER_URL("zeppelin.helium.node.installer.url",
-            "https://nodejs.org/dist/"),
-    ZEPPELIN_HELIUM_NPM_INSTALLER_URL("zeppelin.helium.npm.installer.url",
-            "https://registry.npmjs.org/"),
-    ZEPPELIN_HELIUM_YARNPKG_INSTALLER_URL("zeppelin.helium.yarnpkg.installer.url",
-            "https://github.com/yarnpkg/yarn/releases/download/"),
     // Allows a way to specify a ',' separated list of allowed origins for rest and websockets
     // i.e. http://localhost:8080
     ZEPPELIN_ALLOWED_ORIGINS("zeppelin.server.allowed.origins", "*"),

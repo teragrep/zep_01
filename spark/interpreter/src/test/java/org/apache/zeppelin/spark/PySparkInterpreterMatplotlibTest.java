@@ -99,7 +99,6 @@ public class PySparkInterpreterMatplotlibTest {
     p.setProperty("zeppelin.spark.maxResult", "1000");
     p.setProperty("zeppelin.spark.importImplicit", "true");
     p.setProperty("zeppelin.pyspark.python", "python");
-    p.setProperty("zeppelin.dep.localrepo", tmpDir.getAbsolutePath());
     p.setProperty("zeppelin.pyspark.useIPython", "false");
     p.setProperty("zeppelin.python.gatewayserver_address", "127.0.0.1");
     p.setProperty("zeppelin.spark.deprecatedMsg.show", "false");

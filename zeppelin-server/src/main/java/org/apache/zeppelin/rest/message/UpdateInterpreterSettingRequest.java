@@ -22,7 +22,6 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.zeppelin.common.JsonSerializable;
-import org.apache.zeppelin.dep.Dependency;
 import org.apache.zeppelin.interpreter.InterpreterOption;
 import org.apache.zeppelin.interpreter.InterpreterProperty;
 
@@ -33,22 +32,16 @@ public class UpdateInterpreterSettingRequest implements JsonSerializable {
   private static final Gson gson = new Gson();
 
   Map<String, InterpreterProperty> properties;
-  List<Dependency> dependencies;
   InterpreterOption option;
 
   public UpdateInterpreterSettingRequest(Map<String, InterpreterProperty> properties,
-      List<Dependency> dependencies, InterpreterOption option) {
+      InterpreterOption option) {
     this.properties = properties;
-    this.dependencies = dependencies;
     this.option = option;
   }
 
   public Map<String, InterpreterProperty> getProperties() {
     return properties;
-  }
-
-  public List<Dependency> getDependencies() {
-    return dependencies;
   }
 
   public InterpreterOption getOption() {

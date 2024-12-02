@@ -30,7 +30,6 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import org.apache.commons.io.FileUtils;
 import org.apache.zeppelin.conf.ZeppelinConfiguration;
-import org.apache.zeppelin.dep.DependencyResolver;
 import org.apache.zeppelin.interpreter.InterpreterSettingManager;
 import org.apache.zeppelin.rest.message.InterpreterInstallationRequest;
 import org.junit.After;
@@ -58,8 +57,6 @@ public class InterpreterServiceTest {
     localRepoDir = Files.createTempDirectory(temporaryDir, "local-repo");
 
     when(mockZeppelinConfiguration.getInterpreterDir()).thenReturn(interpreterDir.toString());
-    when(mockZeppelinConfiguration.getInterpreterLocalRepoPath())
-        .thenReturn(localRepoDir.toString());
 
     when(mockZeppelinConfiguration.getZeppelinProxyUrl()).thenReturn(null);
     when(mockZeppelinConfiguration.getZeppelinProxyUser()).thenReturn(null);
@@ -95,39 +92,5 @@ public class InterpreterServiceTest {
 
     interpreterService.installInterpreter(
         new InterpreterInstallationRequest(anotherButSameInterpreterName, "artifact"), null);
-  }
-
-  @Test
-  public void downloadInterpreter() throws IOException {
-    final String interpreterName = "test-interpreter";
-    String artifactName = "junit:junit:4.11";
-    Path specificInterpreterPath =
-        Files.createDirectory(Paths.get(interpreterDir.toString(), interpreterName));
-    DependencyResolver dependencyResolver = new DependencyResolver(localRepoDir.toString());
-
-    doNothing().when(mockInterpreterSettingManager).refreshInterpreterTemplates();
-
-    interpreterService.downloadInterpreter(
-        new InterpreterInstallationRequest(interpreterName, artifactName),
-        dependencyResolver,
-        specificInterpreterPath,
-        new SimpleServiceCallback<String>() {
-          @Override
-          public void onStart(String message, ServiceContext context) {
-            assertEquals("Starting to download " + interpreterName + " interpreter", message);
-          }
-
-          @Override
-          public void onSuccess(String message, ServiceContext context) {
-            assertEquals(interpreterName + " downloaded", message);
-          }
-
-          @Override
-          public void onFailure(Exception ex, ServiceContext context) {
-            fail();
-          }
-        });
-
-    verify(mockInterpreterSettingManager, times(1)).refreshInterpreterTemplates();
   }
 }

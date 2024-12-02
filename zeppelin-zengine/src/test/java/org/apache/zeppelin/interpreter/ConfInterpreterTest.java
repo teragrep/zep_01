@@ -45,7 +45,7 @@ public class ConfInterpreterTest extends AbstractInterpreterTest {
     assertTrue(interpreterFactory.getInterpreter("test", executionContext) instanceof RemoteInterpreter);
     RemoteInterpreter remoteInterpreter = (RemoteInterpreter) interpreterFactory.getInterpreter("test", executionContext);
     remoteInterpreter.interpret("hello world", context);
-    assertEquals(7, remoteInterpreter.getProperties().size());
+    assertEquals(6, remoteInterpreter.getProperties().size());
     assertEquals("new_value", remoteInterpreter.getProperty("property_1"));
     assertEquals("dummy_value", remoteInterpreter.getProperty("new_property"));
     assertEquals("value_3", remoteInterpreter.getProperty("property_3"));
@@ -73,7 +73,7 @@ public class ConfInterpreterTest extends AbstractInterpreterTest {
 
     assertTrue(interpreterFactory.getInterpreter("test", executionContext) instanceof RemoteInterpreter);
     RemoteInterpreter remoteInterpreter = (RemoteInterpreter) interpreterFactory.getInterpreter("test", executionContext);
-    assertEquals(6, remoteInterpreter.getProperties().size());
+    assertEquals(5, remoteInterpreter.getProperties().size());
     assertEquals("value_1", remoteInterpreter.getProperty("property_1"));
     assertEquals("value_3", remoteInterpreter.getProperty("property_3"));
   }

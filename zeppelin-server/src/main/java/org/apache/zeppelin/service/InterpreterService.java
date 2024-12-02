@@ -30,7 +30,6 @@ import javax.inject.Inject;
 import jline.internal.Preconditions;
 import org.apache.commons.io.FileUtils;
 import org.apache.zeppelin.conf.ZeppelinConfiguration;
-import org.apache.zeppelin.dep.DependencyResolver;
 import org.apache.zeppelin.interpreter.InterpreterSettingManager;
 import org.apache.zeppelin.rest.message.InterpreterInstallationRequest;
 import org.slf4j.Logger;
@@ -69,9 +68,6 @@ public class InterpreterService {
     Preconditions.checkNotNull(request.getArtifact());
 
     String interpreterBaseDir = conf.getInterpreterDir();
-    String localRepoPath = conf.getInterpreterLocalRepoPath();
-
-    final DependencyResolver dependencyResolver = new DependencyResolver(localRepoPath);
 
     // TODO(jl): Make a rule between an interpreter name and an installation directory
     List<String> possibleInterpreterDirectories = new ArrayList<>();
@@ -99,12 +95,11 @@ public class InterpreterService {
 
     // It might take time to finish it
     EXECUTOR_SERVICE.execute(
-            () -> downloadInterpreter(request, dependencyResolver, interpreterDir, serviceCallback));
+            () -> downloadInterpreter(request, interpreterDir, serviceCallback));
   }
 
   void downloadInterpreter(
       InterpreterInstallationRequest request,
-      DependencyResolver dependencyResolver,
       Path interpreterDir,
       ServiceCallback<String> serviceCallback) {
     try {
@@ -113,7 +108,6 @@ public class InterpreterService {
         serviceCallback.onStart("Starting to download " + request.getName() + " interpreter", null);
       }
 
-      dependencyResolver.load(request.getArtifact(), interpreterDir.toFile());
       interpreterSettingManager.refreshInterpreterTemplates();
       LOGGER.info(
           "Finish downloading a dependency {} into {}",
@@ -122,7 +116,7 @@ public class InterpreterService {
       if (null != serviceCallback) {
         serviceCallback.onSuccess(request.getName() + " downloaded", null);
       }
-    } catch (RepositoryException | IOException e) {
+    } catch (IOException e) {
       LOGGER.error("Error while downloading dependencies", e);
       try {
         FileUtils.deleteDirectory(interpreterDir.toFile());

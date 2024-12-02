@@ -131,16 +131,6 @@ public class SparkInterpreterLauncher extends StandardInterpreterLauncher {
 
       try {
         List<String> additionalJars = new ArrayList<>();
-        Path localRepoPath =
-                Paths.get(zConf.getInterpreterLocalRepoPath(), context.getInterpreterSettingId());
-        if (Files.exists(localRepoPath) && Files.isDirectory(localRepoPath)) {
-          try (DirectoryStream<Path> localRepoStream = Files.newDirectoryStream(localRepoPath, Files::isRegularFile)) {
-            List<String> localRepoJars = StreamSupport.stream(localRepoStream.spliterator(),
-                  false)
-                  .map(jar -> jar.toAbsolutePath().toString()).collect(Collectors.toList());
-            additionalJars.addAll(localRepoJars);
-          }
-        }
 
         Path scalaFolder =  Paths.get(zConf.getZeppelinHome(), "/interpreter/spark/scala-" + scalaVersion);
         if (!scalaFolder.toFile().exists()) {

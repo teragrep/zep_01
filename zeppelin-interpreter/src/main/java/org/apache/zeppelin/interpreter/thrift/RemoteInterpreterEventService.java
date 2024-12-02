@@ -39,12 +39,6 @@ public class RemoteInterpreterEventService {
 
     public void updateAllOutput(OutputUpdateAllEvent event) throws org.apache.zeppelin.interpreter.thrift.InterpreterRPCException, org.apache.thrift.TException;
 
-    public void appendAppOutput(AppOutputAppendEvent event) throws org.apache.zeppelin.interpreter.thrift.InterpreterRPCException, org.apache.thrift.TException;
-
-    public void updateAppOutput(AppOutputUpdateEvent event) throws org.apache.zeppelin.interpreter.thrift.InterpreterRPCException, org.apache.thrift.TException;
-
-    public void updateAppStatus(AppStatusUpdateEvent event) throws org.apache.zeppelin.interpreter.thrift.InterpreterRPCException, org.apache.thrift.TException;
-
     public void checkpointOutput(java.lang.String noteId, java.lang.String paragraphId) throws org.apache.zeppelin.interpreter.thrift.InterpreterRPCException, org.apache.thrift.TException;
 
     public void runParagraphs(RunParagraphsEvent event) throws org.apache.zeppelin.interpreter.thrift.InterpreterRPCException, org.apache.thrift.TException;
@@ -1634,11 +1628,6 @@ public class RemoteInterpreterEventService {
 
       public appendAppOutput_result getResult(I iface, appendAppOutput_args args) throws org.apache.thrift.TException {
         appendAppOutput_result result = new appendAppOutput_result();
-        try {
-          iface.appendAppOutput(args.event);
-        } catch (org.apache.zeppelin.interpreter.thrift.InterpreterRPCException ex) {
-          result.ex = ex;
-        }
         return result;
       }
     }
@@ -1663,11 +1652,6 @@ public class RemoteInterpreterEventService {
 
       public updateAppOutput_result getResult(I iface, updateAppOutput_args args) throws org.apache.thrift.TException {
         updateAppOutput_result result = new updateAppOutput_result();
-        try {
-          iface.updateAppOutput(args.event);
-        } catch (org.apache.zeppelin.interpreter.thrift.InterpreterRPCException ex) {
-          result.ex = ex;
-        }
         return result;
       }
     }
@@ -1692,11 +1676,6 @@ public class RemoteInterpreterEventService {
 
       public updateAppStatus_result getResult(I iface, updateAppStatus_args args) throws org.apache.thrift.TException {
         updateAppStatus_result result = new updateAppStatus_result();
-        try {
-          iface.updateAppStatus(args.event);
-        } catch (org.apache.zeppelin.interpreter.thrift.InterpreterRPCException ex) {
-          result.ex = ex;
-        }
         return result;
       }
     }

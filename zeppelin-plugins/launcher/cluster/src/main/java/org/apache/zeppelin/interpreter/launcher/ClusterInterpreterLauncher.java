@@ -247,8 +247,6 @@ public class ClusterInterpreterLauncher extends StandardInterpreterLauncher
       String intpSetName = context.getInterpreterSettingName();
       int connectTimeout = getConnectTimeout();
       int connectionPoolSize = getConnectPoolSize();
-      String localRepoPath = zConf.getInterpreterLocalRepoPath() + "/"
-          + context.getInterpreterSettingId();
 
       clusterIntpProcess = new ClusterInterpreterProcess(
           runner != null ? runner.getPath() : zConf.getInterpreterRemoteRunnerPath(),
@@ -256,7 +254,6 @@ public class ClusterInterpreterLauncher extends StandardInterpreterLauncher
           context.getIntpEventServerHost(),
           zConf.getInterpreterPortRange(),
           zConf.getInterpreterDir() + "/" + intpSetGroupName,
-          localRepoPath,
           buildEnvFromProperties(context),
           connectTimeout,
           connectionPoolSize,

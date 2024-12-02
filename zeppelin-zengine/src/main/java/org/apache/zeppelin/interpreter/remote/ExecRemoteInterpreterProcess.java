@@ -46,7 +46,6 @@ public class ExecRemoteInterpreterProcess extends RemoteInterpreterManagedProces
       String intpEventServerHost,
       String interpreterPortRange,
       String intpDir,
-      String localRepoDir,
       Map<String, String> env,
       int connectTimeout,
       int connectionPoolSize,
@@ -54,7 +53,7 @@ public class ExecRemoteInterpreterProcess extends RemoteInterpreterManagedProces
       String interpreterGroupId,
       boolean isUserImpersonated,
       String intpRunner) {
-    super(intpEventServerPort, intpEventServerHost, interpreterPortRange, intpDir, localRepoDir, env, connectTimeout,
+    super(intpEventServerPort, intpEventServerHost, interpreterPortRange, intpDir, env, connectTimeout,
         connectionPoolSize, interpreterSettingName, interpreterGroupId, isUserImpersonated);
     this.interpreterRunner = intpRunner;
   }
@@ -78,7 +77,6 @@ public class ExecRemoteInterpreterProcess extends RemoteInterpreterManagedProces
       cmdLine.addArgument(userName, false);
     }
     cmdLine.addArgument("-l", false);
-    cmdLine.addArgument(getLocalRepoDir(), false);
     cmdLine.addArgument("-g", false);
     cmdLine.addArgument(getInterpreterSettingName(), false);
 

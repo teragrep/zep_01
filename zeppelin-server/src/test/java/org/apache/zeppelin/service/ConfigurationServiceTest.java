@@ -51,8 +51,6 @@ public class ConfigurationServiceTest extends AbstractTestRestApi {
 
   @BeforeClass
   public static void setUp() throws Exception {
-    System.setProperty(ZeppelinConfiguration.ConfVars.ZEPPELIN_HELIUM_REGISTRY.getVarName(),
-        "helium");
     AbstractTestRestApi.startUp(ConfigurationServiceTest.class.getSimpleName());
     configurationService = TestUtils.getInstance(ConfigurationService.class);
   }
