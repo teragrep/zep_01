@@ -216,7 +216,7 @@ public class SparkInterpreterLauncherTest {
             interpreterProcess.getEnv().get("ZEPPELIN_SPARK_CONF"));
   }
 
-  @Ignore("This test is broken: java.lang.RuntimeException: No such note: note1")
+  @Ignore("This test is broken: java.lang.RuntimeException: No such note: note1. This test will also most likely fail due to sparkJars being modified from dependency resolver")
   @Test
   public void testYarnClusterMode_2() throws IOException {
     ZeppelinConfiguration zConf = ZeppelinConfiguration.create();
@@ -242,14 +242,16 @@ public class SparkInterpreterLauncherTest {
     assertTrue(interpreterProcess.getEnv().size() >= 3);
     assertEquals(sparkHome, interpreterProcess.getEnv().get("SPARK_HOME"));
     assertEquals("true", interpreterProcess.getEnv().get("ZEPPELIN_SPARK_YARN_CLUSTER"));
-
+    String sparkJars = "jar_1," +
+            zeppelinHome + "/interpreter/spark/scala-2.11/spark-scala-2.11-" + Util.getVersion() + ".jar," +
+            zeppelinHome + "/interpreter/zeppelin-interpreter-shaded-" + Util.getVersion() + ".jar";
     String sparkrZip = sparkHome + "/R/lib/sparkr.zip#sparkr";
     String sparkFiles = "file_1," + zeppelinHome + "/conf/log4j_yarn_cluster.properties";
     assertEquals("--proxy-user|user1|--conf|spark.yarn.dist.archives=" + sparkrZip +
             "|--conf|spark.yarn.isPython=true|--conf|spark.app.name=intpGroupId" +
             "|--conf|spark.yarn.maxAppAttempts=1" +
             "|--conf|spark.master=yarn" +
-            "|--conf|spark.files=" + sparkFiles +
+            "|--conf|spark.files=" + sparkFiles + "|--conf|spark.jars=" + sparkJars +
             "|--conf|spark.submit.deployMode=cluster" +
             "|--conf|spark.yarn.submit.waitAppCompletion=false",
             interpreterProcess.getEnv().get("ZEPPELIN_SPARK_CONF"));
