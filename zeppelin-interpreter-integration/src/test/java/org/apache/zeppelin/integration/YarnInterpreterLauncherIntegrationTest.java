@@ -34,6 +34,7 @@ import org.apache.zeppelin.user.AuthenticationInfo;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
+import org.junit.Ignore;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -78,6 +79,29 @@ public class YarnInterpreterLauncherIntegrationTest {
     if (hadoopCluster != null) {
       hadoopCluster.stop();
     }
+  }
+
+  @Ignore(value="Depends on shell interpreter")
+  @Test
+  public void testLaunchShellInYarn() throws YarnException, InterpreterException, InterruptedException {
+    InterpreterSetting shellInterpreterSetting = interpreterSettingManager.getInterpreterSettingByName("sh");
+    shellInterpreterSetting.setProperty("zeppelin.interpreter.launcher", "yarn");
+    shellInterpreterSetting.setProperty("HADOOP_CONF_DIR", hadoopCluster.getConfigPath());
+
+    Interpreter shellInterpreter = interpreterFactory.getInterpreter("sh", new ExecutionContext("user1", "note1", "sh"));
+
+    InterpreterContext context = new InterpreterContext.Builder().setNoteId("note1").setParagraphId("paragraph_1").build();
+    InterpreterResult interpreterResult = shellInterpreter.interpret("pwd", context);
+    assertEquals(InterpreterResult.Code.SUCCESS, interpreterResult.code());
+    assertTrue(interpreterResult.toString(), interpreterResult.message().get(0).getData().contains("/usercache/"));
+
+    Thread.sleep(1000);
+    // 1 yarn application launched
+    GetApplicationsRequest request = GetApplicationsRequest.newInstance(EnumSet.of(YarnApplicationState.RUNNING));
+    GetApplicationsResponse response = hadoopCluster.getYarnCluster().getResourceManager().getClientRMService().getApplications(request);
+    assertEquals(1, response.getApplicationList().size());
+
+    interpreterSettingManager.close();
   }
 
   @Test

@@ -75,6 +75,85 @@ public class ZSessionIntegrationTest extends AbstractTestRestApi {
     AbstractTestRestApi.shutDown();
   }
 
+  @Ignore(value="Depends on shell interpreter")
+  @Test
+  public void testZSession_Shell() throws Exception {
+    ZSession session = ZSession.builder()
+            .setClientConfig(clientConfig)
+            .setInterpreter("sh")
+            .build();
+
+    try {
+      session.start();
+      assertNull(session.getWeburl());
+      assertNotNull(session.getNoteId());
+
+      Note note = notebook.getNote(session.getNoteId());
+      assertEquals(2, note.getParagraphCount());
+      assertTrue(note.getParagraph(0).getText(), note.getParagraph(0).getText().startsWith("%sh.conf"));
+
+      ExecuteResult result = session.execute("pwd");
+      assertEquals(result.toString(), Status.FINISHED, result.getStatus());
+      assertEquals(1, result.getResults().size());
+      assertEquals("TEXT", result.getResults().get(0).getType());
+
+      result = session.execute("invalid_command");
+      assertEquals(Status.ERROR, result.getStatus());
+      assertEquals(2, result.getResults().size());
+      assertEquals("TEXT", result.getResults().get(0).getType());
+      assertTrue(result.getResults().get(0).getData(), result.getResults().get(0).getData().contains("command not found"));
+      assertEquals("TEXT", result.getResults().get(1).getType());
+      assertTrue(result.getResults().get(1).getData(), result.getResults().get(1).getData().contains("ExitValue"));
+
+      assertEquals(4, note.getParagraphCount());
+      assertEquals("%sh invalid_command", note.getParagraph(3).getText());
+
+    } finally {
+      session.stop();
+    }
+  }
+
+  @Ignore(value="Depends on shell interpreter")
+  @Test
+  public void testZSession_Shell_Submit() throws Exception {
+    ZSession session = ZSession.builder()
+            .setClientConfig(clientConfig)
+            .setInterpreter("sh")
+            .build();
+
+    try {
+      session.start();
+      assertNull(session.getWeburl());
+      assertNotNull(session.getNoteId());
+
+      Note note = notebook.getNote(session.getNoteId());
+      assertEquals(2, note.getParagraphCount());
+      assertTrue(note.getParagraph(0).getText(), note.getParagraph(0).getText().startsWith("%sh.conf"));
+
+      ExecuteResult result = session.submit("sleep 10\npwd");
+      assertFalse("Status is: " + result.getStatus().toString(), result.getStatus().isCompleted());
+      result = session.waitUntilFinished(result.getStatementId());
+      assertEquals(result.toString(), Status.FINISHED, result.getStatus());
+      assertEquals(1, result.getResults().size());
+      assertEquals("TEXT", result.getResults().get(0).getType());
+
+      result = session.submit("invalid_command");
+      result = session.waitUntilFinished(result.getStatementId());
+      assertEquals(Status.ERROR, result.getStatus());
+      assertEquals(2, result.getResults().size());
+      assertEquals("TEXT", result.getResults().get(0).getType());
+      assertTrue(result.getResults().get(0).getData(), result.getResults().get(0).getData().contains("command not found"));
+      assertEquals("TEXT", result.getResults().get(1).getType());
+      assertTrue(result.getResults().get(1).getData(), result.getResults().get(1).getData().contains("ExitValue"));
+
+      assertEquals(4, note.getParagraphCount());
+      assertEquals("%sh invalid_command", note.getParagraph(3).getText());
+
+    } finally {
+      session.stop();
+    }
+  }
+
   @Ignore(value="PySpark seems to fail")
   @Test
   public void testZSession_Spark() throws Exception {
