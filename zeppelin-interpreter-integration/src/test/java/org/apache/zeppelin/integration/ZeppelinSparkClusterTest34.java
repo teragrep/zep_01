@@ -24,17 +24,16 @@ import java.util.Arrays;
 import java.util.List;
 
 @RunWith(value = Parameterized.class)
-public class ZeppelinSparkClusterTest31 extends ZeppelinSparkClusterTest {
+public class ZeppelinSparkClusterTest34 extends ZeppelinSparkClusterTest {
 
-  public ZeppelinSparkClusterTest31(String sparkVersion, String hadoopVersion) throws Exception {
+  public ZeppelinSparkClusterTest34(String sparkVersion, String hadoopVersion) throws Exception {
     super(sparkVersion, hadoopVersion);
   }
 
   @Parameterized.Parameters
   public static List<Object[]> data() {
     return Arrays.asList(new Object[][]{
-        {"3.1.1", "2.7"},
-        {"3.1.1", "3.2"}
+        {"3.4.2", "3"}
     });
   }
 }

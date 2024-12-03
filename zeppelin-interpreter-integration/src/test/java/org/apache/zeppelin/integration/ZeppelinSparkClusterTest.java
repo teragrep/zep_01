@@ -118,8 +118,6 @@ public abstract class ZeppelinSparkClusterTest extends AbstractTestRestApi {
 
   @BeforeClass
   public static void setUp() throws Exception {
-    System.setProperty(ZeppelinConfiguration.ConfVars.ZEPPELIN_HELIUM_REGISTRY.getVarName(),
-            "helium");
     AbstractTestRestApi.startUp(ZeppelinSparkClusterTest.class.getSimpleName());
   }
 
@@ -254,10 +252,6 @@ public abstract class ZeppelinSparkClusterTest extends AbstractTestRestApi {
 
   @Test
   public void sparkReadCSVTest() throws IOException {
-    if (isSpark1()) {
-      // csv if not supported in spark 1.x natively
-      return;
-    }
 
     Note note = null;
     try {
@@ -418,91 +412,25 @@ public abstract class ZeppelinSparkClusterTest extends AbstractTestRestApi {
       List<InterpreterCompletion> completions = note.completion(p.getId(), code, code.length(), AuthenticationInfo.ANONYMOUS);
       assertTrue(completions.size() > 0);
 
-      if (isSpark1()) {
-        // run sqlContext test
-        p = note.addNewParagraph(anonymous);
-        p.setText("%pyspark from pyspark.sql import Row\n" +
-            "df=sqlContext.createDataFrame([Row(id=1, age=20)])\n" +
-            "df.collect()");
-        note.run(p.getId(), true);
-        assertEquals(Status.FINISHED, p.getStatus());
-        assertEquals("[Row(age=20, id=1)]\n", p.getReturn().message().get(0).getData());
+      // run SparkSession test
+      p = note.addNewParagraph(anonymous);
+      p.setText("%pyspark from pyspark.sql import Row\n" +
+              "df=sqlContext.createDataFrame([Row(id=1, age=20)])\n" +
+              "df.collect()");
+      note.run(p.getId(), true);
+      assertEquals(Status.FINISHED, p.getStatus());
+      assertEquals("[Row(id=1, age=20)]\n", p.getReturn().message().get(0).getData());
 
-        // test display Dataframe
-        p = note.addNewParagraph(anonymous);
-        p.setText("%pyspark from pyspark.sql import Row\n" +
-            "df=sqlContext.createDataFrame([Row(id=1, age=20)])\n" +
-            "z.show(df)");
-        note.run(p.getId(), true);
-        waitForFinish(p);
-        assertEquals(Status.FINISHED, p.getStatus());
-        assertEquals(InterpreterResult.Type.TABLE, p.getReturn().message().get(0).getType());
-        // TODO(zjffdu), one more \n is appended, need to investigate why.
-        assertEquals("age\tid\n20\t1\n", p.getReturn().message().get(0).getData());
+      // test udf
+      p = note.addNewParagraph(anonymous);
+      // use SQLContext to register UDF but use this UDF through SparkSession
+      p.setText("%pyspark sqlContext.udf.register(\"f1\", lambda x: len(x))\n" +
+              "spark.sql(\"select f1(\\\"abc\\\") as len\").collect()");
+      note.run(p.getId(), true);
+      assertEquals(Status.FINISHED, p.getStatus());
+      assertTrue("[Row(len=u'3')]\n".equals(p.getReturn().message().get(0).getData()) ||
+              "[Row(len='3')]\n".equals(p.getReturn().message().get(0).getData()));
 
-        // test udf
-        p = note.addNewParagraph(anonymous);
-        p.setText("%pyspark sqlContext.udf.register(\"f1\", lambda x: len(x))\n" +
-            "sqlContext.sql(\"select f1(\\\"abc\\\") as len\").collect()");
-        note.run(p.getId(), true);
-        assertEquals(Status.FINISHED, p.getStatus());
-        assertTrue("[Row(len=u'3')]\n".equals(p.getReturn().message().get(0).getData()) ||
-            "[Row(len='3')]\n".equals(p.getReturn().message().get(0).getData()));
-
-        // test exception
-        p = note.addNewParagraph(anonymous);
-        /*
-         %pyspark
-         a=1
-
-         print(a2)
-         */
-        p.setText("%pyspark a=1\n\nprint(a2)");
-        note.run(p.getId(), true);
-        assertEquals(Status.ERROR, p.getStatus());
-        assertTrue(p.getReturn().message().get(0).getData()
-            .contains("Fail to execute line 3: print(a2)"));
-        assertTrue(p.getReturn().message().get(0).getData()
-            .contains("name 'a2' is not defined"));
-      } else if (isSpark2()){
-        // run SparkSession test
-        p = note.addNewParagraph(anonymous);
-        p.setText("%pyspark from pyspark.sql import Row\n" +
-            "df=sqlContext.createDataFrame([Row(id=1, age=20)])\n" +
-            "df.collect()");
-        note.run(p.getId(), true);
-        assertEquals(Status.FINISHED, p.getStatus());
-        assertEquals("[Row(age=20, id=1)]\n", p.getReturn().message().get(0).getData());
-
-        // test udf
-        p = note.addNewParagraph(anonymous);
-        // use SQLContext to register UDF but use this UDF through SparkSession
-        p.setText("%pyspark sqlContext.udf.register(\"f1\", lambda x: len(x))\n" +
-            "spark.sql(\"select f1(\\\"abc\\\") as len\").collect()");
-        note.run(p.getId(), true);
-        assertEquals(Status.FINISHED, p.getStatus());
-        assertTrue("[Row(len=u'3')]\n".equals(p.getReturn().message().get(0).getData()) ||
-            "[Row(len='3')]\n".equals(p.getReturn().message().get(0).getData()));
-      } else {
-        // run SparkSession test
-        p = note.addNewParagraph(anonymous);
-        p.setText("%pyspark from pyspark.sql import Row\n" +
-                "df=sqlContext.createDataFrame([Row(id=1, age=20)])\n" +
-                "df.collect()");
-        note.run(p.getId(), true);
-        assertEquals(Status.FINISHED, p.getStatus());
-        assertEquals("[Row(id=1, age=20)]\n", p.getReturn().message().get(0).getData());
-
-        // test udf
-        p = note.addNewParagraph(anonymous);
-        // use SQLContext to register UDF but use this UDF through SparkSession
-        p.setText("%pyspark sqlContext.udf.register(\"f1\", lambda x: len(x))\n" +
-                "spark.sql(\"select f1(\\\"abc\\\") as len\").collect()");
-        note.run(p.getId(), true);
-        assertEquals(Status.FINISHED, p.getStatus());
-        assertTrue("[Row(len=u'3')]\n".equals(p.getReturn().message().get(0).getData()) ||
-                "[Row(len='3')]\n".equals(p.getReturn().message().get(0).getData()));
-      }
     } finally {
       if (null != note) {
         TestUtils.getInstance(Notebook.class).removeNote(note, anonymous);

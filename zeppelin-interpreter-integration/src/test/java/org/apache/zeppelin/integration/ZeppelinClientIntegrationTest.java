@@ -34,6 +34,7 @@ import org.apache.zeppelin.utils.TestUtils;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
+import org.junit.Ignore;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -53,8 +54,6 @@ public class ZeppelinClientIntegrationTest extends AbstractTestRestApi {
 
   @BeforeClass
   public static void setUp() throws Exception {
-    System.setProperty(ZeppelinConfiguration.ConfVars.ZEPPELIN_HELIUM_REGISTRY.getVarName(),
-            "helium");
     System.setProperty(ZeppelinConfiguration.ConfVars.ZEPPELIN_ALLOWED_ORIGINS.getVarName(), "*");
 
     AbstractTestRestApi.startUp(ZeppelinClientIntegrationTest.class.getSimpleName());
@@ -179,6 +178,7 @@ public class ZeppelinClientIntegrationTest extends AbstractTestRestApi {
     assertEquals("text_1", renamedNote.getParagraph(0).getText());
   }
 
+  @Ignore(value="Depends on shell interpreter")
   @Test
   public void testExecuteParagraph() throws Exception {
     // run paragraph succeed
@@ -239,6 +239,7 @@ public class ZeppelinClientIntegrationTest extends AbstractTestRestApi {
     }
   }
 
+  @Ignore(value="Depends on shell interpreter")
   @Test
   public void testSubmitParagraph() throws Exception {
     String noteId = zeppelinClient.createNote("/test/note_2");
@@ -304,6 +305,7 @@ public class ZeppelinClientIntegrationTest extends AbstractTestRestApi {
     }
   }
 
+  @Ignore(value="Depends on shell interpreter")
   @Test
   public void testExecuteNote() throws Exception {
     try {
@@ -374,6 +376,7 @@ public class ZeppelinClientIntegrationTest extends AbstractTestRestApi {
     assertEquals(0, p2.getResults().size());
   }
 
+  @Ignore(value="Depends on shell interpreter")
   @Test
   public void testSubmitNote() throws Exception {
     try {
