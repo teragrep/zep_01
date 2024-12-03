@@ -94,7 +94,6 @@ public abstract class AbstractTestRestApi {
           "admin = *\n" +
           "[urls]\n" +
           "/api/version = anon\n" +
-          "/api/cluster/address = anon\n" +
           "/** = authc";
 
   private static String zeppelinShiroKnox =
@@ -115,7 +114,6 @@ public abstract class AbstractTestRestApi {
           "admin = *\n" +
           "[urls]\n" +
           "/api/version = anon\n" +
-          "/api/cluster/address = anon\n" +
           "/** = authc";
 
   private static File knoxSsoPem = null;
@@ -233,7 +231,6 @@ public abstract class AbstractTestRestApi {
 
       LOG.info("Starting Zeppelin Server...");
       ZeppelinConfiguration conf = ZeppelinConfiguration.create();
-      LOG.info("zconf.getClusterAddress() = {}", conf.getClusterAddress());
 
       if (withAuth) {
         isRunningWithAuth = true;

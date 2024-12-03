@@ -40,10 +40,6 @@ import javax.servlet.http.HttpServletRequest;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.apache.thrift.TException;
-import org.apache.zeppelin.cluster.ClusterManagerServer;
-import org.apache.zeppelin.cluster.event.ClusterEvent;
-import org.apache.zeppelin.cluster.event.ClusterEventListener;
-import org.apache.zeppelin.cluster.event.ClusterMessage;
 import org.apache.zeppelin.conf.ZeppelinConfiguration;
 import org.apache.zeppelin.display.AngularObject;
 import org.apache.zeppelin.display.AngularObjectRegistry;
@@ -103,8 +99,7 @@ public class NotebookServer extends WebSocketServlet
         AngularObjectRegistryListener,
         RemoteInterpreterProcessListener,
         ParagraphJobListener,
-        NoteEventListener,
-        ClusterEventListener {
+        NoteEventListener {
 
   /**
    * Job manager service type.
@@ -583,7 +578,6 @@ public class NotebookServer extends WebSocketServlet
 
   public void broadcastNote(Note note) {
     inlineBroadcastNote(note);
-    broadcastClusterEvent(ClusterEvent.BROADCAST_NOTE, MSG_ID_NOT_DEFINED, note);
   }
 
   private void inlineBroadcastNote(Note note) {
@@ -604,7 +598,6 @@ public class NotebookServer extends WebSocketServlet
 
   public void broadcastParagraph(Note note, Paragraph p, String msgId) {
     inlineBroadcastParagraph(note, p, msgId);
-    broadcastClusterEvent(ClusterEvent.BROADCAST_PARAGRAPH, msgId, note, p);
   }
 
   private void inlineBroadcastParagraphs(Map<String, Paragraph> userParagraphMap,
@@ -621,7 +614,6 @@ public class NotebookServer extends WebSocketServlet
                                    Paragraph defaultParagraph,
                                    String msgId) {
     inlineBroadcastParagraphs(userParagraphMap, msgId);
-    broadcastClusterEvent(ClusterEvent.BROADCAST_PARAGRAPHS, msgId, userParagraphMap, defaultParagraph);
   }
 
   private void inlineBroadcastNewParagraph(Note note, Paragraph para) {
@@ -634,7 +626,6 @@ public class NotebookServer extends WebSocketServlet
 
   private void broadcastNewParagraph(Note note, Paragraph para) {
     inlineBroadcastNewParagraph(note, para);
-    broadcastClusterEvent(ClusterEvent.BROADCAST_NEW_PARAGRAPH, MSG_ID_NOT_DEFINED, note, para);
   }
 
   private void inlineBroadcastNoteList() {
@@ -655,111 +646,6 @@ public class NotebookServer extends WebSocketServlet
 
   public void broadcastNoteList(AuthenticationInfo subject, Set<String> userAndRoles) {
     inlineBroadcastNoteList();
-    broadcastClusterEvent(ClusterEvent.BROADCAST_NOTE_LIST, MSG_ID_NOT_DEFINED, subject, userAndRoles);
-  }
-
-  // broadcast ClusterEvent
-  private void broadcastClusterEvent(ClusterEvent event, String msgId, Object... objects) {
-    ZeppelinConfiguration conf = ZeppelinConfiguration.create();
-    if (!conf.isClusterMode()) {
-      return;
-    }
-
-    ClusterMessage clusterMessage = new ClusterMessage(event);
-    clusterMessage.setMsgId(msgId);
-
-    for(Object object : objects) {
-      String json;
-      if (object instanceof AuthenticationInfo) {
-        json = ((AuthenticationInfo) object).toJson();
-        clusterMessage.put("AuthenticationInfo", json);
-      } else if (object instanceof Note) {
-        json = ((Note) object).toJson();
-        clusterMessage.put("Note", json);
-      } else if (object instanceof Paragraph) {
-        json = ((Paragraph) object).toJson();
-        clusterMessage.put("Paragraph", json);
-      } else if (object instanceof Set) {
-        Gson gson = new Gson();
-        json = gson.toJson(object);
-        clusterMessage.put("Set<String>", json);
-      } else if (object instanceof Map) {
-        Gson gson = new Gson();
-        json = gson.toJson(object);
-        clusterMessage.put("Map<String, Paragraph>", json);
-      } else {
-        LOG.error("Unknown object type!");
-      }
-    }
-
-    String msg = ClusterMessage.serializeMessage(clusterMessage);
-    ClusterManagerServer.getInstance(conf).broadcastClusterEvent(
-        ClusterManagerServer.CLUSTER_NOTE_EVENT_TOPIC, msg);
-  }
-
-  @Override
-  public void onClusterEvent(String msg) {
-    if (LOG.isDebugEnabled()) {
-      LOG.debug("onClusterEvent : {}", msg);
-    }
-    ClusterMessage message = ClusterMessage.deserializeMessage(msg);
-
-    Note note = null;
-    Paragraph paragraph = null;
-    Set<String> userAndRoles = null;
-    Map<String, Paragraph> userParagraphMap = null;
-    AuthenticationInfo authenticationInfo = null;
-    for (Map.Entry<String, String> entry : message.getData().entrySet()) {
-      String key = entry.getKey();
-      String json = entry.getValue();
-      if (StringUtils.equals(key, "AuthenticationInfo")) {
-        authenticationInfo = AuthenticationInfo.fromJson(json);
-      } else if (StringUtils.equals(key, "Note")) {
-        try {
-          note = Note.fromJson(null, json);
-        } catch (IOException e) {
-          LOG.warn("Fail to parse note json", e);
-        }
-      } else if (StringUtils.equals(key, "Paragraph")) {
-        paragraph = Paragraph.fromJson(json);
-      } else if (StringUtils.equals(key, "Set<String>")) {
-        Gson gson = new Gson();
-        userAndRoles = gson.fromJson(json, new TypeToken<Set<String>>() {
-        }.getType());
-      } else if (StringUtils.equals(key, "Map<String, Paragraph>")) {
-        Gson gson = new Gson();
-        userParagraphMap = gson.fromJson(json, new TypeToken<Map<String, Paragraph>>() {
-        }.getType());
-      } else {
-        LOG.error("Unknown key:{}, json:{}!" + key, json);
-      }
-    }
-
-    switch (message.clusterEvent) {
-      case BROADCAST_NOTE:
-        inlineBroadcastNote(note);
-        break;
-      case BROADCAST_NOTE_LIST:
-        try {
-          getNotebook().reloadAllNotes(authenticationInfo);
-          inlineBroadcastNoteList();
-        } catch (IOException e) {
-          LOG.error(e.getMessage(), e);
-        }
-        break;
-      case BROADCAST_PARAGRAPH:
-        inlineBroadcastParagraph(note, paragraph, message.getMsgId());
-        break;
-      case BROADCAST_PARAGRAPHS:
-        inlineBroadcastParagraphs(userParagraphMap, message.getMsgId());
-        break;
-      case BROADCAST_NEW_PARAGRAPH:
-        inlineBroadcastNewParagraph(note, paragraph);
-        break;
-      default:
-        LOG.error("Unknown clusterEvent:{}, msg:{} ", message.clusterEvent, msg);
-        break;
-    }
   }
 
   public void listNotesInfo(NotebookSocket conn, ServiceContext context) throws IOException {

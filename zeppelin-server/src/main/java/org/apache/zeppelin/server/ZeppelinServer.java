@@ -58,7 +58,6 @@ import javax.servlet.ServletContextListener;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.shiro.web.env.EnvironmentLoaderListener;
 import org.apache.shiro.web.servlet.ShiroFilter;
-import org.apache.zeppelin.cluster.ClusterManagerServer;
 import org.apache.zeppelin.common.Message;
 import org.apache.zeppelin.conf.ZeppelinConfiguration;
 import org.apache.zeppelin.conf.ZeppelinConfiguration.ConfVars;
@@ -66,9 +65,7 @@ import org.apache.zeppelin.display.AngularObjectRegistryListener;
 import org.apache.zeppelin.healthcheck.HealthChecks;
 import org.apache.zeppelin.interpreter.InterpreterFactory;
 import org.apache.zeppelin.interpreter.InterpreterOutput;
-import org.apache.zeppelin.interpreter.InterpreterSetting;
 import org.apache.zeppelin.interpreter.InterpreterSettingManager;
-import org.apache.zeppelin.interpreter.recovery.RecoveryStorage;
 import org.apache.zeppelin.interpreter.remote.RemoteInterpreterProcessListener;
 import org.apache.zeppelin.metric.JVMInfoBinder;
 import org.apache.zeppelin.metric.PrometheusServlet;
@@ -222,8 +219,6 @@ public class ZeppelinServer extends ResourceConfig {
 
     initWebApp(defaultWebApp);
     initWebApp(nextWebApp);
-    // Cluster Manager Server
-    setupClusterManagerServer(sharedServiceLocator);
 
     // JMX Enable
     if (conf.isJMXEnabled()) {
@@ -429,41 +424,6 @@ public class ZeppelinServer extends ResourceConfig {
     servletHolder.setInitParameter("maxTextMessageSize", maxTextMessageSize);
 
     webapp.addServlet(servletHolder, "/ws/*");
-  }
-
-  private static void setupClusterManagerServer(ServiceLocator serviceLocator) {
-    if (conf.isClusterMode()) {
-      LOG.info("Cluster mode is enabled, starting ClusterManagerServer");
-      ClusterManagerServer clusterManagerServer = ClusterManagerServer.getInstance(conf);
-
-      NotebookServer notebookServer = serviceLocator.getService(NotebookServer.class);
-      clusterManagerServer.addClusterEventListeners(ClusterManagerServer.CLUSTER_NOTE_EVENT_TOPIC, notebookServer);
-
-      AuthorizationService authorizationService = serviceLocator.getService(AuthorizationService.class);
-      clusterManagerServer.addClusterEventListeners(ClusterManagerServer.CLUSTER_AUTH_EVENT_TOPIC, authorizationService);
-
-      InterpreterSettingManager interpreterSettingManager = serviceLocator.getService(InterpreterSettingManager.class);
-      clusterManagerServer.addClusterEventListeners(ClusterManagerServer.CLUSTER_INTP_SETTING_EVENT_TOPIC, interpreterSettingManager);
-
-      // Since the ClusterInterpreterLauncher is lazy, dynamically generated, So in cluster mode,
-      // when the zeppelin service starts, Create a ClusterInterpreterLauncher object,
-      // This allows the ClusterInterpreterLauncher to listen for cluster events.
-      try {
-        InterpreterSettingManager intpSettingManager = sharedServiceLocator.getService(InterpreterSettingManager.class);
-        RecoveryStorage recoveryStorage = ReflectionUtils.createClazzInstance(
-                conf.getRecoveryStorageClass(),
-                new Class[] {ZeppelinConfiguration.class, InterpreterSettingManager.class},
-                new Object[] {conf, intpSettingManager});
-        recoveryStorage.init();
-        PluginManager.get().loadInterpreterLauncher(InterpreterSetting.CLUSTER_INTERPRETER_LAUNCHER_NAME, recoveryStorage);
-      } catch (IOException e) {
-        LOG.error(e.getMessage(), e);
-      }
-
-      clusterManagerServer.start();
-    } else {
-      LOG.info("Cluster mode is disabled");
-    }
   }
 
   private static SslContextFactory getSslContextFactory(ZeppelinConfiguration conf) {

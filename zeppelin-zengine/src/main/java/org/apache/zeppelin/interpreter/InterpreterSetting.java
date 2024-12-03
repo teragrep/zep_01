@@ -132,8 +132,6 @@ public class InterpreterSetting {
   private transient RecoveryStorage recoveryStorage;
   private transient RemoteInterpreterEventServer interpreterEventServer;
 
-  public static final String CLUSTER_INTERPRETER_LAUNCHER_NAME = "ClusterInterpreterLauncher";
-
   ///////////////////////////////////////////////////////////////////////////////////////////
 
   /**
@@ -696,8 +694,6 @@ public class InterpreterSetting {
         return "FlinkInterpreterLauncher";
       }
       return "K8sStandardInterpreterLauncher";
-    } else if (isRunningOnCluster()) {
-      return InterpreterSetting.CLUSTER_INTERPRETER_LAUNCHER_NAME;
     } else if (isRunningOnDocker()) {
       return "DockerInterpreterLauncher";
     } else {
@@ -721,11 +717,6 @@ public class InterpreterSetting {
 
   private boolean isRunningOnKubernetes() {
     return conf.getRunMode() == ZeppelinConfiguration.RUN_MODE.K8S;
-  }
-
-
-  private boolean isRunningOnCluster() {
-    return conf.isClusterMode();
   }
 
   private boolean isRunningOnDocker() {

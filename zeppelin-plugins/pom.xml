@@ -39,7 +39,6 @@
     <modules>
         <module>notebookrepo/filesystem</module>
 
-        <module>launcher/cluster</module>
         <module>launcher/yarn</module>
     </modules>
 
