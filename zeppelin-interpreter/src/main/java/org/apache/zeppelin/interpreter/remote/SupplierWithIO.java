@@ -17,9 +17,11 @@
 
 package org.apache.zeppelin.interpreter.remote;
 
+import org.apache.thrift.transport.TTransportException;
+
 import java.io.IOException;
 
 @FunctionalInterface
 public interface SupplierWithIO<T> {
-  T getWithIO() throws IOException;
+  T getWithIO() throws IOException, TTransportException;
 }
