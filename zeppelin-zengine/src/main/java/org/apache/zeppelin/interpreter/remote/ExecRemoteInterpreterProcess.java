@@ -76,7 +76,6 @@ public class ExecRemoteInterpreterProcess extends RemoteInterpreterManagedProces
       cmdLine.addArgument("-u", false);
       cmdLine.addArgument(userName, false);
     }
-    cmdLine.addArgument("-l", false);
     cmdLine.addArgument("-g", false);
     cmdLine.addArgument(getInterpreterSettingName(), false);
 
