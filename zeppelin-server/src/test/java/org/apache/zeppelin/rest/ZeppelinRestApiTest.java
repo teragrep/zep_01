@@ -52,6 +52,7 @@ import org.apache.zeppelin.user.AuthenticationInfo;
 /**
  * BASIC Zeppelin rest api tests.
  */
+@Ignore(value="Flaky tests: HttpHostConnect Connect to localhost:8080 [localhost/127.0.0.1] failed: Connection refused (Connection refused) or Task org.apache.zeppelin.notebook.NoteEventAsyncListener$EventHandling@1eea9d2d rejected from java.util.concurrent.ThreadPoolExecutor@29182679")
 @FixMethodOrder(MethodSorters.NAME_ASCENDING)
 public class ZeppelinRestApiTest extends AbstractTestRestApi {
   Gson gson = new Gson();
