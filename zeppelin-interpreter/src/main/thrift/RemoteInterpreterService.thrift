@@ -118,11 +118,6 @@ service RemoteInterpreterService {
   void angularObjectAdd(1: string name, 2: string sessionId, 3: string paragraphId, 4: string object) throws (1: InterpreterRPCException ex);
   void angularObjectRemove(1: string name, 2: string sessionId, 3: string paragraphId) throws (1: InterpreterRPCException ex);
   void angularRegistryPush(1: string registry) throws (1: InterpreterRPCException ex);
-
-  RemoteApplicationResult loadApplication(1: string applicationInstanceId, 2: string packageInfo, 3: string sessionId, 4: string paragraphId) throws (1: InterpreterRPCException ex);
-  RemoteApplicationResult unloadApplication(1: string applicationInstanceId) throws (1: InterpreterRPCException ex);
-  RemoteApplicationResult runApplication(1: string applicationInstanceId) throws (1: InterpreterRPCException ex);
-
 }
 
 
