@@ -52,16 +52,6 @@
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-shade-plugin</artifactId>
         <configuration>
-          <artifactSet>
-            <excludes>
-              <!-- Leave slf4j unshaded so downstream users can configure logging. -->
-              <exclude>org.slf4j:slf4j-api</exclude>
-              <exclude>org.slf4j:slf4j-log4j12</exclude>
-              <exclude>org.slf4j:jcl-over-slf4j</exclude>
-              <!-- Leave log4j unshaded so downstream users can configure logging. -->
-              <exclude>log4j:log4j</exclude>
-            </excludes>
-          </artifactSet>
           <filters>
             <filter>
               <artifact>*:*</artifact>
