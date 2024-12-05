@@ -33,7 +33,6 @@ import org.junit.Test;
 import org.apache.zeppelin.conf.ZeppelinConfiguration;
 import org.apache.zeppelin.rest.AbstractTestRestApi;
 
-@Ignore(value="Seems to cause fairly catastrophic junit failure like 'ExecutionException The forked VM terminated without properly saying goodbye. VM crash or System.exit called?'")
 public class RequestHeaderSizeTest extends AbstractTestRestApi {
   private static final int REQUEST_HEADER_MAX_SIZE = 20000;
 

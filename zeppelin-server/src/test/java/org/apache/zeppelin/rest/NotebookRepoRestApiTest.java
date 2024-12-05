@@ -40,7 +40,6 @@ import org.apache.zeppelin.user.AuthenticationInfo;
 /**
  * NotebookRepo rest api test.
  */
-@Ignore(value="Bulk ignored as AbstractTestRestApi is awful")
 @FixMethodOrder(MethodSorters.NAME_ASCENDING)
 public class NotebookRepoRestApiTest extends AbstractTestRestApi {
   Gson gson = new Gson();
