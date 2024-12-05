@@ -32,7 +32,6 @@ import java.nio.charset.StandardCharsets;
 @Ignore(value="Bulk ignored as AbstractTestRestApi is awful")
 public class DirAccessTest extends AbstractTestRestApi {
 
-  @Ignore(value="This test fails, most likely due to zeppelin-web not existing")
   @Test
   public void testDirAccessForbidden() throws Exception {
     synchronized (this) {
@@ -50,7 +49,6 @@ public class DirAccessTest extends AbstractTestRestApi {
     }
   }
 
-  @Ignore(value="This test fails, most likely due to zeppelin-web not existing")
   @Test
   public void testDirAccessOk() throws Exception {
     synchronized (this) {

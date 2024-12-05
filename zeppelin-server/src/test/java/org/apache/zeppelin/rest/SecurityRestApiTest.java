@@ -30,7 +30,6 @@ import java.nio.charset.StandardCharsets;
 import java.util.List;
 import java.util.Map;
 
-@Ignore(value="Bulk ignored as AbstractTestRestApi is awful")
 public class SecurityRestApiTest extends AbstractTestRestApi {
   Gson gson = new Gson();
 

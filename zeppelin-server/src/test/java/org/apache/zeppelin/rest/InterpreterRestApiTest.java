@@ -49,7 +49,6 @@ import static org.junit.Assert.assertNotNull;
 /**
  * Zeppelin interpreter rest api tests.
  */
-@Ignore(value="Bulk ignored as AbstractTestRestApi is awful")
 @FixMethodOrder(MethodSorters.NAME_ASCENDING)
 public class InterpreterRestApiTest extends AbstractTestRestApi {
   private Gson gson = new Gson();

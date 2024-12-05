@@ -32,7 +32,6 @@ import org.junit.BeforeClass;
 import org.junit.Ignore;
 import org.junit.Test;
 
-@Ignore(value="Bulk ignored as AbstractTestRestApi is awful")
 public class MetricEndpointTest extends AbstractTestRestApi {
 
   @BeforeClass

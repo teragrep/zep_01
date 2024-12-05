@@ -53,9 +53,6 @@ import org.apache.zeppelin.user.AuthenticationInfo;
 /**
  * Zeppelin notebook rest api tests.
  */
-@Ignore(value="[ERROR] Crashed tests:\n" +
-        "[ERROR] org.apache.zeppelin.rest.NotebookRestApiTest\n" +
-        "[ERROR] ExecutionException The forked VM terminated without properly saying goodbye. VM crash or System.exit called?\n")
 @FixMethodOrder(MethodSorters.NAME_ASCENDING)
 public class NotebookRestApiTest extends AbstractTestRestApi {
   Gson gson = new Gson();
@@ -138,7 +135,6 @@ public class NotebookRestApiTest extends AbstractTestRestApi {
     }
   }
 
-  @Ignore(value="147 » NotePathAlreadyExists Note '/note1' existed")
   @Test
   public void testRunParagraphJob() throws Exception {
     LOG.info("Running testRunParagraphJob");
@@ -177,7 +173,6 @@ public class NotebookRestApiTest extends AbstractTestRestApi {
     }
   }
 
-  @Ignore(value="185 » NotePathAlreadyExists Note '/note1' existed")
   @Test
   public void testRunParagraphSynchronously() throws IOException {
     LOG.info("Running testRunParagraphSynchronously");
@@ -267,7 +262,6 @@ public class NotebookRestApiTest extends AbstractTestRestApi {
     assertEquals(0, note2.getParagraphCount());
   }
 
-  @Ignore("331->AbstractTestRestApi.httpPost:418->AbstractTestRestApi.httpPost:434 » HttpHostConnect Connect to localhost:8080 [localhost/127.0.0.1] failed: Connection refused (Connection refused)")
   @Test
   public void testRunNoteBlocking() throws IOException {
     LOG.info("Running testRunNoteBlocking");
@@ -352,7 +346,6 @@ public class NotebookRestApiTest extends AbstractTestRestApi {
     }
   }
 
-  @Ignore(value="379->AbstractTestRestApi.httpPost:418->AbstractTestRestApi.httpPost:434 » NoHttpResponse localhost:8080 failed to respond")
   @Test
   public void testRunNoteBlocking_Isolated() throws IOException {
     LOG.info("Running testRunNoteBlocking_Isolated");
@@ -401,7 +394,6 @@ public class NotebookRestApiTest extends AbstractTestRestApi {
     }
   }
 
-  @Ignore(value="410 » RejectedExecution Task org.apache.zeppelin.notebook.NoteEventAsyncListener$EventHandling@352e612e rejected from java.util.concurrent.ThreadPoolExecutor@65f00478[Shutting down, pool size = 1, active threads = 1, queued tasks = 3, completed tasks = 32]")
   @Test
   public void testRunNoteNonBlocking_Isolated() throws IOException, InterruptedException {
     LOG.info("Running testRunNoteNonBlocking_Isolated");
@@ -454,7 +446,6 @@ public class NotebookRestApiTest extends AbstractTestRestApi {
     }
   }
 
-  @Ignore(value="456 » NotePathAlreadyExists Note '/note1' existed")
   @Test
   public void testRunNoteWithParams() throws IOException, InterruptedException {
     Note note1 = null;
@@ -621,7 +612,6 @@ public class NotebookRestApiTest extends AbstractTestRestApi {
     }
   }
 
-  @Ignore(value="623 » NotePathAlreadyExists Note '/note1' existed")
   @Test
   public void testUpdateParagraphConfig() throws IOException {
     LOG.info("Running testUpdateParagraphConfig");
@@ -700,7 +690,6 @@ public class NotebookRestApiTest extends AbstractTestRestApi {
     }
   }
 
-  @Ignore(value="701 » NotePathAlreadyExists Note '/note1' existed")
   @Test
   public void testRunWithServerRestart() throws Exception {
     LOG.info("Running testRunWithServerRestart");

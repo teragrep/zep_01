@@ -39,7 +39,6 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.reset;
 import static org.mockito.Mockito.verify;
 
-@Ignore(value="Bulk ignored as AbstractTestRestApi is awful")
 public class ConfigurationServiceTest extends AbstractTestRestApi {
 
   private static ConfigurationService configurationService;

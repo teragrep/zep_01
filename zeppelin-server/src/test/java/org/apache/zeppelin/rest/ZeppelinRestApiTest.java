@@ -52,7 +52,6 @@ import org.apache.zeppelin.user.AuthenticationInfo;
 /**
  * BASIC Zeppelin rest api tests.
  */
-@Ignore(value="Bulk ignored as AbstractTestRestApi is awful")
 @FixMethodOrder(MethodSorters.NAME_ASCENDING)
 public class ZeppelinRestApiTest extends AbstractTestRestApi {
   Gson gson = new Gson();
@@ -127,20 +126,17 @@ public class ZeppelinRestApiTest extends AbstractTestRestApi {
     }
   }
 
-  @Ignore(value="132->testNoteCreate:194->AbstractTestRestApi.httpPost:418->AbstractTestRestApi.httpPost:434 » HttpHostConnect Connect to localhost:8080 [localhost/127.0.0.1] failed: Connection refused (Connection refused)")
   @Test
   public void testNoteCreateWithName() throws IOException {
     String noteName = "Test note name";
     testNoteCreate(noteName);
   }
 
-  @Ignore(value="testNoteCreate:194->AbstractTestRestApi.httpPost:418->AbstractTestRestApi.httpPost:434 » HttpHostConnect Connect to localhost:8080 [localhost/127.0.0.1] failed: Connection refused (Connection refused)")
   @Test
   public void testNoteCreateNoName() throws IOException {
     testNoteCreate("");
   }
 
-  @Ignore(value="151->AbstractTestRestApi.httpPost:418->AbstractTestRestApi.httpPost:434 » HttpHostConnect Connect to localhost:8080 [localhost/127.0.0.1] failed: Connection refused (Connection refused)")
   @Test
   public void testNoteCreateWithParagraphs() throws IOException {
     // Call Create Note REST API
@@ -413,7 +409,6 @@ public class ZeppelinRestApiTest extends AbstractTestRestApi {
     }
   }
 
-  @Ignore(value="AbstractTestRestApi.httpGet:377->AbstractTestRestApi.httpGet:381->AbstractTestRestApi.httpGet:395 » HttpHostConnect Connect to localhost:8080 [localhost/127.0.0.1] failed: Connection refused (Connection refused)")
   @Test
   public void testListNotes() throws IOException {
     LOG.info("testListNotes");
@@ -431,7 +426,6 @@ public class ZeppelinRestApiTest extends AbstractTestRestApi {
     get.close();
   }
 
-  @Ignore(value="RejectedExecution Task org.apache.zeppelin.notebook.NoteEventAsyncListener$EventHandling@6e92c6ad rejected from java.util.concurrent.ThreadPoolExecutor@2fb5fe30[Terminated")
   @Test
   public void testNoteJobs() throws Exception {
     LOG.info("testNoteJobs");
@@ -493,7 +487,6 @@ public class ZeppelinRestApiTest extends AbstractTestRestApi {
     }
   }
 
-  @Ignore(value="Thread.sleep is no go")
   @Test
   public void testGetNoteJob() throws Exception {
     LOG.info("testGetNoteJob");
@@ -548,7 +541,6 @@ public class ZeppelinRestApiTest extends AbstractTestRestApi {
     }
   }
 
-  @Ignore(value="RejectedExecution Task org.apache.zeppelin.notebook.NoteEventAsyncListener$EventHandling@6e92c6ad rejected from java.util.concurrent.ThreadPoolExecutor@2fb5fe30[Terminated")
   @Test
   public void testRunParagraphWithParams() throws Exception {
     LOG.info("testRunParagraphWithParams");
@@ -591,7 +583,6 @@ public class ZeppelinRestApiTest extends AbstractTestRestApi {
     }
   }
 
-  @Ignore(value="AbstractTestRestApi.httpDelete:401->AbstractTestRestApi.httpDelete:412 » HttpHostConnect Connect to localhost:8080 [localhost/127.0.0.1] failed: Connection refused (Connection refused)")
   @Test
   public void testJobs() throws Exception {
     // create a note and a paragraph
@@ -642,7 +633,6 @@ public class ZeppelinRestApiTest extends AbstractTestRestApi {
     }
   }
 
-  @Ignore(value="Thread.sleep is no go")
   @Test
   public void testCronDisable() throws Exception {
     Note note = null;
@@ -693,7 +683,6 @@ public class ZeppelinRestApiTest extends AbstractTestRestApi {
     }
   }
 
-  @Ignore(value="RejectedExecution Task org.apache.zeppelin.notebook.NoteEventAsyncListener$EventHandling@6e92c6ad rejected from java.util.concurrent.ThreadPoolExecutor@2fb5fe30[Terminated")
   @Test
   public void testRegressionZEPPELIN_527() throws Exception {
     Note note = null;
@@ -787,7 +776,6 @@ public class ZeppelinRestApiTest extends AbstractTestRestApi {
     }
   }
 
-  @Ignore(value="RejectedExecution Task org.apache.zeppelin.notebook.NoteEventAsyncListener$EventHandling@7a94b64e rejected from java.util.concurrent.ThreadPoolExecutor@2fb5fe30[Terminated, pool size = 0, active threads = 0, queued tasks = 0, completed tasks = 56]")
   @Test
   public void testUpdateParagraph() throws IOException {
     Note note = null;
@@ -873,7 +861,6 @@ public class ZeppelinRestApiTest extends AbstractTestRestApi {
     }
   }
 
-  @Ignore(value="AbstractTestRestApi.httpPost:418->AbstractTestRestApi.httpPost:434 » HttpHostConnect Connect to localhost:8080 [localhost/127.0.0.1] failed: Connection refused (Connection refused)")
   @Test
   public void testMoveParagraph() throws IOException {
     Note note = null;
@@ -941,7 +928,6 @@ public class ZeppelinRestApiTest extends AbstractTestRestApi {
     }
   }
 
-  @Ignore(value="RejectedExecution Task org.apache.zeppelin.notebook.NoteEventAsyncListener$EventHandling@70807224 rejected from java.util.concurrent.ThreadPoolExecutor@2fb5fe30[Terminated, pool size = 0, active threads = 0, queued tasks = 0, completed tasks = 56]")
   @Test
   public void testTitleSearch() throws IOException, InterruptedException {
     Note note = null;
