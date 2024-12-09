@@ -60,7 +60,6 @@ public class InterpreterInfoSaving implements JsonSerializable {
           .create();
 
   public Map<String, InterpreterSetting> interpreterSettings = new HashMap<>();
-  public List<RemoteRepository> interpreterRepositories = new ArrayList<>();
 
   public static InterpreterInfoSaving loadFromFile(Path file) throws IOException {
     LOGGER.info("Load interpreter setting from file: {}", file);

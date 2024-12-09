@@ -328,30 +328,6 @@ public class InterpreterRestApiTest extends AbstractTestRestApi {
     }
   }
 
-  @Test
-  public void testListRepository() throws IOException {
-    CloseableHttpResponse get = httpGet("/interpreter/repository");
-    assertThat(get, isAllowed());
-    get.close();
-  }
-
-  @Test
-  public void testAddDeleteRepository() throws IOException {
-    // Call create repository API
-    String repoId = "securecentral";
-    String jsonRequest = "{\"id\":\"" + repoId +
-        "\",\"url\":\"https://repo1.maven.org/maven2\",\"snapshot\":\"false\"}";
-
-    CloseableHttpResponse post = httpPost("/interpreter/repository/", jsonRequest);
-    assertThat("Test create method:", post, isAllowed());
-    post.close();
-
-    // Call delete repository API
-    CloseableHttpResponse delete = httpDelete("/interpreter/repository/" + repoId);
-    assertThat("Test delete method:", delete, isAllowed());
-    delete.close();
-  }
-
   private JsonObject getBodyFieldFromResponse(String rawResponse) {
     JsonObject response = gson.fromJson(rawResponse, JsonElement.class).getAsJsonObject();
     return response.getAsJsonObject("body");
