@@ -34,7 +34,6 @@ import org.apache.zeppelin.interpreter.InterpreterOption;
 import org.apache.zeppelin.interpreter.InterpreterResult;
 import org.apache.zeppelin.interpreter.InterpreterSetting;
 import org.apache.zeppelin.interpreter.InterpreterSettingManager;
-import org.apache.zeppelin.interpreter.integration.DownloadUtils;
 import org.codehaus.plexus.util.xml.pull.XmlPullParserException;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
@@ -51,7 +50,6 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertTrue;
 
-
 public abstract class SparkIntegrationTest {
   private static Logger LOGGER = LoggerFactory.getLogger(SparkIntegrationTest.class);
 
@@ -67,7 +65,7 @@ public abstract class SparkIntegrationTest {
     LOGGER.info("Testing Spark Version: " + sparkVersion);
     LOGGER.info("Testing Hadoop Version: " + hadoopVersion);
     this.sparkVersion = sparkVersion;
-    this.sparkHome = DownloadUtils.downloadSpark(sparkVersion, hadoopVersion);
+    // this.sparkHome = DownloadUtils.downloadSpark(sparkVersion, hadoopVersion);
   }
 
   @BeforeClass

@@ -24,7 +24,6 @@ import org.apache.zeppelin.client.websocket.SimpleMessageHandler;
 import org.apache.zeppelin.client.Status;
 import org.apache.zeppelin.client.ZSession;
 import org.apache.zeppelin.conf.ZeppelinConfiguration;
-import org.apache.zeppelin.interpreter.integration.DownloadUtils;
 import org.apache.zeppelin.interpreter.lifecycle.TimeoutLifecycleManager;
 import org.apache.zeppelin.notebook.Note;
 import org.apache.zeppelin.notebook.Notebook;
@@ -67,7 +66,7 @@ public class ZSessionIntegrationTest extends AbstractTestRestApi {
     zConf.setProperty(ZeppelinConfiguration.ConfVars.ZEPPELIN_INTERPRETER_LIFECYCLE_MANAGER_TIMEOUT_THRESHOLD.getVarName(), "10000");
 
     notebook = TestUtils.getInstance(Notebook.class);
-    sparkHome = DownloadUtils.downloadSpark("3.4.2", "3");
+    // sparkHome = DownloadUtils.downloadSpark("3.4.2", "3");
   }
 
   @AfterClass
