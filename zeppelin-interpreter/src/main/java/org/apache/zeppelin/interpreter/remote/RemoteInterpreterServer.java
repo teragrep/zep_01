@@ -1213,30 +1213,4 @@ public class RemoteInterpreterServer extends Thread
       LOGGER.info("Exception in RemoteInterpreterServer while angularRegistryPush, nolock", e);
     }
   }
-
-  protected InterpreterOutput createAppOutput(final String noteId,
-                                              final String paragraphId,
-                                              final String appId) {
-    return new InterpreterOutput(new InterpreterOutputListener() {
-      @Override
-      public void onUpdateAll(InterpreterOutput out) {
-
-      }
-
-      @Override
-      public void onAppend(int index, InterpreterResultMessageOutput out, byte[] line) {
-        intpEventClient.onAppOutputAppend(noteId, paragraphId, index, appId, new String(line));
-      }
-
-      @Override
-      public void onUpdate(int index, InterpreterResultMessageOutput out) {
-        try {
-          intpEventClient.onAppOutputUpdate(noteId, paragraphId, index, appId,
-              out.getType(), new String(out.toByteArray()));
-        } catch (IOException e) {
-          LOGGER.error(e.getMessage(), e);
-        }
-      }
-    });
-  }
 }

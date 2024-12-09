@@ -59,7 +59,6 @@ public class RemoteInterpreterServerTest {
     server.intpEventClient = mock(RemoteInterpreterEventClient.class);
     startRemoteInterpreterServer(server, 10 * 1000);
 
-    server.intpEventClient.onAppStatusUpdate("", "", "", "");
     stopRemoteInterpreterServer(server, 10 * 10000);
   }
 
