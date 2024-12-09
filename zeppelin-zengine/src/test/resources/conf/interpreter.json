@@ -152,24 +152,5 @@
       "2C3RWCVAG",
       "2CKWE7B19"
     ]
-  },
-  "interpreterRepositories": [
-    {
-      "id": "central",
-      "type": "default",
-      "url": "https://repo1.maven.org/maven2/",
-      "releasePolicy": {
-        "enabled": true,
-        "updatePolicy": "daily",
-        "checksumPolicy": "warn"
-      },
-      "snapshotPolicy": {
-        "enabled": true,
-        "updatePolicy": "daily",
-        "checksumPolicy": "warn"
-      },
-      "mirroredRepositories": [],
-      "repositoryManager": false
-    }
-  ]
+  }
 }
