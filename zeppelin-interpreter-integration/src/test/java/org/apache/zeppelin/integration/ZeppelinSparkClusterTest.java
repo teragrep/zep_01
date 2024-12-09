@@ -29,7 +29,6 @@ import org.apache.zeppelin.interpreter.InterpreterProperty;
 import org.apache.zeppelin.interpreter.InterpreterResult;
 import org.apache.zeppelin.interpreter.InterpreterSetting;
 import org.apache.zeppelin.interpreter.InterpreterSettingManager;
-import org.apache.zeppelin.interpreter.integration.DownloadUtils;
 import org.apache.zeppelin.interpreter.thrift.InterpreterCompletion;
 import org.apache.zeppelin.notebook.Note;
 import org.apache.zeppelin.notebook.Notebook;
@@ -82,7 +81,7 @@ public abstract class ZeppelinSparkClusterTest extends AbstractTestRestApi {
   public ZeppelinSparkClusterTest(String sparkVersion, String hadoopVersion) throws Exception {
     this.sparkVersion = sparkVersion;
     LOGGER.info("Testing SparkVersion: " + sparkVersion);
-    this.sparkHome = DownloadUtils.downloadSpark(sparkVersion, hadoopVersion);
+    // this.sparkHome = DownloadUtils.downloadSpark(sparkVersion, hadoopVersion);
     if (!verifiedSparkVersions.contains(sparkVersion)) {
       verifiedSparkVersions.add(sparkVersion);
       setupSparkInterpreter(sparkHome);
