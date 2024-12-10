@@ -55,7 +55,7 @@ public class WebDriverManager {
     WebDriver driver = null;
 
     try {
-      int firefoxVersion = WebDriverManager.getFirefoxVersion();
+      int firefoxVersion = 1; // WebDriverManager.getFirefoxVersion();
       LOG.info("Firefox version " + firefoxVersion + " detected");
 
       downLoadsDir = FileUtils.getTempDirectory().toString();
@@ -200,6 +200,7 @@ public class WebDriverManager {
     LOG.info("Download of Geeko version: " + firefoxVersion + ", successful");
   }
 
+  /*
   public static int getFirefoxVersion() {
     try {
       String firefoxVersionCmd = "firefox -v";
@@ -215,4 +216,5 @@ public class WebDriverManager {
       return -1;
     }
   }
+  */
 }

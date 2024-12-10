@@ -396,7 +396,8 @@ public class ZSessionIntegrationTest extends AbstractTestRestApi {
     }
   }
 
-  //@Test
+  @Ignore(value="This was disabled test")
+  @Test
   public void testZSession_Jdbc() throws Exception {
 
     Map<String, String> intpProperties = new HashMap<>();
@@ -434,7 +435,8 @@ public class ZSessionIntegrationTest extends AbstractTestRestApi {
     }
   }
 
-  //@Test
+  @Ignore(value="This was ignored test")
+  @Test
   public void testZSession_Jdbc_Submit() throws Exception {
 
     Map<String, String> intpProperties = new HashMap<>();

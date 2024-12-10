@@ -22,6 +22,7 @@ import java.util.Properties;
 import org.apache.zeppelin.interpreter.InterpreterException;
 import org.apache.zeppelin.interpreter.InterpreterResult;
 import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
 /**
@@ -54,6 +55,8 @@ public class HbaseInterpreterTest {
     assertEquals("Hello World\n", result.message().get(0).getData());
   }
 
+  @Disabled(value="This was disabled test")
+  @Test
   public void putsLoadPath() {
     InterpreterResult result = hbaseInterpreter.interpret(
             "require 'two_power'; puts twoToThePowerOf(4)", null);

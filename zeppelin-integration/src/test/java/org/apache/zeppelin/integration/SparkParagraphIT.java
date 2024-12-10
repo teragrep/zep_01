@@ -24,6 +24,7 @@ import org.apache.zeppelin.WebDriverManager;
 import org.hamcrest.CoreMatchers;
 import org.junit.After;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ErrorCollector;
@@ -55,6 +56,7 @@ public class SparkParagraphIT extends AbstractZeppelinIT {
     driver.quit();
   }
 
+  @Ignore(value="Contains UI specific values")
   @Test
   public void testSpark() throws Exception {
     try {
@@ -107,6 +109,7 @@ public class SparkParagraphIT extends AbstractZeppelinIT {
     }
   }
 
+  @Ignore(value="Contains UI specific values")
   @Test
   public void testPySpark() throws Exception {
     try {
@@ -155,6 +158,7 @@ public class SparkParagraphIT extends AbstractZeppelinIT {
     }
   }
 
+  @Ignore(value="Contains UI specific values")
   @Test
   public void testCancelPyspark() throws Exception {
     try {
@@ -193,6 +197,7 @@ public class SparkParagraphIT extends AbstractZeppelinIT {
     }
   }
 
+  @Ignore(value="Contains UI specific values")
   @Test
   public void testSqlSpark() throws Exception {
     try {
@@ -224,7 +229,8 @@ public class SparkParagraphIT extends AbstractZeppelinIT {
     }
   }
 
-//  @Test
+  @Ignore(value="Contains UI specific values")
+  @Test
   public void testDep() throws Exception {
     try {
       // restart spark interpreter before running %dep

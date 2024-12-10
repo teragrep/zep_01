@@ -42,11 +42,15 @@ public class ZeppelinITUtils {
     }
   }
 
+
   public static void restartZeppelin() {
+    throw new RuntimeException("This should not be executed I think");
+    /*
     CommandExecutor.executeCommandLocalHost("../bin/zeppelin-daemon.sh restart",
         false, ProcessData.Types_Of_Data.OUTPUT);
     //wait for server to start.
     sleep(5000, false);
+     */
   }
 
   public static void turnOffImplicitWaits(WebDriver driver) {

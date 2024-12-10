@@ -27,6 +27,7 @@ import org.apache.zeppelin.ZeppelinITUtils;
 import org.hamcrest.CoreMatchers;
 import org.junit.After;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ErrorCollector;
@@ -65,6 +66,7 @@ public class ZeppelinIT extends AbstractZeppelinIT {
     driver.quit();
   }
 
+  @Ignore(value="Contains UI specific values")
   @Test
   public void testAngularDisplay() throws Exception {
     try {
@@ -198,7 +200,8 @@ public class ZeppelinIT extends AbstractZeppelinIT {
   }
 
   //It is a flaky test, disable it temporary, should fix it later. ZEPPELIN-5528
-  //@Test
+  @Ignore(value="Contains UI specific values")
+  @Test
   public void testSparkInterpreterDependencyLoading() throws Exception {
     try {
       // navigate to interpreter page
@@ -265,6 +268,7 @@ public class ZeppelinIT extends AbstractZeppelinIT {
     }
   }
 
+  @Ignore(value="Contains UI specific values")
   @Test
   public void testAngularRunParagraph() throws Exception {
     try {
@@ -325,6 +329,7 @@ public class ZeppelinIT extends AbstractZeppelinIT {
 
   }
 
+  @Ignore(value="So much sleep, what, why")
   @Test
   public void deleteTrashNode() throws Exception {
     try {

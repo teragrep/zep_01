@@ -108,7 +108,8 @@ public class PythonInterpreterTest extends BasePythonInterpreterTest {
     }
   }
 
-  //@Test
+  @Disabled(value="This was disabled to begin with")
+  @Test
   void testCancelIntp() throws InterruptedException, InterpreterException {
     assertEquals(InterpreterResult.Code.SUCCESS,
         interpreter.interpret("a = 1\n", getInterpreterContext()).code());

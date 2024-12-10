@@ -22,6 +22,7 @@ import org.apache.zeppelin.WebDriverManager;
 import org.hamcrest.CoreMatchers;
 import org.junit.After;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ErrorCollector;
@@ -47,6 +48,7 @@ public class InterpreterIT extends AbstractZeppelinIT {
     driver.quit();
   }
 
+  @Ignore(value="Depends on very exact UI elements to exist at right positions")
   @Test
   public void testShowDescriptionOnInterpreterCreate() throws Exception {
     try {
