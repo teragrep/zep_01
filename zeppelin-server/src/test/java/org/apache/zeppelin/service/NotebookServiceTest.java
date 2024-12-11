@@ -92,6 +92,7 @@ public class NotebookServiceTest {
   public void setUp() throws Exception {
     notebookDir = new File("target/notebookDir").toPath().toAbsolutePath().toFile();
     notebookDir.mkdirs();
+    System.setProperty(ZeppelinConfiguration.ConfVars.ZEPPELIN_SEARCH_INDEX_PATH.getVarName(), notebookDir.getAbsolutePath() + "/lucene");
     System.setProperty(ZeppelinConfiguration.ConfVars.ZEPPELIN_NOTEBOOK_DIR.getVarName(),
             notebookDir.getAbsolutePath());
     ZeppelinConfiguration zeppelinConfiguration = ZeppelinConfiguration.create();

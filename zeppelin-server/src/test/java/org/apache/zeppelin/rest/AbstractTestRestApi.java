@@ -203,6 +203,7 @@ public abstract class AbstractTestRestApi {
       LOG.info("ZEPPELIN_CONF_DIR: " + confDir.getAbsolutePath());
       confDir.mkdirs();
 
+      System.setProperty(ZeppelinConfiguration.ConfVars.ZEPPELIN_SEARCH_INDEX_PATH.getVarName(), zeppelinHome.getAbsolutePath() + "/lucene");
       System.setProperty(ZeppelinConfiguration.ConfVars.ZEPPELIN_HOME.getVarName(),
           zeppelinHome.getAbsolutePath());
       System.setProperty(ZeppelinConfiguration.ConfVars.ZEPPELIN_WAR.getVarName(),

@@ -32,6 +32,7 @@ import java.io.File;
 import java.nio.file.Files;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
+import java.time.Instant;
 import java.util.List;
 import java.util.Map;
 
@@ -45,17 +46,13 @@ public class VFSNotebookRepoTest {
 
   @Before
   public void setUp() throws IOException {
-    notebookDir = new File("target/notebookDir").toPath().toFile();
+    // New dir for every execution, it won't be cleared in between
+    notebookDir = new File("target/notebookDir" + Instant.now().toEpochMilli()).toPath().toAbsolutePath().toFile();
     System.setProperty(ZeppelinConfiguration.ConfVars.ZEPPELIN_NOTEBOOK_DIR.getVarName(),
         notebookDir.getAbsolutePath());
     notebookRepo = new VFSNotebookRepo();
     zConf = ZeppelinConfiguration.create();
     notebookRepo.init(zConf);
-  }
-
-  @After
-  public void tearDown() throws IOException {
-    FileUtils.deleteDirectory(notebookDir);
   }
 
   @Test
@@ -132,7 +129,7 @@ public class VFSNotebookRepoTest {
     createNewNote("{}", "id2", "my_project/name2");
     assertEquals(1, notebookRepo.list(AuthenticationInfo.ANONYMOUS).size());
 
-    String newNotebookDir = "/tmp/zeppelin/vfs_notebookrepo2";
+    String newNotebookDir = "target/zeppelin/vfs_notebookrepo2";
     FileUtils.forceMkdir(new File(newNotebookDir));
     Map<String, String> newSettings = ImmutableMap.of("Notebook Path", newNotebookDir);
     notebookRepo.updateSettings(newSettings, AuthenticationInfo.ANONYMOUS);

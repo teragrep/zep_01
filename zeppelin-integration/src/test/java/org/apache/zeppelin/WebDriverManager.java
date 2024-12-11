@@ -58,7 +58,7 @@ public class WebDriverManager {
       int firefoxVersion = 1; // WebDriverManager.getFirefoxVersion();
       LOG.info("Firefox version " + firefoxVersion + " detected");
 
-      downLoadsDir = FileUtils.getTempDirectory().toString();
+      downLoadsDir = new File("target/").getAbsolutePath();
 
       String tempPath = downLoadsDir + "/firefox/";
 
