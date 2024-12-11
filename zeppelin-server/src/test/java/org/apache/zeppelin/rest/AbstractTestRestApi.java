@@ -206,9 +206,9 @@ public abstract class AbstractTestRestApi {
       System.setProperty(ZeppelinConfiguration.ConfVars.ZEPPELIN_HOME.getVarName(),
           zeppelinHome.getAbsolutePath());
       System.setProperty(ZeppelinConfiguration.ConfVars.ZEPPELIN_WAR.getVarName(),
-          new File("../zeppelin-web/dist").getAbsolutePath());
+          new File("target/zeppelin-web/dist").getAbsolutePath());
       System.setProperty(ZeppelinConfiguration.ConfVars.ZEPPELIN_ANGULAR_WAR.getVarName(),
-              new File("../zeppelin-web-angular/dist").getAbsolutePath());
+              new File("target/zeppelin-web-angular/dist").getAbsolutePath());
       System.setProperty(ZeppelinConfiguration.ConfVars.ZEPPELIN_CONF_DIR.getVarName(),
           confDir.getAbsolutePath());
       System.setProperty(
@@ -226,8 +226,8 @@ public abstract class AbstractTestRestApi {
 
       // some test profile does not build zeppelin-web.
       // to prevent zeppelin starting up fail, create zeppelin-web/dist directory
-      new File("../zeppelin-web/dist").mkdirs();
-      new File("../zeppelin-web-angular/dist").mkdirs();
+      new File("target/zeppelin-web/dist").mkdirs();
+      new File("target/zeppelin-web-angular/dist").mkdirs();
 
       LOG.info("Starting Zeppelin Server...");
       ZeppelinConfiguration conf = ZeppelinConfiguration.create();
