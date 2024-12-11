@@ -61,7 +61,7 @@ public class GitNotebookRepoTest {
 
   @Before
   public void setUp() throws Exception {
-    String zpath = System.getProperty("java.io.tmpdir") + "/ZeppelinTest_" + System.currentTimeMillis();
+    String zpath =  new File("target/ZeppelinTest_" + System.currentTimeMillis()).getAbsolutePath();
     zeppelinDir = new File(zpath);
     zeppelinDir.mkdirs();
     new File(zeppelinDir, "conf").mkdirs();

@@ -65,7 +65,7 @@ public class RecoveryTest extends AbstractTestRestApi {
   public void init() throws Exception {
     System.setProperty(ZeppelinConfiguration.ConfVars.ZEPPELIN_RECOVERY_STORAGE_CLASS.getVarName(),
             FileSystemRecoveryStorage.class.getName());
-    recoveryDir = Files.createTempDirectory("recovery").toFile();
+    recoveryDir = new File("target/").toPath().toAbsolutePath().toFile();
     System.setProperty(ZeppelinConfiguration.ConfVars.ZEPPELIN_RECOVERY_DIR.getVarName(),
             recoveryDir.getAbsolutePath());
     startUp(RecoveryTest.class.getSimpleName());
