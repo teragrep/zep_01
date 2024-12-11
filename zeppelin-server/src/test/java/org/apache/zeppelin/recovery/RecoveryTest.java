@@ -76,7 +76,6 @@ public class RecoveryTest extends AbstractTestRestApi {
   @After
   public void destroy() throws Exception {
     shutDown(true, true);
-    FileUtils.deleteDirectory(recoveryDir);
     System.setProperty(ZeppelinConfiguration.ConfVars.ZEPPELIN_RECOVERY_STORAGE_CLASS.getVarName(),
             ZeppelinConfiguration.ConfVars.ZEPPELIN_RECOVERY_STORAGE_CLASS.getStringValue());
   }

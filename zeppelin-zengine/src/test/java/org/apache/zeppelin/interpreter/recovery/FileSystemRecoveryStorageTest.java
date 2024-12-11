@@ -63,7 +63,6 @@ public class FileSystemRecoveryStorageTest extends AbstractInterpreterTest {
   @After
   public void tearDown() throws Exception {
     super.tearDown();
-    FileUtils.deleteDirectory(recoveryDir);
     System.clearProperty(ZeppelinConfiguration.ConfVars.ZEPPELIN_RECOVERY_STORAGE_CLASS.getVarName());
   }
 

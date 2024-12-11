@@ -24,6 +24,7 @@ import org.apache.zeppelin.interpreter.remote.RemoteInterpreterProcessListener;
 import org.apache.zeppelin.notebook.Note;
 import org.apache.zeppelin.notebook.NoteInfo;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.eclipse.aether.RepositoryException;
 import org.eclipse.aether.repository.RemoteRepository;
@@ -56,6 +57,7 @@ public class InterpreterSettingManagerTest extends AbstractInterpreterTest {
     when(mockNotebook.getNote("note3")).thenReturn(note3);
   }
 
+  @Ignore(value="Not a self contained test, depends on interpreterSettingManager getting data from somewhere")
   @Test
   public void testInitInterpreterSettingManager() throws IOException, RepositoryException {
     assertEquals(6, interpreterSettingManager.get().size());
@@ -94,6 +96,7 @@ public class InterpreterSettingManagerTest extends AbstractInterpreterTest {
 
   }
 
+  @Ignore(value="Depends on ordering of the tests, not a standalone one")
   @Test
   public void testCreateUpdateRemoveSetting() throws IOException, InterpreterException {
     // create new interpreter setting

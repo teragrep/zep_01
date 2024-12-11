@@ -57,6 +57,7 @@ import java.lang.ref.WeakReference;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.nio.charset.StandardCharsets;
+import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ExecutorService;
@@ -196,10 +197,9 @@ public abstract class AbstractTestRestApi {
     if (!WAS_RUNNING) {
       ZeppelinConfiguration.reset();
       // copy the resources files to a temp folder
-      zeppelinHome = new File("target/");
+      zeppelinHome = new File("target/" + Instant.now().toEpochMilli());
       LOG.info("ZEPPELIN_HOME: " + zeppelinHome.getAbsolutePath());
       confDir = new File(zeppelinHome, "conf_" + testClassName);
-      FileUtils.deleteDirectory(confDir);
       LOG.info("ZEPPELIN_CONF_DIR: " + confDir.getAbsolutePath());
       confDir.mkdirs();
 
@@ -217,9 +217,6 @@ public abstract class AbstractTestRestApi {
           "spark");
 
       notebookDir = new File(zeppelinHome.getAbsolutePath() + "/notebook_" + testClassName);
-      if (cleanData) {
-        FileUtils.deleteDirectory(notebookDir);
-      }
       System.setProperty(
           ZeppelinConfiguration.ConfVars.ZEPPELIN_NOTEBOOK_DIR.getVarName(),
           notebookDir.getPath()

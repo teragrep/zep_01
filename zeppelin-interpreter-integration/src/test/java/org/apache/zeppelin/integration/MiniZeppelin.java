@@ -65,8 +65,6 @@ public class MiniZeppelin {
 
   public void stop() throws IOException {
     interpreterSettingManager.close();
-    FileUtils.deleteDirectory(confDir);
-    FileUtils.deleteDirectory(notebookDir);
   }
 
   public File getZeppelinHome() {
