@@ -196,7 +196,7 @@ public abstract class AbstractTestRestApi {
     if (!WAS_RUNNING) {
       ZeppelinConfiguration.reset();
       // copy the resources files to a temp folder
-      zeppelinHome = new File("..");
+      zeppelinHome = new File("target/");
       LOG.info("ZEPPELIN_HOME: " + zeppelinHome.getAbsolutePath());
       confDir = new File(zeppelinHome, "conf_" + testClassName);
       FileUtils.deleteDirectory(confDir);

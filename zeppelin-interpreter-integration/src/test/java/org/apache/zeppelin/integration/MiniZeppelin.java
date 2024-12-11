@@ -43,7 +43,7 @@ public class MiniZeppelin {
   protected ZeppelinConfiguration conf;
 
   public void start(Class clazz) throws IOException {
-    zeppelinHome = new File("..");
+    zeppelinHome = new File("target");
     System.setProperty(ZeppelinConfiguration.ConfVars.ZEPPELIN_HOME.getVarName(),
         zeppelinHome.getAbsolutePath());
     confDir = new File(zeppelinHome, "conf_" + clazz.getSimpleName());

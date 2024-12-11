@@ -59,9 +59,9 @@ public abstract class AbstractInterpreterTest {
     // copy the resources files to a temp folder
     zeppelinHome = new File("..");
     LOGGER.info("ZEPPELIN_HOME: " + zeppelinHome.getAbsolutePath());
-    interpreterDir = new File(zeppelinHome, "interpreter_" + getClass().getSimpleName());
-    confDir = new File(zeppelinHome, "conf_" + getClass().getSimpleName());
-    notebookDir = new File(zeppelinHome, "notebook_" + getClass().getSimpleName());
+    interpreterDir = new File(zeppelinHome, "zeppelin-zengine/target/interpreter_" + getClass().getSimpleName());
+    confDir = new File(zeppelinHome, "zeppelin-zengine/target/conf_" + getClass().getSimpleName());
+    notebookDir = new File(zeppelinHome, "zeppelin-zengine/target/notebook_" + getClass().getSimpleName());
     FileUtils.deleteDirectory(notebookDir);
 
     interpreterDir.mkdirs();
