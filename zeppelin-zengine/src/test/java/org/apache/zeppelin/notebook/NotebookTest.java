@@ -368,7 +368,7 @@ public class NotebookTest extends AbstractInterpreterTest implements ParagraphJo
       p1.setText("hello world");
       notebook.saveNote(note, anonymous);
     } catch (IOException fe) {
-      logger.warn("Failed to create note and paragraph. Possible problem with persisting note, safe to ignore", fe);
+      fail("Failure: " + fe.getMessage());
     }
 
     assertEquals(1, notebook.getAllNotes().size());
@@ -448,7 +448,7 @@ public class NotebookTest extends AbstractInterpreterTest implements ParagraphJo
   @Test
   public void testRemoveNote() throws IOException, InterruptedException {
     try {
-      LOGGER.info("--------------- Test testRemoveNote ---------------");
+      LOGGER.debug("--------------- Test testRemoveNote ---------------");
       // create a note and a paragraph
       Note note = notebook.createNote("note1", anonymous);
       int mock1ProcessNum = interpreterSettingManager.getByName("mock1").getAllInterpreterGroups().size();
@@ -466,13 +466,13 @@ public class NotebookTest extends AbstractInterpreterTest implements ParagraphJo
         }
       }
       assertEquals(mock1ProcessNum + 1, interpreterSettingManager.getByName("mock1").getAllInterpreterGroups().size());
-      LOGGER.info("--------------- Finish Test testRemoveNote ---------------");
+      LOGGER.debug("--------------- Finish Test testRemoveNote ---------------");
       notebook.removeNote(note, anonymous);
       // stop interpreter process is async, so we wait for 5 seconds here.
       Thread.sleep(5 * 1000);
       assertEquals(mock1ProcessNum, interpreterSettingManager.getByName("mock1").getAllInterpreterGroups().size());
 
-      LOGGER.info("--------------- Finish Test testRemoveNote ---------------");
+      LOGGER.debug("--------------- Finish Test testRemoveNote ---------------");
     } catch (Exception e) {
       fail("Failure happened: " + e.getMessage());
     }
@@ -480,7 +480,7 @@ public class NotebookTest extends AbstractInterpreterTest implements ParagraphJo
 
   @Test
   public void testRemoveCorruptedNote() throws IOException{
-      LOGGER.info("--------------- Test testRemoveCorruptedNote ---------------");
+      LOGGER.debug("--------------- Test testRemoveCorruptedNote ---------------");
       // create a note and a paragraph
       Note corruptedNote = notebook.createNote("note1", anonymous);
       String corruptedNotePath = notebookDir.getAbsolutePath() + corruptedNote.getPath() + "_" + corruptedNote.getId() + ".zpln";
@@ -488,11 +488,11 @@ public class NotebookTest extends AbstractInterpreterTest implements ParagraphJo
       FileWriter myWriter = new FileWriter(corruptedNotePath);
       myWriter.write("{{{I'm corrupted;;;");
       myWriter.close();
-      LOGGER.info("--------------- Finish Test testRemoveCorruptedNote ---------------");
+      LOGGER.debug("--------------- Finish Test testRemoveCorruptedNote ---------------");
       int numberOfNotes = notebook.getAllNotes().size();
       notebook.removeNote(corruptedNote, anonymous);
       assertEquals(numberOfNotes - 1, notebook.getAllNotes().size());
-      LOGGER.info("--------------- Finish Test testRemoveCorruptedNote ---------------");
+      LOGGER.debug("--------------- Finish Test testRemoveCorruptedNote ---------------");
   }
 
   @Ignore(value="Has sleep in it")
@@ -1162,7 +1162,7 @@ public class NotebookTest extends AbstractInterpreterTest implements ParagraphJo
   @Ignore(value="Has sleep in it")
   @Test
   public void testInterpreterSettingConfig() {
-    LOGGER.info("testInterpreterSettingConfig >>> ");
+    LOGGER.debug("testInterpreterSettingConfig >>> ");
     Note note = new Note("testInterpreterSettingConfig", "config_test",
         interpreterFactory, interpreterSettingManager, this, credentials, new ArrayList<>());
 
@@ -1187,7 +1187,7 @@ public class NotebookTest extends AbstractInterpreterTest implements ParagraphJo
     p1.execute(true);
 
     // Check if the config_test interpreter default parameter takes effect
-    LOGGER.info("p1.getConfig() =  " + p1.getConfig());
+    LOGGER.debug("p1.getConfig() =  " + p1.getConfig());
     assertEquals(false, config.get(InterpreterSetting.PARAGRAPH_CONFIG_RUNONSELECTIONCHANGE));
     assertEquals(true, config.get(InterpreterSetting.PARAGRAPH_CONFIG_TITLE));
     assertEquals(false, config.get(InterpreterSetting.PARAGRAPH_CONFIG_CHECK_EMTPY));
@@ -1197,7 +1197,7 @@ public class NotebookTest extends AbstractInterpreterTest implements ParagraphJo
     p1.execute(true);
 
     // mock1 has no config setting in interpreter-setting.json, so keep the previous config
-    LOGGER.info("changed intp p1.getConfig() =  " + p1.getConfig());
+    LOGGER.debug("changed intp p1.getConfig() =  " + p1.getConfig());
     assertEquals(false, config.get(InterpreterSetting.PARAGRAPH_CONFIG_RUNONSELECTIONCHANGE));
     assertEquals(true, config.get(InterpreterSetting.PARAGRAPH_CONFIG_TITLE));
     assertEquals(false, config.get(InterpreterSetting.PARAGRAPH_CONFIG_CHECK_EMTPY));
@@ -1209,7 +1209,7 @@ public class NotebookTest extends AbstractInterpreterTest implements ParagraphJo
     p1.execute(true);
 
     // manually config change take effect after execution
-    LOGGER.info("changed intp p1.getConfig() =  " + p1.getConfig());
+    LOGGER.debug("changed intp p1.getConfig() =  " + p1.getConfig());
     assertEquals(true, config.get(InterpreterSetting.PARAGRAPH_CONFIG_RUNONSELECTIONCHANGE));
     assertEquals(false, config.get(InterpreterSetting.PARAGRAPH_CONFIG_TITLE));
     assertEquals(false, config.get(InterpreterSetting.PARAGRAPH_CONFIG_CHECK_EMTPY));

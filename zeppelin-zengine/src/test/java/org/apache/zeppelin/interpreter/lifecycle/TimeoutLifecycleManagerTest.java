@@ -125,7 +125,7 @@ public class TimeoutLifecycleManagerTest extends AbstractInterpreterTest {
 
     while(!remoteInterpreter.isOpened()) {
       Thread.sleep(1000);
-      LOGGER.info("Wait for interpreter to be started");
+      LOGGER.debug("Wait for interpreter to be started");
     }
 
     InterpreterSetting interpreterSetting = interpreterSettingManager.getInterpreterSettingByName("test");

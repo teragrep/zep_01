@@ -92,7 +92,7 @@ class SqlCompleterTest {
 
       String explain = explain(buffer, cursor, candidates);
 
-      logger.info(explain);
+      logger.debug(explain);
 
       assertEquals(expected, new HashSet<>(candidates), "Buffer [" + buffer.replace(" ", ".")
               + "] and Cursor[" + cursor + "] " + explain);

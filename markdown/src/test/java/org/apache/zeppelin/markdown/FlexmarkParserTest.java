@@ -85,7 +85,7 @@ class FlexmarkParserTest {
       try {
         r1 = md.interpret("# H1", null).code().name();
       } catch (Exception e) {
-        LOGGER.error("testTestMultipleThread failed to interpret", e);
+        fail("Failed to interpret # H1", e);
       }
       result = r1;
     }

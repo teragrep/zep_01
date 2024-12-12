@@ -21,6 +21,7 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
@@ -87,7 +88,7 @@ public class ZeppelinRestApiTest extends AbstractTestRestApi {
 
   @Test
   public void testGetNoteInfo() throws IOException {
-    LOG.info("testGetNoteInfo");
+    LOG.debug("testGetNoteInfo");
     Note note = null;
     try {
       // Create note to get info
@@ -105,7 +106,7 @@ public class ZeppelinRestApiTest extends AbstractTestRestApi {
       String sourceNoteId = note.getId();
       CloseableHttpResponse get = httpGet("/notebook/" + sourceNoteId);
       String getResponse = EntityUtils.toString(get.getEntity(), StandardCharsets.UTF_8);
-      LOG.info("testGetNoteInfo \n" + getResponse);
+      LOG.debug("testGetNoteInfo \n" + getResponse);
       assertThat("test note get method:", get, isAllowed());
 
       Map<String, Object> resp = gson.fromJson(getResponse,
@@ -151,19 +152,19 @@ public class ZeppelinRestApiTest extends AbstractTestRestApi {
         "}}]} ";
     CloseableHttpResponse post = httpPost("/notebook/", jsonRequest);
     String postResponse = EntityUtils.toString(post.getEntity(), StandardCharsets.UTF_8);
-    LOG.info("testNoteCreate \n" + postResponse);
+    LOG.debug("testNoteCreate \n" + postResponse);
     assertThat("test note create method:", post, isAllowed());
 
     Map<String, Object> resp = gson.fromJson(postResponse,
             new TypeToken<Map<String, Object>>() {}.getType());
 
     String newNoteId =  (String) resp.get("body");
-    LOG.info("newNoteId:=" + newNoteId);
+    LOG.debug("newNoteId:=" + newNoteId);
     Note newNote = TestUtils.getInstance(Notebook.class).getNote(newNoteId);
     assertNotNull("Can not find new note by id", newNote);
     // This is partial test as newNote is in memory but is not persistent
     String newNoteName = newNote.getName();
-    LOG.info("new note name is: " + newNoteName);
+    LOG.debug("new note name is: " + newNoteName);
     String expectedNoteName = noteName;
     if (noteName.isEmpty()) {
       expectedNoteName = "Note " + newNoteId;
@@ -194,19 +195,19 @@ public class ZeppelinRestApiTest extends AbstractTestRestApi {
     String jsonRequest = "{\"name\":\"" + noteName + "\"}";
     CloseableHttpResponse post = httpPost("/notebook/", jsonRequest);
     String postResponse = EntityUtils.toString(post.getEntity(), StandardCharsets.UTF_8);
-    LOG.info("testNoteCreate \n" + postResponse);
+    LOG.debug("testNoteCreate \n" + postResponse);
     assertThat("test note create method:", post, isAllowed());
 
     Map<String, Object> resp = gson.fromJson(postResponse,
             new TypeToken<Map<String, Object>>() {}.getType());
 
     String newNoteId =  (String) resp.get("body");
-    LOG.info("newNoteId:=" + newNoteId);
+    LOG.debug("newNoteId:=" + newNoteId);
     Note newNote = TestUtils.getInstance(Notebook.class).getNote(newNoteId);
     assertNotNull("Can not find new note by id", newNote);
     // This is partial test as newNote is in memory but is not persistent
     String newNoteName = newNote.getName();
-    LOG.info("new note name is: " + newNoteName);
+    LOG.debug("new note name is: " + newNoteName);
     if (StringUtils.isBlank(noteName)) {
       noteName = "Untitled Note";
     }
@@ -218,7 +219,7 @@ public class ZeppelinRestApiTest extends AbstractTestRestApi {
 
   @Test
   public void testDeleteNote() throws IOException {
-    LOG.info("testDeleteNote");
+    LOG.debug("testDeleteNote");
     Note note = null;
     try {
       //Create note and get ID
@@ -236,13 +237,13 @@ public class ZeppelinRestApiTest extends AbstractTestRestApi {
 
   @Test
   public void testDeleteNoteBadId() throws IOException {
-    LOG.info("testDeleteNoteBadId");
+    LOG.debug("testDeleteNoteBadId");
     testDeleteNotExistNote("bad_ID");
   }
 
   @Test
   public void testExportNote() throws IOException {
-    LOG.info("testExportNote");
+    LOG.debug("testExportNote");
 
     Note note = null;
     try {
@@ -259,7 +260,7 @@ public class ZeppelinRestApiTest extends AbstractTestRestApi {
       // Call export Note REST API
       CloseableHttpResponse get = httpGet("/notebook/export/" + sourceNoteId);
       String getResponse = EntityUtils.toString(get.getEntity(), StandardCharsets.UTF_8);
-      LOG.info("testNoteExport \n" + getResponse);
+      LOG.debug("testNoteExport \n" + getResponse);
       assertThat("test note export method:", get, isAllowed());
 
       Map<String, Object> resp =
@@ -268,7 +269,7 @@ public class ZeppelinRestApiTest extends AbstractTestRestApi {
 
       String exportJSON = (String) resp.get("body");
       assertNotNull("Can not find new notejson", exportJSON);
-      LOG.info("export JSON:=" + exportJSON);
+      LOG.debug("export JSON:=" + exportJSON);
       get.close();
     } finally {
       if (null != note) {
@@ -286,7 +287,7 @@ public class ZeppelinRestApiTest extends AbstractTestRestApi {
     String noteName;
     try {
       noteName = "source note for import";
-      LOG.info("testImportNote");
+      LOG.debug("testImportNote");
       // create test note
       note = TestUtils.getInstance(Notebook.class).createNote("note1_testImportNotebook", anonymous);
       assertNotNull("can't create new note", note);
@@ -346,7 +347,7 @@ public class ZeppelinRestApiTest extends AbstractTestRestApi {
 
   private void testDeleteNote(String noteId) throws IOException {
     CloseableHttpResponse delete = httpDelete(("/notebook/" + noteId));
-    LOG.info("testDeleteNote delete response\n" + EntityUtils.toString(delete.getEntity(), StandardCharsets.UTF_8));
+    LOG.debug("testDeleteNote delete response\n" + EntityUtils.toString(delete.getEntity(), StandardCharsets.UTF_8));
     assertThat("Test delete method:", delete, isAllowed());
     delete.close();
     // make sure note is deleted
@@ -358,14 +359,14 @@ public class ZeppelinRestApiTest extends AbstractTestRestApi {
 
   private void testDeleteNotExistNote(String noteId) throws IOException {
     CloseableHttpResponse delete = httpDelete(("/notebook/" + noteId));
-    LOG.info("testDeleteNote delete response\n" + EntityUtils.toString(delete.getEntity(), StandardCharsets.UTF_8));
+    LOG.debug("testDeleteNote delete response\n" + EntityUtils.toString(delete.getEntity(), StandardCharsets.UTF_8));
     assertThat("Test delete method:", delete, isNotFound());
     delete.close();
   }
 
   @Test
   public void testCloneNote() throws IOException, IllegalArgumentException {
-    LOG.info("testCloneNote");
+    LOG.debug("testCloneNote");
     Note note = null, newNote = null;
     try {
       // Create note to clone
@@ -385,14 +386,14 @@ public class ZeppelinRestApiTest extends AbstractTestRestApi {
       String jsonRequest = "{\"name\":\"" + noteName + "\"}";
       CloseableHttpResponse post = httpPost("/notebook/" + sourceNoteId, jsonRequest);
       String postResponse = EntityUtils.toString(post.getEntity(), StandardCharsets.UTF_8);
-      LOG.info("testNoteClone \n" + postResponse);
+      LOG.debug("testNoteClone \n" + postResponse);
       assertThat("test note clone method:", post, isAllowed());
 
       Map<String, Object> resp = gson.fromJson(postResponse,
               new TypeToken<Map<String, Object>>() {}.getType());
 
       String newNoteId =  (String) resp.get("body");
-      LOG.info("newNoteId:=" + newNoteId);
+      LOG.debug("newNoteId:=" + newNoteId);
       newNote = TestUtils.getInstance(Notebook.class).getNote(newNoteId);
       assertNotNull("Can not find new note by id", newNote);
       assertEquals("Compare note names", noteName, newNote.getName());
@@ -412,7 +413,7 @@ public class ZeppelinRestApiTest extends AbstractTestRestApi {
 
   @Test
   public void testListNotes() throws IOException {
-    LOG.info("testListNotes");
+    LOG.debug("testListNotes");
     CloseableHttpResponse get = httpGet("/notebook/");
     assertThat("List notes method", get, isAllowed());
     Map<String, Object> resp = gson.fromJson(EntityUtils.toString(get.getEntity(), StandardCharsets.UTF_8),
@@ -429,7 +430,7 @@ public class ZeppelinRestApiTest extends AbstractTestRestApi {
 
   @Test
   public void testNoteJobs() throws Exception {
-    LOG.info("testNoteJobs");
+    LOG.debug("testNoteJobs");
 
     Note note = null;
     try {
@@ -453,7 +454,7 @@ public class ZeppelinRestApiTest extends AbstractTestRestApi {
       while (!paragraph.isTerminated()) {
         Thread.sleep(1000);
         if (timeout++ > 10) {
-          LOG.info("testNoteJobs timeout job.");
+          fail("Failure: testNoteJobs timeout job.");
           break;
         }
       }
@@ -490,7 +491,7 @@ public class ZeppelinRestApiTest extends AbstractTestRestApi {
 
   @Test
   public void testGetNoteJob() throws Exception {
-    LOG.info("testGetNoteJob");
+    LOG.debug("testGetNoteJob");
 
     Note note = null;
     try {
@@ -516,7 +517,7 @@ public class ZeppelinRestApiTest extends AbstractTestRestApi {
       String responseBody = EntityUtils.toString(get.getEntity(), StandardCharsets.UTF_8);
       get.close();
 
-      LOG.info("test get note job: \n" + responseBody);
+      LOG.debug("test get note job: \n" + responseBody);
       Map<String, Object> resp = gson.fromJson(responseBody,
               new TypeToken<Map<String, Object>>() {}.getType());
 
@@ -530,7 +531,7 @@ public class ZeppelinRestApiTest extends AbstractTestRestApi {
       while (!paragraph.isTerminated()) {
         Thread.sleep(100);
         if (timeout++ > 10) {
-          LOG.info("testGetNoteJob timeout job.");
+          fail("Failure: testGetNoteJob timeout job.");
           break;
         }
       }
@@ -544,7 +545,7 @@ public class ZeppelinRestApiTest extends AbstractTestRestApi {
 
   @Test
   public void testRunParagraphWithParams() throws Exception {
-    LOG.info("testRunParagraphWithParams");
+    LOG.debug("testRunParagraphWithParams");
 
     Note note = null;
     try {
@@ -721,7 +722,7 @@ public class ZeppelinRestApiTest extends AbstractTestRestApi {
       String jsonRequest = "{\"title\": \"title1\", \"text\": \"text1\"}";
       CloseableHttpResponse post = httpPost("/notebook/" + note.getId() + "/paragraph", jsonRequest);
       String postResponse = EntityUtils.toString(post.getEntity(), StandardCharsets.UTF_8);
-      LOG.info("testInsertParagraph response\n" + postResponse);
+      LOG.debug("testInsertParagraph response\n" + postResponse);
       assertThat("Test insert method:", post, isAllowed());
       post.close();
 
@@ -729,7 +730,7 @@ public class ZeppelinRestApiTest extends AbstractTestRestApi {
               new TypeToken<Map<String, Object>>() {}.getType());
 
       String newParagraphId = (String) resp.get("body");
-      LOG.info("newParagraphId:=" + newParagraphId);
+      LOG.debug("newParagraphId:=" + newParagraphId);
 
       Note retrNote = TestUtils.getInstance(Notebook.class).getNote(note.getId());
       Paragraph newParagraph = retrNote.getParagraph(newParagraphId);
@@ -744,7 +745,7 @@ public class ZeppelinRestApiTest extends AbstractTestRestApi {
       // insert to index 0
       String jsonRequest2 = "{\"index\": 0, \"title\": \"title2\", \"text\": \"text2\"}";
       CloseableHttpResponse post2 = httpPost("/notebook/" + note.getId() + "/paragraph", jsonRequest2);
-      LOG.info("testInsertParagraph response2\n" + EntityUtils.toString(post2.getEntity(), StandardCharsets.UTF_8));
+      LOG.debug("testInsertParagraph response2\n" + EntityUtils.toString(post2.getEntity(), StandardCharsets.UTF_8));
       assertThat("Test insert method:", post2, isAllowed());
       post2.close();
 
@@ -757,7 +758,7 @@ public class ZeppelinRestApiTest extends AbstractTestRestApi {
                             "\"config\": {\"colWidth\": 9.0, \"title\": true, " +
                             "\"results\": [{\"graph\": {\"mode\": \"pieChart\"}}]}}";
       CloseableHttpResponse post3 = httpPost("/notebook/" + note.getId() + "/paragraph", jsonRequest3);
-      LOG.info("testInsertParagraph response4\n" + EntityUtils.toString(post3.getEntity(), StandardCharsets.UTF_8));
+      LOG.debug("testInsertParagraph response4\n" + EntityUtils.toString(post3.getEntity(), StandardCharsets.UTF_8));
       assertThat("Test insert method:", post3, isAllowed());
       post3.close();
 
@@ -839,7 +840,7 @@ public class ZeppelinRestApiTest extends AbstractTestRestApi {
 
       CloseableHttpResponse get = httpGet("/notebook/" + note.getId() + "/paragraph/" + p.getId());
       String getResponse = EntityUtils.toString(get.getEntity(), StandardCharsets.UTF_8);
-      LOG.info("testGetParagraph response\n" + getResponse);
+      LOG.debug("testGetParagraph response\n" + getResponse);
       assertThat("Test get method: ", get, isAllowed());
       get.close();
 

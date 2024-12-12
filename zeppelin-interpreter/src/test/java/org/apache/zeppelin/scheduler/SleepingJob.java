@@ -51,7 +51,7 @@ public class SleepingJob extends Job {
       try {
         Thread.sleep(10);
       } catch (InterruptedException e) {
-        LOGGER.error("Exception in MockInterpreterAngular while interpret Thread.sleep", e);
+        throw new RuntimeException("This should not happen", e);
       }
       if (System.currentTimeMillis() - start > time) {
         break;

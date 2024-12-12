@@ -63,8 +63,8 @@ public abstract class SparkIntegrationTest {
   private String sparkHome;
 
   public SparkIntegrationTest(String sparkVersion, String hadoopVersion) {
-    LOGGER.info("Testing Spark Version: " + sparkVersion);
-    LOGGER.info("Testing Hadoop Version: " + hadoopVersion);
+    LOGGER.debug("Testing Spark Version: " + sparkVersion);
+    LOGGER.debug("Testing Hadoop Version: " + hadoopVersion);
     this.sparkVersion = sparkVersion;
     // this.sparkHome = DownloadUtils.downloadSpark(sparkVersion, hadoopVersion);
   }

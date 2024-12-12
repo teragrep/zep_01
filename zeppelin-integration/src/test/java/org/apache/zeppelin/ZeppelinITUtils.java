@@ -29,16 +29,16 @@ public class ZeppelinITUtils {
 
   public static void sleep(long millis, boolean logOutput) {
     if (logOutput) {
-      LOG.info("Starting sleeping for " + (millis / 1000) + " seconds...");
-      LOG.info("Caller: " + Thread.currentThread().getStackTrace()[2]);
+      LOG.debug("Starting sleeping for " + (millis / 1000) + " seconds...");
+      LOG.debug("Caller: " + Thread.currentThread().getStackTrace()[2]);
     }
     try {
       Thread.sleep(millis);
     } catch (InterruptedException e) {
-      LOG.error("Exception in WebDriverManager while getWebDriver ", e);
+      throw new RuntimeException("Exception in WebDriverManager while getWebDriver ", e);
     }
     if (logOutput) {
-      LOG.info("Finished.");
+      LOG.debug("Finished.");
     }
   }
 

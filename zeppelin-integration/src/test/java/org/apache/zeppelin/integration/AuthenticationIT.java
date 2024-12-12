@@ -17,6 +17,7 @@
 package org.apache.zeppelin.integration;
 
 import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
 import java.io.File;
 import java.io.IOException;
@@ -91,7 +92,7 @@ public class AuthenticationIT extends AbstractZeppelinIT {
       }
       FileUtils.write(file, authShiro, "UTF-8");
     } catch (IOException e) {
-      LOG.error("Error in AuthenticationIT startUp::", e);
+      fail("Failure: " + e.getMessage());
     }
     ZeppelinITUtils.restartZeppelin();
     driver = WebDriverManager.getWebDriver();
@@ -110,7 +111,7 @@ public class AuthenticationIT extends AbstractZeppelinIT {
         }
       }
     } catch (IOException e) {
-      LOG.error("Error in AuthenticationIT tearDown::", e);
+      fail("Failure: " + e.getMessage());
     }
     ZeppelinITUtils.restartZeppelin();
     driver.quit();

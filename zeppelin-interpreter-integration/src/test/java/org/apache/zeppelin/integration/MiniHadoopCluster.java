@@ -52,7 +52,7 @@ public class MiniHadoopCluster {
   }
 
   public void start() throws IOException {
-    LOGGER.info("Starting MiniHadoopCluster ...");
+    LOGGER.debug("Starting MiniHadoopCluster ...");
     new File(configPath).mkdirs();
     // start MiniDFSCluster
     this.dfsCluster = new MiniDFSCluster.Builder(hadoopConf)
@@ -99,7 +99,7 @@ public class MiniHadoopCluster {
       throw new IOException("RM not up yes");
     }
 
-    LOGGER.info("RM address in configuration is " + yarnConfig.get(YarnConfiguration.RM_ADDRESS));
+    LOGGER.debug("RM address in configuration is " + yarnConfig.get(YarnConfiguration.RM_ADDRESS));
     saveConfig(yarnConfig,configPath + "/yarn-site.xml");
   }
 
@@ -115,7 +115,7 @@ public class MiniHadoopCluster {
     } finally {
       out.close();
     }
-    LOGGER.info("Save configuration to " + dest);
+    LOGGER.debug("Save configuration to " + dest);
   }
 
   public void stop() {

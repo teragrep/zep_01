@@ -193,7 +193,7 @@ public class ZeppelinIT extends AbstractZeppelinIT {
           "//div[@class='modal-footer']//button[contains(.,'OK')]"));
       ZeppelinITUtils.sleep(100, false);
 
-      LOG.info("testCreateNotebook Test executed");
+      LOG.debug("testCreateNotebook Test executed");
     } catch (Exception e) {
       handleException("Exception in ZeppelinIT while testAngularDisplay ", e);
     }
@@ -322,7 +322,7 @@ public class ZeppelinIT extends AbstractZeppelinIT {
       deleteTestNotebook(driver);
       ZeppelinITUtils.sleep(1000, false);
 
-      LOG.info("testAngularRunParagraph Test executed");
+      LOG.debug("testAngularRunParagraph Test executed");
     }  catch (Exception e) {
       handleException("Exception in ZeppelinIT while testAngularRunParagraph", e);
     }
@@ -339,7 +339,7 @@ public class ZeppelinIT extends AbstractZeppelinIT {
       waitForParagraph(1, "READY");
 
       String currentUrl = driver.getCurrentUrl();
-      LOG.info("currentUrl = " + currentUrl);
+      LOG.debug("currentUrl = " + currentUrl);
 
       //delete created notebook to trash
       deleteTestNotebook(driver);
@@ -352,7 +352,7 @@ public class ZeppelinIT extends AbstractZeppelinIT {
       // delete note from trash
       deleteTrashNotebook(driver);
       ZeppelinITUtils.sleep(2000, false);
-      LOG.info("deleteTrashNode executed");
+      LOG.debug("deleteTrashNode executed");
     }  catch (Exception e) {
       handleException("Exception in ZeppelinIT while deleteTrashNode", e);
     }

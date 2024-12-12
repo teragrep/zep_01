@@ -439,9 +439,7 @@ public class NotebookServerTest extends AbstractTestRestApi {
       try {
         note = notebookServer.importNote(null, context, messageReceived);
       } catch (NullPointerException e) {
-        //broadcastNoteList(); failed nothing to worry.
-        LOG.error("Exception in NotebookServerTest while testImportNotebook, failed nothing to " +
-                "worry ", e);
+        fail("Failure: " + e.getMessage());
       }
 
       assertNotEquals(null, notebook.getNote(note.getId()));

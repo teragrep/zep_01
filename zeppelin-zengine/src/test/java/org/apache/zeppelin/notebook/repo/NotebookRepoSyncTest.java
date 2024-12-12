@@ -20,6 +20,7 @@ package org.apache.zeppelin.notebook.repo;
 import static com.google.common.truth.Truth.assertThat;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 import static org.mockito.Mockito.mock;
 
 import com.google.common.io.Files;
@@ -89,8 +90,8 @@ public class NotebookRepoSyncTest {
     System.setProperty(ConfVars.ZEPPELIN_CONFIG_FS_DIR.getVarName(), ZEPPELIN_HOME.getAbsolutePath() + "/conf");
     System.setProperty(ConfVars.ZEPPELIN_PLUGINS_DIR.getVarName(), new File("../../../plugins").getAbsolutePath());
 
-    LOG.info("main Note dir : " + mainNotePath);
-    LOG.info("secondary note dir : " + secNotePath);
+    LOG.debug("main Note dir : " + mainNotePath);
+    LOG.debug("secondary note dir : " + secNotePath);
     conf = ZeppelinConfiguration.create();
 
     ConfigStorage.reset();
@@ -227,7 +228,7 @@ public class NotebookRepoSyncTest {
     try {
       FileUtils.copyDirectory(srcDir, destDir);
     } catch (IOException e) {
-      LOG.error(e.toString(), e);
+      fail("Failure: " + e.getMessage());
     }
 
     assertEquals(0, notebookRepoSync.list(0, anonymous).size());
@@ -259,7 +260,7 @@ public class NotebookRepoSyncTest {
     try {
       FileUtils.copyDirectory(srcDir, destDir);
     } catch (IOException e) {
-      LOG.error(e.toString(), e);
+      fail("Failure: " + e.getMessage());
     }
     assertEquals(0, notebookRepoSync.list(0, null).size());
     assertEquals(2, notebookRepoSync.list(1, null).size());
@@ -275,7 +276,7 @@ public class NotebookRepoSyncTest {
     try {
       FileUtils.copyDirectory(srcDir, destDir);
     } catch (IOException e) {
-      LOG.error(e.toString(), e);
+      fail("Failure: " + e.getMessage());
     }
     assertEquals(2, notebookRepoSync.list(0, null).size());
     assertEquals(0, notebookRepoSync.list(1, null).size());

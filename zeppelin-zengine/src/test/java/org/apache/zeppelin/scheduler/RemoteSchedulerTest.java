@@ -121,7 +121,7 @@ public class RemoteSchedulerTest extends AbstractInterpreterTest
 
     int cycles = 0;
     while (!job.isRunning() && cycles < MAX_WAIT_CYCLES) {
-      LOGGER.info("Status:" + job.getStatus());
+      LOGGER.debug("Status:" + job.getStatus());
       Thread.sleep(TICK_WAIT);
       cycles++;
     }

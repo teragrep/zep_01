@@ -31,6 +31,8 @@ import java.util.List;
 import java.util.Properties;
 import java.util.concurrent.atomic.AtomicInteger;
 
+import static org.junit.Assert.fail;
+
 public class MockInterpreterAngular extends Interpreter {
 
   private static final Logger LOGGER = LoggerFactory.getLogger(MockInterpreterAngular.class);
@@ -86,7 +88,7 @@ public class MockInterpreterAngular extends Interpreter {
     try {
       Thread.sleep(500); // wait for watcher executed
     } catch (InterruptedException e) {
-      LOGGER.error("Exception in MockInterpreterAngular while interpret Thread.sleep", e);
+      fail("Failure: " + e.getMessage());
     }
 
     String msg = registry.getAll(context.getNoteId(), null).size() + " " + Integer.toString(numWatch

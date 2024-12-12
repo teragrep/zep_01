@@ -71,7 +71,7 @@ public class ZeppelinClientIntegrationTest extends AbstractTestRestApi {
   @Test
   public void testZeppelinVersion() throws Exception {
     String version = zeppelinClient.getVersion();
-    LOG.info("Zeppelin version: " + version);
+    LOG.debug("Zeppelin version: " + version);
   }
 
   @Test

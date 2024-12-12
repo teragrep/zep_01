@@ -42,6 +42,7 @@ import java.io.File;
 import java.io.IOException;
 
 import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
 @Ignore(value="Contains file writes/deletions that should not be needed in tests")
 public class PersonalizeActionsIT extends AbstractZeppelinIT {
@@ -80,7 +81,7 @@ public class PersonalizeActionsIT extends AbstractZeppelinIT {
       }
       FileUtils.write(file, authShiro, "UTF-8");
     } catch (IOException e) {
-      LOG.error("Error in PersonalizeActionsIT startUp::", e);
+      fail("Failure: " + e.getMessage());
     }
     ZeppelinITUtils.restartZeppelin();
     driver = WebDriverManager.getWebDriver();
@@ -98,7 +99,7 @@ public class PersonalizeActionsIT extends AbstractZeppelinIT {
         }
       }
     } catch (IOException e) {
-      LOG.error("Error in PersonalizeActionsIT tearDown::", e);
+      fail("Failure: " + e.getMessage());
     }
     ZeppelinITUtils.restartZeppelin();
     driver.quit();

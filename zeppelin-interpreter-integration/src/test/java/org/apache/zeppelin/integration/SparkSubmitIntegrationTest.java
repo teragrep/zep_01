@@ -65,8 +65,8 @@ public class SparkSubmitIntegrationTest {
   public static void setUp() throws IOException {
     String sparkVersion = "3.4.2";
     String hadoopVersion = "3";
-    LOGGER.info("Testing Spark Version: " + sparkVersion);
-    LOGGER.info("Testing Hadoop Version: " + hadoopVersion);
+    LOGGER.debug("Testing Spark Version: " + sparkVersion);
+    LOGGER.debug("Testing Hadoop Version: " + hadoopVersion);
     // sparkHome = DownloadUtils.downloadSpark(sparkVersion, hadoopVersion);
 
     hadoopCluster = new MiniHadoopCluster();

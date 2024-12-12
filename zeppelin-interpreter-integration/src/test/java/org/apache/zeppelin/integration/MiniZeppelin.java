@@ -50,7 +50,7 @@ public class MiniZeppelin {
     notebookDir = new File(zeppelinHome, "notebook_" + clazz.getSimpleName());
     confDir.mkdirs();
     notebookDir.mkdirs();
-    LOGGER.info("ZEPPELIN_HOME: " + zeppelinHome.getAbsolutePath());
+    LOGGER.debug("ZEPPELIN_HOME: " + zeppelinHome.getAbsolutePath());
     FileUtils.copyFile(new File(zeppelinHome, "conf/log4j.properties"), new File(confDir, "log4j.properties"));
     FileUtils.copyFile(new File(zeppelinHome, "conf/log4j2.properties"), new File(confDir, "log4j2.properties"));
     FileUtils.copyFile(new File(zeppelinHome, "conf/log4j_yarn_cluster.properties"), new File(confDir, "log4j_yarn_cluster.properties"));

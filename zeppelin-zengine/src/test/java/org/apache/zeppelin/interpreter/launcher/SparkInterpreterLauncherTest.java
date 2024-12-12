@@ -58,7 +58,7 @@ public class SparkInterpreterLauncherTest {
             new File("..").getAbsolutePath());
 
     zeppelinHome = ZeppelinConfiguration.create().getZeppelinHome();
-    LOGGER.info("ZEPPELIN_HOME: " + zeppelinHome);
+    LOGGER.debug("ZEPPELIN_HOME: " + zeppelinHome);
   }
 
   @Test

@@ -106,7 +106,6 @@ public class NotebookRepoSyncInitializationTest {
       NotebookRepoSync notebookRepoSync = new NotebookRepoSync(conf);
       fail("Should throw exception due to invalid NotebookRepo");
     } catch (IOException e) {
-      LOGGER.error(e.getMessage());
       assertTrue(e.getMessage().contains("Fail to instantiate notebookrepo from classpath directly"));
     }
   }
@@ -159,7 +158,6 @@ public class NotebookRepoSyncInitializationTest {
       NotebookRepoSync notebookRepoSync = new NotebookRepoSync(conf);
       fail("Should throw exception due to invalid NotebookRepo");
     } catch (IOException e) {
-      LOGGER.error(e.getMessage());
       assertTrue(e.getMessage().contains("Fail to instantiate notebookrepo from classpath directly"));
     }
   }

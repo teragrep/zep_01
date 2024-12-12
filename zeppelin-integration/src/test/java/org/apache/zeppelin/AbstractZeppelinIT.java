@@ -43,6 +43,8 @@ import org.openqa.selenium.support.ui.WebDriverWait;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import static org.junit.Assert.fail;
+
 abstract public class AbstractZeppelinIT {
 
   protected static WebDriver driver;
@@ -172,9 +174,7 @@ abstract public class AbstractZeppelinIT {
   }
 
   protected void handleException(String message, Exception e) throws Exception {
-    LOG.error(message, e);
-    File scrFile = ((TakesScreenshot) driver).getScreenshotAs(OutputType.FILE);
-    LOG.error("ScreenShot::\ndata:image/png;base64," + new String(Base64.encodeBase64(FileUtils.readFileToByteArray(scrFile))));
+    fail("Failed to handle: " + e.getMessage());
     throw e;
   }
 
