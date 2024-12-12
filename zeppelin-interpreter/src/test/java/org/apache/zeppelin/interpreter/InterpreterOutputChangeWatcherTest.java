@@ -30,7 +30,6 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 
-@Ignore(value="Contains questionable file creations and deletions")
 public class InterpreterOutputChangeWatcherTest implements InterpreterOutputChangeListener {
   private File tmpDir;
   private File fileChanged;
@@ -42,8 +41,7 @@ public class InterpreterOutputChangeWatcherTest implements InterpreterOutputChan
     watcher = new InterpreterOutputChangeWatcher(this);
     watcher.start();
 
-    tmpDir = new File(System.getProperty("java.io.tmpdir") + "/ZeppelinLTest_" +
-        System.currentTimeMillis());
+    tmpDir = new File("target/ZeppelinLTest_" + System.currentTimeMillis());
     tmpDir.mkdirs();
     fileChanged = null;
     numChanged = new AtomicInteger(0);
@@ -52,23 +50,7 @@ public class InterpreterOutputChangeWatcherTest implements InterpreterOutputChan
   @After
   public void tearDown() throws Exception {
     watcher.shutdown();
-    delete(tmpDir);
   }
-
-  private void delete(File file) {
-    if (file.isFile()) {
-      file.delete();
-    } else if (file.isDirectory()) {
-      File[] files = file.listFiles();
-      if (files != null && files.length > 0) {
-        for (File f : files) {
-          delete(f);
-        }
-      }
-      file.delete();
-    }
-  }
-
 
   @Ignore("Contains sleeping job")
   @Test

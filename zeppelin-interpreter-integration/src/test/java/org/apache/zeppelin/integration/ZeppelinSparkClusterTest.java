@@ -39,6 +39,7 @@ import org.apache.zeppelin.user.AuthenticationInfo;
 import org.apache.zeppelin.utils.TestUtils;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -223,7 +224,8 @@ public abstract class ZeppelinSparkClusterTest extends AbstractTestRestApi {
     try {
       note = TestUtils.getInstance(Notebook.class).createNote("note1", anonymous);
       Paragraph p = note.addNewParagraph(anonymous);
-      File tmpJsonFile = File.createTempFile("test", ".json");
+      File tmpJsonFile = new File("target/test.json");
+      tmpJsonFile.createNewFile();
       FileWriter jsonFileWriter = new FileWriter(tmpJsonFile);
       IOUtils.copy(new StringReader("{\"metadata\": { \"key\": 84896, \"value\": 54 }}\n"),
               jsonFileWriter);
@@ -256,7 +258,8 @@ public abstract class ZeppelinSparkClusterTest extends AbstractTestRestApi {
     try {
       note = TestUtils.getInstance(Notebook.class).createNote("note1", anonymous);
       Paragraph p = note.addNewParagraph(anonymous);
-      File tmpCSVFile = File.createTempFile("test", ".csv");
+      File tmpCSVFile = new File("target/test.csv");
+      tmpCSVFile.createNewFile();
       FileWriter csvFileWriter = new FileWriter(tmpCSVFile);
       IOUtils.copy(new StringReader("84896,54"), csvFileWriter);
       csvFileWriter.close();
@@ -945,6 +948,7 @@ public abstract class ZeppelinSparkClusterTest extends AbstractTestRestApi {
     }
   }
 
+  @Ignore(value="References to external spark.jars.packages")
   @Test
   public void testConfInterpreter() throws IOException {
     Note note = null;
