@@ -29,6 +29,7 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.time.Instant;
 import java.util.Random;
 
 import static org.junit.Assert.*;
@@ -38,7 +39,7 @@ public class LocalConfigStorageTest {
 
     @Test
     public void testWritingAtomically() throws IOException {
-        final Path destination = Files.createTempFile("test-", "file");
+        final Path destination = new File("target/test-file-" + Instant.now().toEpochMilli()).toPath().toAbsolutePath();
         final File destinationFile = destination.toFile();
         try {
             FileUtils.atomicWriteToFile(TEST_STRING, destinationFile);
@@ -54,7 +55,7 @@ public class LocalConfigStorageTest {
     @Test
     public void testWritingAtomicallyNonExistingDir() throws IOException {
         Random rnd = new Random();
-        final Path destDir = Paths.get(System.getProperty("java.io.tmpdir"), "non-existing-" + rnd.nextLong());
+        final Path destDir = new File("target/non-existing-" + rnd.nextLong()).toPath();
         final Path destination = Paths.get(destDir.toString(),"test-" + rnd.nextLong() + "-file");
         final File destinationFile = destination.toFile();
         try {
@@ -71,7 +72,7 @@ public class LocalConfigStorageTest {
 
     @Test
     public void testReading() throws IOException {
-        final Path destination = Files.createTempFile("test-", "file");
+        final Path destination = new File("target/test-file-" + Instant.now().toEpochMilli()).toPath();
         final File destinationFile = destination.toFile();
 
         try {

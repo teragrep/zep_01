@@ -1622,20 +1622,6 @@ public class NotebookTest extends AbstractInterpreterTest implements ParagraphJo
     }
   }
 
-  private void delete(File file) {
-    if (file.isFile()) {
-      file.delete();
-    } else if (file.isDirectory()) {
-      File[] files = file.listFiles();
-      if (files != null && files.length > 0) {
-        for (File f : files) {
-          delete(f);
-        }
-      }
-      file.delete();
-    }
-  }
-
   @Override
   public void noteRunningStatusChange(String noteId, boolean newStatus) {
 

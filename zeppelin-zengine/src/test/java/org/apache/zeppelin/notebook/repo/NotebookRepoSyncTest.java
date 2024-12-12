@@ -25,6 +25,7 @@ import static org.mockito.Mockito.mock;
 import com.google.common.io.Files;
 import java.io.File;
 import java.io.IOException;
+import java.time.Instant;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
@@ -72,7 +73,7 @@ public class NotebookRepoSyncTest {
   @Before
   public void setUp() throws Exception {
     System.setProperty("zeppelin.isTest", "true");
-    ZEPPELIN_HOME = Files.createTempDir();
+    ZEPPELIN_HOME = new File("target/home-" + Instant.now().toEpochMilli()).getAbsoluteFile();
     new File(ZEPPELIN_HOME, "conf").mkdirs();
     String mainNotePath = ZEPPELIN_HOME.getAbsolutePath() + "/notebook";
     String secNotePath = ZEPPELIN_HOME.getAbsolutePath() + "/notebook_secondary";
@@ -109,7 +110,6 @@ public class NotebookRepoSyncTest {
 
   @After
   public void tearDown() throws Exception {
-    delete(ZEPPELIN_HOME);
     System.clearProperty("zeppelin.isTest");
   }
 
@@ -391,19 +391,5 @@ public class NotebookRepoSyncTest {
     assertEquals(0, authorizationService.getReaders(note.getId()).size());
     assertEquals(0, authorizationService.getRunners(note.getId()).size());
     assertEquals(0, authorizationService.getWriters(note.getId()).size());
-  }
-
-  static void delete(File file) {
-    if (file.isFile()) {
-      file.delete();
-    } else if (file.isDirectory()) {
-      File[] files = file.listFiles();
-      if (files != null && files.length > 0) {
-        for (File f : files) {
-          delete(f);
-        }
-      }
-      file.delete();
-    }
   }
 }

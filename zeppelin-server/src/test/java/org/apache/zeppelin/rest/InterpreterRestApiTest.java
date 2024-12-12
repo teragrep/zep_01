@@ -220,6 +220,8 @@ public class InterpreterRestApiTest extends AbstractTestRestApi {
 
   }
 
+  @Ignore(value="This was not enabled")
+  @Test
   public void testInterpreterRestart() throws IOException, InterruptedException {
     Note note = null;
     try {

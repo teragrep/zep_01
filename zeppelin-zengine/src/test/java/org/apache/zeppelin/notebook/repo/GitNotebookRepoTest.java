@@ -81,13 +81,6 @@ public class GitNotebookRepoTest {
     conf = ZeppelinConfiguration.create();
   }
 
-  @After
-  public void tearDown() throws Exception {
-    if (!FileUtils.deleteQuietly(zeppelinDir)) {
-      LOG.error("Failed to delete {} ", zeppelinDir.getName());
-    }
-  }
-
   @Test
   public void initNonemptyNotebookDir() throws IOException, GitAPIException {
     //given - .git does not exit
