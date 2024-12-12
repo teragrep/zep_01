@@ -23,6 +23,7 @@ import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.anyString;
 import static org.mockito.Mockito.mock;
@@ -625,15 +626,11 @@ public class NotebookServerTest extends AbstractTestRestApi {
     ServiceContext context = new ServiceContext(AuthenticationInfo.ANONYMOUS, new HashSet<>());
     try {
       note = notebookServer.importNote(null, context, messageReceived);
-    } catch (NullPointerException e) {
-      //broadcastNoteList(); failed nothing to worry.
-      LOG.error("Exception in NotebookServerTest while testImportNotebook, failed nothing to " +
-          "worry ", e);
-    } catch (IOException e) {
-      e.printStackTrace();
+    } catch (NullPointerException | IOException e) {
+      fail("Failure happened: " + e.getMessage());
     }
 
-    assertNotEquals(null, notebook.getNote(note.getId()));
+      assertNotEquals(null, notebook.getNote(note.getId()));
     assertNotEquals(null, note.getParagraph(0));
 
     String nodeId = note.getId();
@@ -679,10 +676,8 @@ public class NotebookServerTest extends AbstractTestRestApi {
       List<ParagraphInfo> paragraphList0 = null;
       try {
         paragraphList0 = notebookServer.getParagraphList(user1Id, noteId);
-      } catch (ServiceException e) {
-        e.printStackTrace();
       } catch (TException e) {
-        e.printStackTrace();
+        fail("Failure happened: " + e.getMessage());
       }
       assertNotNull(user1Id + " can get anonymous's note", paragraphList0);
 
@@ -694,10 +689,8 @@ public class NotebookServerTest extends AbstractTestRestApi {
       List<ParagraphInfo> paragraphList1 = null;
       try {
         paragraphList1 = notebookServer.getParagraphList(user1Id, noteId);
-      } catch (ServiceException e) {
-        e.printStackTrace();
       } catch (TException e) {
-        e.printStackTrace();
+        fail("Failure happened: " + e.getMessage());
       }
       assertNull(user1Id + " cannot get " + user2Id + "'s note", paragraphList1);
 
@@ -709,10 +702,8 @@ public class NotebookServerTest extends AbstractTestRestApi {
       List<ParagraphInfo> paragraphList2 = null;
       try {
         paragraphList2 = notebookServer.getParagraphList(user1Id, noteId);
-      } catch (ServiceException e) {
-        e.printStackTrace();
       } catch (TException e) {
-        e.printStackTrace();
+        fail("Failure happened: " + e.getMessage());
       }
       assertNotNull(user1Id + " can get " + user2Id + "'s shared note", paragraphList2);
     } finally {

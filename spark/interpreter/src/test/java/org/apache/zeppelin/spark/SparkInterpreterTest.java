@@ -33,6 +33,7 @@ import org.apache.zeppelin.interpreter.InterpreterResultMessageOutput;
 import org.apache.zeppelin.interpreter.remote.RemoteInterpreterEventClient;
 import org.apache.zeppelin.interpreter.thrift.InterpreterCompletion;
 import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
@@ -354,7 +355,7 @@ class SparkInterpreterTest {
           result = interpreter.interpret(
               "val df = sc.parallelize(1 to 10, 5).foreach(e=>Thread.sleep(1000))", context2);
         } catch (InterpreterException e) {
-          e.printStackTrace();
+          Assertions.fail("Failure happened: " + e.getMessage());
         }
         assertEquals(InterpreterResult.Code.SUCCESS, result.code());
       }
@@ -382,7 +383,7 @@ class SparkInterpreterTest {
           result = interpreter.interpret(
               "val df = sc.parallelize(1 to 10, 2).foreach(e=>Thread.sleep(1000))", context3);
         } catch (InterpreterException e) {
-          e.printStackTrace();
+          Assertions.fail("Failure happened: " + e.getMessage());
         }
         assertEquals(InterpreterResult.Code.ERROR, result.code());
         assertTrue(output.contains("cancelled"));
@@ -624,7 +625,7 @@ class SparkInterpreterTest {
                 try {
                   output = out.toInterpreterResultMessage().getData();
                 } catch (IOException e) {
-                  e.printStackTrace();
+                  Assertions.fail("Failure happened: " + e.getMessage());
                 }
               }
 

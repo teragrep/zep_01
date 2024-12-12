@@ -307,7 +307,6 @@ public class InterpreterSettingManagerTest extends AbstractInterpreterTest {
         setUp();
         fail("Should not able to create InterpreterSettingManager");
       } catch (Exception e) {
-        e.printStackTrace();
         assertEquals("zeppelin.interpreter.include and zeppelin.interpreter.exclude can not be specified together, only one can be set.",
                 e.getMessage());
       }

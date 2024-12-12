@@ -28,6 +28,7 @@ import org.apache.zeppelin.interpreter.InterpreterResult.Type;
 import org.apache.zeppelin.interpreter.remote.RemoteInterpreterEventClient;
 import org.apache.zeppelin.resource.LocalResourcePool;
 import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
@@ -260,7 +261,7 @@ public class SparkSqlInterpreterTest {
           InterpreterResult result = sqlInterpreter.interpret("select sleep(10)", context);
           assertEquals(InterpreterResult.Code.SUCCESS, result.code());
         } catch (InterpreterException e) {
-          e.printStackTrace();
+          Assertions.fail("Failure happened: " + e.getMessage());
         }
       }
     };
@@ -272,7 +273,7 @@ public class SparkSqlInterpreterTest {
           InterpreterResult result = sqlInterpreter.interpret("select sleep(10)", context);
           assertEquals(InterpreterResult.Code.SUCCESS, result.code());
         } catch (InterpreterException e) {
-          e.printStackTrace();
+          Assertions.fail("Failure happened: " + e.getMessage());
         }
       }
     };

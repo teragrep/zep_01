@@ -49,6 +49,7 @@ import java.util.EnumSet;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
 public abstract class SparkIntegrationTest {
   private static Logger LOGGER = LoggerFactory.getLogger(SparkIntegrationTest.class);
@@ -205,7 +206,7 @@ public abstract class SparkIntegrationTest {
       try {
         Thread.sleep(1000);
       } catch (InterruptedException e) {
-        e.printStackTrace();
+        fail("Failure happened: " + e.getMessage());
       }
     }
     assertTrue("Yarn app is not completed in " + timeout + " milliseconds.", yarnAppCompleted);

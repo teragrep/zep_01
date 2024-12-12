@@ -28,6 +28,8 @@ import java.util.concurrent.TimeUnit;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import static org.junit.Assert.fail;
+
 public class ProcessData {
   public enum Types_Of_Data {
     OUTPUT,
@@ -239,8 +241,8 @@ public class ProcessData {
             Exception e = new Exception("Exited from buildOutputAndErrorStreamData by timeout");
             e.printStackTrace(new PrintWriter(sw)); //Get stack trace
             LOG.error(String.valueOf(e), e);
-          } catch (Exception ignore) {
-            LOG.info("Exception in ProcessData while buildOutputAndErrorStreamData ", ignore);
+          } catch (Exception e) {
+            fail("Failure happened: " + e.getMessage());
           }
           break;
         }

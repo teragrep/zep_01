@@ -382,15 +382,13 @@ public class ZSessionIntegrationTest extends AbstractTestRestApi {
       try {
         session.execute("1/0");
         fail("Should fail to execute code after session is stopped");
-      } catch (Exception e) {
-        e.printStackTrace();
+      } catch (Exception ignored) {
       }
     } finally {
       try {
         session.stop();
         fail("Should fail to stop session after it is stopped");
       } catch (Exception e) {
-        e.printStackTrace();
         assertTrue(e.getMessage().contains("No such session"));
       }
     }

@@ -27,6 +27,7 @@ import org.apache.zeppelin.interpreter.InterpreterResult;
 import org.apache.zeppelin.interpreter.InterpreterResult.Type;
 import org.apache.zeppelin.interpreter.InterpreterResultMessage;
 import org.apache.zeppelin.interpreter.remote.RemoteInterpreterEventClient;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.TestMethodOrder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -81,7 +82,7 @@ public class PySparkInterpreterMatplotlibTest {
         context.out.flush();
         resultMessages = context.out.toInterpreterResultMessage();
       } catch (IOException e) {
-        e.printStackTrace();
+        Assertions.fail("Failure happened: " + e.getMessage());
       }
       resultMessages.addAll(result.message());
 

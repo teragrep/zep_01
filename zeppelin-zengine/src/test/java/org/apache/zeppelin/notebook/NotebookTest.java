@@ -462,7 +462,7 @@ public class NotebookTest extends AbstractInterpreterTest implements ParagraphJo
         try {
           Thread.sleep(1000);
         } catch (InterruptedException e) {
-          e.printStackTrace();
+          fail("Failure happened: " + e.getMessage());
         }
       }
       assertEquals(mock1ProcessNum + 1, interpreterSettingManager.getByName("mock1").getAllInterpreterGroups().size());
@@ -474,7 +474,7 @@ public class NotebookTest extends AbstractInterpreterTest implements ParagraphJo
 
       LOGGER.info("--------------- Finish Test testRemoveNote ---------------");
     } catch (Exception e) {
-      e.printStackTrace();
+      fail("Failure happened: " + e.getMessage());
     }
   }
 

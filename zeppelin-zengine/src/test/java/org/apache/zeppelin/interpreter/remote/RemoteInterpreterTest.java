@@ -136,8 +136,7 @@ public class RemoteInterpreterTest extends AbstractInterpreterTest {
     try {
       assertEquals("hello", remoteInterpreter1.interpret("hello", context1).message().get(0).getData());
       fail("Should not be able to call interpret after interpreter is closed");
-    } catch (Exception e) {
-      e.printStackTrace();
+    } catch (Exception ignored) {
     }
 
     assertTrue(remoteInterpreter2.getInterpreterGroup().getRemoteInterpreterProcess().isRunning());
@@ -244,8 +243,7 @@ public class RemoteInterpreterTest extends AbstractInterpreterTest {
         try {
           assertEquals(Code.SUCCESS, interpreter1.interpret("100", context1).code());
         } catch (InterpreterException e) {
-          e.printStackTrace();
-          fail();
+          fail("Failure happened: " + e.getMessage());
         }
       }
     };
@@ -255,8 +253,7 @@ public class RemoteInterpreterTest extends AbstractInterpreterTest {
         try {
           assertEquals(Code.SUCCESS, interpreter1.interpret("100", context1).code());
         } catch (InterpreterException e) {
-          e.printStackTrace();
-          fail();
+          fail("Failure happened: " + e.getMessage());
         }
       }
     };
@@ -287,8 +284,7 @@ public class RemoteInterpreterTest extends AbstractInterpreterTest {
         try {
           assertEquals(Code.SUCCESS, interpreter1.interpret("100", context1).code());
         } catch (InterpreterException e) {
-          e.printStackTrace();
-          fail();
+          fail("Failure happened: " + e.getMessage());
         }
       }
     };
@@ -298,8 +294,7 @@ public class RemoteInterpreterTest extends AbstractInterpreterTest {
         try {
           assertEquals(Code.SUCCESS, interpreter1.interpret("100", context1).code());
         } catch (InterpreterException e) {
-          e.printStackTrace();
-          fail();
+          fail("Failure happened: " + e.getMessage());
         }
       }
     };
