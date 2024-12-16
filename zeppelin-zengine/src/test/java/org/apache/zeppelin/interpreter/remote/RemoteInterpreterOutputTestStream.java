@@ -62,7 +62,6 @@ public class RemoteInterpreterOutputTestStream extends AbstractInterpreterTest
         .build();
   }
 
-  @Ignore("This test is broken: java.lang.RuntimeException: No such note: note1")
   @Test
   public void testInterpreterResultOnly() throws InterpreterException {
     RemoteInterpreter intp = (RemoteInterpreter) interpreterSetting.getInterpreter("user1", "note1", "mock_stream");
@@ -79,7 +78,6 @@ public class RemoteInterpreterOutputTestStream extends AbstractInterpreterTest
     assertEquals("staticresult3", ret.message().get(0).getData());
   }
 
-  @Ignore("This test is broken: java.lang.RuntimeException: No such note: note1")
   @Test
   public void testInterpreterOutputStreamOnly() throws InterpreterException {
     RemoteInterpreter intp = (RemoteInterpreter) interpreterSetting.getInterpreter("user1", "note1", "mock_stream");
@@ -92,7 +90,6 @@ public class RemoteInterpreterOutputTestStream extends AbstractInterpreterTest
     assertEquals("streamresult2", ret.message().get(0).getData());
   }
 
-  @Ignore("This test is broken: java.lang.RuntimeException: No such note: note1")
   @Test
   public void testInterpreterResultOutputStreamMixed() throws InterpreterException {
     RemoteInterpreter intp = (RemoteInterpreter) interpreterSetting.getInterpreter("user1", "note1", "mock_stream");
@@ -102,7 +99,6 @@ public class RemoteInterpreterOutputTestStream extends AbstractInterpreterTest
     assertEquals("static", ret.message().get(1).getData());
   }
 
-  @Ignore("This test is broken: java.lang.RuntimeException: No such note: note1")
   @Test
   public void testOutputType() throws InterpreterException {
     RemoteInterpreter intp = (RemoteInterpreter) interpreterSetting.getInterpreter("user1", "note1", "mock_stream");

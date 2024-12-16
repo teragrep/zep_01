@@ -52,13 +52,6 @@ public class AppendOutputRunnerTest {
    */
   private volatile static int numInvocations = 0;
 
-  @After
-  public void afterEach() {
-    if (future != null) {
-      future.cancel(true);
-    }
-  }
-
   @Test
   public void testSingleEvent() throws InterruptedException {
     RemoteInterpreterProcessListener listener = mock(RemoteInterpreterProcessListener.class);
