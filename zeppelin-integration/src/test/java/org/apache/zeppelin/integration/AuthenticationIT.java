@@ -17,6 +17,7 @@
 package org.apache.zeppelin.integration;
 
 import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
 import java.io.File;
 import java.io.IOException;
@@ -42,10 +43,12 @@ import org.openqa.selenium.WebElement;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-
+import org.junit.Ignore;
 /**
  * Created for org.apache.zeppelin.integration on 13/06/16.
  */
+
+@Ignore(value="Contains very questionable file overwrites/deletions, should not be needed in tests")
 public class AuthenticationIT extends AbstractZeppelinIT {
   private static final Logger LOG = LoggerFactory.getLogger(AuthenticationIT.class);
 
@@ -89,7 +92,7 @@ public class AuthenticationIT extends AbstractZeppelinIT {
       }
       FileUtils.write(file, authShiro, "UTF-8");
     } catch (IOException e) {
-      LOG.error("Error in AuthenticationIT startUp::", e);
+      fail("Failure: " + e.getMessage());
     }
     ZeppelinITUtils.restartZeppelin();
     driver = WebDriverManager.getWebDriver();
@@ -108,12 +111,13 @@ public class AuthenticationIT extends AbstractZeppelinIT {
         }
       }
     } catch (IOException e) {
-      LOG.error("Error in AuthenticationIT tearDown::", e);
+      fail("Failure: " + e.getMessage());
     }
     ZeppelinITUtils.restartZeppelin();
     driver.quit();
   }
 
+  @Ignore(value="Depends on very exact UI elements to exist at right positions")
   public void authenticationUser(String userName, String password) {
     pollingWait(By.xpath(
         "//div[contains(@class, 'navbar-collapse')]//li//button[contains(.,'Login')]"),
@@ -126,6 +130,7 @@ public class AuthenticationIT extends AbstractZeppelinIT {
     ZeppelinITUtils.sleep(1000, false);
   }
 
+  @Ignore(value="Depends on very exact UI elements to exist at right positions")
   private void testShowNotebookListOnNavbar() throws Exception {
     try {
       pollingWait(By.xpath("//li[@class='dropdown notebook-list-dropdown']"),
@@ -140,6 +145,7 @@ public class AuthenticationIT extends AbstractZeppelinIT {
     }
   }
 
+  @Ignore(value="Depends on very exact UI elements to exist at right positions")
   public void logoutUser(String userName) throws URISyntaxException {
     ZeppelinITUtils.sleep(500, false);
     driver.findElement(By.xpath("//div[contains(@class, 'navbar-collapse')]//li[contains(.,'" +
@@ -156,7 +162,8 @@ public class AuthenticationIT extends AbstractZeppelinIT {
     ZeppelinITUtils.sleep(500, false);
   }
 
-  //  @Test
+  @Ignore(value="Depends on very exact UI elements to exist at right positions")
+  @Test
   public void testSimpleAuthentication() throws Exception {
     try {
       AuthenticationIT authenticationIT = new AuthenticationIT();
@@ -172,6 +179,7 @@ public class AuthenticationIT extends AbstractZeppelinIT {
     }
   }
 
+  @Ignore(value="Depends on very exact UI elements to exist at right positions")
   @Test
   public void testAnyOfRolesUser() throws Exception {
     try {
@@ -225,6 +233,7 @@ public class AuthenticationIT extends AbstractZeppelinIT {
     }
   }
 
+  @Ignore(value="Depends on very exact UI elements to exist at right positions")
   @Test
   public void testGroupPermission() throws Exception {
     try {

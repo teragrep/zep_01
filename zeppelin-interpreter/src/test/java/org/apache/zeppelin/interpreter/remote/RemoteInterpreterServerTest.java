@@ -38,6 +38,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 import static org.mockito.Mockito.mock;
 
 @Ignore("Contains bunch of sleeps and timeouts")
@@ -172,7 +173,7 @@ public class RemoteInterpreterServerTest {
         try {
           server.interpret("session_1", Test1Interpreter.class.getName(), "SLEEP", intpContext);
         } catch (TException e) {
-          e.printStackTrace();
+          fail("Failure happened: " + e.getMessage());
         }
       }
     };
@@ -218,14 +219,14 @@ public class RemoteInterpreterServerTest {
         try {
           context.out.write("INTERPRETER_OUT");
         } catch (IOException e) {
-          e.printStackTrace();
+          fail("Failure happened: " + e.getMessage());
         }
         return new InterpreterResult(InterpreterResult.Code.SUCCESS, "SINGLE_OUTPUT_SUCCESS");
       } else if (st.equals("SLEEP")) {
         try {
           Thread.sleep(3 * 1000);
         } catch (InterruptedException e) {
-          e.printStackTrace();
+          fail("Failure happened: " + e.getMessage());
         }
         return new InterpreterResult(InterpreterResult.Code.SUCCESS, "SLEEP_SUCCESS");
       }

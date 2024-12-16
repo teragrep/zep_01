@@ -57,6 +57,7 @@ import java.lang.ref.WeakReference;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.nio.charset.StandardCharsets;
+import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ExecutorService;
@@ -66,6 +67,8 @@ import java.util.regex.Pattern;
 import org.apache.zeppelin.conf.ZeppelinConfiguration;
 import org.apache.zeppelin.interpreter.InterpreterSetting;
 import org.apache.zeppelin.server.ZeppelinServer;
+
+import static org.junit.Assert.fail;
 
 public abstract class AbstractTestRestApi {
   protected static final Logger LOG = LoggerFactory.getLogger(AbstractTestRestApi.class);
@@ -179,7 +182,6 @@ public abstract class AbstractTestRestApi {
         TestUtils.clearInstances();
         ZeppelinServer.main(new String[]{""});
       } catch (Throwable e) {
-        LOG.error("Exception in WebDriverManager while getWebDriver ", e);
         throw new RuntimeException(e);
       }
     }
@@ -190,25 +192,25 @@ public abstract class AbstractTestRestApi {
                             boolean withKnox,
                             boolean cleanData)
           throws Exception {
-    LOG.info("Starting ZeppelinServer withAuth: {}, testClassName: {}, withKnox: {}",
+    LOG.debug("Starting ZeppelinServer withAuth: {}, testClassName: {}, withKnox: {}",
         withAuth, testClassName, withKnox);
 
     if (!WAS_RUNNING) {
       ZeppelinConfiguration.reset();
       // copy the resources files to a temp folder
-      zeppelinHome = new File("..");
-      LOG.info("ZEPPELIN_HOME: " + zeppelinHome.getAbsolutePath());
+      zeppelinHome = new File("target/" + Instant.now().toEpochMilli());
+      LOG.debug("ZEPPELIN_HOME: " + zeppelinHome.getAbsolutePath());
       confDir = new File(zeppelinHome, "conf_" + testClassName);
-      FileUtils.deleteDirectory(confDir);
-      LOG.info("ZEPPELIN_CONF_DIR: " + confDir.getAbsolutePath());
+      LOG.debug("ZEPPELIN_CONF_DIR: " + confDir.getAbsolutePath());
       confDir.mkdirs();
 
+      System.setProperty(ZeppelinConfiguration.ConfVars.ZEPPELIN_SEARCH_INDEX_PATH.getVarName(), zeppelinHome.getAbsolutePath() + "/lucene");
       System.setProperty(ZeppelinConfiguration.ConfVars.ZEPPELIN_HOME.getVarName(),
           zeppelinHome.getAbsolutePath());
       System.setProperty(ZeppelinConfiguration.ConfVars.ZEPPELIN_WAR.getVarName(),
-          new File("../zeppelin-web/dist").getAbsolutePath());
+          new File("target/zeppelin-web/dist").getAbsolutePath());
       System.setProperty(ZeppelinConfiguration.ConfVars.ZEPPELIN_ANGULAR_WAR.getVarName(),
-              new File("../zeppelin-web-angular/dist").getAbsolutePath());
+              new File("target/zeppelin-web-angular/dist").getAbsolutePath());
       System.setProperty(ZeppelinConfiguration.ConfVars.ZEPPELIN_CONF_DIR.getVarName(),
           confDir.getAbsolutePath());
       System.setProperty(
@@ -216,9 +218,6 @@ public abstract class AbstractTestRestApi {
           "spark");
 
       notebookDir = new File(zeppelinHome.getAbsolutePath() + "/notebook_" + testClassName);
-      if (cleanData) {
-        FileUtils.deleteDirectory(notebookDir);
-      }
       System.setProperty(
           ZeppelinConfiguration.ConfVars.ZEPPELIN_NOTEBOOK_DIR.getVarName(),
           notebookDir.getPath()
@@ -226,10 +225,10 @@ public abstract class AbstractTestRestApi {
 
       // some test profile does not build zeppelin-web.
       // to prevent zeppelin starting up fail, create zeppelin-web/dist directory
-      new File("../zeppelin-web/dist").mkdirs();
-      new File("../zeppelin-web-angular/dist").mkdirs();
+      new File("target/zeppelin-web/dist").mkdirs();
+      new File("target/zeppelin-web-angular/dist").mkdirs();
 
-      LOG.info("Starting Zeppelin Server...");
+      LOG.debug("Starting Zeppelin Server...");
       ZeppelinConfiguration conf = ZeppelinConfiguration.create();
 
       if (withAuth) {
@@ -266,11 +265,8 @@ public abstract class AbstractTestRestApi {
           break;
         }
       }
-      if (started == false) {
-        throw new RuntimeException("Can not start Zeppelin server");
-      }
 
-      LOG.info("Zeppelin Server is started.");
+      LOG.debug("Zeppelin Server is started.");
     }
   }
 
@@ -294,8 +290,8 @@ public abstract class AbstractTestRestApi {
     try {
       return InetAddress.getLocalHost().getHostName();
     } catch (UnknownHostException e) {
-      LOG.error("Exception in WebDriverManager while getWebDriver ", e);
-      return "localhost";
+      fail("Getting own hostname should not fail");
+      return null;
     }
   }
 
@@ -322,7 +318,7 @@ public abstract class AbstractTestRestApi {
       if (shiroIni != null) {
         FileUtils.deleteQuietly(shiroIni);
       }
-      LOG.info("Terminating Zeppelin Server...");
+      LOG.debug("Terminating Zeppelin Server...");
       ZeppelinServer.jettyWebServer.stop();
       executor.shutdown();
       PluginManager.reset();
@@ -341,7 +337,7 @@ public abstract class AbstractTestRestApi {
         throw new RuntimeException("Can not stop Zeppelin server");
       }
 
-      LOG.info("Zeppelin Server is terminated.");
+      LOG.debug("Zeppelin Server is terminated.");
 
       if (isRunningWithAuth) {
         isRunningWithAuth = shiroIni.exists();
@@ -363,8 +359,6 @@ public abstract class AbstractTestRestApi {
     try (CloseableHttpResponse response = httpGet("/version")) {
       isRunning = response.getStatusLine().getStatusCode() == 200;
     } catch (IOException e) {
-      LOG.error("AbstractTestRestApi.checkIfServerIsRunning() fails .. ZeppelinServer is not " +
-          "running");
       isRunning = false;
     }
     return isRunning;
@@ -380,7 +374,7 @@ public abstract class AbstractTestRestApi {
 
   public static CloseableHttpResponse httpGet(String path, String user, String pwd, String cookies)
     throws IOException {
-    LOG.info("Connecting to {}", URL + path);
+    LOG.debug("Connecting to {}", URL + path);
     HttpGet httpGet = new HttpGet(URL + path);
     httpGet.addHeader("Origin", URL);
     if (userAndPasswordAreNotBlank(user, pwd)) {
@@ -390,7 +384,7 @@ public abstract class AbstractTestRestApi {
       httpGet.setHeader("Cookie", httpGet.getFirstHeader("Cookie") + ";" + cookies);
     }
     CloseableHttpResponse response = getHttpClient().execute(httpGet);
-    LOG.info("{} - {}", response.getStatusLine().getStatusCode(), response.getStatusLine().getReasonPhrase());
+    LOG.debug("{} - {}", response.getStatusLine().getStatusCode(), response.getStatusLine().getReasonPhrase());
     return response;
   }
 
@@ -400,14 +394,14 @@ public abstract class AbstractTestRestApi {
 
   public static CloseableHttpResponse httpDelete(String path, String user, String pwd)
       throws IOException {
-    LOG.info("Connecting to {}", URL + path);
+    LOG.debug("Connecting to {}", URL + path);
     HttpDelete httpDelete = new HttpDelete(URL + path);
     httpDelete.addHeader("Origin", URL);
     if (userAndPasswordAreNotBlank(user, pwd)) {
       httpDelete.setHeader("Cookie", "JSESSIONID=" + getCookie(user, pwd));
     }
     CloseableHttpResponse response = getHttpClient().execute(httpDelete);
-    LOG.info("{} - {}", response.getStatusLine().getStatusCode(), response.getStatusLine().getReasonPhrase());
+    LOG.debug("{} - {}", response.getStatusLine().getStatusCode(), response.getStatusLine().getReasonPhrase());
     return response;
   }
 
@@ -417,7 +411,7 @@ public abstract class AbstractTestRestApi {
 
   public static CloseableHttpResponse httpPost(String path, String request, String user, String pwd)
       throws IOException {
-    LOG.info("Connecting to {}", URL + path);
+    LOG.debug("Connecting to {}", URL + path);
     RequestConfig localConfig = RequestConfig.custom()
       .setCookieSpec(CookieSpecs.IGNORE_COOKIES)
       .build();
@@ -429,7 +423,7 @@ public abstract class AbstractTestRestApi {
       httpPost.setHeader("Cookie", "JSESSIONID=" + getCookie(user, pwd));
     }
     CloseableHttpResponse response = getHttpClient().execute(httpPost);
-    LOG.info("{} - {}", response.getStatusLine().getStatusCode(), response.getStatusLine().getReasonPhrase());
+    LOG.debug("{} - {}", response.getStatusLine().getStatusCode(), response.getStatusLine().getReasonPhrase());
     return response;
   }
 
@@ -439,7 +433,7 @@ public abstract class AbstractTestRestApi {
 
   public static CloseableHttpResponse httpPut(String path, String body, String user, String pwd)
       throws IOException {
-    LOG.info("Connecting to {}", URL + path);
+    LOG.debug("Connecting to {}", URL + path);
     HttpPut httpPut = new HttpPut(URL + path);
     httpPut.addHeader("Origin", URL);
     httpPut.setEntity(new StringEntity(body, ContentType.TEXT_PLAIN));
@@ -447,7 +441,7 @@ public abstract class AbstractTestRestApi {
       httpPut.setHeader("Cookie", "JSESSIONID=" + getCookie(user, pwd));
     }
     CloseableHttpResponse response = getHttpClient().execute(httpPut);
-    LOG.info("{} - {}", response.getStatusLine().getStatusCode(), response.getStatusLine().getReasonPhrase());
+    LOG.debug("{} - {}", response.getStatusLine().getStatusCode(), response.getStatusLine().getReasonPhrase());
     return response;
   }
 
@@ -459,7 +453,7 @@ public abstract class AbstractTestRestApi {
     postParameters.add(new BasicNameValuePair("userName", user));
     httpPost.setEntity(new UrlEncodedFormEntity(postParameters, StandardCharsets.UTF_8));
     try (CloseableHttpResponse response = getHttpClient().execute(httpPost)) {
-      LOG.info("{} - {}", response.getStatusLine().getStatusCode(), response.getStatusLine().getReasonPhrase());
+      LOG.debug("{} - {}", response.getStatusLine().getStatusCode(), response.getStatusLine().getReasonPhrase());
       Pattern pattern = Pattern.compile("JSESSIONID=([a-zA-Z0-9-]*)");
       Header[] setCookieHeaders = response.getHeaders("Set-Cookie");
       String jsessionId = null;
@@ -531,8 +525,7 @@ public abstract class AbstractTestRestApi {
         try {
           new JsonParser().parse(body);
         } catch (JsonParseException e) {
-          LOG.error("Exception in AbstractTestRestApi while matchesSafely ", e);
-          isValid = false;
+          throw new RuntimeException("This should not happen: ", e);
         }
         return isValid;
       }
@@ -579,7 +572,7 @@ public abstract class AbstractTestRestApi {
     try {
       executor.execute(cmd);
     } catch (IOException e) {
-      LOG.error(e.getMessage(), e);
+      fail("This command should not fail: " + e.getMessage());
     }
   }
 

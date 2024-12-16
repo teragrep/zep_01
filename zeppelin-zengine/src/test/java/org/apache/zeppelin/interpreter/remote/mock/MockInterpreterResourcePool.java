@@ -32,6 +32,8 @@ import java.util.List;
 import java.util.Properties;
 import java.util.concurrent.atomic.AtomicInteger;
 
+import static org.junit.Assert.fail;
+
 public class MockInterpreterResourcePool extends Interpreter {
 
   private static final Logger LOGGER = LoggerFactory.getLogger(MockInterpreterResourcePool.class);
@@ -90,20 +92,21 @@ public class MockInterpreterResourcePool extends Interpreter {
       ret = resourcePool.getAll();
     } else if (cmd.equals("invoke")) {
       Resource resource = resourcePool.get(noteId, paragraphId, name);
-      LOGGER.info("Resource: " + resource);
+      LOGGER.debug("Resource: " + resource);
       if (stmt.length >=4) {
         Resource res = resource.invokeMethod(value, stmt[3]);
-        LOGGER.info("After invokeMethod: " + resource);
+        LOGGER.debug("After invokeMethod: " + resource);
         ret = res.get();
       } else {
         ret = resource.invokeMethod(value);
-        LOGGER.info("After invokeMethod: " + ret);
+        LOGGER.debug("After invokeMethod: " + ret);
       }
     }
 
     try {
       Thread.sleep(500); // wait for watcher executed
     } catch (InterruptedException e) {
+      fail("Failure: " + e.getMessage());
     }
 
     Gson gson = new Gson();

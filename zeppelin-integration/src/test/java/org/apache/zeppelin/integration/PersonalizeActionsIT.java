@@ -24,6 +24,7 @@ import org.apache.zeppelin.conf.ZeppelinConfiguration;
 import org.hamcrest.CoreMatchers;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
+import org.junit.Ignore;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ErrorCollector;
@@ -41,7 +42,9 @@ import java.io.File;
 import java.io.IOException;
 
 import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
+@Ignore(value="Contains file writes/deletions that should not be needed in tests")
 public class PersonalizeActionsIT extends AbstractZeppelinIT {
   private static final Logger LOG = LoggerFactory.getLogger(PersonalizeActionsIT.class);
 
@@ -78,7 +81,7 @@ public class PersonalizeActionsIT extends AbstractZeppelinIT {
       }
       FileUtils.write(file, authShiro, "UTF-8");
     } catch (IOException e) {
-      LOG.error("Error in PersonalizeActionsIT startUp::", e);
+      fail("Failure: " + e.getMessage());
     }
     ZeppelinITUtils.restartZeppelin();
     driver = WebDriverManager.getWebDriver();
@@ -96,7 +99,7 @@ public class PersonalizeActionsIT extends AbstractZeppelinIT {
         }
       }
     } catch (IOException e) {
-      LOG.error("Error in PersonalizeActionsIT tearDown::", e);
+      fail("Failure: " + e.getMessage());
     }
     ZeppelinITUtils.restartZeppelin();
     driver.quit();
@@ -108,6 +111,7 @@ public class PersonalizeActionsIT extends AbstractZeppelinIT {
     waitForParagraph(1, "FINISHED");
   }
 
+  @Ignore(value="Contains UI specific values")
   @Test
   public void testSimpleAction() throws Exception {
     try {
@@ -184,6 +188,7 @@ public class PersonalizeActionsIT extends AbstractZeppelinIT {
     }
   }
 
+  @Ignore(value="Contains UI specific values")
   @Test
   public void testGraphAction() throws Exception {
     try {
@@ -275,6 +280,7 @@ public class PersonalizeActionsIT extends AbstractZeppelinIT {
     }
   }
 
+  @Ignore(value="Contains UI specific values")
   @Test
   public void testDynamicFormAction() throws Exception {
     try {

@@ -71,7 +71,7 @@ public class ZeppelinClientIntegrationTest extends AbstractTestRestApi {
   @Test
   public void testZeppelinVersion() throws Exception {
     String version = zeppelinClient.getVersion();
-    LOG.info("Zeppelin version: " + version);
+    LOG.debug("Zeppelin version: " + version);
   }
 
   @Test
@@ -92,7 +92,6 @@ public class ZeppelinClientIntegrationTest extends AbstractTestRestApi {
       zeppelinClient.importNote("/imported_notes/note_1", noteContent);
       fail("Should fail to import note to the same notePath");
     } catch (Exception e) {
-      e.printStackTrace();
       assertTrue(e.getMessage(), e.getMessage().contains("Note '/imported_notes/note_1' existed"));
     }
 
@@ -101,7 +100,6 @@ public class ZeppelinClientIntegrationTest extends AbstractTestRestApi {
       zeppelinClient.importNote("/imported_notes/note_1", "Invalid_content");
       fail("Should fail to import note with invalid note content");
     } catch (Exception e) {
-      e.printStackTrace();
       assertTrue(e.getMessage(), e.getMessage().contains("Invalid JSON"));
     }
   }
@@ -460,7 +458,6 @@ public class ZeppelinClientIntegrationTest extends AbstractTestRestApi {
       zeppelinClient.stopSession("invalid_session");
       fail("Should fail to stop session after it is stopped");
     } catch (Exception e) {
-      e.printStackTrace();
       assertTrue(e.getMessage().contains("No such session"));
     }
   }

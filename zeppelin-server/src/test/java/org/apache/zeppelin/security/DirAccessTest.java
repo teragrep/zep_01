@@ -40,7 +40,7 @@ public class DirAccessTest extends AbstractTestRestApi {
                 .getVarName(), "false");
         AbstractTestRestApi.startUp(DirAccessTest.class.getSimpleName());
         CloseableHttpResponse getMethod = getHttpClient().execute(new HttpGet(getUrlToTest() + "/app/"));
-        LOG.info("Invoke getMethod - " + EntityUtils.toString(getMethod.getEntity(), StandardCharsets.UTF_8));
+        LOG.debug("Invoke getMethod - " + EntityUtils.toString(getMethod.getEntity(), StandardCharsets.UTF_8));
 
         assertEquals(HttpStatus.SC_FORBIDDEN, getMethod.getStatusLine().getStatusCode());
       } finally {
@@ -57,7 +57,7 @@ public class DirAccessTest extends AbstractTestRestApi {
                 .getVarName(), "true");
         AbstractTestRestApi.startUp(DirAccessTest.class.getSimpleName());
         CloseableHttpResponse getMethod = getHttpClient().execute(new HttpGet(getUrlToTest() + "/app/"));
-        LOG.info("Invoke getMethod - " + EntityUtils.toString(getMethod.getEntity(), StandardCharsets.UTF_8));
+        LOG.debug("Invoke getMethod - " + EntityUtils.toString(getMethod.getEntity(), StandardCharsets.UTF_8));
         assertEquals(HttpStatus.SC_OK, getMethod.getStatusLine().getStatusCode());
       } finally {
         AbstractTestRestApi.shutDown();

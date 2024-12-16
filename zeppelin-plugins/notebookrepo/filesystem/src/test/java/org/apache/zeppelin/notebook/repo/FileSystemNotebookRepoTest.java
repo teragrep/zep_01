@@ -34,6 +34,7 @@ import java.io.File;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.nio.file.Files;
+import java.time.Instant;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -50,18 +51,13 @@ public class FileSystemNotebookRepoTest {
 
   @Before
   public void setUp() throws IOException {
-    notebookDir = Files.createTempDirectory("FileSystemNotebookRepoTest").toFile().getAbsolutePath();
+    notebookDir = new File("target/test" + Instant.now().toEpochMilli()).toPath().toAbsolutePath().toString();
     zConf = ZeppelinConfiguration.create();
     System.setProperty(ZeppelinConfiguration.ConfVars.ZEPPELIN_NOTEBOOK_DIR.getVarName(), notebookDir);
     hadoopConf = new Configuration();
     fs = FileSystem.get(hadoopConf);
     hdfsNotebookRepo = new FileSystemNotebookRepo();
     hdfsNotebookRepo.init(zConf);
-  }
-
-  @After
-  public void tearDown() throws IOException {
-    FileUtils.deleteDirectory(new File(notebookDir));
   }
 
   @Test

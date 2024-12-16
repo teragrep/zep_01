@@ -39,6 +39,7 @@ import org.apache.zeppelin.user.AuthenticationInfo;
 import org.apache.zeppelin.utils.TestUtils;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -58,6 +59,7 @@ import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
 /**
  * Test against spark cluster.
@@ -80,7 +82,7 @@ public abstract class ZeppelinSparkClusterTest extends AbstractTestRestApi {
 
   public ZeppelinSparkClusterTest(String sparkVersion, String hadoopVersion) throws Exception {
     this.sparkVersion = sparkVersion;
-    LOGGER.info("Testing SparkVersion: " + sparkVersion);
+    LOGGER.debug("Testing SparkVersion: " + sparkVersion);
     // this.sparkHome = DownloadUtils.downloadSpark(sparkVersion, hadoopVersion);
     if (!verifiedSparkVersions.contains(sparkVersion)) {
       verifiedSparkVersions.add(sparkVersion);
@@ -95,7 +97,7 @@ public abstract class ZeppelinSparkClusterTest extends AbstractTestRestApi {
 
     Map<String, InterpreterProperty> sparkProperties =
         (Map<String, InterpreterProperty>) sparkIntpSetting.getProperties();
-    LOG.info("SPARK HOME detected " + sparkHome);
+    LOG.debug("SPARK HOME detected " + sparkHome);
     String masterEnv = System.getenv("SPARK_MASTER");
     sparkProperties.put(SPARK_MASTER_PROPERTY_NAME,
         new InterpreterProperty(SPARK_MASTER_PROPERTY_NAME, masterEnv == null ? "local[2]" : masterEnv));
@@ -132,7 +134,7 @@ public abstract class ZeppelinSparkClusterTest extends AbstractTestRestApi {
       try {
         Thread.sleep(100);
       } catch (InterruptedException e) {
-        LOG.error("Exception in WebDriverManager while getWebDriver ", e);
+        fail("Failure: " + e.getMessage());
       }
     }
   }
@@ -142,7 +144,7 @@ public abstract class ZeppelinSparkClusterTest extends AbstractTestRestApi {
       try {
         Thread.sleep(100);
       } catch (InterruptedException e) {
-        LOG.error("Exception in WebDriverManager while getWebDriver ", e);
+        fail("Failure: " + e.getMessage());
       }
     }
   }
@@ -223,7 +225,8 @@ public abstract class ZeppelinSparkClusterTest extends AbstractTestRestApi {
     try {
       note = TestUtils.getInstance(Notebook.class).createNote("note1", anonymous);
       Paragraph p = note.addNewParagraph(anonymous);
-      File tmpJsonFile = File.createTempFile("test", ".json");
+      File tmpJsonFile = new File("target/test.json");
+      tmpJsonFile.createNewFile();
       FileWriter jsonFileWriter = new FileWriter(tmpJsonFile);
       IOUtils.copy(new StringReader("{\"metadata\": { \"key\": 84896, \"value\": 54 }}\n"),
               jsonFileWriter);
@@ -256,7 +259,8 @@ public abstract class ZeppelinSparkClusterTest extends AbstractTestRestApi {
     try {
       note = TestUtils.getInstance(Notebook.class).createNote("note1", anonymous);
       Paragraph p = note.addNewParagraph(anonymous);
-      File tmpCSVFile = File.createTempFile("test", ".csv");
+      File tmpCSVFile = new File("target/test.csv");
+      tmpCSVFile.createNewFile();
       FileWriter csvFileWriter = new FileWriter(tmpCSVFile);
       IOUtils.copy(new StringReader("84896,54"), csvFileWriter);
       csvFileWriter.close();
@@ -945,6 +949,7 @@ public abstract class ZeppelinSparkClusterTest extends AbstractTestRestApi {
     }
   }
 
+  @Ignore(value="References to external spark.jars.packages")
   @Test
   public void testConfInterpreter() throws IOException {
     Note note = null;

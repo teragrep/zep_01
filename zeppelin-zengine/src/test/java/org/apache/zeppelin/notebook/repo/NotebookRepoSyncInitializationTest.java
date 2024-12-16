@@ -72,7 +72,7 @@ public class NotebookRepoSyncInitializationTest {
   @Test
   public void validInitTwoStorageTest() throws IOException {
     // initialize folders for each storage
-    String zpath = System.getProperty("java.io.tmpdir") + "/ZeppelinLTest_" + System.currentTimeMillis();
+    String zpath = new File("target/ZeppelinLTest_" + System.currentTimeMillis()).getAbsolutePath();
     File mainZepDir = new File(zpath);
     mainZepDir.mkdirs();
     new File(mainZepDir, "conf").mkdirs();
@@ -106,7 +106,6 @@ public class NotebookRepoSyncInitializationTest {
       NotebookRepoSync notebookRepoSync = new NotebookRepoSync(conf);
       fail("Should throw exception due to invalid NotebookRepo");
     } catch (IOException e) {
-      LOGGER.error(e.getMessage());
       assertTrue(e.getMessage().contains("Fail to instantiate notebookrepo from classpath directly"));
     }
   }
@@ -114,7 +113,7 @@ public class NotebookRepoSyncInitializationTest {
   @Test
   public void initUnsupportedNumberStoragesTest() throws IOException {
     // initialize folders for each storage, currently for 2 only
-    String zpath = System.getProperty("java.io.tmpdir") + "/ZeppelinLTest_" + System.currentTimeMillis();
+    String zpath = new File("target/ZeppelinLTest_" + System.currentTimeMillis()).getAbsolutePath();
     File mainZepDir = new File(zpath);
     mainZepDir.mkdirs();
     new File(mainZepDir, "conf").mkdirs();
@@ -159,7 +158,6 @@ public class NotebookRepoSyncInitializationTest {
       NotebookRepoSync notebookRepoSync = new NotebookRepoSync(conf);
       fail("Should throw exception due to invalid NotebookRepo");
     } catch (IOException e) {
-      LOGGER.error(e.getMessage());
       assertTrue(e.getMessage().contains("Fail to instantiate notebookrepo from classpath directly"));
     }
   }

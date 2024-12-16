@@ -18,6 +18,7 @@
 package org.apache.zeppelin.interpreter;
 
 import org.junit.Test;
+import org.junit.Ignore;
 
 import static org.junit.Assert.assertEquals;
 
@@ -99,6 +100,8 @@ public class InterpreterResultTest {
         "col1\tcol2\naaa\t123\n", result.message().get(1).getData());
   }
 
+  @Ignore(value="Was not enabled")
+  @Test
   public void testComplexMagicData() {
 
     InterpreterResult result = null;

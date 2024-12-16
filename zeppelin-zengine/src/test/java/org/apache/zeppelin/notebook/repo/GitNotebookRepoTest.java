@@ -61,7 +61,7 @@ public class GitNotebookRepoTest {
 
   @Before
   public void setUp() throws Exception {
-    String zpath = System.getProperty("java.io.tmpdir") + "/ZeppelinTest_" + System.currentTimeMillis();
+    String zpath =  new File("target/ZeppelinTest_" + System.currentTimeMillis()).getAbsolutePath();
     zeppelinDir = new File(zpath);
     zeppelinDir.mkdirs();
     new File(zeppelinDir, "conf").mkdirs();
@@ -79,13 +79,6 @@ public class GitNotebookRepoTest {
     System.setProperty(ConfVars.ZEPPELIN_NOTEBOOK_STORAGE.getVarName(), "org.apache.zeppelin.notebook.repo.GitNotebookRepo");
 
     conf = ZeppelinConfiguration.create();
-  }
-
-  @After
-  public void tearDown() throws Exception {
-    if (!FileUtils.deleteQuietly(zeppelinDir)) {
-      LOG.error("Failed to delete {} ", zeppelinDir.getName());
-    }
   }
 
   @Test
@@ -348,7 +341,7 @@ public class GitNotebookRepoTest {
     Note note = notebookRepo.get(TEST_NOTE_ID, TEST_NOTE_PATH, null);
     note.setInterpreterFactory(mock(InterpreterFactory.class));
     int paragraphCount_1 = note.getParagraphs().size();
-    LOG.info("initial paragraph count: {}", paragraphCount_1);
+    LOG.debug("initial paragraph count: {}", paragraphCount_1);
 
     // checkpoint revision1
     Revision revision1 = notebookRepo.checkpoint(TEST_NOTE_ID, TEST_NOTE_PATH, "set revision: first commit", null);
@@ -365,7 +358,7 @@ public class GitNotebookRepoTest {
     notebookRepo.save(note, null);
     int paragraphCount_2 = note.getParagraphs().size();
     assertThat(paragraphCount_2).isEqualTo(paragraphCount_1 + 1);
-    LOG.info("paragraph count after modification: {}", paragraphCount_2);
+    LOG.debug("paragraph count after modification: {}", paragraphCount_2);
 
     // checkpoint revision2
     Revision revision2 = notebookRepo.checkpoint(TEST_NOTE_ID, TEST_NOTE_PATH, "set revision: second commit", null);

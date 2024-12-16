@@ -27,8 +27,8 @@ import org.apache.zeppelin.interpreter.InterpreterResult;
 import org.apache.zeppelin.interpreter.InterpreterResult.Type;
 import org.apache.zeppelin.interpreter.InterpreterResultMessage;
 import org.apache.zeppelin.interpreter.remote.RemoteInterpreterEventClient;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.TestMethodOrder;
-import org.junit.jupiter.api.io.TempDir;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -50,7 +50,6 @@ import static org.mockito.Mockito.mock;
 @TestMethodOrder(MethodOrderer.MethodName.class)
 public class PySparkInterpreterMatplotlibTest {
 
-  @TempDir
   static File tmpDir;
 
   static SparkInterpreter sparkInterpreter;
@@ -83,7 +82,7 @@ public class PySparkInterpreterMatplotlibTest {
         context.out.flush();
         resultMessages = context.out.toInterpreterResultMessage();
       } catch (IOException e) {
-        e.printStackTrace();
+        Assertions.fail("Failure happened: " + e.getMessage());
       }
       resultMessages.addAll(result.message());
 

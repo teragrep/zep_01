@@ -43,14 +43,14 @@ public class MiniZeppelin {
   protected ZeppelinConfiguration conf;
 
   public void start(Class clazz) throws IOException {
-    zeppelinHome = new File("..");
+    zeppelinHome = new File("target");
     System.setProperty(ZeppelinConfiguration.ConfVars.ZEPPELIN_HOME.getVarName(),
         zeppelinHome.getAbsolutePath());
     confDir = new File(zeppelinHome, "conf_" + clazz.getSimpleName());
     notebookDir = new File(zeppelinHome, "notebook_" + clazz.getSimpleName());
     confDir.mkdirs();
     notebookDir.mkdirs();
-    LOGGER.info("ZEPPELIN_HOME: " + zeppelinHome.getAbsolutePath());
+    LOGGER.debug("ZEPPELIN_HOME: " + zeppelinHome.getAbsolutePath());
     FileUtils.copyFile(new File(zeppelinHome, "conf/log4j.properties"), new File(confDir, "log4j.properties"));
     FileUtils.copyFile(new File(zeppelinHome, "conf/log4j2.properties"), new File(confDir, "log4j2.properties"));
     FileUtils.copyFile(new File(zeppelinHome, "conf/log4j_yarn_cluster.properties"), new File(confDir, "log4j_yarn_cluster.properties"));
@@ -65,8 +65,6 @@ public class MiniZeppelin {
 
   public void stop() throws IOException {
     interpreterSettingManager.close();
-    FileUtils.deleteDirectory(confDir);
-    FileUtils.deleteDirectory(notebookDir);
   }
 
   public File getZeppelinHome() {

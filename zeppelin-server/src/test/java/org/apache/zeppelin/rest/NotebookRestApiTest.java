@@ -77,7 +77,7 @@ public class NotebookRestApiTest extends AbstractTestRestApi {
 
   @Test
   public void testGetReloadNote() throws IOException {
-    LOG.info("Running testGetNote");
+    LOG.debug("Running testGetNote");
     Note note1 = null;
     try {
       note1 = TestUtils.getInstance(Notebook.class).createNote("note1", anonymous);
@@ -110,7 +110,7 @@ public class NotebookRestApiTest extends AbstractTestRestApi {
 
   @Test
   public void testGetNoteParagraphJobStatus() throws IOException {
-    LOG.info("Running testGetNoteParagraphJobStatus");
+    LOG.debug("Running testGetNoteParagraphJobStatus");
     Note note1 = null;
     try {
       note1 = TestUtils.getInstance(Notebook.class).createNote("note1", anonymous);
@@ -138,7 +138,7 @@ public class NotebookRestApiTest extends AbstractTestRestApi {
 
   @Test
   public void testRunParagraphJob() throws Exception {
-    LOG.info("Running testRunParagraphJob");
+    LOG.debug("Running testRunParagraphJob");
     Note note1 = null;
     try {
       note1 = TestUtils.getInstance(Notebook.class).createNote("note1", anonymous);
@@ -176,7 +176,7 @@ public class NotebookRestApiTest extends AbstractTestRestApi {
 
   @Test
   public void testRunParagraphSynchronously() throws IOException {
-    LOG.info("Running testRunParagraphSynchronously");
+    LOG.debug("Running testRunParagraphSynchronously");
     Note note1 = null;
     try {
       note1 = TestUtils.getInstance(Notebook.class).createNote("note1", anonymous);
@@ -233,7 +233,7 @@ public class NotebookRestApiTest extends AbstractTestRestApi {
 
   @Test
   public void testCreateNote() throws Exception {
-    LOG.info("Running testCreateNote");
+    LOG.debug("Running testCreateNote");
     String message1 = "{\n\t\"name\" : \"test1\",\n\t\"addingEmptyParagraph\" : true\n}";
     CloseableHttpResponse post1 = httpPost("/notebook/", message1);
     assertThat(post1, isAllowed());
@@ -265,7 +265,7 @@ public class NotebookRestApiTest extends AbstractTestRestApi {
 
   @Test
   public void testRunNoteBlocking() throws IOException {
-    LOG.info("Running testRunNoteBlocking");
+    LOG.debug("Running testRunNoteBlocking");
     Note note1 = null;
     try {
       note1 = TestUtils.getInstance(Notebook.class).createNote("note1", anonymous);
@@ -306,7 +306,7 @@ public class NotebookRestApiTest extends AbstractTestRestApi {
   @Ignore(value="This test should not work as %sh should not be available")
   @Test
   public void testRunNoteNonBlocking() throws Exception {
-    LOG.info("Running testRunNoteNonBlocking");
+    LOG.debug("Running testRunNoteNonBlocking");
     Note note1 = null;
     try {
       note1 = TestUtils.getInstance(Notebook.class).createNote("note1", anonymous);
@@ -349,7 +349,7 @@ public class NotebookRestApiTest extends AbstractTestRestApi {
 
   @Test
   public void testRunNoteBlocking_Isolated() throws IOException {
-    LOG.info("Running testRunNoteBlocking_Isolated");
+    LOG.debug("Running testRunNoteBlocking_Isolated");
     Note note1 = null;
     try {
       InterpreterSettingManager interpreterSettingManager =
@@ -397,7 +397,7 @@ public class NotebookRestApiTest extends AbstractTestRestApi {
 
   @Test
   public void testRunNoteNonBlocking_Isolated() throws IOException, InterruptedException {
-    LOG.info("Running testRunNoteNonBlocking_Isolated");
+    LOG.debug("Running testRunNoteNonBlocking_Isolated");
     Note note1 = null;
     try {
       InterpreterSettingManager interpreterSettingManager =
@@ -512,7 +512,7 @@ public class NotebookRestApiTest extends AbstractTestRestApi {
 
   @Test
   public void testRunAllParagraph_FirstFailed() throws IOException {
-    LOG.info("Running testRunAllParagraph_FirstFailed");
+    LOG.debug("Running testRunAllParagraph_FirstFailed");
     Note note1 = null;
     try {
       note1 = TestUtils.getInstance(Notebook.class).createNote("note1", anonymous);
@@ -551,14 +551,14 @@ public class NotebookRestApiTest extends AbstractTestRestApi {
 
   @Test
   public void testCloneNote() throws IOException {
-    LOG.info("Running testCloneNote");
+    LOG.debug("Running testCloneNote");
     Note note1 = null;
     String clonedNoteId = null;
     try {
       note1 = TestUtils.getInstance(Notebook.class).createNote("note1", anonymous);
       CloseableHttpResponse post = httpPost("/notebook/" + note1.getId(), "");
       String postResponse = EntityUtils.toString(post.getEntity(), StandardCharsets.UTF_8);
-      LOG.info("testCloneNote response\n" + postResponse);
+      LOG.debug("testCloneNote response\n" + postResponse);
       assertThat(post, isAllowed());
       Map<String, Object> resp = gson.fromJson(postResponse,
               new TypeToken<Map<String, Object>>() {}.getType());
@@ -589,7 +589,7 @@ public class NotebookRestApiTest extends AbstractTestRestApi {
 
   @Test
   public void testRenameNote() throws IOException {
-    LOG.info("Running testRenameNote");
+    LOG.debug("Running testRenameNote");
     Note note = null;
     try {
       String oldName = "old_name";
@@ -615,7 +615,7 @@ public class NotebookRestApiTest extends AbstractTestRestApi {
 
   @Test
   public void testUpdateParagraphConfig() throws IOException {
-    LOG.info("Running testUpdateParagraphConfig");
+    LOG.debug("Running testUpdateParagraphConfig");
     Note note = null;
     try {
       note = TestUtils.getInstance(Notebook.class).createNote("note1", anonymous);
@@ -648,7 +648,7 @@ public class NotebookRestApiTest extends AbstractTestRestApi {
 
   @Test
   public void testClearAllParagraphOutput() throws IOException {
-    LOG.info("Running testClearAllParagraphOutput");
+    LOG.debug("Running testClearAllParagraphOutput");
     Note note = null;
     try {
       // Create note and set result explicitly
@@ -663,7 +663,7 @@ public class NotebookRestApiTest extends AbstractTestRestApi {
 
       // clear paragraph result
       CloseableHttpResponse put = httpPut("/notebook/" + note.getId() + "/clear", "");
-      LOG.info("test clear paragraph output response\n" + EntityUtils.toString(put.getEntity(), StandardCharsets.UTF_8));
+      LOG.debug("test clear paragraph output response\n" + EntityUtils.toString(put.getEntity(), StandardCharsets.UTF_8));
       assertThat(put, isAllowed());
       put.close();
 
@@ -693,7 +693,7 @@ public class NotebookRestApiTest extends AbstractTestRestApi {
 
   @Test
   public void testRunWithServerRestart() throws Exception {
-    LOG.info("Running testRunWithServerRestart");
+    LOG.debug("Running testRunWithServerRestart");
     Note note1 = null;
     try {
       note1 = TestUtils.getInstance(Notebook.class).createNote("note1", anonymous);
@@ -717,7 +717,7 @@ public class NotebookRestApiTest extends AbstractTestRestApi {
       assertThat(post1, isAllowed());
       post1.close();
       CloseableHttpResponse put = httpPut("/notebook/" + note1.getId() + "/clear", "");
-      LOG.info("test clear paragraph output response\n" + EntityUtils.toString(put.getEntity(), StandardCharsets.UTF_8));
+      LOG.debug("test clear paragraph output response\n" + EntityUtils.toString(put.getEntity(), StandardCharsets.UTF_8));
       assertThat(put, isAllowed());
       put.close();
 

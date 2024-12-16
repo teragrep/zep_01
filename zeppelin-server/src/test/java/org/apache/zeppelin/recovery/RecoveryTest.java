@@ -65,7 +65,7 @@ public class RecoveryTest extends AbstractTestRestApi {
   public void init() throws Exception {
     System.setProperty(ZeppelinConfiguration.ConfVars.ZEPPELIN_RECOVERY_STORAGE_CLASS.getVarName(),
             FileSystemRecoveryStorage.class.getName());
-    recoveryDir = Files.createTempDirectory("recovery").toFile();
+    recoveryDir = new File("target/").toPath().toAbsolutePath().toFile();
     System.setProperty(ZeppelinConfiguration.ConfVars.ZEPPELIN_RECOVERY_DIR.getVarName(),
             recoveryDir.getAbsolutePath());
     startUp(RecoveryTest.class.getSimpleName());
@@ -76,14 +76,13 @@ public class RecoveryTest extends AbstractTestRestApi {
   @After
   public void destroy() throws Exception {
     shutDown(true, true);
-    FileUtils.deleteDirectory(recoveryDir);
     System.setProperty(ZeppelinConfiguration.ConfVars.ZEPPELIN_RECOVERY_STORAGE_CLASS.getVarName(),
             ZeppelinConfiguration.ConfVars.ZEPPELIN_RECOVERY_STORAGE_CLASS.getStringValue());
   }
 
   @Test
   public void testRecovery() throws Exception {
-    LOG.info("Test testRecovery");
+    LOG.debug("Test testRecovery");
     Note note1 = null;
     try {
       note1 = notebook.createNote("note1", anonymous);
@@ -116,8 +115,7 @@ public class RecoveryTest extends AbstractTestRestApi {
       assertEquals(Job.Status.FINISHED, p1.getStatus());
       assertEquals("abc\n", p1.getReturn().message().get(0).getData());
     } catch (Exception e) {
-      LOG.error(e.toString(), e);
-      throw e;
+      fail("Failure: " + e.getMessage());
     } finally {
       if (null != note1) {
         TestUtils.getInstance(Notebook.class).removeNote(note1, anonymous);
@@ -127,7 +125,7 @@ public class RecoveryTest extends AbstractTestRestApi {
 
   @Test
   public void testRecovery_2() throws Exception {
-    LOG.info("Test testRecovery_2");
+    LOG.debug("Test testRecovery_2");
     Note note1 = null;
     try {
       note1 = notebook.createNote("note2", AuthenticationInfo.ANONYMOUS);
@@ -164,8 +162,7 @@ public class RecoveryTest extends AbstractTestRestApi {
       post.close();
       assertEquals(Job.Status.ERROR, p1.getStatus());
     } catch (Exception e) {
-      LOG.error(e.toString(), e);
-      throw e;
+      fail("Failure: " + e.getMessage());
     } finally {
       if (null != note1) {
         TestUtils.getInstance(Notebook.class).removeNote(note1, anonymous);
@@ -175,7 +172,7 @@ public class RecoveryTest extends AbstractTestRestApi {
 
   @Test
   public void testRecovery_3() throws Exception {
-    LOG.info("Test testRecovery_3");
+    LOG.debug("Test testRecovery_3");
     Note note1 = null;
     try {
       note1 = TestUtils.getInstance(Notebook.class).createNote("note3", AuthenticationInfo.ANONYMOUS);
@@ -209,8 +206,7 @@ public class RecoveryTest extends AbstractTestRestApi {
       post.close();
       assertEquals(Job.Status.ERROR, p1.getStatus());
     } catch (Exception e ) {
-      LOG.error(e.toString(), e);
-      throw e;
+      fail("Failure: " + e.getMessage());
     } finally {
       if (null != note1) {
         TestUtils.getInstance(Notebook.class).removeNote(note1, anonymous);
@@ -220,7 +216,7 @@ public class RecoveryTest extends AbstractTestRestApi {
 
   @Test
   public void testRecovery_Finished_Paragraph_python() throws Exception {
-    LOG.info("Test testRecovery_Finished_Paragraph_python");
+    LOG.debug("Test testRecovery_Finished_Paragraph_python");
     Note note1 = null;
     try {
       InterpreterSettingManager interpreterSettingManager = TestUtils.getInstance(InterpreterSettingManager.class);
@@ -265,8 +261,7 @@ public class RecoveryTest extends AbstractTestRestApi {
               "8\n" +
               "9\n", p1.getReturn().message().get(0).getData());
     } catch (Exception e ) {
-      LOG.error(e.toString(), e);
-      throw e;
+      fail("Failure: " + e.getMessage());
     } finally {
       if (null != note1) {
         TestUtils.getInstance(Notebook.class).removeNote(note1, anonymous);

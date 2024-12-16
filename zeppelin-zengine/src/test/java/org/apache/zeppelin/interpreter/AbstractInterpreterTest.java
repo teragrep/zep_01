@@ -30,6 +30,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.File;
+import java.time.Instant;
 
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -58,11 +59,10 @@ public abstract class AbstractInterpreterTest {
   public void setUp() throws Exception {
     // copy the resources files to a temp folder
     zeppelinHome = new File("..");
-    LOGGER.info("ZEPPELIN_HOME: " + zeppelinHome.getAbsolutePath());
-    interpreterDir = new File(zeppelinHome, "interpreter_" + getClass().getSimpleName());
-    confDir = new File(zeppelinHome, "conf_" + getClass().getSimpleName());
-    notebookDir = new File(zeppelinHome, "notebook_" + getClass().getSimpleName());
-    FileUtils.deleteDirectory(notebookDir);
+    LOGGER.debug("ZEPPELIN_HOME: " + zeppelinHome.getAbsolutePath());
+    interpreterDir = new File(zeppelinHome, "zeppelin-zengine/target/interpreter_" + getClass().getSimpleName() + Instant.now().toEpochMilli());
+    confDir = new File(zeppelinHome, "zeppelin-zengine/target/conf_" + getClass().getSimpleName() + Instant.now().toEpochMilli());
+    notebookDir = new File(zeppelinHome, "zeppelin-zengine/target/notebook_" + getClass().getSimpleName() + Instant.now().toEpochMilli());
 
     interpreterDir.mkdirs();
     confDir.mkdirs();
@@ -90,18 +90,6 @@ public abstract class AbstractInterpreterTest {
   public void tearDown() throws Exception {
     if (interpreterSettingManager != null) {
       interpreterSettingManager.close();
-    }
-    if (interpreterDir != null) {
-      LOGGER.info("Delete interpreterDir: {}", interpreterDir);
-      FileUtils.deleteDirectory(interpreterDir);
-    }
-    if (confDir != null) {
-      LOGGER.info("Delete confDir: {}", confDir);
-      FileUtils.deleteDirectory(confDir);
-    }
-    if (notebookDir != null) {
-      LOGGER.info("Delete notebookDir: {}", notebookDir);
-      FileUtils.deleteDirectory(notebookDir);
     }
   }
 

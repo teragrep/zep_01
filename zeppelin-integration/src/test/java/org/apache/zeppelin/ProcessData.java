@@ -28,6 +28,8 @@ import java.util.concurrent.TimeUnit;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import static org.junit.Assert.fail;
+
 public class ProcessData {
   public enum Types_Of_Data {
     OUTPUT,
@@ -206,18 +208,6 @@ public class ProcessData {
           sbErrorStream.append(tempSB);
           if (tempSB.length() > 0) {
             outputProduced = true;
-            String temp = new String(tempSB);
-            temp = temp.replaceAll("Pseudo-terminal will not be allocated because stdin is not a terminal.", "");
-            //TODO : error stream output need to be improved, because it outputs downloading information.
-            if (printToConsole) {
-              if (!temp.trim().equals("")) {
-                if (temp.toLowerCase().contains("error") || temp.toLowerCase().contains("failed")) {
-                  LOG.warn(temp.trim());
-                } else {
-                  LOG.debug(temp.trim());
-                }
-              }
-            }
           }
           lastStreamDataTime = System.currentTimeMillis();
         }
@@ -225,23 +215,9 @@ public class ProcessData {
 
         if ((System.currentTimeMillis() - lastStreamDataTime > silenceTimeout) ||     //Exit if silenceTimeout ms has passed from last stream read. Means process is alive but not sending any data.
             (System.currentTimeMillis() > unconditionalExitTime)) {                    //Exit unconditionally - guards against alive process continuously sending data.
-          LOG.info("Conditions: " + (System.currentTimeMillis() - lastStreamDataTime > silenceTimeout) + " " +
+          LOG.debug("Conditions: " + (System.currentTimeMillis() - lastStreamDataTime > silenceTimeout) + " " +
               (System.currentTimeMillis() > unconditionalExitTime));
           this.checked_process.destroy();
-          try {
-            if ((System.currentTimeMillis() > unconditionalExitTime)) {
-              LOG.error(
-                  "!@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@Unconditional exit occured@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@!\nsome process hag up for more than "
-                      + unconditionalExitDelayMinutes + " minutes.");
-            }
-            LOG.error("!##################################!");
-            StringWriter sw = new StringWriter();
-            Exception e = new Exception("Exited from buildOutputAndErrorStreamData by timeout");
-            e.printStackTrace(new PrintWriter(sw)); //Get stack trace
-            LOG.error(String.valueOf(e), e);
-          } catch (Exception ignore) {
-            LOG.info("Exception in ProcessData while buildOutputAndErrorStreamData ", ignore);
-          }
           break;
         }
       }

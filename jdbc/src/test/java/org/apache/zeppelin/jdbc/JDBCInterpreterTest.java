@@ -33,6 +33,7 @@ import org.apache.zeppelin.user.UsernamePassword;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
+import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -74,8 +75,7 @@ public class JDBCInterpreterTest extends BasicJDBCTestCaseAdapter {
 
   private static String getJdbcConnection() throws IOException {
     if (null == jdbcConnection) {
-      Path tmpDir = Files.createTempDirectory("h2-test-");
-      tmpDir.toFile().deleteOnExit();
+      Path tmpDir = new File("target/h2-test").toPath().toAbsolutePath();
       jdbcConnection = format("jdbc:h2:%s", tmpDir);
     }
     return jdbcConnection;

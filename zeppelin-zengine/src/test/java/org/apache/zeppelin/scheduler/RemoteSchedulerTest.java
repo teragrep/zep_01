@@ -42,6 +42,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 import static org.mockito.Mockito.when;
 
 public class RemoteSchedulerTest extends AbstractInterpreterTest
@@ -120,7 +121,7 @@ public class RemoteSchedulerTest extends AbstractInterpreterTest
 
     int cycles = 0;
     while (!job.isRunning() && cycles < MAX_WAIT_CYCLES) {
-      LOGGER.info("Status:" + job.getStatus());
+      LOGGER.debug("Status:" + job.getStatus());
       Thread.sleep(TICK_WAIT);
       cycles++;
     }
@@ -183,7 +184,7 @@ public class RemoteSchedulerTest extends AbstractInterpreterTest
           try {
             intpA.cancel(context);
           } catch (InterpreterException e) {
-            e.printStackTrace();
+            fail("Failure happened: " + e.getMessage());
           }
         }
         return true;
@@ -230,7 +231,7 @@ public class RemoteSchedulerTest extends AbstractInterpreterTest
           try {
             intpA.cancel(context);
           } catch (InterpreterException e) {
-            e.printStackTrace();
+            fail("Failure happened: " + e.getMessage());
           }
         }
         return true;

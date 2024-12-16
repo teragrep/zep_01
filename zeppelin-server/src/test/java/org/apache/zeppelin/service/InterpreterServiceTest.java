@@ -24,6 +24,7 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -52,7 +53,7 @@ public class InterpreterServiceTest {
 
   @Before
   public void setUp() throws Exception {
-    temporaryDir = Files.createTempDirectory("tmp");
+    temporaryDir = new File("target/").toPath();
     interpreterDir = Files.createTempDirectory(temporaryDir, "interpreter");
     localRepoDir = Files.createTempDirectory(temporaryDir, "local-repo");
 
@@ -64,13 +65,6 @@ public class InterpreterServiceTest {
 
     interpreterService =
         new InterpreterService(mockZeppelinConfiguration, mockInterpreterSettingManager);
-  }
-
-  @After
-  public void tearDown() throws Exception {
-    if (null != temporaryDir) {
-      FileUtils.deleteDirectory(temporaryDir.toFile());
-    }
   }
 
   @Test(expected = Exception.class)

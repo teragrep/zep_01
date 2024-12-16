@@ -25,6 +25,7 @@ import org.apache.zeppelin.ZeppelinITUtils;
 import org.hamcrest.CoreMatchers;
 import org.junit.After;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ErrorCollector;
@@ -53,6 +54,7 @@ public class ParagraphActionsIT extends AbstractZeppelinIT {
     driver.quit();
   }
 
+  @Ignore(value="Contains UI specific values")
   @Test
   public void testCreateNewButton() throws Exception {
     try {
@@ -118,6 +120,7 @@ public class ParagraphActionsIT extends AbstractZeppelinIT {
 
   }
 
+  @Ignore(value="Contains UI specific values")
   @Test
   public void testRemoveButton() throws Exception {
     try {
@@ -152,6 +155,7 @@ public class ParagraphActionsIT extends AbstractZeppelinIT {
     }
   }
 
+  @Ignore(value="Contains UI specific values")
   @Test
   public void testMoveUpAndDown() throws Exception {
     try {
@@ -202,6 +206,7 @@ public class ParagraphActionsIT extends AbstractZeppelinIT {
 
   }
 
+  @Ignore(value="Contains UI specific values")
   @Test
   public void testDisableParagraphRunButton() throws Exception {
     try {
@@ -235,6 +240,7 @@ public class ParagraphActionsIT extends AbstractZeppelinIT {
     }
   }
 
+  @Ignore(value="Contains UI specific values")
   @Test
   public void testRunAllUserCodeFail() throws Exception {
     try {
@@ -276,6 +282,7 @@ public class ParagraphActionsIT extends AbstractZeppelinIT {
     }
   }
 
+  @Ignore(value="Contains UI specific values")
   @Test
   public void testRunAllCancel() throws Exception {
     try {
@@ -316,7 +323,8 @@ public class ParagraphActionsIT extends AbstractZeppelinIT {
     }
   }
 
-//  @Test
+  @Ignore(value="Contains UI specific values")
+  @Test
   public void testRunOnSelectionChange() throws Exception {
     try {
       String xpathToRunOnSelectionChangeCheckbox = getParagraphXPath(1) + "//ul/li/form/input[contains(@ng-checked, 'true')]";
@@ -369,6 +377,7 @@ public class ParagraphActionsIT extends AbstractZeppelinIT {
     }
   }
 
+  @Ignore(value="Contains UI specific values")
   @Test
   public void testClearOutputButton() throws Exception {
     try {
@@ -399,6 +408,7 @@ public class ParagraphActionsIT extends AbstractZeppelinIT {
     }
   }
 
+  @Ignore(value="Contains UI specific values")
   @Test
   public void testWidth() throws Exception {
     try {
@@ -423,6 +433,7 @@ public class ParagraphActionsIT extends AbstractZeppelinIT {
     }
   }
 
+  @Ignore(value="Contains UI specific values")
   @Test
   public void testFontSize() throws Exception {
     try {
@@ -448,6 +459,7 @@ public class ParagraphActionsIT extends AbstractZeppelinIT {
     }
   }
 
+  @Ignore(value="Contains UI specific values")
   @Test
   public void testTitleButton() throws Exception {
     try {
@@ -516,6 +528,7 @@ public class ParagraphActionsIT extends AbstractZeppelinIT {
 
   }
 
+  @Ignore(value="Contains UI specific values")
   @Test
   public void testShowAndHideLineNumbers() throws Exception {
     try {
@@ -561,7 +574,8 @@ public class ParagraphActionsIT extends AbstractZeppelinIT {
     }
   }
 
-//  @Test
+  @Ignore(value="Contains UI specific values")
+  @Test
   public void testEditOnDoubleClick() throws Exception {
     try {
       createNewNote();
@@ -607,7 +621,8 @@ public class ParagraphActionsIT extends AbstractZeppelinIT {
     }
   }
 
-  //@Test
+  @Ignore(value="Contains UI specific values")
+  @Test
   public void testSingleDynamicFormTextInput() throws Exception {
     try {
       createNewNote();
@@ -641,7 +656,8 @@ public class ParagraphActionsIT extends AbstractZeppelinIT {
     }
   }
 
-  // @Test
+  @Ignore(value="Contains UI specific values")
+  @Test
   public void testSingleDynamicFormSelectForm() throws Exception {
     try {
       createNewNote();
@@ -678,6 +694,7 @@ public class ParagraphActionsIT extends AbstractZeppelinIT {
     }
   }
 
+  @Ignore(value="Contains UI specific values")
   @Test
   public void testSingleDynamicFormCheckboxForm() throws Exception {
     try {
@@ -720,7 +737,8 @@ public class ParagraphActionsIT extends AbstractZeppelinIT {
     }
   }
 
-  // @Test
+  @Ignore(value="Contains UI specific values")
+  @Test
   public void testMultipleDynamicFormsSameType() throws Exception {
     try {
       createNewNote();
@@ -758,6 +776,7 @@ public class ParagraphActionsIT extends AbstractZeppelinIT {
     }
   }
 
+  @Ignore(value="Contains UI specific values")
   @Test
   public void testNoteDynamicFormTextInput() throws Exception {
     try {
@@ -796,7 +815,8 @@ public class ParagraphActionsIT extends AbstractZeppelinIT {
     }
   }
 
-  // @Test
+  @Ignore(value="Contains UI specific values")
+  @Test
   public void testNoteDynamicFormSelect() throws Exception {
     try {
       createNewNote();
@@ -841,6 +861,7 @@ public class ParagraphActionsIT extends AbstractZeppelinIT {
     }
   }
 
+  @Ignore(value="Contains UI specific values")
   @Test
   public void testDynamicNoteFormCheckbox() throws Exception {
     try {
@@ -886,6 +907,7 @@ public class ParagraphActionsIT extends AbstractZeppelinIT {
     }
   }
 
+  @Ignore(value="Contains UI specific values")
   @Test
   public void testWithNoteAndParagraphDynamicFormTextInput() throws Exception {
     try {

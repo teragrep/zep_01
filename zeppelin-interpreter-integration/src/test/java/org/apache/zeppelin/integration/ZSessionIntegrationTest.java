@@ -382,21 +382,20 @@ public class ZSessionIntegrationTest extends AbstractTestRestApi {
       try {
         session.execute("1/0");
         fail("Should fail to execute code after session is stopped");
-      } catch (Exception e) {
-        e.printStackTrace();
+      } catch (Exception ignored) {
       }
     } finally {
       try {
         session.stop();
         fail("Should fail to stop session after it is stopped");
       } catch (Exception e) {
-        e.printStackTrace();
         assertTrue(e.getMessage().contains("No such session"));
       }
     }
   }
 
-  //@Test
+  @Ignore(value="This was disabled test")
+  @Test
   public void testZSession_Jdbc() throws Exception {
 
     Map<String, String> intpProperties = new HashMap<>();
@@ -434,7 +433,8 @@ public class ZSessionIntegrationTest extends AbstractTestRestApi {
     }
   }
 
-  //@Test
+  @Ignore(value="This was ignored test")
+  @Test
   public void testZSession_Jdbc_Submit() throws Exception {
 
     Map<String, String> intpProperties = new HashMap<>();

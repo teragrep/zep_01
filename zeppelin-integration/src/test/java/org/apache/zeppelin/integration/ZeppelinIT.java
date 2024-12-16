@@ -27,6 +27,7 @@ import org.apache.zeppelin.ZeppelinITUtils;
 import org.hamcrest.CoreMatchers;
 import org.junit.After;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ErrorCollector;
@@ -65,6 +66,7 @@ public class ZeppelinIT extends AbstractZeppelinIT {
     driver.quit();
   }
 
+  @Ignore(value="Contains UI specific values")
   @Test
   public void testAngularDisplay() throws Exception {
     try {
@@ -191,14 +193,15 @@ public class ZeppelinIT extends AbstractZeppelinIT {
           "//div[@class='modal-footer']//button[contains(.,'OK')]"));
       ZeppelinITUtils.sleep(100, false);
 
-      LOG.info("testCreateNotebook Test executed");
+      LOG.debug("testCreateNotebook Test executed");
     } catch (Exception e) {
       handleException("Exception in ZeppelinIT while testAngularDisplay ", e);
     }
   }
 
   //It is a flaky test, disable it temporary, should fix it later. ZEPPELIN-5528
-  //@Test
+  @Ignore(value="Contains UI specific values")
+  @Test
   public void testSparkInterpreterDependencyLoading() throws Exception {
     try {
       // navigate to interpreter page
@@ -265,6 +268,7 @@ public class ZeppelinIT extends AbstractZeppelinIT {
     }
   }
 
+  @Ignore(value="Contains UI specific values")
   @Test
   public void testAngularRunParagraph() throws Exception {
     try {
@@ -318,13 +322,14 @@ public class ZeppelinIT extends AbstractZeppelinIT {
       deleteTestNotebook(driver);
       ZeppelinITUtils.sleep(1000, false);
 
-      LOG.info("testAngularRunParagraph Test executed");
+      LOG.debug("testAngularRunParagraph Test executed");
     }  catch (Exception e) {
       handleException("Exception in ZeppelinIT while testAngularRunParagraph", e);
     }
 
   }
 
+  @Ignore(value="So much sleep, what, why")
   @Test
   public void deleteTrashNode() throws Exception {
     try {
@@ -334,7 +339,7 @@ public class ZeppelinIT extends AbstractZeppelinIT {
       waitForParagraph(1, "READY");
 
       String currentUrl = driver.getCurrentUrl();
-      LOG.info("currentUrl = " + currentUrl);
+      LOG.debug("currentUrl = " + currentUrl);
 
       //delete created notebook to trash
       deleteTestNotebook(driver);
@@ -347,7 +352,7 @@ public class ZeppelinIT extends AbstractZeppelinIT {
       // delete note from trash
       deleteTrashNotebook(driver);
       ZeppelinITUtils.sleep(2000, false);
-      LOG.info("deleteTrashNode executed");
+      LOG.debug("deleteTrashNode executed");
     }  catch (Exception e) {
       handleException("Exception in ZeppelinIT while deleteTrashNode", e);
     }

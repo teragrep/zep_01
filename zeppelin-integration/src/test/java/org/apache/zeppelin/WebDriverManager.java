@@ -17,8 +17,6 @@
 
 package org.apache.zeppelin;
 
-import static org.junit.Assert.fail;
-
 import com.google.common.collect.ImmutableMap;
 import java.io.File;
 import java.io.IOException;
@@ -55,10 +53,10 @@ public class WebDriverManager {
     WebDriver driver = null;
 
     try {
-      int firefoxVersion = WebDriverManager.getFirefoxVersion();
-      LOG.info("Firefox version " + firefoxVersion + " detected");
+      int firefoxVersion = 1; // WebDriverManager.getFirefoxVersion();
+      LOG.debug("Firefox version " + firefoxVersion + " detected");
 
-      downLoadsDir = FileUtils.getTempDirectory().toString();
+      downLoadsDir = new File("target/").getAbsolutePath();
 
       String tempPath = downLoadsDir + "/firefox/";
 
@@ -98,14 +96,14 @@ public class WebDriverManager {
                .build(), firefoxOptions);
 
     } catch (Exception e) {
-      LOG.error("Exception in WebDriverManager while FireFox Driver ", e);
+      throw new RuntimeException("Exception in WebDriverManager while FireFox Driver ", e);
     }
 
     if (driver == null) {
       try {
         driver = new ChromeDriver();
       } catch (Exception e) {
-        LOG.error("Exception in WebDriverManager while ChromeDriver ", e);
+        throw new RuntimeException("Exception in WebDriverManager while ChromeDriver ", e);
       }
     }
 
@@ -113,7 +111,7 @@ public class WebDriverManager {
       try {
         driver = new SafariDriver();
       } catch (Exception e) {
-        LOG.error("Exception in WebDriverManager while SafariDriver ", e);
+        throw new RuntimeException("Exception in WebDriverManager while SafariDriver ", e);
       }
     }
 
@@ -143,13 +141,12 @@ public class WebDriverManager {
         loaded = true;
         break;
       } catch (TimeoutException e) {
-        LOG.info("Exception in WebDriverManager while WebDriverWait ", e);
-        driver.navigate().to(url);
+        throw new RuntimeException("Failure: ", e);
       }
     }
 
     if (loaded == false) {
-      fail();
+      throw new RuntimeException("Failed to load driver");
     }
 
     driver.manage().window().maximize();
@@ -161,7 +158,7 @@ public class WebDriverManager {
         "https://github.com/mozilla/geckodriver/releases/download/v" + GECKODRIVER_VERSION
             + "/geckodriver-v" + GECKODRIVER_VERSION + "-";
 
-    LOG.info("Geeko version: " + firefoxVersion + ", will be downloaded to " + tempPath);
+    LOG.debug("Geeko version: " + firefoxVersion + ", will be downloaded to " + tempPath);
     try {
       if (SystemUtils.IS_OS_WINDOWS) {
         if (System.getProperty("sun.arch.data.model").equals("64")) {
@@ -195,11 +192,12 @@ public class WebDriverManager {
       }
 
     } catch (IOException e) {
-      LOG.error("Download of Geeko version: " + firefoxVersion + ", falied in path " + tempPath);
+      throw new RuntimeException("Download of Geeko version: " + firefoxVersion + ", falied in path " + tempPath);
     }
-    LOG.info("Download of Geeko version: " + firefoxVersion + ", successful");
+    LOG.debug("Download of Geeko version: " + firefoxVersion + ", successful");
   }
 
+  /*
   public static int getFirefoxVersion() {
     try {
       String firefoxVersionCmd = "firefox -v";
@@ -215,4 +213,5 @@ public class WebDriverManager {
       return -1;
     }
   }
+  */
 }
