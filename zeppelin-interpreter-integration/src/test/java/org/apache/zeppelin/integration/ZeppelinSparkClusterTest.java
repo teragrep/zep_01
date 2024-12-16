@@ -815,14 +815,5 @@ public abstract class ZeppelinSparkClusterTest extends AbstractTestRestApi {
     assertEquals(Status.ERROR, p1.getStatus());
     assertTrue("Actual error message: " + p1.getReturn().message().get(0).getData(),
             p1.getReturn().message().get(0).getData().contains("No such file or directory"));
-
-    // FIXME: Why is it causing failures in other tests???!
-    // reset SPARK_HOME, otherwise it will cause the following test fail
-    InterpreterSetting sparkIntpSetting = TestUtils.getInstance(Notebook.class).getInterpreterSettingManager()
-            .getInterpreterSettingByName("spark");
-    Map<String, InterpreterProperty> sparkProperties =
-            (Map<String, InterpreterProperty>) sparkIntpSetting.getProperties();
-    sparkProperties.put("SPARK_HOME", new InterpreterProperty("SPARK_HOME", sparkHome));
-    sparkIntpSetting.close();
   }
 }
