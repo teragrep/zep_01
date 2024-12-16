@@ -60,7 +60,7 @@ public class WebDriverManager {
 
       String tempPath = downLoadsDir + "/firefox/";
 
-      downloadGeekoDriver(firefoxVersion, tempPath);
+      // downloadGeekoDriver(firefoxVersion, tempPath);
 
       FirefoxProfile profile = new FirefoxProfile();
       profile.setPreference("browser.download.folderList", 2);
@@ -153,6 +153,7 @@ public class WebDriverManager {
     return driver;
   }
 
+  /*
   public static void downloadGeekoDriver(int firefoxVersion, String tempPath) {
     String geekoDriverUrlString =
         "https://github.com/mozilla/geckodriver/releases/download/v" + GECKODRIVER_VERSION
@@ -196,6 +197,7 @@ public class WebDriverManager {
     }
     LOG.debug("Download of Geeko version: " + firefoxVersion + ", successful");
   }
+   */
 
   /*
   public static int getFirefoxVersion() {

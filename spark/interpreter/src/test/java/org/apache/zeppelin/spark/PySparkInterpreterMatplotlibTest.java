@@ -28,6 +28,7 @@ import org.apache.zeppelin.interpreter.InterpreterResult.Type;
 import org.apache.zeppelin.interpreter.InterpreterResultMessage;
 import org.apache.zeppelin.interpreter.remote.RemoteInterpreterEventClient;
 import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.TestMethodOrder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -47,10 +48,9 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.mock;
 
+@Disabled(value="Contains external dependencies")
 @TestMethodOrder(MethodOrderer.MethodName.class)
 public class PySparkInterpreterMatplotlibTest {
-
-  static File tmpDir;
 
   static SparkInterpreter sparkInterpreter;
   static PySparkInterpreter pyspark;
@@ -102,20 +102,6 @@ public class PySparkInterpreterMatplotlibTest {
     p.setProperty("zeppelin.python.gatewayserver_address", "127.0.0.1");
     p.setProperty("zeppelin.spark.deprecatedMsg.show", "false");
     return p;
-  }
-
-  /**
-   * Get spark version number as a numerical value.
-   * eg. 1.1.x => 11, 1.2.x => 12, 1.3.x => 13 ...
-   */
-  public static int getSparkVersionNumber() {
-    if (sparkInterpreter == null) {
-      return 0;
-    }
-
-    String[] split = sparkInterpreter.getSparkContext().version().split("\\.");
-    int version = Integer.parseInt(split[0]) * 10 + Integer.parseInt(split[1]);
-    return version;
   }
 
   @BeforeAll
