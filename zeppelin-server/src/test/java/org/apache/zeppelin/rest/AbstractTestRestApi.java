@@ -315,9 +315,6 @@ public abstract class AbstractTestRestApi {
           TestUtils.getInstance(Notebook.class).getInterpreterSettingManager().restart(setting.getId());
         }
       }
-      if (shiroIni != null) {
-        FileUtils.deleteQuietly(shiroIni);
-      }
       LOG.debug("Terminating Zeppelin Server...");
       ZeppelinServer.jettyWebServer.stop();
       executor.shutdown();
@@ -560,20 +557,6 @@ public abstract class AbstractTestRestApi {
         description.appendText("got ").appendText(root.toString());
       }
     };
-  }
-
-  public static void ps() {
-    DefaultExecutor executor = new DefaultExecutor();
-    executor.setStreamHandler(new PumpStreamHandler(System.out, System.err));
-
-    CommandLine cmd = CommandLine.parse("ps");
-    cmd.addArgument("aux", false);
-
-    try {
-      executor.execute(cmd);
-    } catch (IOException e) {
-      fail("This command should not fail: " + e.getMessage());
-    }
   }
 
   /**

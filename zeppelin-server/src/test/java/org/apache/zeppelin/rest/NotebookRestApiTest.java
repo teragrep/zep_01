@@ -78,157 +78,125 @@ public class NotebookRestApiTest extends AbstractTestRestApi {
   @Test
   public void testGetReloadNote() throws IOException {
     LOG.debug("Running testGetNote");
-    Note note1 = null;
-    try {
-      note1 = TestUtils.getInstance(Notebook.class).createNote("note1", anonymous);
-      note1.addNewParagraph(AuthenticationInfo.ANONYMOUS);
-      TestUtils.getInstance(Notebook.class).saveNote(note1, anonymous);
-      CloseableHttpResponse get = httpGet("/notebook/" + note1.getId());
-      assertThat(get, isAllowed());
-      Map<String, Object> resp = gson.fromJson(EntityUtils.toString(get.getEntity(), StandardCharsets.UTF_8),
-              new TypeToken<Map<String, Object>>() {}.getType());
-      Map<String, Object> noteObject = (Map<String, Object>) resp.get("body");
-      assertEquals(1, ((List)noteObject.get("paragraphs")).size());
+    Note note1 = TestUtils.getInstance(Notebook.class).createNote("note1", anonymous);
+    note1.addNewParagraph(AuthenticationInfo.ANONYMOUS);
+    TestUtils.getInstance(Notebook.class).saveNote(note1, anonymous);
+    CloseableHttpResponse get = httpGet("/notebook/" + note1.getId());
+    assertThat(get, isAllowed());
+    Map<String, Object> resp = gson.fromJson(EntityUtils.toString(get.getEntity(), StandardCharsets.UTF_8),
+            new TypeToken<Map<String, Object>>() {}.getType());
+    Map<String, Object> noteObject = (Map<String, Object>) resp.get("body");
+    assertEquals(1, ((List)noteObject.get("paragraphs")).size());
 
-      // add one new paragraph, but don't save it and reload it again
-      note1.addNewParagraph(AuthenticationInfo.ANONYMOUS);
+    // add one new paragraph, but don't save it and reload it again
+    note1.addNewParagraph(AuthenticationInfo.ANONYMOUS);
 
-      get = httpGet("/notebook/" + note1.getId() + "?reload=true");
-      assertThat(get, isAllowed());
-      resp = gson.fromJson(EntityUtils.toString(get.getEntity(), StandardCharsets.UTF_8),
-              new TypeToken<Map<String, Object>>() {}.getType());
-      noteObject = (Map<String, Object>) resp.get("body");
-      assertEquals(1, ((List)noteObject.get("paragraphs")).size());
-      get.close();
-    } finally {
-      // cleanup
-      if (null != note1) {
-        TestUtils.getInstance(Notebook.class).removeNote(note1, anonymous);
-      }
-    }
+    get = httpGet("/notebook/" + note1.getId() + "?reload=true");
+    assertThat(get, isAllowed());
+    resp = gson.fromJson(EntityUtils.toString(get.getEntity(), StandardCharsets.UTF_8),
+            new TypeToken<Map<String, Object>>() {}.getType());
+    noteObject = (Map<String, Object>) resp.get("body");
+    assertEquals(1, ((List)noteObject.get("paragraphs")).size());
+    get.close();
   }
 
   @Test
   public void testGetNoteParagraphJobStatus() throws IOException {
     LOG.debug("Running testGetNoteParagraphJobStatus");
-    Note note1 = null;
-    try {
-      note1 = TestUtils.getInstance(Notebook.class).createNote("note1", anonymous);
-      note1.addNewParagraph(AuthenticationInfo.ANONYMOUS);
+    Note note1 = TestUtils.getInstance(Notebook.class).createNote("note1", anonymous);
+    note1.addNewParagraph(AuthenticationInfo.ANONYMOUS);
 
-      String paragraphId = note1.getLastParagraph().getId();
+    String paragraphId = note1.getLastParagraph().getId();
 
-      CloseableHttpResponse get = httpGet("/notebook/job/" + note1.getId() + "/" + paragraphId);
-      assertThat(get, isAllowed());
-      Map<String, Object> resp = gson.fromJson(EntityUtils.toString(get.getEntity(), StandardCharsets.UTF_8),
-              new TypeToken<Map<String, Object>>() {}.getType());
-      Map<String, Set<String>> paragraphStatus = (Map<String, Set<String>>) resp.get("body");
+    CloseableHttpResponse get = httpGet("/notebook/job/" + note1.getId() + "/" + paragraphId);
+    assertThat(get, isAllowed());
+    Map<String, Object> resp = gson.fromJson(EntityUtils.toString(get.getEntity(), StandardCharsets.UTF_8),
+            new TypeToken<Map<String, Object>>() {}.getType());
+    Map<String, Set<String>> paragraphStatus = (Map<String, Set<String>>) resp.get("body");
 
-      // Check id and status have proper value
-      assertEquals(paragraphStatus.get("id"), paragraphId);
-      assertEquals(paragraphStatus.get("status"), "READY");
-      get.close();
-    } finally {
-      // cleanup
-      if (null != note1) {
-        TestUtils.getInstance(Notebook.class).removeNote(note1, anonymous);
-      }
-    }
+    // Check id and status have proper value
+    assertEquals(paragraphStatus.get("id"), paragraphId);
+    assertEquals(paragraphStatus.get("status"), "READY");
+    get.close();
   }
 
   @Test
   public void testRunParagraphJob() throws Exception {
     LOG.debug("Running testRunParagraphJob");
-    Note note1 = null;
-    try {
-      note1 = TestUtils.getInstance(Notebook.class).createNote("note1", anonymous);
-      note1.addNewParagraph(AuthenticationInfo.ANONYMOUS);
+    Note note1 = TestUtils.getInstance(Notebook.class).createNote("note1", anonymous);
+    note1.addNewParagraph(AuthenticationInfo.ANONYMOUS);
 
-      Paragraph p = note1.addNewParagraph(AuthenticationInfo.ANONYMOUS);
+    Paragraph p = note1.addNewParagraph(AuthenticationInfo.ANONYMOUS);
 
-      // run blank paragraph
-      CloseableHttpResponse post = httpPost("/notebook/job/" + note1.getId() + "/" + p.getId(), "");
-      assertThat(post, isAllowed());
-      Map<String, Object> resp = gson.fromJson(EntityUtils.toString(post.getEntity(), StandardCharsets.UTF_8),
-              new TypeToken<Map<String, Object>>() {}.getType());
-      assertEquals("OK", resp.get("status"));
-      post.close();
-      p.waitUntilFinished();
-      assertEquals(Job.Status.FINISHED, p.getStatus());
+    // run blank paragraph
+    CloseableHttpResponse post = httpPost("/notebook/job/" + note1.getId() + "/" + p.getId(), "");
+    assertThat(post, isAllowed());
+    Map<String, Object> resp = gson.fromJson(EntityUtils.toString(post.getEntity(), StandardCharsets.UTF_8),
+            new TypeToken<Map<String, Object>>() {}.getType());
+    assertEquals("OK", resp.get("status"));
+    post.close();
+    p.waitUntilFinished();
+    assertEquals(Job.Status.FINISHED, p.getStatus());
 
-      // run non-blank paragraph
-      p.setText("test");
-      post = httpPost("/notebook/job/" + note1.getId() + "/" + p.getId(), "");
-      assertThat(post, isAllowed());
-      resp = gson.fromJson(EntityUtils.toString(post.getEntity(), StandardCharsets.UTF_8),
-              new TypeToken<Map<String, Object>>() {}.getType());
-      assertEquals("OK", resp.get("status"));
-      post.close();
-      p.waitUntilFinished();
-      assertNotEquals(Job.Status.FINISHED, p.getStatus());
-    } finally {
-      // cleanup
-      if (null != note1) {
-        TestUtils.getInstance(Notebook.class).removeNote(note1, anonymous);
-      }
-    }
+    // run non-blank paragraph
+    p.setText("test");
+    post = httpPost("/notebook/job/" + note1.getId() + "/" + p.getId(), "");
+    assertThat(post, isAllowed());
+    resp = gson.fromJson(EntityUtils.toString(post.getEntity(), StandardCharsets.UTF_8),
+            new TypeToken<Map<String, Object>>() {}.getType());
+    assertEquals("OK", resp.get("status"));
+    post.close();
+    p.waitUntilFinished();
+    assertNotEquals(Job.Status.FINISHED, p.getStatus());
   }
 
   @Test
   public void testRunParagraphSynchronously() throws IOException {
     LOG.debug("Running testRunParagraphSynchronously");
-    Note note1 = null;
-    try {
-      note1 = TestUtils.getInstance(Notebook.class).createNote("note1", anonymous);
-      note1.addNewParagraph(AuthenticationInfo.ANONYMOUS);
+    Note note1 = TestUtils.getInstance(Notebook.class).createNote("note1", anonymous);
+    note1.addNewParagraph(AuthenticationInfo.ANONYMOUS);
 
-      Paragraph p = note1.addNewParagraph(AuthenticationInfo.ANONYMOUS);
+    Paragraph p = note1.addNewParagraph(AuthenticationInfo.ANONYMOUS);
 
-      // run non-blank paragraph
-      String title = "title";
-      String text = "%sh\n sleep 1";
-      p.setTitle(title);
-      p.setText(text);
+    // run non-blank paragraph
+    String title = "title";
+    String text = "%sh\n sleep 1";
+    p.setTitle(title);
+    p.setText(text);
 
-      CloseableHttpResponse post = httpPost("/notebook/run/" + note1.getId() + "/" + p.getId(), "");
-      assertThat(post, isAllowed());
-      Map<String, Object> resp = gson.fromJson(EntityUtils.toString(post.getEntity(), StandardCharsets.UTF_8),
-          new TypeToken<Map<String, Object>>() {}.getType());
-      assertEquals("OK", resp.get("status"));
-      post.close();
-      assertNotEquals(Job.Status.READY, p.getStatus());
+    CloseableHttpResponse post = httpPost("/notebook/run/" + note1.getId() + "/" + p.getId(), "");
+    assertThat(post, isAllowed());
+    Map<String, Object> resp = gson.fromJson(EntityUtils.toString(post.getEntity(), StandardCharsets.UTF_8),
+        new TypeToken<Map<String, Object>>() {}.getType());
+    assertEquals("OK", resp.get("status"));
+    post.close();
+    assertNotEquals(Job.Status.READY, p.getStatus());
 
-      // Check if the paragraph is emptied
-      assertEquals(title, p.getTitle());
-      assertEquals(text, p.getText());
+    // Check if the paragraph is emptied
+    assertEquals(title, p.getTitle());
+    assertEquals(text, p.getText());
 
-      // run invalid code
-      text = "%sh\n invalid_cmd";
-      p.setTitle(title);
-      p.setText(text);
+    // run invalid code
+    text = "%sh\n invalid_cmd";
+    p.setTitle(title);
+    p.setText(text);
 
-      post = httpPost("/notebook/run/" + note1.getId() + "/" + p.getId(), "");
-      assertEquals(200, post.getStatusLine().getStatusCode());
-      resp = gson.fromJson(EntityUtils.toString(post.getEntity(), StandardCharsets.UTF_8),
-              new TypeToken<Map<String, Object>>() {}.getType());
-      assertEquals("OK", resp.get("status"));
-      Map stringMap = (Map) resp.get("body");
-      assertEquals("ERROR", stringMap.get("code"));
-      List<Map> interpreterResults = (List<Map>) stringMap.get("msg");
-      assertTrue(interpreterResults.get(0).toString(),
-              interpreterResults.get(0).get("data").toString().contains("invalid_cmd: command not found"));
-      post.close();
-      assertNotEquals(Job.Status.READY, p.getStatus());
+    post = httpPost("/notebook/run/" + note1.getId() + "/" + p.getId(), "");
+    assertEquals(200, post.getStatusLine().getStatusCode());
+    resp = gson.fromJson(EntityUtils.toString(post.getEntity(), StandardCharsets.UTF_8),
+            new TypeToken<Map<String, Object>>() {}.getType());
+    assertEquals("OK", resp.get("status"));
+    Map stringMap = (Map) resp.get("body");
+    assertEquals("ERROR", stringMap.get("code"));
+    List<Map> interpreterResults = (List<Map>) stringMap.get("msg");
+    assertTrue(interpreterResults.get(0).toString(),
+            interpreterResults.get(0).get("data").toString().contains("invalid_cmd: command not found"));
+    post.close();
+    assertNotEquals(Job.Status.READY, p.getStatus());
 
-      // Check if the paragraph is emptied
-      assertEquals(title, p.getTitle());
-      assertEquals(text, p.getText());
-    } finally {
-      // cleanup
-      if (null != note1) {
-        TestUtils.getInstance(Notebook.class).removeNote(note1, anonymous);
-      }
-    }
+    // Check if the paragraph is emptied
+    assertEquals(title, p.getTitle());
+    assertEquals(text, p.getText());
   }
 
   @Test
@@ -266,9 +234,7 @@ public class NotebookRestApiTest extends AbstractTestRestApi {
   @Test
   public void testRunNoteBlocking() throws IOException {
     LOG.debug("Running testRunNoteBlocking");
-    Note note1 = null;
-    try {
-      note1 = TestUtils.getInstance(Notebook.class).createNote("note1", anonymous);
+    Note note1 = TestUtils.getInstance(Notebook.class).createNote("note1", anonymous);
       // 2 paragraphs
       // P1:
       //    %python
@@ -295,456 +261,363 @@ public class NotebookRestApiTest extends AbstractTestRestApi {
       assertEquals(Job.Status.FINISHED, p1.getStatus());
       assertEquals(Job.Status.FINISHED, p2.getStatus());
       assertEquals("abc\n", p2.getReturn().message().get(0).getData());
-    } finally {
-      // cleanup
-      if (null != note1) {
-        TestUtils.getInstance(Notebook.class).removeNote(note1, anonymous);
-      }
-    }
   }
 
   @Ignore(value="This test should not work as %sh should not be available")
   @Test
   public void testRunNoteNonBlocking() throws Exception {
     LOG.debug("Running testRunNoteNonBlocking");
-    Note note1 = null;
-    try {
-      note1 = TestUtils.getInstance(Notebook.class).createNote("note1", anonymous);
-      // 2 paragraphs
-      // P1:
-      //    %python
-      //    import time
-      //    time.sleep(5)
-      //    name='hello'
-      //    z.put('name', name)
-      // P2:
-      //    %%sh(interpolate=true)
-      //    echo '{name}'
-      //
-      Paragraph p1 = note1.addNewParagraph(AuthenticationInfo.ANONYMOUS);
-      Paragraph p2 = note1.addNewParagraph(AuthenticationInfo.ANONYMOUS);
-      p1.setText("%python import time\ntime.sleep(5)\nname='hello'\nz.put('name', name)");
-      p2.setText("%sh(interpolate=true) echo '{name}'");
+    Note note1 = TestUtils.getInstance(Notebook.class).createNote("note1", anonymous);
+    // 2 paragraphs
+    // P1:
+    //    %python
+    //    import time
+    //    time.sleep(5)
+    //    name='hello'
+    //    z.put('name', name)
+    // P2:
+    //    %%sh(interpolate=true)
+    //    echo '{name}'
+    //
+    Paragraph p1 = note1.addNewParagraph(AuthenticationInfo.ANONYMOUS);
+    Paragraph p2 = note1.addNewParagraph(AuthenticationInfo.ANONYMOUS);
+    p1.setText("%python import time\ntime.sleep(5)\nname='hello'\nz.put('name', name)");
+    p2.setText("%sh(interpolate=true) echo '{name}'");
 
-      CloseableHttpResponse post = httpPost("/notebook/job/" + note1.getId() + "?blocking=true", "");
-      assertThat(post, isAllowed());
-      Map<String, Object> resp = gson.fromJson(EntityUtils.toString(post.getEntity(), StandardCharsets.UTF_8),
-              new TypeToken<Map<String, Object>>() {}.getType());
-      assertEquals("OK", resp.get("status"));
-      post.close();
+    CloseableHttpResponse post = httpPost("/notebook/job/" + note1.getId() + "?blocking=true", "");
+    assertThat(post, isAllowed());
+    Map<String, Object> resp = gson.fromJson(EntityUtils.toString(post.getEntity(), StandardCharsets.UTF_8),
+            new TypeToken<Map<String, Object>>() {}.getType());
+    assertEquals("OK", resp.get("status"));
+    post.close();
 
-      p1.waitUntilFinished();
-      p2.waitUntilFinished();
+    p1.waitUntilFinished();
+    p2.waitUntilFinished();
 
-      assertEquals(Job.Status.FINISHED, p1.getStatus());
-      assertEquals(Job.Status.FINISHED, p2.getStatus());
-      assertEquals("hello\n", p2.getReturn().message().get(0).getData());
-    } finally {
-      // cleanup
-      if (null != note1) {
-        TestUtils.getInstance(Notebook.class).removeNote(note1, anonymous);
-      }
-    }
+    assertEquals(Job.Status.FINISHED, p1.getStatus());
+    assertEquals(Job.Status.FINISHED, p2.getStatus());
+    assertEquals("hello\n", p2.getReturn().message().get(0).getData());
   }
 
   @Test
   public void testRunNoteBlocking_Isolated() throws IOException {
     LOG.debug("Running testRunNoteBlocking_Isolated");
-    Note note1 = null;
-    try {
-      InterpreterSettingManager interpreterSettingManager =
-              TestUtils.getInstance(InterpreterSettingManager.class);
-      InterpreterSetting interpreterSetting = interpreterSettingManager.getInterpreterSettingByName("python");
-      int pythonProcessNum = interpreterSetting.getAllInterpreterGroups().size();
+    InterpreterSettingManager interpreterSettingManager =
+            TestUtils.getInstance(InterpreterSettingManager.class);
+    InterpreterSetting interpreterSetting = interpreterSettingManager.getInterpreterSettingByName("python");
+    int pythonProcessNum = interpreterSetting.getAllInterpreterGroups().size();
 
-      note1 = TestUtils.getInstance(Notebook.class).createNote("note1", anonymous);
-      // 2 paragraphs
-      // P1:
-      //    %python
-      //    from __future__ import print_function
-      //    import time
-      //    time.sleep(1)
-      //    user='abc'
-      // P2:
-      //    %python
-      //    print(user)
-      //
-      Paragraph p1 = note1.addNewParagraph(AuthenticationInfo.ANONYMOUS);
-      Paragraph p2 = note1.addNewParagraph(AuthenticationInfo.ANONYMOUS);
-      p1.setText("%python from __future__ import print_function\nimport time\ntime.sleep(1)\nuser='abc'");
-      p2.setText("%python print(user)");
+    Note note1 = TestUtils.getInstance(Notebook.class).createNote("note1", anonymous);
+    // 2 paragraphs
+    // P1:
+    //    %python
+    //    from __future__ import print_function
+    //    import time
+    //    time.sleep(1)
+    //    user='abc'
+    // P2:
+    //    %python
+    //    print(user)
+    //
+    Paragraph p1 = note1.addNewParagraph(AuthenticationInfo.ANONYMOUS);
+    Paragraph p2 = note1.addNewParagraph(AuthenticationInfo.ANONYMOUS);
+    p1.setText("%python from __future__ import print_function\nimport time\ntime.sleep(1)\nuser='abc'");
+    p2.setText("%python print(user)");
 
-      CloseableHttpResponse post = httpPost("/notebook/job/" + note1.getId() + "?blocking=true&isolated=true", "");
-      assertThat(post, isAllowed());
-      Map<String, Object> resp = gson.fromJson(EntityUtils.toString(post.getEntity(), StandardCharsets.UTF_8),
-              new TypeToken<Map<String, Object>>() {}.getType());
-      assertEquals("OK", resp.get("status"));
-      post.close();
+    CloseableHttpResponse post = httpPost("/notebook/job/" + note1.getId() + "?blocking=true&isolated=true", "");
+    assertThat(post, isAllowed());
+    Map<String, Object> resp = gson.fromJson(EntityUtils.toString(post.getEntity(), StandardCharsets.UTF_8),
+            new TypeToken<Map<String, Object>>() {}.getType());
+    assertEquals("OK", resp.get("status"));
+    post.close();
 
-      assertEquals(Job.Status.FINISHED, p1.getStatus());
-      assertEquals(Job.Status.FINISHED, p2.getStatus());
-      assertEquals("abc\n", p2.getReturn().message().get(0).getData());
+    assertEquals(Job.Status.FINISHED, p1.getStatus());
+    assertEquals(Job.Status.FINISHED, p2.getStatus());
+    assertEquals("abc\n", p2.getReturn().message().get(0).getData());
 
-      // no new python process is created because it is isolated mode.
-      assertEquals(pythonProcessNum, interpreterSetting.getAllInterpreterGroups().size());
-    } finally {
-      // cleanup
-      if (null != note1) {
-        TestUtils.getInstance(Notebook.class).removeNote(note1, anonymous);
-      }
-    }
+    // no new python process is created because it is isolated mode.
+    assertEquals(pythonProcessNum, interpreterSetting.getAllInterpreterGroups().size());
   }
 
   @Test
   public void testRunNoteNonBlocking_Isolated() throws IOException, InterruptedException {
     LOG.debug("Running testRunNoteNonBlocking_Isolated");
-    Note note1 = null;
-    try {
-      InterpreterSettingManager interpreterSettingManager =
-              TestUtils.getInstance(InterpreterSettingManager.class);
-      InterpreterSetting interpreterSetting = interpreterSettingManager.getInterpreterSettingByName("python");
-      int pythonProcessNum = interpreterSetting.getAllInterpreterGroups().size();
+    InterpreterSettingManager interpreterSettingManager =
+            TestUtils.getInstance(InterpreterSettingManager.class);
+    InterpreterSetting interpreterSetting = interpreterSettingManager.getInterpreterSettingByName("python");
+    int pythonProcessNum = interpreterSetting.getAllInterpreterGroups().size();
 
-      note1 = TestUtils.getInstance(Notebook.class).createNote("note1", anonymous);
-      // 2 paragraphs
-      // P1:
-      //    %python
-      //    from __future__ import print_function
-      //    import time
-      //    time.sleep(1)
-      //    user='abc'
-      // P2:
-      //    %python
-      //    print(user)
-      //
-      Paragraph p1 = note1.addNewParagraph(AuthenticationInfo.ANONYMOUS);
-      Paragraph p2 = note1.addNewParagraph(AuthenticationInfo.ANONYMOUS);
-      p1.setText("%python from __future__ import print_function\nimport time\ntime.sleep(1)\nuser='abc'");
-      p2.setText("%python print(user)");
+    Note note1 = TestUtils.getInstance(Notebook.class).createNote("note1", anonymous);
+    // 2 paragraphs
+    // P1:
+    //    %python
+    //    from __future__ import print_function
+    //    import time
+    //    time.sleep(1)
+    //    user='abc'
+    // P2:
+    //    %python
+    //    print(user)
+    //
+    Paragraph p1 = note1.addNewParagraph(AuthenticationInfo.ANONYMOUS);
+    Paragraph p2 = note1.addNewParagraph(AuthenticationInfo.ANONYMOUS);
+    p1.setText("%python from __future__ import print_function\nimport time\ntime.sleep(1)\nuser='abc'");
+    p2.setText("%python print(user)");
 
-      CloseableHttpResponse post = httpPost("/notebook/job/" + note1.getId() + "?blocking=false&isolated=true", "");
-      assertThat(post, isAllowed());
-      Map<String, Object> resp = gson.fromJson(EntityUtils.toString(post.getEntity(), StandardCharsets.UTF_8),
-              new TypeToken<Map<String, Object>>() {}.getType());
-      assertEquals("OK", resp.get("status"));
-      post.close();
+    CloseableHttpResponse post = httpPost("/notebook/job/" + note1.getId() + "?blocking=false&isolated=true", "");
+    assertThat(post, isAllowed());
+    Map<String, Object> resp = gson.fromJson(EntityUtils.toString(post.getEntity(), StandardCharsets.UTF_8),
+            new TypeToken<Map<String, Object>>() {}.getType());
+    assertEquals("OK", resp.get("status"));
+    post.close();
 
-      // wait for all the paragraphs are done
-      while(note1.isRunning()) {
-        Thread.sleep(1000);
-      }
-      assertEquals(Job.Status.FINISHED, p1.getStatus());
-      assertEquals(Job.Status.FINISHED, p2.getStatus());
-      assertEquals("abc\n", p2.getReturn().message().get(0).getData());
-
-      // no new python process is created because it is isolated mode.
-      assertEquals(pythonProcessNum, interpreterSetting.getAllInterpreterGroups().size());
-    } finally {
-      // cleanup
-      if (null != note1) {
-        TestUtils.getInstance(Notebook.class).removeNote(note1, anonymous);
-      }
+    // wait for all the paragraphs are done
+    while(note1.isRunning()) {
+      Thread.sleep(1000);
     }
+    assertEquals(Job.Status.FINISHED, p1.getStatus());
+    assertEquals(Job.Status.FINISHED, p2.getStatus());
+    assertEquals("abc\n", p2.getReturn().message().get(0).getData());
+
+    // no new python process is created because it is isolated mode.
+    assertEquals(pythonProcessNum, interpreterSetting.getAllInterpreterGroups().size());
   }
 
   @Test
   public void testRunNoteWithParams() throws IOException, InterruptedException {
-    Note note1 = null;
-    try {
-      note1 = TestUtils.getInstance(Notebook.class).createNote("note1", anonymous);
-      // 2 paragraphs
-      // P1:
-      //    %python
-      //    name = z.input('name', 'world')
-      //    print(name)
-      // P2:
-      //    %sh
-      //    echo ${name|world}
-      //
-      Paragraph p1 = note1.addNewParagraph(AuthenticationInfo.ANONYMOUS);
-      Paragraph p2 = note1.addNewParagraph(AuthenticationInfo.ANONYMOUS);
-      p1.setText("%python name = z.input('name', 'world')\nprint(name)");
-      p2.setText("%sh echo '${name=world}'");
+    Note note1 = TestUtils.getInstance(Notebook.class).createNote("note1", anonymous);
+    // 2 paragraphs
+    // P1:
+    //    %python
+    //    name = z.input('name', 'world')
+    //    print(name)
+    // P2:
+    //    %sh
+    //    echo ${name|world}
+    //
+    Paragraph p1 = note1.addNewParagraph(AuthenticationInfo.ANONYMOUS);
+    Paragraph p2 = note1.addNewParagraph(AuthenticationInfo.ANONYMOUS);
+    p1.setText("%python name = z.input('name', 'world')\nprint(name)");
+    p2.setText("%sh echo '${name=world}'");
 
-      Map<String, Object> paramsMap = new HashMap<>();
-      paramsMap.put("name", "zeppelin");
-      ParametersRequest parametersRequest = new ParametersRequest(paramsMap);
-      CloseableHttpResponse post = httpPost("/notebook/job/" + note1.getId() + "?blocking=false&isolated=true&",
-              parametersRequest.toJson());
-      assertThat(post, isAllowed());
-      Map<String, Object> resp = gson.fromJson(EntityUtils.toString(post.getEntity(), StandardCharsets.UTF_8),
-              new TypeToken<Map<String, Object>>() {}.getType());
-      assertEquals("OK",resp.get("status"));
-      post.close();
+    Map<String, Object> paramsMap = new HashMap<>();
+    paramsMap.put("name", "zeppelin");
+    ParametersRequest parametersRequest = new ParametersRequest(paramsMap);
+    CloseableHttpResponse post = httpPost("/notebook/job/" + note1.getId() + "?blocking=false&isolated=true&",
+            parametersRequest.toJson());
+    assertThat(post, isAllowed());
+    Map<String, Object> resp = gson.fromJson(EntityUtils.toString(post.getEntity(), StandardCharsets.UTF_8),
+            new TypeToken<Map<String, Object>>() {}.getType());
+    assertEquals("OK",resp.get("status"));
+    post.close();
 
-      // wait for all the paragraphs are done
-      while(note1.isRunning()) {
-        Thread.sleep(1000);
-      }
-      assertEquals(Job.Status.FINISHED, p1.getStatus());
-      assertEquals(Job.Status.FINISHED, p2.getStatus());
-      assertEquals("zeppelin\n", p1.getReturn().message().get(0).getData());
-      assertEquals("zeppelin\n", p2.getReturn().message().get(0).getData());
-
-      // another attempt rest api call without params
-      post = httpPost("/notebook/job/" + note1.getId() + "?blocking=false&isolated=true", "");
-      assertThat(post, isAllowed());
-      resp = gson.fromJson(EntityUtils.toString(post.getEntity(), StandardCharsets.UTF_8),
-              new TypeToken<Map<String, Object>>() {}.getType());
-      assertEquals("OK", resp.get("status"));
-      post.close();
-
-      // wait for all the paragraphs are done
-      while(note1.isRunning()) {
-        Thread.sleep(1000);
-      }
-      assertEquals(Job.Status.FINISHED, p1.getStatus());
-      assertEquals(Job.Status.FINISHED, p2.getStatus());
-      assertEquals("world\n", p1.getReturn().message().get(0).getData());
-      assertEquals("world\n", p2.getReturn().message().get(0).getData());
-    } finally {
-      // cleanup
-      if (null != note1) {
-        TestUtils.getInstance(Notebook.class).removeNote(note1, anonymous);
-      }
+    // wait for all the paragraphs are done
+    while(note1.isRunning()) {
+      Thread.sleep(1000);
     }
+    assertEquals(Job.Status.FINISHED, p1.getStatus());
+    assertEquals(Job.Status.FINISHED, p2.getStatus());
+    assertEquals("zeppelin\n", p1.getReturn().message().get(0).getData());
+    assertEquals("zeppelin\n", p2.getReturn().message().get(0).getData());
+
+    // another attempt rest api call without params
+    post = httpPost("/notebook/job/" + note1.getId() + "?blocking=false&isolated=true", "");
+    assertThat(post, isAllowed());
+    resp = gson.fromJson(EntityUtils.toString(post.getEntity(), StandardCharsets.UTF_8),
+            new TypeToken<Map<String, Object>>() {}.getType());
+    assertEquals("OK", resp.get("status"));
+    post.close();
+
+    // wait for all the paragraphs are done
+    while(note1.isRunning()) {
+      Thread.sleep(1000);
+    }
+    assertEquals(Job.Status.FINISHED, p1.getStatus());
+    assertEquals(Job.Status.FINISHED, p2.getStatus());
+    assertEquals("world\n", p1.getReturn().message().get(0).getData());
+    assertEquals("world\n", p2.getReturn().message().get(0).getData());
   }
 
   @Test
   public void testRunAllParagraph_FirstFailed() throws IOException {
     LOG.debug("Running testRunAllParagraph_FirstFailed");
-    Note note1 = null;
-    try {
-      note1 = TestUtils.getInstance(Notebook.class).createNote("note1", anonymous);
-      // 2 paragraphs
-      // P1:
-      //    %python
-      //    from __future__ import print_function
-      //    import time
-      //    time.sleep(1)
-      //    print(user2)
-      //
-      // P2:
-      //    %python
-      //    user2='abc'
-      //    print(user2)
-      //
-      Paragraph p1 = note1.addNewParagraph(AuthenticationInfo.ANONYMOUS);
-      Paragraph p2 = note1.addNewParagraph(AuthenticationInfo.ANONYMOUS);
-      p1.setText("%python from __future__ import print_function\nimport time\ntime.sleep(1)\nprint(user2)");
-      p2.setText("%python user2='abc'\nprint(user2)");
+    Note note1 = TestUtils.getInstance(Notebook.class).createNote("note1", anonymous);
+    // 2 paragraphs
+    // P1:
+    //    %python
+    //    from __future__ import print_function
+    //    import time
+    //    time.sleep(1)
+    //    print(user2)
+    //
+    // P2:
+    //    %python
+    //    user2='abc'
+    //    print(user2)
+    //
+    Paragraph p1 = note1.addNewParagraph(AuthenticationInfo.ANONYMOUS);
+    Paragraph p2 = note1.addNewParagraph(AuthenticationInfo.ANONYMOUS);
+    p1.setText("%python from __future__ import print_function\nimport time\ntime.sleep(1)\nprint(user2)");
+    p2.setText("%python user2='abc'\nprint(user2)");
 
-      CloseableHttpResponse post = httpPost("/notebook/job/" + note1.getId() + "?blocking=true", "");
-      assertThat(post, isAllowed());
+    CloseableHttpResponse post = httpPost("/notebook/job/" + note1.getId() + "?blocking=true", "");
+    assertThat(post, isAllowed());
 
-      assertEquals(Job.Status.ERROR, p1.getStatus());
-      // p2 will be skipped because p1 is failed.
-      assertEquals(Job.Status.READY, p2.getStatus());
-      post.close();
-    } finally {
-      // cleanup
-      if (null != note1) {
-        TestUtils.getInstance(Notebook.class).removeNote(note1, anonymous);
-      }
-    }
+    assertEquals(Job.Status.ERROR, p1.getStatus());
+    // p2 will be skipped because p1 is failed.
+    assertEquals(Job.Status.READY, p2.getStatus());
+    post.close();
   }
 
   @Test
   public void testCloneNote() throws IOException {
     LOG.debug("Running testCloneNote");
-    Note note1 = null;
     String clonedNoteId = null;
-    try {
-      note1 = TestUtils.getInstance(Notebook.class).createNote("note1", anonymous);
-      CloseableHttpResponse post = httpPost("/notebook/" + note1.getId(), "");
-      String postResponse = EntityUtils.toString(post.getEntity(), StandardCharsets.UTF_8);
-      LOG.debug("testCloneNote response\n" + postResponse);
-      assertThat(post, isAllowed());
-      Map<String, Object> resp = gson.fromJson(postResponse,
-              new TypeToken<Map<String, Object>>() {}.getType());
-      clonedNoteId = (String) resp.get("body");
-      post.close();
+    Note note1 = TestUtils.getInstance(Notebook.class).createNote("note1", anonymous);
+    CloseableHttpResponse post = httpPost("/notebook/" + note1.getId(), "");
+    String postResponse = EntityUtils.toString(post.getEntity(), StandardCharsets.UTF_8);
+    LOG.debug("testCloneNote response\n" + postResponse);
+    assertThat(post, isAllowed());
+    Map<String, Object> resp = gson.fromJson(postResponse,
+            new TypeToken<Map<String, Object>>() {}.getType());
+    clonedNoteId = (String) resp.get("body");
+    post.close();
 
-      CloseableHttpResponse get = httpGet("/notebook/" + clonedNoteId);
-      assertThat(get, isAllowed());
-      Map<String, Object> resp2 = gson.fromJson(EntityUtils.toString(get.getEntity(), StandardCharsets.UTF_8),
-              new TypeToken<Map<String, Object>>() {}.getType());
-      Map<String, Object> resp2Body = (Map<String, Object>) resp2.get("body");
+    CloseableHttpResponse get = httpGet("/notebook/" + clonedNoteId);
+    assertThat(get, isAllowed());
+    Map<String, Object> resp2 = gson.fromJson(EntityUtils.toString(get.getEntity(), StandardCharsets.UTF_8),
+            new TypeToken<Map<String, Object>>() {}.getType());
+    Map<String, Object> resp2Body = (Map<String, Object>) resp2.get("body");
 
-      //    assertEquals(resp2Body.get("name"), "Note " + clonedNoteId);
-      get.close();
-    } finally {
-      // cleanup
-      if (null != note1) {
-        TestUtils.getInstance(Notebook.class).removeNote(note1, anonymous);
-      }
-      if (null != clonedNoteId) {
-        Note clonedNote = TestUtils.getInstance(Notebook.class).getNote(clonedNoteId);
-        if (clonedNote != null) {
-          TestUtils.getInstance(Notebook.class).removeNote(clonedNote, anonymous);
-        }
-      }
-    }
+    //    assertEquals(resp2Body.get("name"), "Note " + clonedNoteId);
+    get.close();
   }
 
   @Test
   public void testRenameNote() throws IOException {
     LOG.debug("Running testRenameNote");
-    Note note = null;
-    try {
-      String oldName = "old_name";
-      note = TestUtils.getInstance(Notebook.class).createNote(oldName, anonymous);
-      assertEquals(note.getName(), oldName);
-      String noteId = note.getId();
+    String oldName = "old_name";
+    Note note = TestUtils.getInstance(Notebook.class).createNote(oldName, anonymous);
+    assertEquals(note.getName(), oldName);
+    String noteId = note.getId();
 
-      final String newName = "testName";
-      String jsonRequest = "{\"name\": " + newName + "}";
+    final String newName = "testName";
+    String jsonRequest = "{\"name\": " + newName + "}";
 
-      CloseableHttpResponse put = httpPut("/notebook/" + noteId + "/rename/", jsonRequest);
-      assertThat("test testRenameNote:", put, isAllowed());
-      put.close();
+    CloseableHttpResponse put = httpPut("/notebook/" + noteId + "/rename/", jsonRequest);
+    assertThat("test testRenameNote:", put, isAllowed());
+    put.close();
 
-      assertEquals(note.getName(), newName);
-    } finally {
-      // cleanup
-      if (null != note) {
-        TestUtils.getInstance(Notebook.class).removeNote(note, anonymous);
-      }
-    }
+    assertEquals(note.getName(), newName);
   }
 
   @Test
   public void testUpdateParagraphConfig() throws IOException {
     LOG.debug("Running testUpdateParagraphConfig");
-    Note note = null;
-    try {
-      note = TestUtils.getInstance(Notebook.class).createNote("note1", anonymous);
-      String noteId = note.getId();
-      Paragraph p = note.addNewParagraph(AuthenticationInfo.ANONYMOUS);
-      assertNull(p.getConfig().get("colWidth"));
-      String paragraphId = p.getId();
-      String jsonRequest = "{\"colWidth\": 6.0}";
+    Note note = TestUtils.getInstance(Notebook.class).createNote("note1", anonymous);
+    String noteId = note.getId();
+    Paragraph p = note.addNewParagraph(AuthenticationInfo.ANONYMOUS);
+    assertNull(p.getConfig().get("colWidth"));
+    String paragraphId = p.getId();
+    String jsonRequest = "{\"colWidth\": 6.0}";
 
-      CloseableHttpResponse put = httpPut("/notebook/" + noteId + "/paragraph/" + paragraphId + "/config",
-              jsonRequest);
-      assertThat("test testUpdateParagraphConfig:", put, isAllowed());
+    CloseableHttpResponse put = httpPut("/notebook/" + noteId + "/paragraph/" + paragraphId + "/config",
+            jsonRequest);
+    assertThat("test testUpdateParagraphConfig:", put, isAllowed());
 
-      Map<String, Object> resp = gson.fromJson(EntityUtils.toString(put.getEntity(), StandardCharsets.UTF_8),
-              new TypeToken<Map<String, Object>>() {}.getType());
-      Map<String, Object> respBody = (Map<String, Object>) resp.get("body");
-      Map<String, Object> config = (Map<String, Object>) respBody.get("config");
-      put.close();
+    Map<String, Object> resp = gson.fromJson(EntityUtils.toString(put.getEntity(), StandardCharsets.UTF_8),
+            new TypeToken<Map<String, Object>>() {}.getType());
+    Map<String, Object> respBody = (Map<String, Object>) resp.get("body");
+    Map<String, Object> config = (Map<String, Object>) respBody.get("config");
+    put.close();
 
-      assertEquals(config.get("colWidth"), 6.0);
-      note = TestUtils.getInstance(Notebook.class).getNote(noteId);
-      assertEquals(note.getParagraph(paragraphId).getConfig().get("colWidth"), 6.0);
-    } finally {
-      // cleanup
-      if (null != note) {
-        TestUtils.getInstance(Notebook.class).removeNote(note, anonymous);
-      }
-    }
+    assertEquals(config.get("colWidth"), 6.0);
+    note = TestUtils.getInstance(Notebook.class).getNote(noteId);
+    assertEquals(note.getParagraph(paragraphId).getConfig().get("colWidth"), 6.0);
   }
 
   @Test
   public void testClearAllParagraphOutput() throws IOException {
     LOG.debug("Running testClearAllParagraphOutput");
-    Note note = null;
-    try {
-      // Create note and set result explicitly
-      note = TestUtils.getInstance(Notebook.class).createNote("note1", anonymous);
-      Paragraph p1 = note.addNewParagraph(AuthenticationInfo.ANONYMOUS);
-      InterpreterResult result = new InterpreterResult(InterpreterResult.Code.SUCCESS,
-              InterpreterResult.Type.TEXT, "result");
-      p1.setResult(result);
+    Note note = TestUtils.getInstance(Notebook.class).createNote("note1", anonymous);
+    Paragraph p1 = note.addNewParagraph(AuthenticationInfo.ANONYMOUS);
+    InterpreterResult result = new InterpreterResult(InterpreterResult.Code.SUCCESS,
+            InterpreterResult.Type.TEXT, "result");
+    p1.setResult(result);
 
-      Paragraph p2 = note.addNewParagraph(AuthenticationInfo.ANONYMOUS);
-      p2.setReturn(result, new Throwable());
+    Paragraph p2 = note.addNewParagraph(AuthenticationInfo.ANONYMOUS);
+    p2.setReturn(result, new Throwable());
 
-      // clear paragraph result
-      CloseableHttpResponse put = httpPut("/notebook/" + note.getId() + "/clear", "");
-      LOG.debug("test clear paragraph output response\n" + EntityUtils.toString(put.getEntity(), StandardCharsets.UTF_8));
-      assertThat(put, isAllowed());
-      put.close();
+    // clear paragraph result
+    CloseableHttpResponse put = httpPut("/notebook/" + note.getId() + "/clear", "");
+    LOG.debug("test clear paragraph output response\n" + EntityUtils.toString(put.getEntity(), StandardCharsets.UTF_8));
+    assertThat(put, isAllowed());
+    put.close();
 
-      // check if paragraph results are cleared
-      CloseableHttpResponse get = httpGet("/notebook/" + note.getId() + "/paragraph/" + p1.getId());
-      assertThat(get, isAllowed());
-      Map<String, Object> resp1 = gson.fromJson(EntityUtils.toString(get.getEntity(), StandardCharsets.UTF_8),
-              new TypeToken<Map<String, Object>>() {}.getType());
-      Map<String, Object> resp1Body = (Map<String, Object>) resp1.get("body");
-      assertNull(resp1Body.get("result"));
-      get.close();
+    // check if paragraph results are cleared
+    CloseableHttpResponse get = httpGet("/notebook/" + note.getId() + "/paragraph/" + p1.getId());
+    assertThat(get, isAllowed());
+    Map<String, Object> resp1 = gson.fromJson(EntityUtils.toString(get.getEntity(), StandardCharsets.UTF_8),
+            new TypeToken<Map<String, Object>>() {}.getType());
+    Map<String, Object> resp1Body = (Map<String, Object>) resp1.get("body");
+    assertNull(resp1Body.get("result"));
+    get.close();
 
-      get = httpGet("/notebook/" + note.getId() + "/paragraph/" + p2.getId());
-      assertThat(get, isAllowed());
-      Map<String, Object> resp2 = gson.fromJson(EntityUtils.toString(get.getEntity(), StandardCharsets.UTF_8),
-              new TypeToken<Map<String, Object>>() {}.getType());
-      Map<String, Object> resp2Body = (Map<String, Object>) resp2.get("body");
-      assertNull(resp2Body.get("result"));
-      get.close();
-    } finally {
-      // cleanup
-      if (null != note) {
-        TestUtils.getInstance(Notebook.class).removeNote(note, anonymous);
-      }
-    }
+    get = httpGet("/notebook/" + note.getId() + "/paragraph/" + p2.getId());
+    assertThat(get, isAllowed());
+    Map<String, Object> resp2 = gson.fromJson(EntityUtils.toString(get.getEntity(), StandardCharsets.UTF_8),
+            new TypeToken<Map<String, Object>>() {}.getType());
+    Map<String, Object> resp2Body = (Map<String, Object>) resp2.get("body");
+    assertNull(resp2Body.get("result"));
+    get.close();
   }
 
   @Test
   public void testRunWithServerRestart() throws Exception {
     LOG.debug("Running testRunWithServerRestart");
-    Note note1 = null;
-    try {
-      note1 = TestUtils.getInstance(Notebook.class).createNote("note1", anonymous);
-      // 2 paragraphs
-      // P1:
-      //    %python
-      //    from __future__ import print_function
-      //    import time
-      //    time.sleep(1)
-      //    user='abc'
-      // P2:
-      //    %python
-      //    print(user)
-      //
-      Paragraph p1 = note1.addNewParagraph(AuthenticationInfo.ANONYMOUS);
-      Paragraph p2 = note1.addNewParagraph(AuthenticationInfo.ANONYMOUS);
-      p1.setText("%python from __future__ import print_function\nimport time\ntime.sleep(1)\nuser='abc'");
-      p2.setText("%python print(user)");
+    Note note1 = TestUtils.getInstance(Notebook.class).createNote("note1", anonymous);
+    // 2 paragraphs
+    // P1:
+    //    %python
+    //    from __future__ import print_function
+    //    import time
+    //    time.sleep(1)
+    //    user='abc'
+    // P2:
+    //    %python
+    //    print(user)
+    //
+    Paragraph p1 = note1.addNewParagraph(AuthenticationInfo.ANONYMOUS);
+    Paragraph p2 = note1.addNewParagraph(AuthenticationInfo.ANONYMOUS);
+    p1.setText("%python from __future__ import print_function\nimport time\ntime.sleep(1)\nuser='abc'");
+    p2.setText("%python print(user)");
 
-      CloseableHttpResponse post1 = httpPost("/notebook/job/" + note1.getId() + "?blocking=true", "");
-      assertThat(post1, isAllowed());
-      post1.close();
-      CloseableHttpResponse put = httpPut("/notebook/" + note1.getId() + "/clear", "");
-      LOG.debug("test clear paragraph output response\n" + EntityUtils.toString(put.getEntity(), StandardCharsets.UTF_8));
-      assertThat(put, isAllowed());
-      put.close();
+    CloseableHttpResponse post1 = httpPost("/notebook/job/" + note1.getId() + "?blocking=true", "");
+    assertThat(post1, isAllowed());
+    post1.close();
+    CloseableHttpResponse put = httpPut("/notebook/" + note1.getId() + "/clear", "");
+    LOG.debug("test clear paragraph output response\n" + EntityUtils.toString(put.getEntity(), StandardCharsets.UTF_8));
+    assertThat(put, isAllowed());
+    put.close();
 
-      // restart server (while keeping interpreter configuration)
-      AbstractTestRestApi.shutDown(false);
-      startUp(NotebookRestApiTest.class.getSimpleName(), false);
+    // restart server (while keeping interpreter configuration)
+    AbstractTestRestApi.shutDown(false);
+    startUp(NotebookRestApiTest.class.getSimpleName(), false);
 
-      note1 = TestUtils.getInstance(Notebook.class).getNote(note1.getId());
-      p1 = note1.getParagraph(p1.getId());
-      p2 = note1.getParagraph(p2.getId());
+    note1 = TestUtils.getInstance(Notebook.class).getNote(note1.getId());
+    p1 = note1.getParagraph(p1.getId());
+    p2 = note1.getParagraph(p2.getId());
 
-      CloseableHttpResponse post2 = httpPost("/notebook/job/" + note1.getId() + "?blocking=true", "");
-      assertThat(post2, isAllowed());
-      Map<String, Object> resp = gson.fromJson(EntityUtils.toString(post2.getEntity(), StandardCharsets.UTF_8),
-          new TypeToken<Map<String, Object>>() {}.getType());
-      assertEquals("OK", resp.get("status"));
-      post2.close();
+    CloseableHttpResponse post2 = httpPost("/notebook/job/" + note1.getId() + "?blocking=true", "");
+    assertThat(post2, isAllowed());
+    Map<String, Object> resp = gson.fromJson(EntityUtils.toString(post2.getEntity(), StandardCharsets.UTF_8),
+        new TypeToken<Map<String, Object>>() {}.getType());
+    assertEquals("OK", resp.get("status"));
+    post2.close();
 
-      assertEquals(Job.Status.FINISHED, p1.getStatus());
-      assertEquals(p2.getReturn().toString(), Job.Status.FINISHED, p2.getStatus());
-      assertNotNull(p2.getReturn());
-      assertEquals("abc\n", p2.getReturn().message().get(0).getData());
-    } finally {
-      // cleanup
-      if (null != note1) {
-        TestUtils.getInstance(Notebook.class).removeNote(note1, anonymous);
-      }
-    }
+    assertEquals(Job.Status.FINISHED, p1.getStatus());
+    assertEquals(p2.getReturn().toString(), Job.Status.FINISHED, p2.getStatus());
+    assertNotNull(p2.getReturn());
+    assertEquals("abc\n", p2.getReturn().message().get(0).getData());
   }
 }

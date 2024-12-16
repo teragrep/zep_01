@@ -149,10 +149,8 @@ public class NotebookSecurityRestApiTest extends AbstractTestRestApi {
     assertThat("Test delete method:", delete, isAllowed());
     delete.close();
     // make sure note is deleted
-    if (!noteId.isEmpty()) {
-      Note deletedNote = TestUtils.getInstance(Notebook.class).getNote(noteId);
-      assertNull("Deleted note should be null", deletedNote);
-    }
+    Note deletedNote = TestUtils.getInstance(Notebook.class).getNote(noteId);
+    assertNull("Deleted note should be null", deletedNote);
   }
 
   private void createParagraphForUser(String noteId, String user, String pwd,
