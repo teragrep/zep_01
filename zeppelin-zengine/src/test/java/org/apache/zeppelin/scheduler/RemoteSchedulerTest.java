@@ -49,7 +49,6 @@ public class RemoteSchedulerTest extends AbstractInterpreterTest
     implements RemoteInterpreterProcessListener {
 
   private InterpreterSetting interpreterSetting;
-  private SchedulerFactory schedulerSvc;
   private static final int TICK_WAIT = 100;
   private static final int MAX_WAIT_CYCLES = 100;
 
@@ -60,7 +59,6 @@ public class RemoteSchedulerTest extends AbstractInterpreterTest
     Note note1 = new Note(new NoteInfo("note1", "/note_1"));
     when(mockNotebook.getNote("note1")).thenReturn(note1);
 
-    schedulerSvc = SchedulerFactory.singleton();
     interpreterSetting = interpreterSettingManager.getInterpreterSettingByName("test");
   }
 
@@ -138,7 +136,6 @@ public class RemoteSchedulerTest extends AbstractInterpreterTest
     assertTrue(job.isTerminated());
 
     intpA.close();
-    schedulerSvc.removeScheduler("test");
   }
 
   @Ignore(value="Contains sleep, timeout, while loops or something similar waiting/cycleburning")
@@ -272,7 +269,6 @@ public class RemoteSchedulerTest extends AbstractInterpreterTest
     assertEquals("result2", job2.getReturn());
 
     intpA.close();
-    schedulerSvc.removeScheduler("test");
   }
 
   @Override
