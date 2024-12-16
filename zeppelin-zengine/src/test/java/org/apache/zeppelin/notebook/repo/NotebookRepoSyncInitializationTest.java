@@ -47,6 +47,7 @@ public class NotebookRepoSyncInitializationTest {
 
   @Before
   public void setUp(){
+    // FIXME: This depends on previously built plugins
     System.setProperty(ConfVars.ZEPPELIN_PLUGINS_DIR.getVarName(), new File("../../../plugins").getAbsolutePath());
     System.setProperty("zeppelin.isTest", "true");
   }

@@ -114,8 +114,6 @@ public class NotebookTest extends AbstractInterpreterTest implements ParagraphJo
   @After
   public void tearDown() throws Exception {
     super.tearDown();
-    System.clearProperty(ConfVars.ZEPPELIN_NOTEBOOK_PUBLIC.getVarName());
-    System.clearProperty(ConfVars.ZEPPELIN_NOTEBOOK_CRON_ENABLE.getVarName());
   }
 
   @Test
@@ -392,7 +390,6 @@ public class NotebookTest extends AbstractInterpreterTest implements ParagraphJo
 //        interpreterSettingManager, null, null, null);
 
     //assertEquals(1, notebook2.getAllNotes().size());
-    notebook.removeNote(note, anonymous);
   }
 
   @Test
@@ -405,7 +402,6 @@ public class NotebookTest extends AbstractInterpreterTest implements ParagraphJo
     Set<String> owners = new HashSet<>();
     owners.add("user1");
     assertEquals(owners, authorizationService.getOwners(note.getId()));
-    notebook.removeNote(note, anonymous);
   }
 
   @Ignore(value="While ... thread yield")
@@ -426,7 +422,6 @@ public class NotebookTest extends AbstractInterpreterTest implements ParagraphJo
     // clear paragraph output/result
     note.clearParagraphOutput(p1.getId());
     assertNull(p1.getReturn());
-    notebook.removeNote(note, anonymous);
   }
 
   @Ignore(value="Has sleep in it")
@@ -441,7 +436,6 @@ public class NotebookTest extends AbstractInterpreterTest implements ParagraphJo
     Thread.sleep(2 * 1000);
     assertEquals(Status.FINISHED, p1.getStatus());
     assertNull(p1.getDateStarted());
-    notebook.removeNote(note, anonymous);
   }
 
   @Ignore(value="Sleeping async stuff")
@@ -510,7 +504,6 @@ public class NotebookTest extends AbstractInterpreterTest implements ParagraphJo
     assertEquals(InterpreterResult.Code.ERROR, result.code());
     assertEquals("Interpreter invalid not found", result.message().get(0).getData());
     assertNull(p1.getDateStarted());
-    notebook.removeNote(note, anonymous);
   }
 
   @Test
@@ -541,8 +534,6 @@ public class NotebookTest extends AbstractInterpreterTest implements ParagraphJo
     assertEquals("repl1: p1", p1.getReturn().message().get(0).getData());
     assertNull(p2.getReturn());
     assertEquals("repl1: p3", p3.getReturn().message().get(0).getData());
-
-    notebook.removeNote(note, anonymous);
   }
 
   @Ignore(value="Has sleep in it")
@@ -574,7 +565,6 @@ public class NotebookTest extends AbstractInterpreterTest implements ParagraphJo
     assertNotNull(dateFinished);
     Thread.sleep(2 * 1000);
     assertEquals(dateFinished, p.getDateFinished());
-    notebook.removeNote(note, anonymous);
   }
 
   @Ignore(value="Has sleep in it")
@@ -610,9 +600,6 @@ public class NotebookTest extends AbstractInterpreterTest implements ParagraphJo
     for (Paragraph p : note.getParagraphs()) {
       assertNull(p.getDateFinished());
     }
-
-    // remove the note
-    notebook.removeNote(note, anonymous);
   }
 
   @Ignore(value="Has timeout or await, makes runtime long")
@@ -636,7 +623,6 @@ public class NotebookTest extends AbstractInterpreterTest implements ParagraphJo
 
     assertTrue(jobsToExecuteCount.await(timeout, TimeUnit.SECONDS));
 
-    terminateScheduledNote(note);
     afterStatusChangedListener = null;
   }
 
@@ -655,30 +641,25 @@ public class NotebookTest extends AbstractInterpreterTest implements ParagraphJo
   public void testScheduleDisabled() throws InterruptedException, IOException {
 
     System.setProperty(ConfVars.ZEPPELIN_NOTEBOOK_CRON_ENABLE.getVarName(), "false");
-    try {
-      final int timeout = 10;
-      final String everySecondCron = "* * * * * ?";
-      final CountDownLatch jobsToExecuteCount = new CountDownLatch(5);
-      final Note note = notebook.createNote("note1", anonymous);
+    final int timeout = 10;
+    final String everySecondCron = "* * * * * ?";
+    final CountDownLatch jobsToExecuteCount = new CountDownLatch(5);
+    final Note note = notebook.createNote("note1", anonymous);
 
-      executeNewParagraphByCron(note, everySecondCron);
-      afterStatusChangedListener = new StatusChangedListener() {
-        @Override
-        public void onStatusChanged(Job<?> job, Status before, Status after) {
-          if (after == Status.FINISHED) {
-            jobsToExecuteCount.countDown();
-          }
+    executeNewParagraphByCron(note, everySecondCron);
+    afterStatusChangedListener = new StatusChangedListener() {
+      @Override
+      public void onStatusChanged(Job<?> job, Status before, Status after) {
+        if (after == Status.FINISHED) {
+          jobsToExecuteCount.countDown();
         }
-      };
+      }
+    };
 
-      //This job should not run because "ZEPPELIN_NOTEBOOK_CRON_ENABLE" is set to false
-      assertFalse(jobsToExecuteCount.await(timeout, TimeUnit.SECONDS));
+    //This job should not run because "ZEPPELIN_NOTEBOOK_CRON_ENABLE" is set to false
+    assertFalse(jobsToExecuteCount.await(timeout, TimeUnit.SECONDS));
 
-      terminateScheduledNote(note);
-      afterStatusChangedListener = null;
-    } finally {
-      System.setProperty(ConfVars.ZEPPELIN_NOTEBOOK_CRON_ENABLE.getVarName(), "true");
-    }
+    afterStatusChangedListener = null;
   }
 
   @Ignore(value="Has timeout or await, makes runtime long")
@@ -686,56 +667,44 @@ public class NotebookTest extends AbstractInterpreterTest implements ParagraphJo
   public void testScheduleDisabledWithName() throws InterruptedException, IOException {
 
     System.setProperty(ConfVars.ZEPPELIN_NOTEBOOK_CRON_FOLDERS.getVarName(), "/System");
-    try {
-      final int timeout = 30;
-      final String everySecondCron = "* * * * * ?";
-      // each run starts a new JVM and the job takes about ~5 seconds
-      final CountDownLatch jobsToExecuteCount = new CountDownLatch(5);
-      final Note note = notebook.createNote("note1", anonymous);
+    final int timeout = 30;
+    final String everySecondCron = "* * * * * ?";
+    // each run starts a new JVM and the job takes about ~5 seconds
+    final CountDownLatch jobsToExecuteCount = new CountDownLatch(5);
+    final Note note = notebook.createNote("note1", anonymous);
 
-      executeNewParagraphByCron(note, everySecondCron);
-      afterStatusChangedListener = new StatusChangedListener() {
-        @Override
-        public void onStatusChanged(Job<?> job, Status before, Status after) {
-          if (after == Status.FINISHED) {
-            jobsToExecuteCount.countDown();
-          }
+    executeNewParagraphByCron(note, everySecondCron);
+    afterStatusChangedListener = new StatusChangedListener() {
+      @Override
+      public void onStatusChanged(Job<?> job, Status before, Status after) {
+        if (after == Status.FINISHED) {
+          jobsToExecuteCount.countDown();
         }
-      };
+      }
+    };
 
-      //This job should not run because it's path does not matches "ZEPPELIN_NOTEBOOK_CRON_FOLDERS"
-      assertFalse(jobsToExecuteCount.await(timeout, TimeUnit.SECONDS));
+    //This job should not run because it's path does not matches "ZEPPELIN_NOTEBOOK_CRON_FOLDERS"
+    assertFalse(jobsToExecuteCount.await(timeout, TimeUnit.SECONDS));
 
-      terminateScheduledNote(note);
-      afterStatusChangedListener = null;
+    afterStatusChangedListener = null;
 
-      final Note noteNameSystem = notebook.createNote("/System/test1", anonymous);
-      final CountDownLatch jobsToExecuteCountNameSystem = new CountDownLatch(5);
+    final Note noteNameSystem = notebook.createNote("/System/test1", anonymous);
+    final CountDownLatch jobsToExecuteCountNameSystem = new CountDownLatch(5);
 
-      executeNewParagraphByCron(noteNameSystem, everySecondCron);
-      afterStatusChangedListener = new StatusChangedListener() {
-        @Override
-        public void onStatusChanged(Job<?> job, Status before, Status after) {
-          if (after == Status.FINISHED) {
-            jobsToExecuteCountNameSystem.countDown();
-          }
+    executeNewParagraphByCron(noteNameSystem, everySecondCron);
+    afterStatusChangedListener = new StatusChangedListener() {
+      @Override
+      public void onStatusChanged(Job<?> job, Status before, Status after) {
+        if (after == Status.FINISHED) {
+          jobsToExecuteCountNameSystem.countDown();
         }
-      };
+      }
+    };
 
-      //This job should run because it's path contains "System/"
-      assertTrue(jobsToExecuteCountNameSystem.await(timeout, TimeUnit.SECONDS));
+    //This job should run because it's path contains "System/"
+    assertTrue(jobsToExecuteCountNameSystem.await(timeout, TimeUnit.SECONDS));
 
-      terminateScheduledNote(noteNameSystem);
-      afterStatusChangedListener = null;
-    } finally {
-      System.clearProperty(ConfVars.ZEPPELIN_NOTEBOOK_CRON_FOLDERS.getVarName());
-    }
-  }
-
-  private void terminateScheduledNote(Note note) throws IOException {
-    note.getConfig().remove("cron");
-    schedulerService.refreshCron(note.getId());
-    notebook.removeNote(note, anonymous);
+    afterStatusChangedListener = null;
   }
 
   @Ignore(value="Contains sleep")
@@ -784,7 +753,6 @@ public class NotebookTest extends AbstractInterpreterTest implements ParagraphJo
     // make sure all paragraph has been executed
     assertNotNull(p.getDateFinished());
     assertNotNull(p2.getDateFinished());
-    notebook.removeNote(note, anonymous);
   }
 
   @Ignore(value="Contains sleep")
@@ -848,17 +816,6 @@ public class NotebookTest extends AbstractInterpreterTest implements ParagraphJo
     // test that anotherNoteInterpreter is still opened
     assertTrue(anotherNoteInterpreter.isOpened());
 
-    // remove cron scheduler
-    config = new HashMap<>();
-    config.put("cron", null);
-    config.put("cronExecutingUser", null);
-    config.put("releaseresource", null);
-    cronNote.setConfig(config);
-    schedulerService.refreshCron(cronNote.getId());
-
-    // remove notebooks
-    notebook.removeNote(cronNote, anonymous);
-    notebook.removeNote(anotherNote, anonymous);
   }
 
   @Test
@@ -875,11 +832,6 @@ public class NotebookTest extends AbstractInterpreterTest implements ParagraphJo
     final int jobsAfterRefresh = schedulerService.getJobs().size();
 
     assertEquals(jobsBeforeRefresh, jobsAfterRefresh);
-
-    // remove cron scheduler.
-    config.remove("cron");
-    schedulerService.refreshCron(note.getId());
-    notebook.removeNote(note, anonymous);
   }
 
   @Test
@@ -911,9 +863,6 @@ public class NotebookTest extends AbstractInterpreterTest implements ParagraphJo
     Set<String> owners = new HashSet<>();
     owners.add("user1");
     assertEquals(owners, authorizationService.getOwners(importedNote2.getId()));
-    notebook.removeNote(note, anonymous);
-    notebook.removeNote(importedNote, anonymous);
-    notebook.removeNote(importedNote2, anonymous);
   }
 
   @Test
@@ -942,9 +891,6 @@ public class NotebookTest extends AbstractInterpreterTest implements ParagraphJo
     Set<String> owners = new HashSet<>();
     owners.add("user1");
     assertEquals(owners, authorizationService.getOwners(cloneNote2.getId()));
-    notebook.removeNote(note, anonymous);
-    notebook.removeNote(cloneNote, anonymous);
-    notebook.removeNote(cloneNote2, anonymous);
   }
 
   @Test
@@ -1031,7 +977,6 @@ public class NotebookTest extends AbstractInterpreterTest implements ParagraphJo
     // notebook scope and global object sould be remained
     assertNotNull(registry.get("o2", note.getId(), null));
     assertNotNull(registry.get("o3", null, null));
-    notebook.removeNote(note, anonymous);
   }
 
   @Test
@@ -1057,7 +1002,6 @@ public class NotebookTest extends AbstractInterpreterTest implements ParagraphJo
     // New InterpreterGroup will be created and its AngularObjectRegistry will be created
     assertNull(registry.get("o1", note.getId(), null));
     assertNull(registry.get("o2", null, null));
-    notebook.removeNote(note, anonymous);
   }
 
   @Test
@@ -1109,8 +1053,6 @@ public class NotebookTest extends AbstractInterpreterTest implements ParagraphJo
         new HashSet<>(Arrays.asList("user2"))));
     assertTrue(authorizationService.isReader(note.getId(),
         new HashSet<>(Arrays.asList("user4"))));
-
-    notebook.removeNote(note, anonymous);
   }
 
   @Test
@@ -1245,8 +1187,6 @@ public class NotebookTest extends AbstractInterpreterTest implements ParagraphJo
     assertEquals(Status.FINISHED, p1.getStatus());
     assertEquals(Status.ABORT, p2.getStatus());
     assertEquals(Status.READY, p3.getStatus());
-
-    notebook.removeNote(note, anonymous);
   }
 
   @Ignore(value="While ... thread yield")
@@ -1278,8 +1218,6 @@ public class NotebookTest extends AbstractInterpreterTest implements ParagraphJo
     note1.run(p1.getId());
     while (p1.getStatus() != Status.FINISHED) Thread.yield();
     assertNotEquals(p1.getReturn().message(), result.message());
-
-    notebook.removeNote(note1, anonymous);
   }
 
   @Ignore(value="While ... thread yield")
@@ -1321,9 +1259,6 @@ public class NotebookTest extends AbstractInterpreterTest implements ParagraphJo
     while (p2.getStatus() != Status.FINISHED) Thread.yield();
 
     assertNotEquals(p1.getReturn().message().get(0).getData(), p2.getReturn().message().get(0).getData());
-
-    notebook.removeNote(note1, anonymous);
-    notebook.removeNote(note2, anonymous);
   }
 
 
@@ -1380,9 +1315,6 @@ public class NotebookTest extends AbstractInterpreterTest implements ParagraphJo
     while (p2.getStatus() != Status.FINISHED) Thread.yield();
 
     assertNotEquals(p1.getReturn().message().get(0).getData(), p2.getReturn().message().get(0).getData());
-
-    notebook.removeNote(note1, anonymous);
-    notebook.removeNote(note2, anonymous);
   }
 
   public void testNotebookEventListener() throws IOException {
@@ -1466,8 +1398,6 @@ public class NotebookTest extends AbstractInterpreterTest implements ParagraphJo
     assertEquals(0, notebook.getAllNotes(note -> authorizationService.isReader(note.getId(), new HashSet<>(Arrays.asList("anonymous")))).size());
     assertEquals(1, notebook.getAllNotes(note -> authorizationService.isReader(note.getId(), new HashSet<>(Arrays.asList("user1")))).size());
     assertEquals(1, notebook.getAllNotes(note -> authorizationService.isReader(note.getId(), new HashSet<>(Arrays.asList("user2")))).size());
-    notebook.removeNote(note1, AuthenticationInfo.ANONYMOUS);
-    notebook.removeNote(note2, AuthenticationInfo.ANONYMOUS);
   }
 
   @Test
@@ -1478,8 +1408,6 @@ public class NotebookTest extends AbstractInterpreterTest implements ParagraphJo
       fail("Should not be able to create same note 'note1'");
     } catch (Exception e) {
       assertTrue(e.getMessage().contains("Note '/note1' existed"));
-    } finally {
-      notebook.removeNote(note1, anonymous);
     }
   }
 
@@ -1576,9 +1504,6 @@ public class NotebookTest extends AbstractInterpreterTest implements ParagraphJo
     assertEquals(1, authorizationService.getRunners(notePrivate.getId()).size());
     assertEquals(1, authorizationService.getWriters(notePrivate.getId()).size());
 
-    //set back public to true
-    System.setProperty(ConfVars.ZEPPELIN_NOTEBOOK_PUBLIC.getVarName(), "true");
-    ZeppelinConfiguration.create();
   }
 
   @Test
@@ -1604,22 +1529,15 @@ public class NotebookTest extends AbstractInterpreterTest implements ParagraphJo
 
   @Test
   public void testMoveNote() throws InterruptedException, IOException {
-    Note note = null;
-    try {
-      note = notebook.createNote("note1", anonymous);
-      assertEquals("note1", note.getName());
-      assertEquals("/note1", note.getPath());
-      notebook.moveNote(note.getId(), "/tmp/note2", anonymous);
+    Note note = notebook.createNote("note1", anonymous);
+    assertEquals("note1", note.getName());
+    assertEquals("/note1", note.getPath());
+    notebook.moveNote(note.getId(), "/tmp/note2", anonymous);
 
-      // read note json file to check the name field is updated
-      File noteFile = new File(conf.getNotebookDir() + "/" + notebookRepo.buildNoteFileName(note));
-      String noteJson = IOUtils.toString(new FileInputStream(noteFile));
-      assertTrue(noteJson, noteJson.contains("note2"));
-    } finally {
-      if (note != null) {
-        notebook.removeNote(note, anonymous);
-      }
-    }
+    // read note json file to check the name field is updated
+    File noteFile = new File(conf.getNotebookDir() + "/" + notebookRepo.buildNoteFileName(note));
+    String noteJson = IOUtils.toString(new FileInputStream(noteFile));
+    assertTrue(noteJson, noteJson.contains("note2"));
   }
 
   @Override

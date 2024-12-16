@@ -135,7 +135,6 @@ public class NotebookRepoSyncTest {
     assertEquals(notebookRepoSync.list(0, anonymous).get(0).getId(), notebookRepoSync.list(1, anonymous).get(0).getId());
 
     NoteInfo noteInfo = notebookRepoSync.list(0, null).get(0);
-    notebook.removeNote(notebookRepoSync.get(noteInfo.getId(), note.getPath(), anonymous), anonymous);
   }
 
   @Test
@@ -211,7 +210,6 @@ public class NotebookRepoSyncTest {
     assertEquals(p1.getId(), notebookRepoSync.get(1,
         notebookRepoSync.list(1, anonymous).get(0).getId(),
         notebookRepoSync.list(1, anonymous).get(0).getPath(), anonymous).getLastParagraph().getId());
-    notebookRepoSync.remove(note.getId(), note.getPath(), anonymous);
   }
 
   @Test
@@ -326,7 +324,6 @@ public class NotebookRepoSyncTest {
     vRepoSync.save(note, anonymous);
     vRepoSync.checkpoint(noteId, notePath, "checkpoint message 2", anonymous);
     assertThat(gitRepo.revisionHistory(noteId, notePath, anonymous).size()).isEqualTo(vCount + 1);
-    notebookRepoSync.remove(note.getId(), note.getPath(), anonymous);
   }
 
   @Test
