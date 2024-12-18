@@ -219,7 +219,7 @@ public class JDBCInterpreterTest extends BasicJDBCTestCaseAdapter {
     assertEquals("ID\tNAME\na\ta_name\n", resultMessages.get(0).getData());
   }
 
-  @Disabled(value="Cotnains bunch of sleeps and awaits")
+  @Disabled(value="Contains bunch of sleeps and awaits")
   @Test
   void testSelectWithRefresh() throws IOException, InterruptedException, TimeoutException {
     Properties properties = new Properties();

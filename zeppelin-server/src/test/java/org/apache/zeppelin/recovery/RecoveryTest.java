@@ -50,7 +50,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.fail;
 
-@Ignore(value="Tets will fail at notebook.createNote with a 'IndexOutOfBounds Index 0 out of bounds for length 0' message, might be relics of test-to-test contamination")
+@Ignore(value="Tests will fail at notebook.createNote with a 'IndexOutOfBounds Index 0 out of bounds for length 0' message, might be relics of test-to-test contamination")
 public class RecoveryTest extends AbstractTestRestApi {
 
   private Gson gson = new Gson();
