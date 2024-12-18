@@ -114,6 +114,8 @@ public class NotebookTest extends AbstractInterpreterTest implements ParagraphJo
   @After
   public void tearDown() throws Exception {
     super.tearDown();
+    System.clearProperty(ConfVars.ZEPPELIN_NOTEBOOK_PUBLIC.getVarName());
+    System.clearProperty(ConfVars.ZEPPELIN_NOTEBOOK_CRON_ENABLE.getVarName());
   }
 
   @Test
