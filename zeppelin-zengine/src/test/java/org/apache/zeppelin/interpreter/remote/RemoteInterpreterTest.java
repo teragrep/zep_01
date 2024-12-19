@@ -34,6 +34,7 @@ import org.apache.zeppelin.interpreter.InterpreterResult.Code;
 import org.apache.zeppelin.interpreter.InterpreterSetting;
 import org.apache.zeppelin.notebook.Note;
 import org.apache.zeppelin.notebook.NoteInfo;
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
@@ -65,6 +66,12 @@ public class RemoteInterpreterTest extends AbstractInterpreterTest {
     interpreterSetting = interpreterSettingManager.getInterpreterSettingByName("test");
     Note note1 = new Note(new NoteInfo("note1", "/note_1"));
     when(mockNotebook.getNote("note1")).thenReturn(note1);
+  }
+
+  @After
+  public void cleanUp() {
+    System.clearProperty(ZeppelinConfiguration.ConfVars.ZEPPELIN_INTERPRETER_REMOTE_RUNNER.getVarName());
+    System.clearProperty(ZeppelinConfiguration.ConfVars.ZEPPELIN_INTERPRETER_CONNECT_TIMEOUT.getVarName());
   }
 
   @Override
