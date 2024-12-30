@@ -79,6 +79,7 @@ public class PythonInterpreterTest extends BasePythonInterpreterTest {
     intpGroup.close();
   }
 
+  @Disabled(value="This test doesn't do anything")
   @Override
   @Test
   public void testCodeCompletion() throws InterpreterException, IOException, InterruptedException {

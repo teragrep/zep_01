@@ -49,9 +49,6 @@ public class NotebookSecurityRestApiTest extends AbstractTestRestApi {
     AbstractTestRestApi.shutDown();
   }
 
-  @Before
-  public void setUp() {}
-
   @Test
   public void testThatUserCanCreateAndRemoveNote() throws IOException {
     String noteId = createNoteForUser("test_1", "admin", "password1");

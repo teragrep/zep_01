@@ -58,10 +58,6 @@ public class KnoxRestApiTest extends AbstractTestRestApi {
     AbstractTestRestApi.shutDown();
   }
 
-  @Before
-  public void setUp() {
-  }
-
   @Test
   @Ignore
   public void testThatOtherUserCanAccessNoteIfPermissionNotSet() throws IOException {
