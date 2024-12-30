@@ -294,6 +294,7 @@ public abstract class BasePythonInterpreterTest extends ConcurrentTestCase {
   }
 
   @Disabled("Flaky test, need to investigate why it fails")
+  @Test
   public void testRedefinitionZeppelinContext() throws InterpreterException {
     String redefinitionCode = "z = 1\n";
     String restoreCode = "z = __zeppelin__\n";

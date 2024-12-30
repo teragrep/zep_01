@@ -130,6 +130,7 @@ public class SparkSqlInterpreterTest {
 
   }
 
+  @Test
   public void test_null_value_in_row() throws InterpreterException {
     sparkInterpreter.interpret("import org.apache.spark.sql._", context);
     sparkInterpreter.interpret(

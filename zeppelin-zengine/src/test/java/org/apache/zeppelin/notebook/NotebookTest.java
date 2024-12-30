@@ -1319,6 +1319,7 @@ public class NotebookTest extends AbstractInterpreterTest implements ParagraphJo
     assertNotEquals(p1.getReturn().message().get(0).getData(), p2.getReturn().message().get(0).getData());
   }
 
+  @Test
   public void testNotebookEventListener() throws IOException {
     final AtomicInteger onNoteRemove = new AtomicInteger(0);
     final AtomicInteger onNoteCreate = new AtomicInteger(0);
