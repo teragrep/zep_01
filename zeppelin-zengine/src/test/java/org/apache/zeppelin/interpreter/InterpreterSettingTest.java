@@ -500,9 +500,9 @@ public class InterpreterSettingTest {
     String json = InterpreterSetting.toJson(interpreterSetting);
 
     InterpreterSetting checkIntpSetting = InterpreterSetting.fromJson(json);
-    assertEquals(checkIntpSetting.getId(), "id");
-    assertEquals(checkIntpSetting.getName(), "id");
-    assertEquals(checkIntpSetting.getGroup(), "group");
+    assertEquals("id", checkIntpSetting.getId());
+    assertEquals("id", checkIntpSetting.getName());
+    assertEquals("group", checkIntpSetting.getGroup());
     assertTrue(checkIntpSetting.getOption().perUserShared());
     assertNotNull(checkIntpSetting.getInterpreterInfo("echo"));
     assertNotNull(checkIntpSetting.getInterpreterInfo("double_echo"));

@@ -1499,7 +1499,7 @@ public class NotebookTest extends AbstractInterpreterTest implements ParagraphJo
     notes2 = notebook.getAllNotes(note -> authorizationService.isReader(note.getId(), new HashSet<>(Arrays.asList("user2"))));
     assertEquals(2, notes1.size());
     assertEquals(1, notes2.size());
-    assertEquals(true, notes1.contains(notePrivate));
+    assertTrue(notes1.contains(notePrivate));
 
     // user1 have all rights
     assertEquals(1, authorizationService.getOwners(notePrivate.getId()).size());

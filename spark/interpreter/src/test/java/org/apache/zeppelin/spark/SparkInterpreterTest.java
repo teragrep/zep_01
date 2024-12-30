@@ -45,6 +45,9 @@ import java.util.Map;
 import java.util.Properties;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertInstanceOf;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.mock;
@@ -261,7 +264,7 @@ class SparkInterpreterTest {
     result = interpreter.interpret("z.input(\"name\", \"default_name\")", context);
     assertEquals(InterpreterResult.Code.SUCCESS, result.code());
     assertEquals(1, context.getGui().getForms().size());
-    assertTrue(context.getGui().getForms().get("name") instanceof TextBox);
+    assertInstanceOf(TextBox.class, context.getGui().getForms().get("name"));
     TextBox textBox = (TextBox) context.getGui().getForms().get("name");
     assertEquals("name", textBox.getName());
     assertEquals("default_name", textBox.getDefaultValue());
@@ -270,7 +273,7 @@ class SparkInterpreterTest {
     result = interpreter.interpret("z.password(\"pwd\")", context);
     assertEquals(InterpreterResult.Code.SUCCESS, result.code());
     assertEquals(1, context.getGui().getForms().size());
-    assertTrue(context.getGui().getForms().get("pwd") instanceof Password);
+    assertInstanceOf(Password.class, context.getGui().getForms().get("pwd"));
     Password pwd = (Password) context.getGui().getForms().get("pwd");
     assertEquals("pwd", pwd.getName());
 
@@ -278,7 +281,7 @@ class SparkInterpreterTest {
     result = interpreter.interpret("z.checkbox(\"checkbox_1\", Seq((\"value_1\", \"name_1\"), (\"value_2\", \"name_2\")), Seq(\"value_2\"))", context);
     assertEquals(InterpreterResult.Code.SUCCESS, result.code());
     assertEquals(1, context.getGui().getForms().size());
-    assertTrue(context.getGui().getForms().get("checkbox_1") instanceof CheckBox);
+    assertInstanceOf(CheckBox.class, context.getGui().getForms().get("checkbox_1"));
     CheckBox checkBox = (CheckBox) context.getGui().getForms().get("checkbox_1");
     assertEquals("checkbox_1", checkBox.getName());
     assertEquals(1, checkBox.getDefaultValue().length);
@@ -293,7 +296,7 @@ class SparkInterpreterTest {
     result = interpreter.interpret("z.select(\"select_1\", Seq((\"value_1\", \"name_1\"), (\"value_2\", \"name_2\")), Seq(\"value_2\"))", context);
     assertEquals(InterpreterResult.Code.SUCCESS, result.code());
     assertEquals(1, context.getGui().getForms().size());
-    assertTrue(context.getGui().getForms().get("select_1") instanceof Select);
+    assertInstanceOf(Select.class, context.getGui().getForms().get("select_1"));
     Select select = (Select) context.getGui().getForms().get("select_1");
     assertEquals("select_1", select.getName());
     // TODO(zjffdu) it seems a bug of GUI, the default value should be 'value_2', but it is List(value_2)
@@ -497,7 +500,7 @@ class SparkInterpreterTest {
     // pool is reset to null if user don't specify it via paragraph properties
     result = interpreter.interpret("sc.range(1, 10).sum", getInterpreterContext());
     assertEquals(InterpreterResult.Code.SUCCESS, result.code());
-    assertEquals(null, interpreter.getSparkContext().getLocalProperty("spark.scheduler.pool"));
+    assertNull(interpreter.getSparkContext().getLocalProperty("spark.scheduler.pool"));
   }
 
   // spark.ui.enabled: false
@@ -578,7 +581,7 @@ class SparkInterpreterTest {
     interpreter2.open();
 
     // check if there is any duplicated loaded class
-    assertEquals(true, interpreter1.getInnerInterpreter().getClass()==interpreter2.getInnerInterpreter().getClass());
+    assertSame(interpreter1.getInnerInterpreter().getClass(), interpreter2.getInnerInterpreter().getClass());
 
     InterpreterContext context = getInterpreterContext();
 

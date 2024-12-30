@@ -120,7 +120,7 @@ public class ZeppelinClientIntegrationTest extends AbstractTestRestApi {
     // query NoteResult
     NoteResult noteResult = zeppelinClient.queryNoteResult(noteId);
     assertEquals(noteId, noteResult.getNoteId());
-    assertEquals(false, noteResult.isRunning());
+    assertFalse(noteResult.isRunning());
     // note is created with 0 paragraph.
     assertEquals(0, noteResult.getParagraphResultList().size());
 
@@ -316,7 +316,7 @@ public class ZeppelinClientIntegrationTest extends AbstractTestRestApi {
     String p0Id = zeppelinClient.addParagraph(noteId, "run sh", "%sh echo 'hello world'");
     NoteResult noteResult = zeppelinClient.executeNote(noteId, new HashMap<>());
     assertEquals(noteId, noteResult.getNoteId());
-    assertEquals(false, noteResult.isRunning());
+    assertFalse(noteResult.isRunning());
     assertEquals(1, noteResult.getParagraphResultList().size());
     ParagraphResult p0 = noteResult.getParagraphResultList().get(0);
     assertEquals(Status.FINISHED, p0.getStatus());
@@ -328,7 +328,7 @@ public class ZeppelinClientIntegrationTest extends AbstractTestRestApi {
     zeppelinClient.updateParagraph(noteId, p0Id, "run sh", "%sh echo 'hello ${name=abc}'");
     noteResult = zeppelinClient.executeNote(noteId);
     assertEquals(noteId, noteResult.getNoteId());
-    assertEquals(false, noteResult.isRunning());
+    assertFalse(noteResult.isRunning());
     assertEquals(1, noteResult.getParagraphResultList().size());
     p0 = noteResult.getParagraphResultList().get(0);
     assertEquals(Status.FINISHED, p0.getStatus());
@@ -341,7 +341,7 @@ public class ZeppelinClientIntegrationTest extends AbstractTestRestApi {
     parameters.put("name", "zeppelin");
     noteResult = zeppelinClient.executeNote(noteId, parameters);
     assertEquals(noteId, noteResult.getNoteId());
-    assertEquals(false, noteResult.isRunning());
+    assertFalse(noteResult.isRunning());
     assertEquals(1, noteResult.getParagraphResultList().size());
     p0 = noteResult.getParagraphResultList().get(0);
     assertEquals(Status.FINISHED, p0.getStatus());
@@ -353,7 +353,7 @@ public class ZeppelinClientIntegrationTest extends AbstractTestRestApi {
     zeppelinClient.addParagraph(noteId, "run sh", "%sh pwd");
     noteResult = zeppelinClient.executeNote(noteId, parameters);
     assertEquals(noteId, noteResult.getNoteId());
-    assertEquals(false, noteResult.isRunning());
+    assertFalse(noteResult.isRunning());
     assertEquals(3, noteResult.getParagraphResultList().size());
     p0 = noteResult.getParagraphResultList().get(0);
     assertEquals(Status.FINISHED, p0.getStatus());
@@ -388,7 +388,7 @@ public class ZeppelinClientIntegrationTest extends AbstractTestRestApi {
     zeppelinClient.submitNote(noteId);
     NoteResult noteResult = zeppelinClient.waitUntilNoteFinished(noteId);
     assertEquals(noteId, noteResult.getNoteId());
-    assertEquals(false, noteResult.isRunning());
+    assertFalse(noteResult.isRunning());
     assertEquals(1, noteResult.getParagraphResultList().size());
     ParagraphResult p0 = noteResult.getParagraphResultList().get(0);
     assertEquals(Status.FINISHED, p0.getStatus());
@@ -399,10 +399,10 @@ public class ZeppelinClientIntegrationTest extends AbstractTestRestApi {
     // update paragraph with dynamic forms
     zeppelinClient.updateParagraph(noteId, p0Id, "run sh", "%sh sleep 5\necho 'hello ${name=abc}'");
     noteResult = zeppelinClient.submitNote(noteId);
-    assertEquals(true, noteResult.isRunning());
+    assertTrue(noteResult.isRunning());
     noteResult = zeppelinClient.waitUntilNoteFinished(noteId);
     assertEquals(noteId, noteResult.getNoteId());
-    assertEquals(false, noteResult.isRunning());
+    assertFalse(noteResult.isRunning());
     assertEquals(1, noteResult.getParagraphResultList().size());
     p0 = noteResult.getParagraphResultList().get(0);
     assertEquals(Status.FINISHED, p0.getStatus());
@@ -415,7 +415,7 @@ public class ZeppelinClientIntegrationTest extends AbstractTestRestApi {
     parameters.put("name", "zeppelin");
     noteResult = zeppelinClient.executeNote(noteId, parameters);
     assertEquals(noteId, noteResult.getNoteId());
-    assertEquals(false, noteResult.isRunning());
+    assertFalse(noteResult.isRunning());
     assertEquals(1, noteResult.getParagraphResultList().size());
     p0 = noteResult.getParagraphResultList().get(0);
     assertEquals(Status.FINISHED, p0.getStatus());
@@ -428,7 +428,7 @@ public class ZeppelinClientIntegrationTest extends AbstractTestRestApi {
     zeppelinClient.submitNote(noteId, parameters);
     noteResult = zeppelinClient.waitUntilNoteFinished(noteId);
     assertEquals(noteId, noteResult.getNoteId());
-    assertEquals(false, noteResult.isRunning());
+    assertFalse(noteResult.isRunning());
     assertEquals(3, noteResult.getParagraphResultList().size());
     p0 = noteResult.getParagraphResultList().get(0);
     assertEquals(Status.FINISHED, p0.getStatus());

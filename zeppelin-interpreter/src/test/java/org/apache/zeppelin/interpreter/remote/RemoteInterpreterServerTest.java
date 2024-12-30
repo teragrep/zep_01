@@ -65,7 +65,7 @@ public class RemoteInterpreterServerTest {
 
   private void startRemoteInterpreterServer(RemoteInterpreterServer server, int timeout)
           throws InterruptedException, TException {
-    assertEquals(false, server.isRunning());
+    assertFalse(server.isRunning());
     server.start();
     long startTime = System.currentTimeMillis();
     while (System.currentTimeMillis() - startTime < timeout) {
@@ -74,9 +74,9 @@ public class RemoteInterpreterServerTest {
       }
       Thread.sleep(200);
     }
-    assertEquals(true, server.isRunning());
-    assertEquals(true, RemoteInterpreterUtils.checkIfRemoteEndpointAccessible("localhost",
-        server.getPort()));
+    assertTrue(server.isRunning());
+    assertTrue(RemoteInterpreterUtils.checkIfRemoteEndpointAccessible("localhost",
+              server.getPort()));
 
     server.init(new HashMap<>());
     assertNotNull(server.getConf());
@@ -85,7 +85,7 @@ public class RemoteInterpreterServerTest {
 
   private void stopRemoteInterpreterServer(RemoteInterpreterServer server, int timeout)
       throws TException, InterruptedException {
-    assertEquals(true, server.isRunning());
+    assertTrue(server.isRunning());
     server.shutdown();
     long startTime = System.currentTimeMillis();
     while (System.currentTimeMillis() - startTime < timeout) {
@@ -94,9 +94,9 @@ public class RemoteInterpreterServerTest {
       }
       Thread.sleep(200);
     }
-    assertEquals(false, server.isRunning());
-    assertEquals(false, RemoteInterpreterUtils.checkIfRemoteEndpointAccessible("localhost",
-        server.getPort()));
+    assertFalse(server.isRunning());
+    assertFalse(RemoteInterpreterUtils.checkIfRemoteEndpointAccessible("localhost",
+              server.getPort()));
   }
 
   @Test

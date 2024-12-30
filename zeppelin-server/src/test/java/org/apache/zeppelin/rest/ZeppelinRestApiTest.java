@@ -802,7 +802,7 @@ public class ZeppelinRestApiTest extends AbstractTestRestApi {
         numberOfTitleHits++;
       }
     }
-    assertEquals("Paragraph title hits must be at-least one", true, numberOfTitleHits >= 1);
+    assertTrue("Paragraph title hits must be at-least one", numberOfTitleHits >= 1);
     searchNote.close();
   }
 }

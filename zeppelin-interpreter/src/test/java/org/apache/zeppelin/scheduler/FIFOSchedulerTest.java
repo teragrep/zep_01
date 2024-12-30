@@ -18,6 +18,7 @@
 package org.apache.zeppelin.scheduler;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
 import org.apache.zeppelin.scheduler.Job.Status;
@@ -78,7 +79,7 @@ public class FIFOSchedulerTest {
     assertEquals(Status.ABORT, job2.getStatus());
 
     assertTrue((500 > (Long) job1.getReturn()));
-    assertEquals(null, job2.getReturn());
+    assertNull(job2.getReturn());
     schedulerSvc.removeScheduler(s.getName());
   }
 }

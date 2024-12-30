@@ -116,7 +116,7 @@ public class NotebookRestApiTest extends AbstractTestRestApi {
 
     // Check id and status have proper value
     assertEquals(paragraphStatus.get("id"), paragraphId);
-    assertEquals(paragraphStatus.get("status"), "READY");
+    assertEquals("READY", paragraphStatus.get("status"));
     get.close();
   }
 
@@ -498,7 +498,7 @@ public class NotebookRestApiTest extends AbstractTestRestApi {
     LOG.debug("Running testRenameNote");
     String oldName = "old_name";
     Note note = TestUtils.getInstance(Notebook.class).createNote(oldName, anonymous);
-    assertEquals(note.getName(), oldName);
+    assertEquals(oldName, note.getName());
     String noteId = note.getId();
 
     final String newName = "testName";
@@ -508,7 +508,7 @@ public class NotebookRestApiTest extends AbstractTestRestApi {
     assertThat("test testRenameNote:", put, isAllowed());
     put.close();
 
-    assertEquals(note.getName(), newName);
+    assertEquals(newName, note.getName());
   }
 
   @Test
@@ -531,9 +531,9 @@ public class NotebookRestApiTest extends AbstractTestRestApi {
     Map<String, Object> config = (Map<String, Object>) respBody.get("config");
     put.close();
 
-    assertEquals(config.get("colWidth"), 6.0);
+    assertEquals(6.0, config.get("colWidth"));
     note = TestUtils.getInstance(Notebook.class).getNote(noteId);
-    assertEquals(note.getParagraph(paragraphId).getConfig().get("colWidth"), 6.0);
+    assertEquals(6.0, note.getParagraph(paragraphId).getConfig().get("colWidth"));
   }
 
   @Test

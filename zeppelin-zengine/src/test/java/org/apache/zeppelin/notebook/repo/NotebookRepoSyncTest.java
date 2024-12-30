@@ -340,7 +340,7 @@ public class NotebookRepoSyncTest {
     /* check that user1 is the only owner */
     Set<String> entity = new HashSet<String>();
     entity.add(user1.getUser());
-    assertEquals(true, authorizationService.isOwner(note.getId(), entity));
+    assertTrue(authorizationService.isOwner(note.getId(), entity));
     assertEquals(1, authorizationService.getOwners(note.getId()).size());
     assertEquals(0, authorizationService.getReaders(note.getId()).size());
     assertEquals(0, authorizationService.getRunners(note.getId()).size());
@@ -369,7 +369,7 @@ public class NotebookRepoSyncTest {
     assertEquals(1, notebookRepoSync.get(0,
         notebookRepoSync.list(0, null).get(0).getId(),
         notebookRepoSync.list(0, null).get(0).getPath(), null).getParagraphs().size());
-    assertEquals(true, authorizationService.isOwner(note.getId(), entity));
+    assertTrue(authorizationService.isOwner(note.getId(), entity));
     assertEquals(1, authorizationService.getOwners(note.getId()).size());
     assertEquals(0, authorizationService.getReaders(note.getId()).size());
     assertEquals(0, authorizationService.getRunners(note.getId()).size());

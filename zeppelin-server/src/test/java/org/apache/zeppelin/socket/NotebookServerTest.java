@@ -298,16 +298,16 @@ public class NotebookServerTest extends AbstractTestRestApi {
                     .put("value", "COMMAND_TYPE_VALUE")
                     .put("interpreterGroupId", interpreterGroup.getId()).toJson());
     List<AngularObject> list = note1.getAngularObjects("angular-shared_process");
-    assertEquals(list.size(), 1);
+    assertEquals(1, list.size());
     assertEquals(list.get(0).getNoteId(), note1.getId());
     assertEquals(list.get(0).getParagraphId(), p1.getId());
-    assertEquals(list.get(0).getName(), "COMMAND_TYPE");
-    assertEquals(list.get(0).get(), "COMMAND_TYPE_VALUE");
+    assertEquals("COMMAND_TYPE", list.get(0).getName());
+    assertEquals("COMMAND_TYPE_VALUE", list.get(0).get());
     // Check if the interpreterGroup AngularObjectRegistry is updated
     Map<String, Map<String, AngularObject>> mapRegistry = interpreterGroup.getAngularObjectRegistry().getRegistry();
     AngularObject ao = mapRegistry.get(note1.getId() + "_" + p1.getId()).get("COMMAND_TYPE");
-    assertEquals(ao.getName(), "COMMAND_TYPE");
-    assertEquals(ao.get(), "COMMAND_TYPE_VALUE");
+    assertEquals("COMMAND_TYPE", ao.getName());
+    assertEquals("COMMAND_TYPE_VALUE", ao.get());
 
     // update bind object from sock1
     notebookServer.onMessage(sock1,
@@ -318,16 +318,16 @@ public class NotebookServerTest extends AbstractTestRestApi {
                     .put("value", "COMMAND_TYPE_VALUE_UPDATE")
                     .put("interpreterGroupId", interpreterGroup.getId()).toJson());
     list = note1.getAngularObjects("angular-shared_process");
-    assertEquals(list.size(), 1);
+    assertEquals(1, list.size());
     assertEquals(list.get(0).getNoteId(), note1.getId());
     assertEquals(list.get(0).getParagraphId(), p1.getId());
-    assertEquals(list.get(0).getName(), "COMMAND_TYPE");
-    assertEquals(list.get(0).get(), "COMMAND_TYPE_VALUE_UPDATE");
+    assertEquals("COMMAND_TYPE", list.get(0).getName());
+    assertEquals("COMMAND_TYPE_VALUE_UPDATE", list.get(0).get());
     // Check if the interpreterGroup AngularObjectRegistry is updated
     mapRegistry = interpreterGroup.getAngularObjectRegistry().getRegistry();
     AngularObject ao1 = mapRegistry.get(note1.getId() + "_" + p1.getId()).get("COMMAND_TYPE");
-    assertEquals(ao1.getName(), "COMMAND_TYPE");
-    assertEquals(ao1.get(), "COMMAND_TYPE_VALUE_UPDATE");
+    assertEquals("COMMAND_TYPE", ao1.getName());
+    assertEquals("COMMAND_TYPE_VALUE_UPDATE", ao1.get());
 
     // unbind object from sock1
     notebookServer.onMessage(sock1,
@@ -338,7 +338,7 @@ public class NotebookServerTest extends AbstractTestRestApi {
                     .put("value", "COMMAND_TYPE_VALUE")
                     .put("interpreterGroupId", interpreterGroup.getId()).toJson());
     list = note1.getAngularObjects("angular-shared_process");
-    assertEquals(list.size(), 0);
+    assertEquals(0, list.size());
     // Check if the interpreterGroup AngularObjectRegistry is delete
     mapRegistry = interpreterGroup.getAngularObjectRegistry().getRegistry();
     AngularObject ao2 = mapRegistry.get(note1.getId() + "_" + p1.getId()).get("COMMAND_TYPE");
@@ -386,7 +386,7 @@ public class NotebookServerTest extends AbstractTestRestApi {
 
     // Check the AngularObjectRegistry of the interpreterGroup before executing GET_NOTE
     Map<String, Map<String, AngularObject>> mapRegistry1 = interpreterGroup.getAngularObjectRegistry().getRegistry();
-    assertEquals(mapRegistry1.size(), 0);
+    assertEquals(0, mapRegistry1.size());
 
     // open the notebook from sockets, AngularObjectRegistry that triggers the update of the interpreterGroup
     notebookServer.onMessage(sock1, new Message(OP.GET_NOTE).put("id", note1.getId()).toJson());
@@ -394,10 +394,10 @@ public class NotebookServerTest extends AbstractTestRestApi {
 
     // After executing GET_NOTE, check the AngularObjectRegistry of the interpreterGroup
     Map<String, Map<String, AngularObject>> mapRegistry2 = interpreterGroup.getAngularObjectRegistry().getRegistry();
-    assertEquals(mapRegistry1.size(), 2);
+    assertEquals(2, mapRegistry1.size());
     AngularObject ao1 = mapRegistry2.get(note1.getId() + "_" + p1.getId()).get("COMMAND_TYPE");
-    assertEquals(ao1.getName(), "COMMAND_TYPE");
-    assertEquals(ao1.get(), "COMMAND_TYPE_VALUE");
+    assertEquals("COMMAND_TYPE", ao1.getName());
+    assertEquals("COMMAND_TYPE_VALUE", ao1.get());
   }
 
   @Test
@@ -604,8 +604,8 @@ public class NotebookServerTest extends AbstractTestRestApi {
     assertEquals(1, list.size());
     Map<String, String> map = (Map<String, String>) list.get(0);
     assertEquals(2, map.size());
-    assertEquals(map.get("jobUrl"), "jobUrl_value");
-    assertEquals(map.get("jobLabel"), "jobLabel_value");
+    assertEquals("jobUrl_value", map.get("jobUrl"));
+    assertEquals("jobLabel_value", map.get("jobLabel"));
   }
 
   @Test

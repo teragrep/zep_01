@@ -97,6 +97,6 @@ public class CredentialsRestApiTest {
     assertNull("CredentialMap should be null", testGetUserCredentials().get("entity1"));
 
     credentialRestApi.removeCredentials();
-    assertEquals("Compare CredentialMap", testGetUserCredentials().toString(), "{}");
+    assertEquals("Compare CredentialMap", "{}", testGetUserCredentials().toString());
   }
 }

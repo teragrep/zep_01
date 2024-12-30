@@ -241,7 +241,7 @@ public class ParagraphTest extends AbstractInterpreterTest {
     //Then
     verify(registry).get("name", noteId, paragraphId);
     verify(registry).get("age", noteId, null);
-    assertEquals(actual, expected);
+    assertEquals(expected, actual);
   }
 
   @Test
