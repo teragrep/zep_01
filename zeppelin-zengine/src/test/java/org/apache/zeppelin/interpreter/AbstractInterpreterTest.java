@@ -88,9 +88,7 @@ public abstract class AbstractInterpreterTest {
 
   @After
   public void tearDown() throws Exception {
-    if (interpreterSettingManager != null) {
-      interpreterSettingManager.close();
-    }
+    interpreterSettingManager.close();
   }
 
   protected Note createNote() {

@@ -94,7 +94,7 @@ public class GUITest {
 
     // convert to new input forms
     GUI gui2 = GUI.fromJson(json);
-    assertTrue(3 == gui2.forms.size());
+    assertEquals(3, gui2.forms.size());
     assertTrue(gui2.forms.get("textbox_1") instanceof TextBox);
     assertEquals("default_text_1", gui2.forms.get("textbox_1").getDefaultValue());
     assertTrue(gui2.forms.get("select_1") instanceof Select);
@@ -119,7 +119,7 @@ public class GUITest {
 
     // convert to new input forms
     GUI gui2 = GUI.fromJson(json);
-    assertTrue(3 == gui2.forms.size());
+    assertEquals(3, gui2.forms.size());
     assertTrue(gui2.forms.get("textbox_1") instanceof TextBox);
     assertEquals("default_text_1", gui2.forms.get("textbox_1").getDefaultValue());
     assertTrue(gui2.forms.get("select_1") instanceof Select);

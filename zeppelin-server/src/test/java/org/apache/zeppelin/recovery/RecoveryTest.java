@@ -43,15 +43,14 @@ import org.junit.Test;
 import java.io.File;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
+import java.time.Instant;
 import java.util.Map;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.fail;
 
-@Ignore(value="[ERROR] Crashed tests:\n" +
-        "[ERROR] org.apache.zeppelin.recovery.RecoveryTest\n" +
-        "[ERROR] ExecutionException The forked VM terminated without properly saying goodbye. VM crash or System.exit called?\n")
+@Ignore(value="Tests will fail at notebook.createNote with a 'IndexOutOfBounds Index 0 out of bounds for length 0' message, might be relics of test-to-test contamination")
 public class RecoveryTest extends AbstractTestRestApi {
 
   private Gson gson = new Gson();
@@ -65,7 +64,8 @@ public class RecoveryTest extends AbstractTestRestApi {
   public void init() throws Exception {
     System.setProperty(ZeppelinConfiguration.ConfVars.ZEPPELIN_RECOVERY_STORAGE_CLASS.getVarName(),
             FileSystemRecoveryStorage.class.getName());
-    recoveryDir = new File("target/").toPath().toAbsolutePath().toFile();
+    recoveryDir = new File("target/recovery").toPath().toAbsolutePath().toFile();
+    recoveryDir.mkdirs();
     System.setProperty(ZeppelinConfiguration.ConfVars.ZEPPELIN_RECOVERY_DIR.getVarName(),
             recoveryDir.getAbsolutePath());
     startUp(RecoveryTest.class.getSimpleName());
@@ -83,189 +83,153 @@ public class RecoveryTest extends AbstractTestRestApi {
   @Test
   public void testRecovery() throws Exception {
     LOG.debug("Test testRecovery");
-    Note note1 = null;
-    try {
-      note1 = notebook.createNote("note1", anonymous);
+    Note note1 = notebook.createNote("note1", anonymous);
 
-      // run python interpreter and create new variable `user`
-      Paragraph p1 = note1.addNewParagraph(AuthenticationInfo.ANONYMOUS);
-      p1.setText("%python user='abc'");
-      CloseableHttpResponse post = httpPost("/notebook/job/" + note1.getId() +"?blocking=true", "");
-      assertThat(post, isAllowed());
-      Map<String, Object> resp = gson.fromJson(EntityUtils.toString(post.getEntity(), StandardCharsets.UTF_8),
-              new TypeToken<Map<String, Object>>() {}.getType());
-      assertEquals("OK", resp.get("status"));
-      post.close();
-      assertEquals(Job.Status.FINISHED, p1.getStatus());
-      TestUtils.getInstance(Notebook.class).saveNote(note1, anonymous);
+    // run python interpreter and create new variable `user`
+    Paragraph p1 = note1.addNewParagraph(AuthenticationInfo.ANONYMOUS);
+    p1.setText("%python user='abc'");
+    CloseableHttpResponse post = httpPost("/notebook/job/" + note1.getId() +"?blocking=true", "");
+    assertThat(post, isAllowed());
+    Map<String, Object> resp = gson.fromJson(EntityUtils.toString(post.getEntity(), StandardCharsets.UTF_8),
+            new TypeToken<Map<String, Object>>() {}.getType());
+    assertEquals("OK", resp.get("status"));
+    post.close();
+    assertEquals(Job.Status.FINISHED, p1.getStatus());
+    TestUtils.getInstance(Notebook.class).saveNote(note1, anonymous);
 
-      // shutdown zeppelin and restart it
-      shutDown();
-      startUp(RecoveryTest.class.getSimpleName(), false);
+    // shutdown zeppelin and restart it
+    shutDown();
+    startUp(RecoveryTest.class.getSimpleName(), false);
 
-      // run the paragraph again, but change the text to print variable `user`
-      note1 = TestUtils.getInstance(Notebook.class).getNote(note1.getId());
-      Thread.sleep(10 * 1000);
-      note1 = TestUtils.getInstance(Notebook.class).getNote(note1.getId());
-      p1 = note1.getParagraph(p1.getId());
-      p1.setText("%python print(user)");
-      post = httpPost("/notebook/job/" + note1.getId() + "?blocking=true", "");
-      assertEquals("OK", resp.get("status"));
-      post.close();
-      assertEquals(Job.Status.FINISHED, p1.getStatus());
-      assertEquals("abc\n", p1.getReturn().message().get(0).getData());
-    } catch (Exception e) {
-      fail("Failure: " + e.getMessage());
-    } finally {
-      if (null != note1) {
-        TestUtils.getInstance(Notebook.class).removeNote(note1, anonymous);
-      }
-    }
+    // run the paragraph again, but change the text to print variable `user`
+    note1 = TestUtils.getInstance(Notebook.class).getNote(note1.getId());
+    Thread.sleep(10 * 1000);
+    note1 = TestUtils.getInstance(Notebook.class).getNote(note1.getId());
+    p1 = note1.getParagraph(p1.getId());
+    p1.setText("%python print(user)");
+    post = httpPost("/notebook/job/" + note1.getId() + "?blocking=true", "");
+    assertEquals("OK", resp.get("status"));
+    post.close();
+    assertEquals(Job.Status.FINISHED, p1.getStatus());
+    assertEquals("abc\n", p1.getReturn().message().get(0).getData());
   }
 
   @Test
   public void testRecovery_2() throws Exception {
     LOG.debug("Test testRecovery_2");
-    Note note1 = null;
-    try {
-      note1 = notebook.createNote("note2", AuthenticationInfo.ANONYMOUS);
+    Note note1 = notebook.createNote("note2", AuthenticationInfo.ANONYMOUS);
 
-      // run python interpreter and create new variable `user`
-      Paragraph p1 = note1.addNewParagraph(AuthenticationInfo.ANONYMOUS);
-      p1.setText("%python user='abc'");
-      CloseableHttpResponse post = httpPost("/notebook/job/" + note1.getId() + "?blocking=true", "");
-      assertThat(post, isAllowed());
-      Map<String, Object> resp = gson.fromJson(EntityUtils.toString(post.getEntity(), StandardCharsets.UTF_8),
-              new TypeToken<Map<String, Object>>() {}.getType());
-      assertEquals("OK", resp.get("status"));
-      post.close();
-      assertEquals(Job.Status.FINISHED, p1.getStatus());
-      TestUtils.getInstance(Notebook.class).saveNote(note1, AuthenticationInfo.ANONYMOUS);
-      // restart the python interpreter
-      TestUtils.getInstance(Notebook.class).getInterpreterSettingManager().restart(
-          ((ManagedInterpreterGroup) p1.getBindedInterpreter().getInterpreterGroup())
-              .getInterpreterSetting().getId()
-      );
+    // run python interpreter and create new variable `user`
+    Paragraph p1 = note1.addNewParagraph(AuthenticationInfo.ANONYMOUS);
+    p1.setText("%python user='abc'");
+    CloseableHttpResponse post = httpPost("/notebook/job/" + note1.getId() + "?blocking=true", "");
+    assertThat(post, isAllowed());
+    Map<String, Object> resp = gson.fromJson(EntityUtils.toString(post.getEntity(), StandardCharsets.UTF_8),
+            new TypeToken<Map<String, Object>>() {}.getType());
+    assertEquals("OK", resp.get("status"));
+    post.close();
+    assertEquals(Job.Status.FINISHED, p1.getStatus());
+    TestUtils.getInstance(Notebook.class).saveNote(note1, AuthenticationInfo.ANONYMOUS);
+    // restart the python interpreter
+    TestUtils.getInstance(Notebook.class).getInterpreterSettingManager().restart(
+        ((ManagedInterpreterGroup) p1.getBindedInterpreter().getInterpreterGroup())
+            .getInterpreterSetting().getId()
+    );
 
-      // shutdown zeppelin and restart it
-      shutDown();
-      startUp(RecoveryTest.class.getSimpleName(), false);
+    // shutdown zeppelin and restart it
+    shutDown();
+    startUp(RecoveryTest.class.getSimpleName(), false);
 
-      Thread.sleep(5 * 1000);
-      // run the paragraph again, but change the text to print variable `user`.
-      // can not recover the python interpreter, because it has been shutdown.
-      note1 = TestUtils.getInstance(Notebook.class).getNote(note1.getId());
-      p1 = note1.getParagraph(p1.getId());
-      p1.setText("%python print(user)");
-      post = httpPost("/notebook/job/" + note1.getId() + "?blocking=true", "");
-      assertEquals("OK", resp.get("status"));
-      post.close();
-      assertEquals(Job.Status.ERROR, p1.getStatus());
-    } catch (Exception e) {
-      fail("Failure: " + e.getMessage());
-    } finally {
-      if (null != note1) {
-        TestUtils.getInstance(Notebook.class).removeNote(note1, anonymous);
-      }
-    }
+    Thread.sleep(5 * 1000);
+    // run the paragraph again, but change the text to print variable `user`.
+    // can not recover the python interpreter, because it has been shutdown.
+    note1 = TestUtils.getInstance(Notebook.class).getNote(note1.getId());
+    p1 = note1.getParagraph(p1.getId());
+    p1.setText("%python print(user)");
+    post = httpPost("/notebook/job/" + note1.getId() + "?blocking=true", "");
+    assertEquals("OK", resp.get("status"));
+    post.close();
+    assertEquals(Job.Status.ERROR, p1.getStatus());
   }
 
   @Test
   public void testRecovery_3() throws Exception {
     LOG.debug("Test testRecovery_3");
-    Note note1 = null;
-    try {
-      note1 = TestUtils.getInstance(Notebook.class).createNote("note3", AuthenticationInfo.ANONYMOUS);
+    Note note1 = TestUtils.getInstance(Notebook.class).createNote("note3", AuthenticationInfo.ANONYMOUS);
 
-      // run python interpreter and create new variable `user`
-      Paragraph p1 = note1.addNewParagraph(AuthenticationInfo.ANONYMOUS);
-      p1.setText("%python user='abc'");
-      CloseableHttpResponse post = httpPost("/notebook/job/" + note1.getId() + "?blocking=true", "");
-      assertThat(post, isAllowed());
-      Map<String, Object> resp = gson.fromJson(EntityUtils.toString(post.getEntity(), StandardCharsets.UTF_8),
-              new TypeToken<Map<String, Object>>() {}.getType());
-      assertEquals("OK", resp.get("status"));
-      post.close();
-      assertEquals(Job.Status.FINISHED, p1.getStatus());
-      TestUtils.getInstance(Notebook.class).saveNote(note1, AuthenticationInfo.ANONYMOUS);
+    // run python interpreter and create new variable `user`
+    Paragraph p1 = note1.addNewParagraph(AuthenticationInfo.ANONYMOUS);
+    p1.setText("%python user='abc'");
+    CloseableHttpResponse post = httpPost("/notebook/job/" + note1.getId() + "?blocking=true", "");
+    assertThat(post, isAllowed());
+    Map<String, Object> resp = gson.fromJson(EntityUtils.toString(post.getEntity(), StandardCharsets.UTF_8),
+            new TypeToken<Map<String, Object>>() {}.getType());
+    assertEquals("OK", resp.get("status"));
+    post.close();
+    assertEquals(Job.Status.FINISHED, p1.getStatus());
+    TestUtils.getInstance(Notebook.class).saveNote(note1, AuthenticationInfo.ANONYMOUS);
 
-      // shutdown zeppelin and restart it
-      shutDown();
-      StopInterpreter.main(new String[]{});
+    // shutdown zeppelin and restart it
+    shutDown();
+    StopInterpreter.main(new String[]{});
 
-      startUp(RecoveryTest.class.getSimpleName(), false);
+    startUp(RecoveryTest.class.getSimpleName(), false);
 
-      Thread.sleep(5 * 1000);
-      // run the paragraph again, but change the text to print variable `user`.
-      // can not recover the python interpreter, because it has been shutdown.
-      note1 = TestUtils.getInstance(Notebook.class).getNote(note1.getId());
-      p1 = note1.getParagraph(p1.getId());
-      p1.setText("%python print(user)");
-      post = httpPost("/notebook/job/" + note1.getId() + "?blocking=true", "");
-      assertEquals("OK", resp.get("status"));
-      post.close();
-      assertEquals(Job.Status.ERROR, p1.getStatus());
-    } catch (Exception e ) {
-      fail("Failure: " + e.getMessage());
-    } finally {
-      if (null != note1) {
-        TestUtils.getInstance(Notebook.class).removeNote(note1, anonymous);
-      }
-    }
+    Thread.sleep(5 * 1000);
+    // run the paragraph again, but change the text to print variable `user`.
+    // can not recover the python interpreter, because it has been shutdown.
+    note1 = TestUtils.getInstance(Notebook.class).getNote(note1.getId());
+    p1 = note1.getParagraph(p1.getId());
+    p1.setText("%python print(user)");
+    post = httpPost("/notebook/job/" + note1.getId() + "?blocking=true", "");
+    assertEquals("OK", resp.get("status"));
+    post.close();
+    assertEquals(Job.Status.ERROR, p1.getStatus());
   }
 
   @Test
   public void testRecovery_Finished_Paragraph_python() throws Exception {
     LOG.debug("Test testRecovery_Finished_Paragraph_python");
-    Note note1 = null;
-    try {
-      InterpreterSettingManager interpreterSettingManager = TestUtils.getInstance(InterpreterSettingManager.class);
-      InterpreterSetting interpreterSetting = interpreterSettingManager.getInterpreterSettingByName("python");
-      interpreterSetting.setProperty("zeppelin.python.useIPython", "false");
-      interpreterSetting.setProperty("zeppelin.interpreter.result.cache", "100");
+    InterpreterSettingManager interpreterSettingManager = TestUtils.getInstance(InterpreterSettingManager.class);
+    InterpreterSetting interpreterSetting = interpreterSettingManager.getInterpreterSettingByName("python");
+    interpreterSetting.setProperty("zeppelin.python.useIPython", "false");
+    interpreterSetting.setProperty("zeppelin.interpreter.result.cache", "100");
 
-      note1 = TestUtils.getInstance(Notebook.class).createNote("note4", AuthenticationInfo.ANONYMOUS);
+    Note note1 = TestUtils.getInstance(Notebook.class).createNote("note4", AuthenticationInfo.ANONYMOUS);
 
-      // run  paragraph async, print 'hello' after 10 seconds
-      Paragraph p1 = note1.addNewParagraph(AuthenticationInfo.ANONYMOUS);
-      p1.setText("%python import time\n" +
-              "for i in range(1, 10):\n" +
-              "    time.sleep(1)\n" +
-              "    print(i)");
-      CloseableHttpResponse post = httpPost("/notebook/job/" + note1.getId() + "/" + p1.getId(), "");
-      assertThat(post, isAllowed());
-      post.close();
+    // run  paragraph async, print 'hello' after 10 seconds
+    Paragraph p1 = note1.addNewParagraph(AuthenticationInfo.ANONYMOUS);
+    p1.setText("%python import time\n" +
+            "for i in range(1, 10):\n" +
+            "    time.sleep(1)\n" +
+            "    print(i)");
+    CloseableHttpResponse post = httpPost("/notebook/job/" + note1.getId() + "/" + p1.getId(), "");
+    assertThat(post, isAllowed());
+    post.close();
 
-      // wait until paragraph is running
-      while(p1.getStatus() != Job.Status.RUNNING) {
-        Thread.sleep(1000);
-      }
-
-      // shutdown zeppelin and restart it
-      shutDown();
-      // sleep 15 seconds to make sure the paragraph is finished
-      Thread.sleep(15 * 1000);
-
-      startUp(RecoveryTest.class.getSimpleName(), false);
-      // sleep 10 seconds to make sure recovering is finished
-      Thread.sleep(10 * 1000);
-
-      assertEquals(Job.Status.FINISHED, p1.getStatus());
-      assertEquals("1\n" +
-              "2\n" +
-              "3\n" +
-              "4\n" +
-              "5\n" +
-              "6\n" +
-              "7\n" +
-              "8\n" +
-              "9\n", p1.getReturn().message().get(0).getData());
-    } catch (Exception e ) {
-      fail("Failure: " + e.getMessage());
-    } finally {
-      if (null != note1) {
-        TestUtils.getInstance(Notebook.class).removeNote(note1, anonymous);
-      }
+    // wait until paragraph is running
+    while(p1.getStatus() != Job.Status.RUNNING) {
+      Thread.sleep(1000);
     }
+
+    // shutdown zeppelin and restart it
+    shutDown();
+    // sleep 15 seconds to make sure the paragraph is finished
+    Thread.sleep(15 * 1000);
+
+    startUp(RecoveryTest.class.getSimpleName(), false);
+    // sleep 10 seconds to make sure recovering is finished
+    Thread.sleep(10 * 1000);
+
+    assertEquals(Job.Status.FINISHED, p1.getStatus());
+    assertEquals("1\n" +
+            "2\n" +
+            "3\n" +
+            "4\n" +
+            "5\n" +
+            "6\n" +
+            "7\n" +
+            "8\n" +
+            "9\n", p1.getReturn().message().get(0).getData());
   }
 }

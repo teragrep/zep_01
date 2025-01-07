@@ -54,9 +54,7 @@ public class AppendOutputRunnerTest {
 
   @After
   public void afterEach() {
-    if (future != null) {
-      future.cancel(true);
-    }
+    future.cancel(true);
   }
 
   @Test

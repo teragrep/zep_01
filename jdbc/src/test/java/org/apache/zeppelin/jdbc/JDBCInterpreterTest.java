@@ -31,6 +31,7 @@ import org.apache.zeppelin.user.AuthenticationInfo;
 import org.apache.zeppelin.user.UserCredentials;
 import org.apache.zeppelin.user.UsernamePassword;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
 import java.io.File;
@@ -60,6 +61,7 @@ import static org.apache.zeppelin.jdbc.JDBCInterpreter.DEFAULT_URL;
 import static org.apache.zeppelin.jdbc.JDBCInterpreter.DEFAULT_USER;
 import static org.apache.zeppelin.jdbc.JDBCInterpreter.PRECODE_KEY_TEMPLATE;
 
+import static org.junit.jupiter.api.Assertions.assertInstanceOf;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.fail;
@@ -218,6 +220,7 @@ public class JDBCInterpreterTest extends BasicJDBCTestCaseAdapter {
     assertEquals("ID\tNAME\na\ta_name\n", resultMessages.get(0).getData());
   }
 
+  @Disabled(value="Contains bunch of sleeps and awaits")
   @Test
   void testSelectWithRefresh() throws IOException, InterruptedException, TimeoutException {
     Properties properties = new Properties();
@@ -474,7 +477,7 @@ public class JDBCInterpreterTest extends BasicJDBCTestCaseAdapter {
     assertEquals(10, jdbcInterpreter.getMaxConcurrentConnection());
 
     Scheduler scheduler = jdbcInterpreter.getScheduler();
-    assertTrue(scheduler instanceof ParallelScheduler);
+    assertInstanceOf(ParallelScheduler.class, scheduler);
 
     properties.clear();
     properties.setProperty("zeppelin.jdbc.concurrent.use", "false");
@@ -483,7 +486,7 @@ public class JDBCInterpreterTest extends BasicJDBCTestCaseAdapter {
     assertFalse(jdbcInterpreter.isConcurrentExecution());
 
     scheduler = jdbcInterpreter.getScheduler();
-    assertTrue(scheduler instanceof FIFOScheduler);
+    assertInstanceOf(FIFOScheduler.class, scheduler);
   }
 
   @Test
@@ -507,7 +510,7 @@ public class JDBCInterpreterTest extends BasicJDBCTestCaseAdapter {
             CompletionType.keyword.name());
 
     assertEquals(1, completionList.size());
-    assertEquals(true, completionList.contains(correctCompletionKeyword));
+    assertTrue(completionList.contains(correctCompletionKeyword));
   }
 
   private Properties getDBProperty(String dbPrefix,

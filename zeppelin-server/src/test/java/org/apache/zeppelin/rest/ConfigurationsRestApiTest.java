@@ -16,6 +16,7 @@
  */
 package org.apache.zeppelin.rest;
 
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
 import com.google.gson.Gson;
@@ -54,7 +55,7 @@ public class ConfigurationsRestApiTest extends AbstractTestRestApi {
     assertTrue(body.size() > 0);
     // it shouldn't have key/value pair which key contains "password"
     for (String key : body.keySet()) {
-      assertTrue(!key.contains("password"));
+      assertFalse(key.contains("password"));
     }
     get.close();
   }

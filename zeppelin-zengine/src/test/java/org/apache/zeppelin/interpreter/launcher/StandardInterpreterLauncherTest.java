@@ -58,7 +58,7 @@ public class StandardInterpreterLauncherTest {
     assertTrue(interpreterProcess.getEnv().size() >= 2);
     assertEquals("VALUE_1", interpreterProcess.getEnv().get("ENV_1"));
     assertTrue(interpreterProcess.getEnv().containsKey("INTERPRETER_GROUP_ID"));
-    assertEquals(true, interpreterProcess.isUserImpersonated());
+    assertTrue(interpreterProcess.isUserImpersonated());
   }
 
   @Test
@@ -80,7 +80,7 @@ public class StandardInterpreterLauncherTest {
     assertEquals(zConf.getInterpreterRemoteRunnerPath(), interpreterProcess.getInterpreterRunner());
     assertTrue(interpreterProcess.getEnv().size() >= 1);
     assertTrue(interpreterProcess.getEnv().containsKey("INTERPRETER_GROUP_ID"));
-    assertEquals(true, interpreterProcess.isUserImpersonated());
+    assertTrue(interpreterProcess.isUserImpersonated());
   }
 
 }

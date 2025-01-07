@@ -41,14 +41,10 @@ public class LocalConfigStorageTest {
     public void testWritingAtomically() throws IOException {
         final Path destination = new File("target/test-file-" + Instant.now().toEpochMilli()).toPath().toAbsolutePath();
         final File destinationFile = destination.toFile();
-        try {
-            FileUtils.atomicWriteToFile(TEST_STRING, destinationFile);
-            try (InputStream is = Files.newInputStream(destination)) {
-                String read = IOUtils.toString(is, StandardCharsets.UTF_8);
-                assertEquals(TEST_STRING, read);
-            }
-        } finally {
-            Files.deleteIfExists(destination);
+        FileUtils.atomicWriteToFile(TEST_STRING, destinationFile);
+        try (InputStream is = Files.newInputStream(destination)) {
+            String read = IOUtils.toString(is, StandardCharsets.UTF_8);
+            assertEquals(TEST_STRING, read);
         }
     }
 
@@ -58,15 +54,10 @@ public class LocalConfigStorageTest {
         final Path destDir = new File("target/non-existing-" + rnd.nextLong()).toPath();
         final Path destination = Paths.get(destDir.toString(),"test-" + rnd.nextLong() + "-file");
         final File destinationFile = destination.toFile();
-        try {
-            FileUtils.atomicWriteToFile(TEST_STRING, destinationFile);
-            try (InputStream is = Files.newInputStream(destination)) {
-                String read = IOUtils.toString(is, StandardCharsets.UTF_8);
-                assertEquals(TEST_STRING, read);
-            }
-        } finally {
-            Files.deleteIfExists(destination);
-            Files.deleteIfExists(destDir);
+        FileUtils.atomicWriteToFile(TEST_STRING, destinationFile);
+        try (InputStream is = Files.newInputStream(destination)) {
+            String read = IOUtils.toString(is, StandardCharsets.UTF_8);
+            assertEquals(TEST_STRING, read);
         }
     }
 
@@ -75,16 +66,10 @@ public class LocalConfigStorageTest {
         final Path destination = new File("target/test-file-" + Instant.now().toEpochMilli()).toPath();
         final File destinationFile = destination.toFile();
 
-        try {
-            try (BufferedWriter writer = Files.newBufferedWriter(destination)) {
-                writer.write(TEST_STRING);
-            }
-            String read = FileUtils.readFromFile(destinationFile);
-            assertEquals(TEST_STRING, read);
-        } finally {
-            Files.deleteIfExists(destination);
+        try (BufferedWriter writer = Files.newBufferedWriter(destination)) {
+            writer.write(TEST_STRING);
         }
+        String read = FileUtils.readFromFile(destinationFile);
+        assertEquals(TEST_STRING, read);
     }
-
-
 }

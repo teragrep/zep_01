@@ -58,10 +58,6 @@ public class KnoxRestApiTest extends AbstractTestRestApi {
     AbstractTestRestApi.shutDown();
   }
 
-  @Before
-  public void setUp() {
-  }
-
   @Test
   @Ignore
   public void testThatOtherUserCanAccessNoteIfPermissionNotSet() throws IOException {
@@ -78,6 +74,5 @@ public class KnoxRestApiTest extends AbstractTestRestApi {
     collector.checkThat("User logged in as admin",
         ((Map) result.get("body")).get("principal").toString(), CoreMatchers.equalTo("admin"));
 
-    System.out.println(result);
   }
 }

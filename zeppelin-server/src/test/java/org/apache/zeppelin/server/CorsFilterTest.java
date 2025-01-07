@@ -62,7 +62,7 @@ public class CorsFilterTest {
     }).when(mockResponse).setHeader(anyString(), anyString());
 
     filter.doFilter(mockRequest, mockResponse, mockedFilterChain);
-    Assert.assertTrue(headers[0].equals("http://localhost:8080"));
+    Assert.assertEquals("http://localhost:8080", headers[0]);
   }
 
   @Test
@@ -86,6 +86,6 @@ public class CorsFilterTest {
     }).when(mockResponse).setHeader(anyString(), anyString());
 
     filter.doFilter(mockRequest, mockResponse, mockedFilterChain);
-    Assert.assertTrue(headers[0].equals(""));
+      Assert.assertEquals("", headers[0]);
   }
 }

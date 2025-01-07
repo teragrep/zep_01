@@ -36,10 +36,6 @@ public class ZeppCtxtVariableTest {
     resourcePool.put("PI", "3.1415");
   }
 
-  @After
-  public void tearDown() throws Exception {
-  }
-
   @Ignore("We don't use this interpolation format anymore")
   @Test
   public void stringWithoutPatterns() {

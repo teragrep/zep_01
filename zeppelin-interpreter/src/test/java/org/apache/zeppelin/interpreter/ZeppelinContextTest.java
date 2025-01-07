@@ -24,6 +24,7 @@ import java.util.List;
 import java.util.Map;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
 
 
 public class ZeppelinContextTest {
@@ -59,10 +60,10 @@ public class ZeppelinContextTest {
 
     z.unregisterHook(InterpreterHookRegistry.HookType.PRE_EXEC.getName());
     z.unregisterHook(InterpreterHookRegistry.HookType.POST_EXEC.getName());
-    assertEquals(null, hookRegistry.get(null, "Test1Interpreter",
-        InterpreterHookRegistry.HookType.PRE_EXEC.getName()));
-    assertEquals(null, hookRegistry.get(null, "Test1Interpreter",
-        InterpreterHookRegistry.HookType.POST_EXEC.getName()));
+    assertNull(hookRegistry.get(null, "Test1Interpreter",
+              InterpreterHookRegistry.HookType.PRE_EXEC.getName()));
+    assertNull(hookRegistry.get(null, "Test1Interpreter",
+              InterpreterHookRegistry.HookType.POST_EXEC.getName()));
 
     // register global hook for interpreter test2
     z.registerHook(InterpreterHookRegistry.HookType.PRE_EXEC.getName(), "pre_cmd2", "test2");
@@ -74,10 +75,10 @@ public class ZeppelinContextTest {
 
     z.unregisterHook(InterpreterHookRegistry.HookType.PRE_EXEC.getName(), "test2");
     z.unregisterHook(InterpreterHookRegistry.HookType.POST_EXEC.getName(), "test2");
-    assertEquals(null, hookRegistry.get(null, "Test2Interpreter",
-        InterpreterHookRegistry.HookType.PRE_EXEC.getName()));
-    assertEquals(null, hookRegistry.get(null, "Test2Interpreter",
-        InterpreterHookRegistry.HookType.POST_EXEC.getName()));
+    assertNull(hookRegistry.get(null, "Test2Interpreter",
+              InterpreterHookRegistry.HookType.PRE_EXEC.getName()));
+    assertNull(hookRegistry.get(null, "Test2Interpreter",
+              InterpreterHookRegistry.HookType.POST_EXEC.getName()));
 
     // register hook for note_1 and current interpreter
     z.registerNoteHook(InterpreterHookRegistry.HookType.PRE_EXEC.getName(), "pre_cmd", "note_1");
@@ -89,10 +90,10 @@ public class ZeppelinContextTest {
 
     z.unregisterNoteHook("note_1", InterpreterHookRegistry.HookType.PRE_EXEC.getName(), "test1");
     z.unregisterNoteHook("note_1", InterpreterHookRegistry.HookType.POST_EXEC.getName(), "test1");
-    assertEquals(null, hookRegistry.get("note_1", "Test1Interpreter",
-        InterpreterHookRegistry.HookType.PRE_EXEC.getName()));
-    assertEquals(null, hookRegistry.get("note_1", "Test1Interpreter",
-        InterpreterHookRegistry.HookType.POST_EXEC.getName()));
+    assertNull(hookRegistry.get("note_1", "Test1Interpreter",
+              InterpreterHookRegistry.HookType.PRE_EXEC.getName()));
+    assertNull(hookRegistry.get("note_1", "Test1Interpreter",
+              InterpreterHookRegistry.HookType.POST_EXEC.getName()));
 
     // register hook for note_1 and interpreter test2
     z.registerNoteHook(InterpreterHookRegistry.HookType.PRE_EXEC.getName(),
@@ -106,10 +107,10 @@ public class ZeppelinContextTest {
 
     z.unregisterNoteHook("note_1", InterpreterHookRegistry.HookType.PRE_EXEC.getName(), "test2");
     z.unregisterNoteHook("note_1", InterpreterHookRegistry.HookType.POST_EXEC.getName(), "test2");
-    assertEquals(null, hookRegistry.get("note_1", "Test2Interpreter",
-        InterpreterHookRegistry.HookType.PRE_EXEC.getName()));
-    assertEquals(null, hookRegistry.get("note_1", "Test2Interpreter",
-        InterpreterHookRegistry.HookType.POST_EXEC.getName()));
+    assertNull(hookRegistry.get("note_1", "Test2Interpreter",
+              InterpreterHookRegistry.HookType.PRE_EXEC.getName()));
+    assertNull(hookRegistry.get("note_1", "Test2Interpreter",
+              InterpreterHookRegistry.HookType.POST_EXEC.getName()));
   }
 
 

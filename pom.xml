@@ -137,7 +137,7 @@
     <plugin.deploy.version>2.8.2</plugin.deploy.version>
     <plugin.download.version>1.6.0</plugin.download.version>
     <plugin.eclipse.version>2.8</plugin.eclipse.version>
-    <plugin.enforcer.version>3.0.0-M3</plugin.enforcer.version>
+    <plugin.enforcer.version>3.4.1</plugin.enforcer.version>
     <plugin.exec.version>1.6.0</plugin.exec.version>
     <plugin.failsafe.version>2.17</plugin.failsafe.version>
     <plugin.git.commit.id.version>4.0.0</plugin.git.commit.id.version>
@@ -1053,8 +1053,11 @@
             <configuration>
               <rules>
                 <requireMavenVersion>
-                  <version>[3.1.0,)</version>
+                  <version>[3.6.3,)</version>
                 </requireMavenVersion>
+                <requireJavaVersion>
+                  <version>[11,12)</version>
+                </requireJavaVersion>
               </rules>
             </configuration>
           </execution>

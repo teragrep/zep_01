@@ -44,10 +44,10 @@ public class InterpreterHookRegistryTest {
     registry.register(noteId, className, POST_EXEC_DEV.getName(), postExecHook);
 
     // Test get()
-    assertEquals(registry.get(noteId, className, PRE_EXEC.getName()), preExecHook);
-    assertEquals(registry.get(noteId, className, POST_EXEC.getName()), postExecHook);
-    assertEquals(registry.get(noteId, className, PRE_EXEC_DEV.getName()), preExecHook);
-    assertEquals(registry.get(noteId, className, POST_EXEC_DEV.getName()), postExecHook);
+    assertEquals(preExecHook, registry.get(noteId, className, PRE_EXEC.getName()));
+    assertEquals(postExecHook, registry.get(noteId, className, POST_EXEC.getName()));
+    assertEquals(preExecHook, registry.get(noteId, className, PRE_EXEC_DEV.getName()));
+    assertEquals(postExecHook, registry.get(noteId, className, POST_EXEC_DEV.getName()));
 
     // Test Unregister
     registry.unregister(noteId, className, PRE_EXEC.getName());
@@ -61,7 +61,7 @@ public class InterpreterHookRegistryTest {
 
     // Test Global Scope
     registry.register(null, className, PRE_EXEC.getName(), preExecHook);
-    assertEquals(registry.get(GLOBAL_KEY, className, PRE_EXEC.getName()), preExecHook);
+    assertEquals(preExecHook, registry.get(GLOBAL_KEY, className, PRE_EXEC.getName()));
   }
 
   @Test(expected = InvalidHookException.class)

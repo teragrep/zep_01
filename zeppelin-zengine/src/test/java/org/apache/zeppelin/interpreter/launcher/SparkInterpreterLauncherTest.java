@@ -80,7 +80,7 @@ public class SparkInterpreterLauncherTest {
     assertEquals(10000, interpreterProcess.getConnectTimeout());
     assertEquals(zConf.getInterpreterRemoteRunnerPath(), interpreterProcess.getInterpreterRunner());
     assertTrue(interpreterProcess.getEnv().size() >= 2);
-    assertEquals(true, interpreterProcess.isUserImpersonated());
+    assertTrue(interpreterProcess.isUserImpersonated());
   }
 
   @Test

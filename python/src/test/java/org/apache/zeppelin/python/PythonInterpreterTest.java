@@ -80,6 +80,7 @@ public class PythonInterpreterTest extends BasePythonInterpreterTest {
   }
 
   @Override
+  @Test
   public void testCodeCompletion() throws InterpreterException, IOException, InterruptedException {
     super.testCodeCompletion();
 

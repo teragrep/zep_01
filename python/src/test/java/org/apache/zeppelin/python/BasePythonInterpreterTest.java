@@ -40,6 +40,7 @@ import java.io.IOException;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertInstanceOf;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.mock;
 
@@ -245,7 +246,7 @@ public abstract class BasePythonInterpreterTest extends ConcurrentTestCase {
         context.out.toInterpreterResultMessage();
     assertTrue(interpreterResultMessages.get(0).getData().contains("'value_1'"));
     assertEquals(1, context.getGui().getForms().size());
-    assertTrue(context.getGui().getForms().get("text_1") instanceof TextBox);
+    assertInstanceOf(TextBox.class, context.getGui().getForms().get("text_1"));
     TextBox textbox = (TextBox) context.getGui().getForms().get("text_1");
     assertEquals("text_1", textbox.getName());
     assertEquals("value_1", textbox.getDefaultValue());
@@ -256,7 +257,7 @@ public abstract class BasePythonInterpreterTest extends ConcurrentTestCase {
         interpreter.interpret("z.password(name='pwd_1')", context);
     Thread.sleep(100);
     assertEquals(InterpreterResult.Code.SUCCESS, result.code());
-    assertTrue(context.getGui().getForms().get("pwd_1") instanceof Password);
+    assertInstanceOf(Password.class, context.getGui().getForms().get("pwd_1"));
     Password password = (Password) context.getGui().getForms().get("pwd_1");
     assertEquals("pwd_1", password.getName());
 
@@ -266,7 +267,7 @@ public abstract class BasePythonInterpreterTest extends ConcurrentTestCase {
         " options=[('value_1', 'name_1'), ('value_2', 'name_2')])", context);
     assertEquals(InterpreterResult.Code.SUCCESS, result.code());
     assertEquals(1, context.getGui().getForms().size());
-    assertTrue(context.getGui().getForms().get("select_1") instanceof Select);
+    assertInstanceOf(Select.class, context.getGui().getForms().get("select_1"));
     Select select = (Select) context.getGui().getForms().get("select_1");
     assertEquals("select_1", select.getName());
     assertEquals(2, select.getOptions().length);
@@ -279,7 +280,7 @@ public abstract class BasePythonInterpreterTest extends ConcurrentTestCase {
         "options=[('value_1', 'name_1'), ('value_2', 'name_2')])", context);
     assertEquals(InterpreterResult.Code.SUCCESS, result.code());
     assertEquals(1, context.getGui().getForms().size());
-    assertTrue(context.getGui().getForms().get("checkbox_1") instanceof CheckBox);
+    assertInstanceOf(CheckBox.class, context.getGui().getForms().get("checkbox_1"));
     CheckBox checkbox = (CheckBox) context.getGui().getForms().get("checkbox_1");
     assertEquals("checkbox_1", checkbox.getName());
     assertEquals(2, checkbox.getOptions().length);
@@ -294,6 +295,7 @@ public abstract class BasePythonInterpreterTest extends ConcurrentTestCase {
   }
 
   @Disabled("Flaky test, need to investigate why it fails")
+  @Test
   public void testRedefinitionZeppelinContext() throws InterpreterException {
     String redefinitionCode = "z = 1\n";
     String restoreCode = "z = __zeppelin__\n";

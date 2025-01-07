@@ -35,6 +35,7 @@ import org.junit.Test;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
 import static org.mockito.Mockito.when;
 
 public class RemoteAngularObjectTest extends AbstractInterpreterTest
@@ -105,7 +106,7 @@ public class RemoteAngularObjectTest extends AbstractInterpreterTest
     Thread.sleep(500);
     assertEquals("0", result[0]); // size of registry
     assertEquals("1", result[1]); // num watcher called
-    assertEquals(null, localRegistry.get("n1", "note", null));
+    assertNull(localRegistry.get("n1", "note", null));
   }
 
   @Ignore(value="Contains sleep, timeout, while loops or something similar waiting/cycleburning")

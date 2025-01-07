@@ -47,6 +47,7 @@ public class NotebookRepoSyncInitializationTest {
 
   @Before
   public void setUp(){
+    // FIXME: This depends on previously built plugins
     System.setProperty(ConfVars.ZEPPELIN_PLUGINS_DIR.getVarName(), new File("../../../plugins").getAbsolutePath());
     System.setProperty("zeppelin.isTest", "true");
   }
@@ -65,7 +66,7 @@ public class NotebookRepoSyncInitializationTest {
     // create repo
     NotebookRepoSync notebookRepoSync = new NotebookRepoSync(conf);
     // check proper initialization of one storage
-    assertEquals(notebookRepoSync.getRepoCount(), 1);
+    assertEquals(1, notebookRepoSync.getRepoCount());
     assertTrue(notebookRepoSync.getRepo(0) instanceof VFSNotebookRepo);
   }
 
@@ -91,7 +92,7 @@ public class NotebookRepoSyncInitializationTest {
     // create repo
     NotebookRepoSync notebookRepoSync = new NotebookRepoSync(conf);
     // check that both initialized
-    assertEquals(notebookRepoSync.getRepoCount(), 2);
+    assertEquals(2, notebookRepoSync.getRepoCount());
     assertTrue(notebookRepoSync.getRepo(0) instanceof VFSNotebookRepo);
     assertTrue(notebookRepoSync.getRepo(1) instanceof VFSNotebookRepoMock);
   }
@@ -132,7 +133,7 @@ public class NotebookRepoSyncInitializationTest {
     // create repo
     NotebookRepoSync notebookRepoSync = new NotebookRepoSync(conf);
     // check that first two storages initialized instead of three
-    assertEquals(notebookRepoSync.getRepoCount(), 2);
+    assertEquals(2, notebookRepoSync.getRepoCount());
     assertTrue(notebookRepoSync.getRepo(0) instanceof VFSNotebookRepo);
     assertTrue(notebookRepoSync.getRepo(1) instanceof VFSNotebookRepoMock);
   }
@@ -145,7 +146,7 @@ public class NotebookRepoSyncInitializationTest {
     // create repo
     NotebookRepoSync notebookRepoSync = new NotebookRepoSync(conf);
     // check initialization of one default storage
-    assertEquals(notebookRepoSync.getRepoCount(), 1);
+    assertEquals(1, notebookRepoSync.getRepoCount());
     assertTrue(notebookRepoSync.getRepo(0) instanceof NotebookRepoWithVersionControl);
   }
 
