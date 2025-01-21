@@ -137,7 +137,7 @@ public class RemoteInterpreterEventClient implements ResourcePoolConnector,
   public Object readResource(ResourceId resourceId) {
     try {
       ByteBuffer buffer = callRemoteFunction(client -> client.getResource(resourceId.toJson()));
-      return Resource.deserializeObject(buffer);
+      return ResourceImpl.deserializeObject(buffer);
     } catch (IOException | ClassNotFoundException e) {
       LOGGER.warn("Fail to readResource: {}", resourceId, e);
       return null;
@@ -169,7 +169,7 @@ public class RemoteInterpreterEventClient implements ResourcePoolConnector,
             null);
     try {
       ByteBuffer buffer = callRemoteFunction(client -> client.invokeMethod(intpGroupId, invokeMethod.toJson()));
-      return Resource.deserializeObject(buffer);
+      return ResourceImpl.deserializeObject(buffer);
     } catch (IOException | ClassNotFoundException e) {
       LOGGER.error("Failed to invoke method", e);
       return null;
@@ -204,7 +204,7 @@ public class RemoteInterpreterEventClient implements ResourcePoolConnector,
 
     try {
       ByteBuffer serializedResource = callRemoteFunction(client -> client.invokeMethod(intpGroupId, invokeMethod.toJson()));
-      Resource deserializedResource = (Resource) Resource.deserializeObject(serializedResource);
+      Resource deserializedResource = (Resource) ResourceImpl.deserializeObject(serializedResource);
       RemoteResource remoteResource = RemoteResource.fromJson(GSON.toJson(deserializedResource));
       remoteResource.setResourcePoolConnector(this);
 

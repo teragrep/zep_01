@@ -44,6 +44,7 @@ import org.apache.zeppelin.interpreter.xref.InterpreterException;
 import org.apache.zeppelin.interpreter.xref.Type;
 import org.apache.zeppelin.resource.DistributedResourcePool;
 import org.apache.zeppelin.resource.Resource;
+import org.apache.zeppelin.resource.ResourceImpl;
 import org.apache.zeppelin.resource.ResourcePool;
 import org.apache.zeppelin.interpreter.xref.ResourceSet;
 import org.apache.zeppelin.scheduler.ExecutorFactory;
@@ -1132,7 +1133,7 @@ public class RemoteInterpreterServer extends Thread
       return ByteBuffer.allocate(0);
     } else {
       try {
-        return Resource.serializeObject(resource.get());
+        return ResourceImpl.serializeObject(resource.get());
       } catch (IOException e) {
         LOGGER.error(e.getMessage(), e);
         return ByteBuffer.allocate(0);
@@ -1166,7 +1167,7 @@ public class RemoteInterpreterServer extends Thread
               ret);
 
           Resource returnValResource = resourcePool.get(noteId, paragraphId, message.returnResourceName);
-          ByteBuffer serialized = Resource.serializeObject(returnValResource);
+          ByteBuffer serialized = ResourceImpl.serializeObject(returnValResource);
           if (serialized == null) {
             return ByteBuffer.allocate(0);
           } else {
@@ -1175,7 +1176,7 @@ public class RemoteInterpreterServer extends Thread
         } else {
           // if return resource name is not specified,
           // then return serialized result
-          ByteBuffer serialized = Resource.serializeObject(ret);
+          ByteBuffer serialized = ResourceImpl.serializeObject(ret);
           if (serialized == null) {
             return ByteBuffer.allocate(0);
           } else {

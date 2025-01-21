@@ -23,7 +23,7 @@ import org.apache.zeppelin.common.JsonSerializable;
 /**
  * Resource that can retrieve data from remote
  */
-public class RemoteResource extends Resource implements JsonSerializable, Serializable {
+public class RemoteResource extends ResourceImpl implements JsonSerializable, Serializable {
   private static final Gson gson = new Gson();
 
   transient ResourcePoolConnector resourcePoolConnector;

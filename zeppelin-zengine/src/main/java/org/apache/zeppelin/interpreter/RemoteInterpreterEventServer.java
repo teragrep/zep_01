@@ -364,7 +364,7 @@ public class RemoteInterpreterEventServer implements RemoteInterpreterEventServi
       obj = ByteBuffer.allocate(0);
     } else {
       try {
-        obj = Resource.serializeObject(o);
+        obj = ResourceImpl.serializeObject(o);
       } catch (IOException e) {
         throw new InterpreterRPCException(e.toString());
       }
@@ -390,7 +390,7 @@ public class RemoteInterpreterEventServer implements RemoteInterpreterEventServi
       obj = ByteBuffer.allocate(0);
     } else {
       try {
-        obj = Resource.serializeObject(ret);
+        obj = ResourceImpl.serializeObject(ret);
       } catch (IOException e) {
         LOGGER.error("invokeMethod failed", e);
       }
@@ -460,7 +460,7 @@ public class RemoteInterpreterEventServer implements RemoteInterpreterEventServi
                   message.toJson()));
 
       try {
-        return Resource.deserializeObject(res);
+        return ResourceImpl.deserializeObject(res);
       } catch (Exception e) {
         LOGGER.error(e.getMessage(), e);
       }
@@ -483,7 +483,7 @@ public class RemoteInterpreterEventServer implements RemoteInterpreterEventServi
                 resourceId.getName()));
 
     try {
-      return Resource.deserializeObject(buffer);
+      return ResourceImpl.deserializeObject(buffer);
     } catch (Exception e) {
       LOGGER.error(e.getMessage(), e);
     }

@@ -85,7 +85,7 @@ public class LocalResourcePool implements ResourcePool {
     checkSize(name, object);
     ResourceId resourceId = new ResourceId(resourcePoolId, name);
 
-    Resource resource = new Resource(this, resourceId, object);
+    Resource resource = new ResourceImpl(this, resourceId, object);
     resources.put(resourceId, resource);
   }
 
@@ -94,7 +94,7 @@ public class LocalResourcePool implements ResourcePool {
     checkSize(name, object);
     ResourceId resourceId = new ResourceId(resourcePoolId, noteId, paragraphId, name);
 
-    Resource resource = new Resource(this, resourceId, object);
+    Resource resource = new ResourceImpl(this, resourceId, object);
     resources.put(resourceId, resource);
   }
 

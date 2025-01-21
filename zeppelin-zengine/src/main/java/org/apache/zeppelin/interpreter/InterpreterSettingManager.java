@@ -55,6 +55,7 @@ import org.apache.zeppelin.notebook.Notebook;
 import org.apache.zeppelin.notebook.Paragraph;
 import org.apache.zeppelin.notebook.ParagraphTextParser;
 import org.apache.zeppelin.resource.Resource;
+import org.apache.zeppelin.resource.ResourceImpl;
 import org.apache.zeppelin.resource.ResourcePool;
 import org.apache.zeppelin.interpreter.xref.ResourceSet;
 import org.apache.zeppelin.resource.ResourceSetImpl;
@@ -659,7 +660,7 @@ public class InterpreterSettingManager implements NoteEventListener {
         List<String> resourceList = remoteInterpreterProcess.callRemoteFunction(client -> client.resourcePoolGetAll());
         if (resourceList != null) {
           for (String res : resourceList) {
-            resourceSet.add(Resource.fromJson(res));
+            resourceSet.add(ResourceImpl.fromJson(res));
           }
         }
       }
@@ -697,7 +698,7 @@ public class InterpreterSettingManager implements NoteEventListener {
         try {
           List<String> resourceList = remoteInterpreterProcess.callRemoteFunction(client -> client.resourcePoolGetAll());
           for (String res : resourceList) {
-            resourceSet.add(Resource.fromJson(res));
+            resourceSet.add(ResourceImpl.fromJson(res));
           }
 
           if (noteId != null) {
