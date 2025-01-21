@@ -24,7 +24,7 @@ import org.apache.zeppelin.interpreter.xref.Code;
 import org.apache.zeppelin.interpreter.xref.Interpreter;
 import org.apache.zeppelin.interpreter.xref.Type;
 import org.apache.zeppelin.notebook.repo.NotebookRepo;
-import org.apache.zeppelin.scheduler.Scheduler;
+import org.apache.zeppelin.interpreter.xref.Scheduler;
 import org.apache.zeppelin.user.AuthenticationInfo;
 import org.apache.zeppelin.user.Credentials;
 import org.junit.Before;

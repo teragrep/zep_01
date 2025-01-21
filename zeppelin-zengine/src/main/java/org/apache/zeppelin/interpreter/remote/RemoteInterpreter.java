@@ -34,7 +34,7 @@ import org.apache.zeppelin.interpreter.thrift.RemoteInterpreterService.Client;
 import org.apache.zeppelin.interpreter.xref.*;
 import org.apache.zeppelin.scheduler.Job;
 import org.apache.zeppelin.scheduler.RemoteScheduler;
-import org.apache.zeppelin.scheduler.Scheduler;
+import org.apache.zeppelin.interpreter.xref.Scheduler;
 import org.apache.zeppelin.scheduler.SchedulerFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

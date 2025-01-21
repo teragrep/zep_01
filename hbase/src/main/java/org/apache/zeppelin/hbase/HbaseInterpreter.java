@@ -33,7 +33,7 @@ import java.util.List;
 import java.util.Properties;
 
 import org.apache.zeppelin.interpreter.thrift.InterpreterCompletion;
-import org.apache.zeppelin.scheduler.Scheduler;
+import org.apache.zeppelin.interpreter.xref.Scheduler;
 import org.apache.zeppelin.scheduler.SchedulerFactory;
 
 /**

@@ -19,6 +19,7 @@ package org.apache.zeppelin.scheduler;
 
 import org.apache.zeppelin.interpreter.xref.Code;
 import org.apache.zeppelin.interpreter.InterpreterResult;
+import org.apache.zeppelin.interpreter.xref.Scheduler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

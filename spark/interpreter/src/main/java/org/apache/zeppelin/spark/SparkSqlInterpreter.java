@@ -27,7 +27,7 @@ import org.apache.zeppelin.interpreter.util.SqlSplitter;
 import org.apache.zeppelin.interpreter.xref.FormType;
 import org.apache.zeppelin.interpreter.xref.InterpreterException;
 import org.apache.zeppelin.interpreter.xref.ZeppelinContext;
-import org.apache.zeppelin.scheduler.Scheduler;
+import org.apache.zeppelin.interpreter.xref.Scheduler;
 import org.apache.zeppelin.scheduler.SchedulerFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

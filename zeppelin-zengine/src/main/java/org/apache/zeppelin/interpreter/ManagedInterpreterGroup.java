@@ -23,7 +23,7 @@ import org.apache.zeppelin.interpreter.remote.RemoteInterpreterProcess;
 import org.apache.zeppelin.interpreter.xref.Interpreter;
 import org.apache.zeppelin.interpreter.xref.InterpreterException;
 import org.apache.zeppelin.scheduler.Job;
-import org.apache.zeppelin.scheduler.Scheduler;
+import org.apache.zeppelin.interpreter.xref.Scheduler;
 import org.apache.zeppelin.scheduler.SchedulerFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

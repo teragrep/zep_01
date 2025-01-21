@@ -50,7 +50,7 @@ import org.apache.zeppelin.scheduler.ExecutorFactory;
 import org.apache.zeppelin.scheduler.Job;
 import org.apache.zeppelin.scheduler.Job.Status;
 import org.apache.zeppelin.scheduler.JobListener;
-import org.apache.zeppelin.scheduler.Scheduler;
+import org.apache.zeppelin.interpreter.xref.Scheduler;
 import org.apache.zeppelin.scheduler.SchedulerFactory;
 import org.apache.zeppelin.user.AuthenticationInfo;
 import org.slf4j.Logger;

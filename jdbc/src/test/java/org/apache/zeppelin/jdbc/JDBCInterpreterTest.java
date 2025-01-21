@@ -25,7 +25,7 @@ import org.apache.zeppelin.interpreter.xref.InterpreterException;
 import org.apache.zeppelin.interpreter.xref.Type;
 import org.apache.zeppelin.scheduler.FIFOScheduler;
 import org.apache.zeppelin.scheduler.ParallelScheduler;
-import org.apache.zeppelin.scheduler.Scheduler;
+import org.apache.zeppelin.interpreter.xref.Scheduler;
 import org.apache.zeppelin.user.AuthenticationInfo;
 import org.apache.zeppelin.user.UserCredentials;
 import org.apache.zeppelin.user.UsernamePassword;

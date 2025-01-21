@@ -19,6 +19,7 @@ package org.apache.zeppelin.scheduler;
 
 import static org.junit.Assert.assertEquals;
 
+import org.apache.zeppelin.interpreter.xref.Scheduler;
 import org.apache.zeppelin.scheduler.Job.Status;
 import org.junit.BeforeClass;
 import org.junit.Ignore;
