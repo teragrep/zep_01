@@ -4,7 +4,6 @@ import org.apache.zeppelin.display.AngularObjectWatcher;
 import org.apache.zeppelin.display.GUI;
 import org.apache.zeppelin.display.ui.OptionInput;
 import org.apache.zeppelin.interpreter.InterpreterContext;
-import org.apache.zeppelin.interpreter.InvalidHookException;
 import org.apache.zeppelin.interpreter.xref.annotation.Experimental;
 import org.apache.zeppelin.interpreter.xref.annotation.ZeppelinApi;
 import org.apache.zeppelin.resource.ResourceSet;

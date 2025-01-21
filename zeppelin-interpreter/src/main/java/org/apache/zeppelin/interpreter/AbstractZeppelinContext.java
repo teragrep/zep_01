@@ -17,6 +17,7 @@
 
 package org.apache.zeppelin.interpreter;
 
+import org.apache.zeppelin.interpreter.xref.InvalidHookException;
 import org.apache.zeppelin.interpreter.xref.ZeppelinContext;
 import org.apache.zeppelin.interpreter.xref.annotation.Experimental;
 import org.apache.zeppelin.interpreter.xref.annotation.ZeppelinApi;

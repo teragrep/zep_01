@@ -17,6 +17,7 @@
 
 package org.apache.zeppelin.interpreter;
 
+import org.apache.zeppelin.interpreter.xref.InvalidHookException;
 import org.junit.Test;
 
 import java.util.HashMap;

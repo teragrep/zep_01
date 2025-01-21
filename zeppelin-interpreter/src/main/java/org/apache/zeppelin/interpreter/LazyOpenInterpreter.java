@@ -22,10 +22,7 @@ import java.util.List;
 import java.util.Properties;
 
 import org.apache.zeppelin.interpreter.thrift.InterpreterCompletion;
-import org.apache.zeppelin.interpreter.xref.FormType;
-import org.apache.zeppelin.interpreter.xref.Interpreter;
-import org.apache.zeppelin.interpreter.xref.InterpreterException;
-import org.apache.zeppelin.interpreter.xref.WrappedInterpreter;
+import org.apache.zeppelin.interpreter.xref.*;
 import org.apache.zeppelin.scheduler.Scheduler;
 
 /**
