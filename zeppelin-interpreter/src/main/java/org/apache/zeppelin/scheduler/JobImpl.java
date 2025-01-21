@@ -47,7 +47,7 @@ public abstract class JobImpl<T> implements Job<T> {
   private Date dateFinished;
   protected volatile Status status;
 
-  transient boolean aborted = false;
+  private transient boolean aborted = false;
   private volatile String errorMessage;
   private transient volatile Throwable exception;
   private transient JobListener listener;
@@ -201,7 +201,7 @@ public abstract class JobImpl<T> implements Job<T> {
 
   protected abstract T jobRun() throws Throwable;
 
-  protected abstract boolean jobAbort();
+  public abstract boolean jobAbort();
 
   @Override
   public void abort() {
@@ -246,5 +246,10 @@ public abstract class JobImpl<T> implements Job<T> {
   @Override
   public void setErrorMessage(String errorMessage) {
     this.errorMessage = errorMessage;
+  }
+
+  @Override
+  public void setAborted(boolean value) {
+    aborted = value;
   }
 }

@@ -113,7 +113,7 @@ public class TimeoutLifecycleManagerTest extends AbstractInterpreterTest {
       }
 
       @Override
-      protected boolean jobAbort() {
+      public boolean jobAbort() {
         return false;
       }
 

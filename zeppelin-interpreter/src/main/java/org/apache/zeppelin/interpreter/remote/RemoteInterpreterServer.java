@@ -804,7 +804,7 @@ public class RemoteInterpreterServer extends Thread
     }
 
     @Override
-    protected boolean jobAbort() {
+    public boolean jobAbort() {
       return false;
     }
 

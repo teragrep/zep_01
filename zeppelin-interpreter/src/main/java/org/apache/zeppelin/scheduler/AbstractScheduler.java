@@ -86,7 +86,7 @@ public abstract class AbstractScheduler implements Scheduler {
   public void run() {
     schedulerThread = Thread.currentThread();
     while (!terminate && !schedulerThread.isInterrupted()) {
-      JobImpl runningJob = null;
+      Job runningJob = null;
       try {
         runningJob = queue.take();
       } catch (InterruptedException e) {
@@ -98,13 +98,13 @@ public abstract class AbstractScheduler implements Scheduler {
     }
   }
 
-  public abstract void runJobInScheduler(JobImpl job);
+  public abstract void runJobInScheduler(Job job);
 
   @Override
   public void stop() {
     terminate = true;
-    for (JobImpl job : queue) {
-      job.aborted = true;
+    for (Job job : queue) {
+      job.setAborted(true);
       job.jobAbort();
     }
     if (schedulerThread != null) {
@@ -118,11 +118,11 @@ public abstract class AbstractScheduler implements Scheduler {
    *
    * @param runningJob
    */
-  protected void runJob(JobImpl runningJob) {
+  protected void runJob(Job runningJob) {
     if (runningJob.isAborted()) {
       LOGGER.info("Job {} is aborted", runningJob.getId());
       runningJob.setStatus(Status.ABORT);
-      runningJob.aborted = false;
+      runningJob.setAborted(false);
       return;
     }
 
@@ -155,7 +155,7 @@ public abstract class AbstractScheduler implements Scheduler {
     }
     LOGGER.info("Job {} finished by scheduler {} with status {}", runningJob.getId(), name, runningJob.getStatus());
     // reset aborted flag to allow retry
-    runningJob.aborted = false;
+    runningJob.setAborted(false);
     jobs.remove(runningJob.getId());
   }
 }

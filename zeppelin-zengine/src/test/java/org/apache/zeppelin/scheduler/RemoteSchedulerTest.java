@@ -106,7 +106,7 @@ public class RemoteSchedulerTest extends AbstractInterpreterTest
       }
 
       @Override
-      protected boolean jobAbort() {
+      public boolean jobAbort() {
         return false;
       }
 
@@ -177,7 +177,7 @@ public class RemoteSchedulerTest extends AbstractInterpreterTest
       }
 
       @Override
-      protected boolean jobAbort() {
+      public boolean jobAbort() {
         if (isRunning()) {
           try {
             intpA.cancel(context);
@@ -224,7 +224,7 @@ public class RemoteSchedulerTest extends AbstractInterpreterTest
       }
 
       @Override
-      protected boolean jobAbort() {
+      public boolean jobAbort() {
         if (isRunning()) {
           try {
             intpA.cancel(context);

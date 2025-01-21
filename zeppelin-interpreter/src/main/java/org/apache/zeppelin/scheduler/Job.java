@@ -61,4 +61,7 @@ public interface Job<T> {
 
     void setErrorMessage(String errorMessage);
 
+    void setAborted(boolean aborted);
+
+    boolean jobAbort();
 }

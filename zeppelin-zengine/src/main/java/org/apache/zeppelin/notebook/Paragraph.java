@@ -500,7 +500,7 @@ public class Paragraph extends JobWithProgressPoller<InterpreterResult> implemen
   }
 
   @Override
-  protected boolean jobAbort() {
+  public boolean jobAbort() {
     if (interpreter == null) {
       return true;
     }
