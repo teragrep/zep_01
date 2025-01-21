@@ -19,6 +19,7 @@ package org.apache.zeppelin.interpreter;
 
 import org.apache.zeppelin.interpreter.xref.Code;
 import org.apache.zeppelin.interpreter.xref.Interpreter;
+import org.apache.zeppelin.interpreter.xref.InterpreterException;
 import org.junit.Test;
 
 import static org.junit.Assert.assertFalse;

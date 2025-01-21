@@ -20,6 +20,7 @@ package org.apache.zeppelin.interpreter.remote;
 import org.apache.zeppelin.interpreter.*;
 import org.apache.zeppelin.interpreter.thrift.ParagraphInfo;
 import org.apache.zeppelin.interpreter.xref.Code;
+import org.apache.zeppelin.interpreter.xref.InterpreterException;
 import org.apache.zeppelin.interpreter.xref.Type;
 import org.junit.After;
 import org.junit.Before;

@@ -18,6 +18,8 @@
 
 package org.apache.zeppelin.interpreter;
 
+import org.apache.zeppelin.interpreter.xref.InterpreterException;
+
 /**
  * Exception for no interpreter is found
  */

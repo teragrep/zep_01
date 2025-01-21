@@ -21,18 +21,16 @@ package org.apache.zeppelin.interpreter;
 import org.apache.zeppelin.conf.ZeppelinConfiguration;
 import org.apache.zeppelin.display.AngularObjectRegistryListener;
 import org.apache.zeppelin.interpreter.remote.RemoteInterpreterProcessListener;
+import org.apache.zeppelin.interpreter.xref.InterpreterException;
 import org.apache.zeppelin.notebook.Note;
 import org.apache.zeppelin.notebook.NoteInfo;
 import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
 import org.eclipse.aether.RepositoryException;
-import org.eclipse.aether.repository.RemoteRepository;
 
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 import static org.junit.Assert.assertEquals;

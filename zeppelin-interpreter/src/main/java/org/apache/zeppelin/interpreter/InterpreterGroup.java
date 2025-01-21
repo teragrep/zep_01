@@ -19,6 +19,7 @@ package org.apache.zeppelin.interpreter;
 
 import org.apache.zeppelin.display.AngularObjectRegistry;
 import org.apache.zeppelin.interpreter.xref.Interpreter;
+import org.apache.zeppelin.interpreter.xref.InterpreterException;
 import org.apache.zeppelin.resource.ResourcePool;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

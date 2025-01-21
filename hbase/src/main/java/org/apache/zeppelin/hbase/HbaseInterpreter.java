@@ -17,6 +17,7 @@ package org.apache.zeppelin.hbase;
 import org.apache.zeppelin.interpreter.*;
 import org.apache.zeppelin.interpreter.xref.Code;
 import org.apache.zeppelin.interpreter.xref.FormType;
+import org.apache.zeppelin.interpreter.xref.InterpreterException;
 import org.jruby.embed.LocalContextScope;
 import org.jruby.embed.ScriptingContainer;
 import org.slf4j.Logger;
