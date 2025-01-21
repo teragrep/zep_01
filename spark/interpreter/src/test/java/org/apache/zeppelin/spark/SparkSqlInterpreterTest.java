@@ -63,7 +63,7 @@ public class SparkSqlInterpreterTest {
 
     sqlInterpreter = new SparkSqlInterpreter(p);
     sqlInterpreter.setInterpreterGroup(intpGroup);
-    intpGroup.put("session_1", new LinkedList<AbstractInterpreter>());
+    intpGroup.put("session_1", new LinkedList<>());
     intpGroup.get("session_1").add(sparkInterpreter);
     intpGroup.get("session_1").add(sqlInterpreter);
 

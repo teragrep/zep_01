@@ -21,6 +21,7 @@ package org.apache.zeppelin.spark;
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.apache.zeppelin.interpreter.*;
 import org.apache.zeppelin.interpreter.remote.RemoteInterpreterEventClient;
+import org.apache.zeppelin.interpreter.xref.EnhancedInterpreter;
 import org.apache.zeppelin.interpreter.xref.Interpreter;
 import org.apache.zeppelin.interpreter.xref.InterpreterException;
 import org.apache.zeppelin.python.PythonInterpreterTest;
@@ -58,7 +59,7 @@ class PySparkInterpreterTest extends PythonInterpreterTest {
 
     // create interpreter group
     intpGroup = new InterpreterGroup();
-    intpGroup.put("note", new LinkedList<AbstractInterpreter>());
+    intpGroup.put("note", new LinkedList<>());
 
     InterpreterContext context = InterpreterContext.builder()
         .setInterpreterOut(new InterpreterOutput())
@@ -106,7 +107,7 @@ class PySparkInterpreterTest extends PythonInterpreterTest {
             new LazyOpenInterpreter(new SparkInterpreter(properties));
     sparkInterpreter.setInterpreterGroup(intpGroup);
 
-    intpGroup.put("note", new LinkedList<AbstractInterpreter>());
+    intpGroup.put("note", new LinkedList<>());
     intpGroup.get("note").add(interpreter);
     intpGroup.get("note").add(sparkInterpreter);
 

@@ -45,7 +45,7 @@ public class ResourceImpl implements Serializable, Resource {
   private final transient Object r;
   private final transient LocalResourcePool pool;
   private final boolean serializable;
-  private final ResourceId resourceId;
+  private final ResourceIdImpl resourceId;
   private final String className;
 
 
@@ -55,7 +55,7 @@ public class ResourceImpl implements Serializable, Resource {
    * @param resourceId
    * @param r          must not be null
    */
-  ResourceImpl(LocalResourcePool pool, ResourceId resourceId, Object r) {
+  ResourceImpl(LocalResourcePool pool, ResourceIdImpl resourceId, Object r) {
     this.r = r;
     this.pool = pool;
     this.resourceId = resourceId;
@@ -68,7 +68,7 @@ public class ResourceImpl implements Serializable, Resource {
    *
    * @param resourceId
    */
-  ResourceImpl(LocalResourcePool pool, ResourceId resourceId, boolean serializable, String className) {
+  ResourceImpl(LocalResourcePool pool, ResourceIdImpl resourceId, boolean serializable, String className) {
     this.r = null;
     this.pool = pool;
     this.resourceId = resourceId;

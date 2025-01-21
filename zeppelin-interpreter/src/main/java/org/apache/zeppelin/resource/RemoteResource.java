@@ -30,11 +30,11 @@ public class RemoteResource extends ResourceImpl implements JsonSerializable, Se
 
   transient ResourcePoolConnector resourcePoolConnector;
 
-  RemoteResource(ResourceId resourceId, Object r) {
+  RemoteResource(ResourceIdImpl resourceId, Object r) {
     super(null, resourceId, r);
   }
 
-  RemoteResource(ResourceId resourceId, boolean serializable, String className) {
+  RemoteResource(ResourceIdImpl resourceId, boolean serializable, String className) {
     super(null, resourceId, serializable, className);
   }
 
