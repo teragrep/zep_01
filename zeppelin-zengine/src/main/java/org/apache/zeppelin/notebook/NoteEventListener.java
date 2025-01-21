@@ -16,7 +16,7 @@
  */
 package org.apache.zeppelin.notebook;
 
-import org.apache.zeppelin.scheduler.Job;
+import org.apache.zeppelin.scheduler.Status;
 import org.apache.zeppelin.user.AuthenticationInfo;
 
 import java.io.IOException;
@@ -32,5 +32,5 @@ public interface NoteEventListener {
   void onParagraphRemove(Paragraph p) throws IOException;
   void onParagraphCreate(Paragraph p) throws IOException;
   void onParagraphUpdate(Paragraph p) throws IOException;
-  void onParagraphStatusChange(Paragraph p, Job.Status status) throws IOException;
+  void onParagraphStatusChange(Paragraph p, Status status) throws IOException;
 }

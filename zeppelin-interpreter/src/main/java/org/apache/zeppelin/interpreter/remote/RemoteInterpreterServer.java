@@ -49,7 +49,7 @@ import org.apache.zeppelin.resource.ResourcePool;
 import org.apache.zeppelin.interpreter.xref.ResourceSet;
 import org.apache.zeppelin.scheduler.ExecutorFactory;
 import org.apache.zeppelin.scheduler.Job;
-import org.apache.zeppelin.scheduler.Job.Status;
+import org.apache.zeppelin.scheduler.Status;
 import org.apache.zeppelin.scheduler.JobListener;
 import org.apache.zeppelin.interpreter.xref.Scheduler;
 import org.apache.zeppelin.scheduler.SchedulerFactory;

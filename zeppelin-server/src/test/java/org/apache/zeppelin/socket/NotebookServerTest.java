@@ -45,7 +45,6 @@ import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 
-import org.apache.commons.io.IOUtils;
 import org.apache.thrift.TException;
 import org.apache.zeppelin.conf.ZeppelinConfiguration;
 import org.apache.zeppelin.display.AngularObject;
@@ -54,19 +53,15 @@ import org.apache.zeppelin.interpreter.InterpreterGroup;
 import org.apache.zeppelin.interpreter.InterpreterSetting;
 import org.apache.zeppelin.interpreter.remote.RemoteAngularObjectRegistry;
 import org.apache.zeppelin.interpreter.thrift.ParagraphInfo;
-import org.apache.zeppelin.interpreter.thrift.ServiceException;
 import org.apache.zeppelin.notebook.AuthorizationService;
 import org.apache.zeppelin.notebook.Note;
 import org.apache.zeppelin.notebook.Notebook;
 import org.apache.zeppelin.notebook.Paragraph;
 import org.apache.zeppelin.notebook.repo.NotebookRepoWithVersionControl;
-import org.apache.zeppelin.notebook.scheduler.QuartzSchedulerService;
-import org.apache.zeppelin.notebook.scheduler.SchedulerService;
 import org.apache.zeppelin.common.Message;
 import org.apache.zeppelin.common.Message.OP;
 import org.apache.zeppelin.rest.AbstractTestRestApi;
-import org.apache.zeppelin.scheduler.Job;
-import org.apache.zeppelin.service.ConfigurationService;
+import org.apache.zeppelin.scheduler.Status;
 import org.apache.zeppelin.service.NotebookService;
 import org.apache.zeppelin.service.ServiceContext;
 import org.apache.zeppelin.user.AuthenticationInfo;
@@ -205,7 +200,7 @@ public class NotebookServerTest extends AbstractTestRestApi {
 
     // wait for paragraph finished
     while (true) {
-      if (p1.getStatus() == Job.Status.FINISHED) {
+      if (p1.getStatus() == Status.FINISHED) {
         break;
       }
       Thread.sleep(100);
@@ -271,7 +266,7 @@ public class NotebookServerTest extends AbstractTestRestApi {
 
     // wait for paragraph finished
     while (true) {
-      if (p1.getStatus() == Job.Status.FINISHED) {
+      if (p1.getStatus() == Status.FINISHED) {
         break;
       }
       Thread.sleep(100);
@@ -368,7 +363,7 @@ public class NotebookServerTest extends AbstractTestRestApi {
 
     // wait for paragraph finished
     while (true) {
-      if (p1.getStatus() == Job.Status.FINISHED) {
+      if (p1.getStatus() == Status.FINISHED) {
         break;
       }
       Thread.sleep(100);

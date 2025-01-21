@@ -24,7 +24,7 @@ import org.apache.zeppelin.notebook.AuthorizationService;
 import org.apache.zeppelin.notebook.Note;
 import org.apache.zeppelin.notebook.Notebook;
 import org.apache.zeppelin.notebook.Paragraph;
-import org.apache.zeppelin.scheduler.Job;
+import org.apache.zeppelin.scheduler.Status;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -120,7 +120,7 @@ public class JobManagerService {
   public static class ParagraphJobInfo {
     private String id;
     private String name;
-    private Job.Status status;
+    private Status status;
 
     public ParagraphJobInfo(Paragraph p) {
       this.id = p.getId();

@@ -21,7 +21,7 @@ package org.apache.zeppelin.service;
 
 import static org.apache.zeppelin.conf.ZeppelinConfiguration.ConfVars.ZEPPELIN_NOTEBOOK_HOMESCREEN;
 import static org.apache.zeppelin.interpreter.xref.Code.ERROR;
-import static org.apache.zeppelin.scheduler.Job.Status.ABORT;
+import static org.apache.zeppelin.scheduler.Status.ABORT;
 
 import java.io.IOException;
 import java.text.ParseException;
@@ -60,7 +60,7 @@ import org.apache.zeppelin.rest.exception.BadRequestException;
 import org.apache.zeppelin.rest.exception.ForbiddenException;
 import org.apache.zeppelin.rest.exception.NoteNotFoundException;
 import org.apache.zeppelin.rest.exception.ParagraphNotFoundException;
-import org.apache.zeppelin.scheduler.Job;
+import org.apache.zeppelin.scheduler.Status;
 import org.apache.zeppelin.user.AuthenticationInfo;
 import org.bitbucket.cowwoc.diffmatchpatch.DiffMatchPatch;
 import org.slf4j.Logger;
@@ -394,7 +394,7 @@ public class NotebookService {
     } catch (Exception ex) {
       LOGGER.error("Exception from run", ex);
       p.setReturn(new InterpreterResult(Code.ERROR, ex.getMessage()), ex);
-      p.setStatus(Job.Status.ERROR);
+      p.setStatus(Status.ERROR);
       // don't call callback.onFailure, we just need to display the error message
       // in paragraph result section instead of pop up the error window.
       return false;
@@ -1127,7 +1127,7 @@ public class NotebookService {
 
       String text = (String) message.get("paragraph");
       String title = (String) message.get("title");
-      Job.Status status = Job.Status.valueOf((String) message.get("status"));
+      Status status = Status.valueOf((String) message.get("status"));
       Map<String, Object> params = (Map<String, Object>) message.get("params");
       Map<String, Object> config = (Map<String, Object>) message.get("config");
 

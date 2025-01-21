@@ -25,6 +25,7 @@ import org.apache.zeppelin.interpreter.xref.InterpreterException;
 import org.apache.zeppelin.scheduler.Job;
 import org.apache.zeppelin.interpreter.xref.Scheduler;
 import org.apache.zeppelin.scheduler.SchedulerFactory;
+import org.apache.zeppelin.scheduler.Status;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -152,7 +153,7 @@ public class ManagedInterpreterGroup extends InterpreterGroup {
         for (final Job job : scheduler.getAllJobs()) {
           if (!job.isTerminated()) {
             job.abort();
-            job.setStatus(Job.Status.ABORT);
+            job.setStatus(Status.ABORT);
             LOGGER.info("Job {} aborted ", job.getJobName());
           }
         }

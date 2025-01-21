@@ -59,7 +59,7 @@ import org.apache.zeppelin.resource.ResourceImpl;
 import org.apache.zeppelin.resource.ResourcePool;
 import org.apache.zeppelin.interpreter.xref.ResourceSet;
 import org.apache.zeppelin.resource.ResourceSetImpl;
-import org.apache.zeppelin.scheduler.Job;
+import org.apache.zeppelin.scheduler.Status;
 import org.apache.zeppelin.user.AuthenticationInfo;
 import org.apache.zeppelin.util.ReflectionUtils;
 import org.apache.zeppelin.storage.ConfigStorage;
@@ -1085,7 +1085,7 @@ public class InterpreterSettingManager implements NoteEventListener {
   }
 
   @Override
-  public void onParagraphStatusChange(Paragraph p, Job.Status status) throws IOException {
+  public void onParagraphStatusChange(Paragraph p, Status status) throws IOException {
 
   }
 }

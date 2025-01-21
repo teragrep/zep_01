@@ -17,8 +17,8 @@
 
 package org.apache.zeppelin.notebook;
 
-import org.apache.zeppelin.scheduler.Job;
 import org.apache.zeppelin.scheduler.SchedulerThreadFactory;
+import org.apache.zeppelin.scheduler.Status;
 import org.apache.zeppelin.user.AuthenticationInfo;
 import org.apache.zeppelin.util.ExecutorUtil;
 import org.slf4j.Logger;
@@ -95,7 +95,7 @@ public abstract class NoteEventAsyncListener implements NoteEventListener, Close
   }
 
   @Override
-  public void onParagraphStatusChange(Paragraph p, Job.Status status) {
+  public void onParagraphStatusChange(Paragraph p, Status status) {
     executor.execute(new EventHandling(new ParagraphStatusChangeEvent(p)));
   }
 

@@ -51,7 +51,7 @@ import org.apache.zeppelin.notebook.repo.NotebookRepo;
 import org.apache.zeppelin.notebook.repo.NotebookRepoSync;
 import org.apache.zeppelin.notebook.repo.NotebookRepoWithVersionControl;
 import org.apache.zeppelin.notebook.repo.NotebookRepoWithVersionControl.Revision;
-import org.apache.zeppelin.scheduler.Job;
+import org.apache.zeppelin.scheduler.Status;
 import org.apache.zeppelin.search.SearchService;
 import org.apache.zeppelin.user.AuthenticationInfo;
 import org.apache.zeppelin.user.Credentials;
@@ -125,7 +125,7 @@ public class Notebook {
         try {
           boolean hasRecoveredParagraph = false;
           for (Paragraph paragraph : note.getParagraphs()) {
-            if (paragraph.getStatus() == Job.Status.RUNNING) {
+            if (paragraph.getStatus() == Status.RUNNING) {
               paragraph.recover();
               hasRecoveredParagraph = true;
             }

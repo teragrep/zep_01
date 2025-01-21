@@ -31,6 +31,7 @@ import org.apache.zeppelin.interpreter.xref.Code;
 import org.apache.zeppelin.interpreter.xref.Type;
 import org.apache.zeppelin.notebook.Notebook;
 import org.apache.zeppelin.rest.message.ParametersRequest;
+import org.apache.zeppelin.scheduler.Status;
 import org.apache.zeppelin.socket.NotebookServer;
 import org.apache.zeppelin.utils.TestUtils;
 import org.junit.*;
@@ -47,7 +48,6 @@ import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.util.EntityUtils;
 import org.apache.zeppelin.notebook.Note;
 import org.apache.zeppelin.notebook.Paragraph;
-import org.apache.zeppelin.scheduler.Job;
 import org.apache.zeppelin.user.AuthenticationInfo;
 
 /**
@@ -136,7 +136,7 @@ public class NotebookRestApiTest extends AbstractTestRestApi {
     assertEquals("OK", resp.get("status"));
     post.close();
     p.waitUntilFinished();
-    assertEquals(Job.Status.FINISHED, p.getStatus());
+    assertEquals(Status.FINISHED, p.getStatus());
 
     // run non-blank paragraph
     p.setText("test");
@@ -147,7 +147,7 @@ public class NotebookRestApiTest extends AbstractTestRestApi {
     assertEquals("OK", resp.get("status"));
     post.close();
     p.waitUntilFinished();
-    assertNotEquals(Job.Status.FINISHED, p.getStatus());
+    assertNotEquals(Status.FINISHED, p.getStatus());
   }
 
   @Test
@@ -170,7 +170,7 @@ public class NotebookRestApiTest extends AbstractTestRestApi {
         new TypeToken<Map<String, Object>>() {}.getType());
     assertEquals("OK", resp.get("status"));
     post.close();
-    assertNotEquals(Job.Status.READY, p.getStatus());
+    assertNotEquals(Status.READY, p.getStatus());
 
     // Check if the paragraph is emptied
     assertEquals(title, p.getTitle());
@@ -192,7 +192,7 @@ public class NotebookRestApiTest extends AbstractTestRestApi {
     assertTrue(interpreterResults.get(0).toString(),
             interpreterResults.get(0).get("data").toString().contains("invalid_cmd: command not found"));
     post.close();
-    assertNotEquals(Job.Status.READY, p.getStatus());
+    assertNotEquals(Status.READY, p.getStatus());
 
     // Check if the paragraph is emptied
     assertEquals(title, p.getTitle());
@@ -258,8 +258,8 @@ public class NotebookRestApiTest extends AbstractTestRestApi {
       assertEquals("OK", resp.get("status"));
       post.close();
 
-      assertEquals(Job.Status.FINISHED, p1.getStatus());
-      assertEquals(Job.Status.FINISHED, p2.getStatus());
+      assertEquals(Status.FINISHED, p1.getStatus());
+      assertEquals(Status.FINISHED, p2.getStatus());
       assertEquals("abc\n", p2.getReturn().message().get(0).getData());
   }
 
@@ -294,8 +294,8 @@ public class NotebookRestApiTest extends AbstractTestRestApi {
     p1.waitUntilFinished();
     p2.waitUntilFinished();
 
-    assertEquals(Job.Status.FINISHED, p1.getStatus());
-    assertEquals(Job.Status.FINISHED, p2.getStatus());
+    assertEquals(Status.FINISHED, p1.getStatus());
+    assertEquals(Status.FINISHED, p2.getStatus());
     assertEquals("hello\n", p2.getReturn().message().get(0).getData());
   }
 
@@ -331,8 +331,8 @@ public class NotebookRestApiTest extends AbstractTestRestApi {
     assertEquals("OK", resp.get("status"));
     post.close();
 
-    assertEquals(Job.Status.FINISHED, p1.getStatus());
-    assertEquals(Job.Status.FINISHED, p2.getStatus());
+    assertEquals(Status.FINISHED, p1.getStatus());
+    assertEquals(Status.FINISHED, p2.getStatus());
     assertEquals("abc\n", p2.getReturn().message().get(0).getData());
 
     // no new python process is created because it is isolated mode.
@@ -375,8 +375,8 @@ public class NotebookRestApiTest extends AbstractTestRestApi {
     while(note1.isRunning()) {
       Thread.sleep(1000);
     }
-    assertEquals(Job.Status.FINISHED, p1.getStatus());
-    assertEquals(Job.Status.FINISHED, p2.getStatus());
+    assertEquals(Status.FINISHED, p1.getStatus());
+    assertEquals(Status.FINISHED, p2.getStatus());
     assertEquals("abc\n", p2.getReturn().message().get(0).getData());
 
     // no new python process is created because it is isolated mode.
@@ -415,8 +415,8 @@ public class NotebookRestApiTest extends AbstractTestRestApi {
     while(note1.isRunning()) {
       Thread.sleep(1000);
     }
-    assertEquals(Job.Status.FINISHED, p1.getStatus());
-    assertEquals(Job.Status.FINISHED, p2.getStatus());
+    assertEquals(Status.FINISHED, p1.getStatus());
+    assertEquals(Status.FINISHED, p2.getStatus());
     assertEquals("zeppelin\n", p1.getReturn().message().get(0).getData());
     assertEquals("zeppelin\n", p2.getReturn().message().get(0).getData());
 
@@ -432,8 +432,8 @@ public class NotebookRestApiTest extends AbstractTestRestApi {
     while(note1.isRunning()) {
       Thread.sleep(1000);
     }
-    assertEquals(Job.Status.FINISHED, p1.getStatus());
-    assertEquals(Job.Status.FINISHED, p2.getStatus());
+    assertEquals(Status.FINISHED, p1.getStatus());
+    assertEquals(Status.FINISHED, p2.getStatus());
     assertEquals("world\n", p1.getReturn().message().get(0).getData());
     assertEquals("world\n", p2.getReturn().message().get(0).getData());
   }
@@ -463,9 +463,9 @@ public class NotebookRestApiTest extends AbstractTestRestApi {
     CloseableHttpResponse post = httpPost("/notebook/job/" + note1.getId() + "?blocking=true", "");
     assertThat(post, isAllowed());
 
-    assertEquals(Job.Status.ERROR, p1.getStatus());
+    assertEquals(Status.ERROR, p1.getStatus());
     // p2 will be skipped because p1 is failed.
-    assertEquals(Job.Status.READY, p2.getStatus());
+    assertEquals(Status.READY, p2.getStatus());
     post.close();
   }
 
@@ -616,8 +616,8 @@ public class NotebookRestApiTest extends AbstractTestRestApi {
     assertEquals("OK", resp.get("status"));
     post2.close();
 
-    assertEquals(Job.Status.FINISHED, p1.getStatus());
-    assertEquals(p2.getReturn().toString(), Job.Status.FINISHED, p2.getStatus());
+    assertEquals(Status.FINISHED, p1.getStatus());
+    assertEquals(p2.getReturn().toString(), Status.FINISHED, p2.getStatus());
     assertNotNull(p2.getReturn());
     assertEquals("abc\n", p2.getReturn().message().get(0).getData());
   }

@@ -27,7 +27,6 @@ import org.apache.zeppelin.interpreter.xref.Type;
 import org.apache.zeppelin.notebook.Note;
 import org.apache.zeppelin.notebook.NoteInfo;
 import org.apache.zeppelin.resource.LocalResourcePool;
-import org.apache.zeppelin.scheduler.Job.Status;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Ignore;

@@ -32,10 +32,10 @@ import org.apache.zeppelin.interpreter.thrift.RemoteInterpreterResult;
 import org.apache.zeppelin.interpreter.thrift.RemoteInterpreterResultMessage;
 import org.apache.zeppelin.interpreter.thrift.RemoteInterpreterService.Client;
 import org.apache.zeppelin.interpreter.xref.*;
-import org.apache.zeppelin.scheduler.Job;
 import org.apache.zeppelin.scheduler.RemoteScheduler;
 import org.apache.zeppelin.interpreter.xref.Scheduler;
 import org.apache.zeppelin.scheduler.SchedulerFactory;
+import org.apache.zeppelin.scheduler.Status;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -318,7 +318,7 @@ public class RemoteInterpreter extends AbstractInterpreter {
   public String getStatus(final String jobId) {
     if (!isOpened) {
       LOGGER.warn("getStatus is called when RemoteInterpreter is not opened for {}", className);
-      return Job.Status.UNKNOWN.name();
+      return Status.UNKNOWN.name();
     }
     RemoteInterpreterProcess interpreterProcess = null;
     try {

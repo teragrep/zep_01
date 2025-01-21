@@ -65,7 +65,7 @@ public abstract class AbstractScheduler implements Scheduler {
 
   @Override
   public void submit(Job job) {
-    job.setStatus(Job.Status.PENDING);
+    job.setStatus(Status.PENDING);
     try {
       queue.put(job);
     } catch (InterruptedException e) {
@@ -121,7 +121,7 @@ public abstract class AbstractScheduler implements Scheduler {
   protected void runJob(Job runningJob) {
     if (runningJob.isAborted()) {
       LOGGER.info("Job {} is aborted", runningJob.getId());
-      runningJob.setStatus(Job.Status.ABORT);
+      runningJob.setStatus(Status.ABORT);
       runningJob.aborted = false;
       return;
     }
@@ -129,28 +129,28 @@ public abstract class AbstractScheduler implements Scheduler {
     LOGGER.info("Job {} started by scheduler {}",runningJob.getId(), name);
     // Don't set RUNNING status when it is RemoteScheduler, update it via JobStatusPoller
     if (!getClass().getSimpleName().equals("RemoteScheduler")) {
-      runningJob.setStatus(Job.Status.RUNNING);
+      runningJob.setStatus(Status.RUNNING);
     }
     runningJob.run();
     Object jobResult = runningJob.getReturn();
     synchronized (runningJob) {
       if (runningJob.isAborted()) {
-        runningJob.setStatus(Job.Status.ABORT);
+        runningJob.setStatus(Status.ABORT);
         LOGGER.debug("Job Aborted, " + runningJob.getId() + ", " +
                 runningJob.getErrorMessage());
       } else if (runningJob.getException() != null) {
         LOGGER.debug("Job Error, " + runningJob.getId() + ", " +
                 runningJob.getReturn());
-        runningJob.setStatus(Job.Status.ERROR);
+        runningJob.setStatus(Status.ERROR);
       } else if (jobResult != null && jobResult instanceof InterpreterResult
               && ((InterpreterResult) jobResult).code() == Code.ERROR) {
         LOGGER.debug("Job Error, " + runningJob.getId() + ", " +
                 runningJob.getReturn());
-        runningJob.setStatus(Job.Status.ERROR);
+        runningJob.setStatus(Status.ERROR);
       } else {
         LOGGER.debug("Job Finished, " + runningJob.getId() + ", Result: " +
                 runningJob.getReturn());
-        runningJob.setStatus(Job.Status.FINISHED);
+        runningJob.setStatus(Status.FINISHED);
       }
     }
     LOGGER.info("Job {} finished by scheduler {} with status {}", runningJob.getId(), name, runningJob.getStatus());

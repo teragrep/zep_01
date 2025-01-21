@@ -19,7 +19,7 @@ package org.apache.zeppelin.rest.message;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.zeppelin.notebook.Paragraph;
-import org.apache.zeppelin.scheduler.Job;
+import org.apache.zeppelin.scheduler.Status;
 
 public class ParagraphJobStatus {
   private String id;
@@ -42,7 +42,7 @@ public class ParagraphJobStatus {
       this.progress = String.valueOf(p.progress());
     } else if (p.isTerminated()){
       this.progress = String.valueOf(100);
-      if (p.getStatus() == Job.Status.ERROR) {
+      if (p.getStatus() == Status.ERROR) {
         if (!StringUtils.isBlank(p.getErrorMessage())) {
           this.errorMessage = p.getErrorMessage();
         } else {

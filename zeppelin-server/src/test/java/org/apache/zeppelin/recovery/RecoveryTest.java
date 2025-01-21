@@ -18,7 +18,6 @@ package org.apache.zeppelin.recovery;
 
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
-import org.apache.commons.io.FileUtils;
 import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.util.EntityUtils;
 import org.apache.zeppelin.conf.ZeppelinConfiguration;
@@ -31,7 +30,7 @@ import org.apache.zeppelin.notebook.Note;
 import org.apache.zeppelin.notebook.Notebook;
 import org.apache.zeppelin.notebook.Paragraph;
 import org.apache.zeppelin.rest.AbstractTestRestApi;
-import org.apache.zeppelin.scheduler.Job;
+import org.apache.zeppelin.scheduler.Status;
 import org.apache.zeppelin.server.ZeppelinServer;
 import org.apache.zeppelin.user.AuthenticationInfo;
 import org.apache.zeppelin.utils.TestUtils;
@@ -42,8 +41,6 @@ import org.junit.Test;
 
 import java.io.File;
 import java.nio.charset.StandardCharsets;
-import java.nio.file.Files;
-import java.time.Instant;
 import java.util.Map;
 
 import static org.junit.Assert.assertEquals;
@@ -94,7 +91,7 @@ public class RecoveryTest extends AbstractTestRestApi {
             new TypeToken<Map<String, Object>>() {}.getType());
     assertEquals("OK", resp.get("status"));
     post.close();
-    assertEquals(Job.Status.FINISHED, p1.getStatus());
+    assertEquals(Status.FINISHED, p1.getStatus());
     TestUtils.getInstance(Notebook.class).saveNote(note1, anonymous);
 
     // shutdown zeppelin and restart it
@@ -110,7 +107,7 @@ public class RecoveryTest extends AbstractTestRestApi {
     post = httpPost("/notebook/job/" + note1.getId() + "?blocking=true", "");
     assertEquals("OK", resp.get("status"));
     post.close();
-    assertEquals(Job.Status.FINISHED, p1.getStatus());
+    assertEquals(Status.FINISHED, p1.getStatus());
     assertEquals("abc\n", p1.getReturn().message().get(0).getData());
   }
 
@@ -128,7 +125,7 @@ public class RecoveryTest extends AbstractTestRestApi {
             new TypeToken<Map<String, Object>>() {}.getType());
     assertEquals("OK", resp.get("status"));
     post.close();
-    assertEquals(Job.Status.FINISHED, p1.getStatus());
+    assertEquals(Status.FINISHED, p1.getStatus());
     TestUtils.getInstance(Notebook.class).saveNote(note1, AuthenticationInfo.ANONYMOUS);
     // restart the python interpreter
     TestUtils.getInstance(Notebook.class).getInterpreterSettingManager().restart(
@@ -149,7 +146,7 @@ public class RecoveryTest extends AbstractTestRestApi {
     post = httpPost("/notebook/job/" + note1.getId() + "?blocking=true", "");
     assertEquals("OK", resp.get("status"));
     post.close();
-    assertEquals(Job.Status.ERROR, p1.getStatus());
+    assertEquals(Status.ERROR, p1.getStatus());
   }
 
   @Test
@@ -166,7 +163,7 @@ public class RecoveryTest extends AbstractTestRestApi {
             new TypeToken<Map<String, Object>>() {}.getType());
     assertEquals("OK", resp.get("status"));
     post.close();
-    assertEquals(Job.Status.FINISHED, p1.getStatus());
+    assertEquals(Status.FINISHED, p1.getStatus());
     TestUtils.getInstance(Notebook.class).saveNote(note1, AuthenticationInfo.ANONYMOUS);
 
     // shutdown zeppelin and restart it
@@ -184,7 +181,7 @@ public class RecoveryTest extends AbstractTestRestApi {
     post = httpPost("/notebook/job/" + note1.getId() + "?blocking=true", "");
     assertEquals("OK", resp.get("status"));
     post.close();
-    assertEquals(Job.Status.ERROR, p1.getStatus());
+    assertEquals(Status.ERROR, p1.getStatus());
   }
 
   @Test
@@ -208,7 +205,7 @@ public class RecoveryTest extends AbstractTestRestApi {
     post.close();
 
     // wait until paragraph is running
-    while(p1.getStatus() != Job.Status.RUNNING) {
+    while(p1.getStatus() != Status.RUNNING) {
       Thread.sleep(1000);
     }
 
@@ -221,7 +218,7 @@ public class RecoveryTest extends AbstractTestRestApi {
     // sleep 10 seconds to make sure recovering is finished
     Thread.sleep(10 * 1000);
 
-    assertEquals(Job.Status.FINISHED, p1.getStatus());
+    assertEquals(Status.FINISHED, p1.getStatus());
     assertEquals("1\n" +
             "2\n" +
             "3\n" +
