@@ -17,6 +17,8 @@
 
 package org.apache.zeppelin.scheduler;
 
+import org.apache.zeppelin.interpreter.xref.Job;
+
 /**
  * Listener for job execution.
  */

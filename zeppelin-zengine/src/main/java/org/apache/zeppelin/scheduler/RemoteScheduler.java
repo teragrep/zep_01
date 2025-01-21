@@ -18,6 +18,7 @@
 package org.apache.zeppelin.scheduler;
 
 import org.apache.zeppelin.interpreter.remote.RemoteInterpreter;
+import org.apache.zeppelin.interpreter.xref.Job;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

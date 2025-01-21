@@ -17,6 +17,7 @@
 
 package org.apache.zeppelin.scheduler;
 
+import org.apache.zeppelin.interpreter.xref.Job;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -24,7 +25,7 @@ import org.slf4j.LoggerFactory;
  * Polls job progress with given interval
  *
  * @see JobImpl#progress()
- * @see JobListener#onProgressUpdate(org.apache.zeppelin.scheduler.Job, int)
+ * @see JobListener#onProgressUpdate(Job, int)
  *
  * TODO(moon) : add description.
  */

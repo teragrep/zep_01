@@ -17,8 +17,6 @@
 
 package org.apache.zeppelin.interpreter.xref;
 
-import org.apache.zeppelin.scheduler.Job;
-
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
