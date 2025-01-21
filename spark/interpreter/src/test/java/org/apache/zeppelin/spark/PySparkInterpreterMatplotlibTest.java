@@ -21,7 +21,6 @@ import org.apache.zeppelin.display.AngularObjectRegistry;
 import org.apache.zeppelin.interpreter.*;
 import org.apache.zeppelin.interpreter.remote.RemoteInterpreterEventClient;
 import org.apache.zeppelin.interpreter.xref.Code;
-import org.apache.zeppelin.interpreter.xref.Interpreter;
 import org.apache.zeppelin.interpreter.xref.InterpreterException;
 import org.apache.zeppelin.interpreter.xref.Type;
 import org.junit.jupiter.api.Assertions;
@@ -110,7 +109,7 @@ public class PySparkInterpreterMatplotlibTest {
         .setIntpEventClient(mock(RemoteInterpreterEventClient.class))
         .setAngularObjectRegistry(new AngularObjectRegistry(intpGroup.getId(), null))
         .build();
-    InterpreterContext.set(context);
+    InterpreterContextStore.set(context);
 
     sparkInterpreter = new SparkInterpreter(getPySparkTestProperties());
     intpGroup.get("note").add(sparkInterpreter);

@@ -239,8 +239,8 @@ public class RemoteInterpreterEventServer implements RemoteInterpreterEventServi
     try {
       listener.runParagraphs(event.getNoteId(), event.getParagraphIndices(),
           event.getParagraphIds(), event.getCurParagraphId());
-      if (InterpreterContext.get() != null) {
-        LOGGER.info("complete runParagraphs.{} {}", InterpreterContext.get().getParagraphId(), event);
+      if (InterpreterContextStore.get() != null) {
+        LOGGER.info("complete runParagraphs.{} {}", InterpreterContextStore.get().getParagraphId(), event);
       } else {
         LOGGER.info("complete runParagraphs.{}", event);
       }

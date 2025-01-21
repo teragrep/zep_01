@@ -422,7 +422,7 @@ public class RemoteInterpreterServer extends Thread
       this.resourcePool = new DistributedResourcePool(interpreterGroup.getId(), intpEventClient);
 
       // reset all the available InterpreterContext's components that use intpEventClient.
-      for (InterpreterContext context : InterpreterContext.getAllContexts().values()) {
+      for (InterpreterContext context : InterpreterContextStore.getAllContexts().values()) {
         context.setIntpEventClient(intpEventClient);
         context.setAngularObjectRegistry(angularObjectRegistry);
         context.setResourcePool(resourcePool);
@@ -724,7 +724,7 @@ public class RemoteInterpreterServer extends Thread
     public InterpreterResult jobRun() throws Throwable {
       ClassLoader currentThreadContextClassloader = Thread.currentThread().getContextClassLoader();
       try {
-        InterpreterContext.set(context);
+        InterpreterContextStore.set(context);
         // clear the result of last run in frontend before running this paragraph.
         context.out.clear();
 
@@ -793,7 +793,7 @@ public class RemoteInterpreterServer extends Thread
         return new InterpreterResult(Code.ERROR, ExceptionUtils.getStackTrace(e));
       } finally {
         Thread.currentThread().setContextClassLoader(currentThreadContextClassloader);
-        InterpreterContext.remove();
+        InterpreterContextStore.remove();
       }
     }
 

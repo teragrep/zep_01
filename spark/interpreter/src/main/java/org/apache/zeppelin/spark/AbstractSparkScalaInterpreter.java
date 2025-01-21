@@ -251,7 +251,7 @@ public abstract class AbstractSparkScalaInterpreter {
     } else {
       useYarnProxyURLIfNeeded();
     }
-    InterpreterContext.get().getIntpEventClient().sendWebUrlInfo(this.sparkUrl);
+    InterpreterContextStore.get().getIntpEventClient().sendWebUrlInfo(this.sparkUrl);
   }
 
   private String getSparkMaster() {

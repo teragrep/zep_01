@@ -21,7 +21,6 @@ package org.apache.zeppelin.spark;
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.apache.zeppelin.interpreter.*;
 import org.apache.zeppelin.interpreter.remote.RemoteInterpreterEventClient;
-import org.apache.zeppelin.interpreter.xref.EnhancedInterpreter;
 import org.apache.zeppelin.interpreter.xref.Interpreter;
 import org.apache.zeppelin.interpreter.xref.InterpreterException;
 import org.apache.zeppelin.python.PythonInterpreterTest;
@@ -65,7 +64,7 @@ class PySparkInterpreterTest extends PythonInterpreterTest {
         .setInterpreterOut(new InterpreterOutput())
         .setIntpEventClient(mockRemoteEventClient)
         .build();
-    InterpreterContext.set(context);
+    InterpreterContextStore.set(context);
     LazyOpenInterpreter sparkInterpreter =
         new LazyOpenInterpreter(new SparkInterpreter(properties));
 
@@ -112,7 +111,7 @@ class PySparkInterpreterTest extends PythonInterpreterTest {
     intpGroup.get("note").add(sparkInterpreter);
 
 
-    InterpreterContext.set(getInterpreterContext());
+    InterpreterContextStore.set(getInterpreterContext());
 
     try {
       interpreter.interpret("1+1", getInterpreterContext());

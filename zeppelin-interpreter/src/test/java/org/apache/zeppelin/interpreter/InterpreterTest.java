@@ -60,7 +60,7 @@ public class InterpreterTest {
     String paragraphText = "testParagraphText";
     String paragraphId = "testParagraphId";
     String user = "username";
-    InterpreterContext.set(
+    InterpreterContextStore.set(
         InterpreterContext.builder()
             .setNoteId(noteId)
             .setParagraphId(paragraphId)
@@ -75,7 +75,7 @@ public class InterpreterTest {
     Interpreter intp = new DummyInterpreter(p);
     intp.setUserName(user);
     String actual = intp.getProperty("p1");
-    InterpreterContext.remove();
+    InterpreterContextStore.remove();
 
     assertEquals(
         String.format("replName %s, #{paragraphTitle}, #{paragraphId}, #{paragraphText}, , " +

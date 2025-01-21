@@ -341,7 +341,7 @@ public class PythonInterpreter extends AbstractInterpreter {
     z.setInterpreterContext(context);
     z.setGui(context.getGui());
     z.setNoteGui(context.getNoteGui());
-    InterpreterContext.set(context);
+    InterpreterContextStore.set(context);
 
     preCallPython(context);
     callPython(new PythonInterpretRequest(st, false));
@@ -505,7 +505,7 @@ public class PythonInterpreter extends AbstractInterpreter {
     try {
       // Add hook explicitly, otherwise python will fail to execute the statement
       InterpreterResult result = interpret(bootstrapCode + "\n" + "__zeppelin__._displayhook()",
-                                           InterpreterContext.get());
+                                           InterpreterContextStore.get());
       if (result.code() != Code.SUCCESS) {
         throw new IOException("Fail to run bootstrap script: " + resourceName + "\n" + result);
       } else {

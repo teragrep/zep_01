@@ -67,7 +67,7 @@ class PythonInterpreterMatplotlibTest implements InterpreterOutputListener {
         .setInterpreterOut(out)
         .setAngularObjectRegistry(new AngularObjectRegistry(intpGroup.getId(), null))
         .build();
-    InterpreterContext.set(context);
+    InterpreterContextStore.set(context);
 
     python.open();
   }

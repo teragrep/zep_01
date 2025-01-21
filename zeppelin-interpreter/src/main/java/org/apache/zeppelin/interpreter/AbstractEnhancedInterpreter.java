@@ -35,7 +35,7 @@ public abstract class AbstractEnhancedInterpreter extends AbstractInterpreter im
   @Override
   public InterpreterResult interpret(String st,
                                      InterpreterContext context) throws InterpreterException {
-    InterpreterContext.set(context);
+    InterpreterContextStore.set(context);
     ZeppelinContext z = getZeppelinContext();
     if (z != null) {
       z.setGui(context.getGui());

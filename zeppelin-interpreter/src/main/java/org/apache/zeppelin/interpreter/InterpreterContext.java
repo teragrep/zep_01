@@ -25,34 +25,13 @@ import org.apache.zeppelin.user.AuthenticationInfo;
 
 import java.util.HashMap;
 import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * Interpreter context
  */
 public class InterpreterContext {
-  private static final ThreadLocal<InterpreterContext> threadIC = new ThreadLocal<>();
-  private static final ConcurrentHashMap<Thread, InterpreterContext> allContexts = new ConcurrentHashMap<>();
 
   public InterpreterOutput out;
-
-  public static InterpreterContext get() {
-    return threadIC.get();
-  }
-
-  public static void set(InterpreterContext ic) {
-    threadIC.set(ic);
-    allContexts.put(Thread.currentThread(), ic);
-  }
-
-  public static void remove() {
-    threadIC.remove();
-    allContexts.remove(Thread.currentThread());
-  }
-
-  public static ConcurrentHashMap<Thread, InterpreterContext> getAllContexts() {
-    return allContexts;
-  }
 
   private String noteId;
   private String noteName;

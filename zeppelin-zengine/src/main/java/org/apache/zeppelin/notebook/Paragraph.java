@@ -455,7 +455,7 @@ public class Paragraph extends JobWithProgressPoller<InterpreterResult> implemen
       LOGGER.debug("RUN : " + script);
       try {
         InterpreterContext context = getInterpreterContext();
-        InterpreterContext.set(context);
+        InterpreterContextStore.set(context);
 
         // Inject credentials
         String injectPropStr = interpreter.getProperty(Constants.INJECT_CREDENTIALS, "false");
@@ -490,7 +490,7 @@ public class Paragraph extends JobWithProgressPoller<InterpreterResult> implemen
 
         return ret;
       } finally {
-        InterpreterContext.remove();
+        InterpreterContextStore.remove();
       }
     } catch (Exception e) {
       return new InterpreterResult(Code.ERROR, ExceptionUtils.getStackTrace(e));

@@ -68,7 +68,7 @@ public class SparkSqlInterpreterTest {
     intpGroup.get("session_1").add(sqlInterpreter);
 
     context = getInterpreterContext();
-    InterpreterContext.set(context);
+    InterpreterContextStore.set(context);
 
     sparkInterpreter.open();
     sqlInterpreter.open();

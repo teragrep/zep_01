@@ -20,6 +20,7 @@ package org.apache.zeppelin.spark;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.spark.SparkConf;
 import org.apache.spark.api.java.JavaSparkContext;
+import org.apache.zeppelin.interpreter.InterpreterContextStore;
 import org.apache.zeppelin.interpreter.xref.ZeppelinContext;
 import org.apache.zeppelin.interpreter.InterpreterContext;
 import org.apache.zeppelin.interpreter.xref.InterpreterException;
@@ -150,7 +151,7 @@ public class PySparkInterpreter extends PythonInterpreter {
   // Python side will call InterpreterContext.get() too, but it is in a different thread other than the
   // java interpreter thread. So we should call this method in python side as well.
   public void setInterpreterContextInPython() {
-    InterpreterContext.set(curIntpContext);
+    InterpreterContextStore.set(curIntpContext);
   }
 
   // Run python shell

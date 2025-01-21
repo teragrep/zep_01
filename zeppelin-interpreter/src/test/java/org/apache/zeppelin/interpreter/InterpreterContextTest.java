@@ -26,15 +26,15 @@ public class InterpreterContextTest {
 
   @Test
   public void testThreadLocal() {
-    InterpreterContext.remove();
-    assertNull(InterpreterContext.get());
+    InterpreterContextStore.remove();
+    assertNull(InterpreterContextStore.get());
 
-    InterpreterContext.set(InterpreterContext.builder()
+    InterpreterContextStore.set(InterpreterContext.builder()
         .build());
-    assertNotNull(InterpreterContext.get());
+    assertNotNull(InterpreterContextStore.get());
 
-    InterpreterContext.remove();
-    assertNull(InterpreterContext.get());
+    InterpreterContextStore.remove();
+    assertNull(InterpreterContextStore.get());
   }
 
 }

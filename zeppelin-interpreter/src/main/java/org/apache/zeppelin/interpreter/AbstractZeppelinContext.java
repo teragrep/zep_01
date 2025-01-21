@@ -492,7 +492,7 @@ public abstract class AbstractZeppelinContext implements ZeppelinContext {
   @Override
   public void run(String noteId, String paragraphId)
       throws IOException {
-    run(noteId, paragraphId, InterpreterContext.get(), true);
+    run(noteId, paragraphId, InterpreterContextStore.get(), true);
   }
 
   /**

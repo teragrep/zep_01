@@ -86,7 +86,7 @@ class SparkInterpreterTest {
         .setIntpEventClient(mockRemoteEventClient)
         .setAngularObjectRegistry(new AngularObjectRegistry("spark", null))
         .build();
-    InterpreterContext.set(context);
+    InterpreterContextStore.set(context);
 
     interpreter = new SparkInterpreter(properties);
     interpreter.setInterpreterGroup(mock(InterpreterGroup.class));
@@ -409,7 +409,7 @@ class SparkInterpreterTest {
     properties.setProperty("zeppelin.spark.scala.color", "false");
     properties.setProperty("zeppelin.spark.deprecatedMsg.show", "false");
 
-    InterpreterContext.set(getInterpreterContext());
+    InterpreterContextStore.set(getInterpreterContext());
     interpreter = new SparkInterpreter(properties);
     interpreter.setInterpreterGroup(mock(InterpreterGroup.class));
     interpreter.open();
@@ -437,7 +437,7 @@ class SparkInterpreterTest {
     properties.setProperty("zeppelin.spark.scala.color", "false");
     properties.setProperty("zeppelin.spark.deprecatedMsg.show", "false");
 
-    InterpreterContext.set(getInterpreterContext());
+    InterpreterContextStore.set(getInterpreterContext());
     interpreter = new SparkInterpreter(properties);
     interpreter.setInterpreterGroup(mock(InterpreterGroup.class));
     interpreter.open();
@@ -485,7 +485,7 @@ class SparkInterpreterTest {
 
     interpreter = new SparkInterpreter(properties);
     interpreter.setInterpreterGroup(mock(InterpreterGroup.class));
-    InterpreterContext.set(getInterpreterContext());
+    InterpreterContextStore.set(getInterpreterContext());
     interpreter.open();
 
     InterpreterContext context = getInterpreterContext();
@@ -515,7 +515,7 @@ class SparkInterpreterTest {
 
     interpreter = new SparkInterpreter(properties);
     interpreter.setInterpreterGroup(mock(InterpreterGroup.class));
-    InterpreterContext.set(getInterpreterContext());
+    InterpreterContextStore.set(getInterpreterContext());
     interpreter.open();
 
     InterpreterContext context = getInterpreterContext();
@@ -541,7 +541,7 @@ class SparkInterpreterTest {
 
     interpreter = new SparkInterpreter(properties);
     interpreter.setInterpreterGroup(mock(InterpreterGroup.class));
-    InterpreterContext.set(getInterpreterContext());
+    InterpreterContextStore.set(getInterpreterContext());
     interpreter.open();
 
     InterpreterContext context = getInterpreterContext();
@@ -573,7 +573,7 @@ class SparkInterpreterTest {
     interpreterGroup.addInterpreterToSession(interpreter1, "session_1");
     interpreterGroup.addInterpreterToSession(interpreter2, "session_2");
 
-    InterpreterContext.set(getInterpreterContext());
+    InterpreterContextStore.set(getInterpreterContext());
     interpreter1.open();
     interpreter2.open();
 

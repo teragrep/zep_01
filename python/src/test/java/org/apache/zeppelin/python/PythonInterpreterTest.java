@@ -21,8 +21,6 @@ import net.jodah.concurrentunit.Waiter;
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.apache.zeppelin.interpreter.*;
 import org.apache.zeppelin.interpreter.xref.Code;
-import org.apache.zeppelin.interpreter.xref.EnhancedInterpreter;
-import org.apache.zeppelin.interpreter.xref.Interpreter;
 import org.apache.zeppelin.interpreter.xref.InterpreterException;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;
@@ -68,7 +66,7 @@ public class PythonInterpreterTest extends BasePythonInterpreterTest {
     intpGroup.get("note").add(interpreter);
     interpreter.setInterpreterGroup(intpGroup);
 
-    InterpreterContext.set(getInterpreterContext());
+    InterpreterContextStore.set(getInterpreterContext());
     interpreter.open();
   }
 
@@ -169,7 +167,7 @@ public class PythonInterpreterTest extends BasePythonInterpreterTest {
     intpGroup.get("note").add(interpreter);
     interpreter.setInterpreterGroup(intpGroup);
 
-    InterpreterContext.set(getInterpreterContext());
+    InterpreterContextStore.set(getInterpreterContext());
 
     try {
       interpreter.interpret("1+1", getInterpreterContext());

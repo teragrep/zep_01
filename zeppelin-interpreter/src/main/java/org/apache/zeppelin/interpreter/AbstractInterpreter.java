@@ -316,7 +316,7 @@ public abstract class AbstractInterpreter implements Interpreter {
    * with same name and marker #{user}. If value == null then replace by empty string.
    */
   private void replaceContextParameters(Properties properties) {
-    InterpreterContext interpreterContext = InterpreterContext.get();
+    InterpreterContext interpreterContext = InterpreterContextStore.get();
     if (interpreterContext != null) {
       String markerTemplate = "#\\{%s\\}";
       List<String> skipFields = Arrays.asList("paragraphTitle", "paragraphId", "paragraphText");

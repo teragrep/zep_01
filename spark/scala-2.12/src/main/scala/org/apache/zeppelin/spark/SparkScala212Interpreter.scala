@@ -23,7 +23,7 @@ import org.apache.zeppelin.interpreter
 import org.apache.zeppelin.interpreter.thrift.InterpreterCompletion
 import org.apache.zeppelin.interpreter.util.InterpreterOutputStream
 import org.apache.zeppelin.interpreter.xref.{Code, InterpreterException}
-import org.apache.zeppelin.interpreter.{InterpreterContext, InterpreterGroup, InterpreterResult, xref}
+import org.apache.zeppelin.interpreter.{InterpreterContext, InterpreterContextStore, InterpreterGroup, InterpreterResult, xref}
 import org.slf4j.{Logger, LoggerFactory}
 
 import java.io.{BufferedReader, File}
@@ -155,7 +155,7 @@ class SparkScala212Interpreter(conf: SparkConf,
   }
 
   def interpret(code: String): InterpreterResult =
-    interpret(code, InterpreterContext.get())
+    interpret(code, InterpreterContextStore.get())
 
   override def close(): Unit = {
     super.close()
@@ -201,7 +201,7 @@ class SparkScala212Interpreter(conf: SparkConf,
 
   override def createZeppelinContext(): Unit = {
     val sparkShims = SparkShims.getInstance(sc.version, properties, sparkSession)
-    sparkShims.setupSparkListener(sc.master, sparkUrl, InterpreterContext.get)
+    sparkShims.setupSparkListener(sc.master, sparkUrl, InterpreterContextStore.get)
     z = new SparkZeppelinContext(sc, sparkShims,
       interpreterGroup.getInterpreterHookRegistry,
       properties.getProperty("zeppelin.spark.maxResult", "1000").toInt)
