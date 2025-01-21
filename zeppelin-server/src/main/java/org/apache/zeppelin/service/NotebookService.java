@@ -20,7 +20,7 @@ package org.apache.zeppelin.service;
 
 
 import static org.apache.zeppelin.conf.ZeppelinConfiguration.ConfVars.ZEPPELIN_NOTEBOOK_HOMESCREEN;
-import static org.apache.zeppelin.interpreter.Code.ERROR;
+import static org.apache.zeppelin.interpreter.xref.Code.ERROR;
 import static org.apache.zeppelin.scheduler.Job.Status.ABORT;
 
 import java.io.IOException;
@@ -41,7 +41,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.zeppelin.conf.ZeppelinConfiguration;
 import org.apache.zeppelin.display.AngularObject;
 import org.apache.zeppelin.display.AngularObjectRegistry;
-import org.apache.zeppelin.interpreter.Code;
+import org.apache.zeppelin.interpreter.xref.Code;
 import org.apache.zeppelin.interpreter.InterpreterResult;
 import org.apache.zeppelin.interpreter.InterpreterSetting;
 import org.apache.zeppelin.interpreter.thrift.InterpreterCompletion;

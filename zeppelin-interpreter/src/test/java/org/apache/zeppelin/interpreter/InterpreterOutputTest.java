@@ -16,6 +16,7 @@
  */
 package org.apache.zeppelin.interpreter;
 
+import org.apache.zeppelin.interpreter.xref.Type;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;

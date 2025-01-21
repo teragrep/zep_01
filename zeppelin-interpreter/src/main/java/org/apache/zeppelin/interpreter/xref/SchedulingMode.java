@@ -1,4 +1,4 @@
-package org.apache.zeppelin.interpreter;
+package org.apache.zeppelin.interpreter.xref;
 
 /**
  * Type of Scheduling.

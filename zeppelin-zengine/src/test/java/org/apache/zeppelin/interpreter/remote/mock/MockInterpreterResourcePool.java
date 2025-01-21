@@ -18,11 +18,11 @@
 package org.apache.zeppelin.interpreter.remote.mock;
 
 import com.google.gson.Gson;
-import org.apache.zeppelin.interpreter.FormType;
+import org.apache.zeppelin.interpreter.xref.FormType;
 import org.apache.zeppelin.interpreter.Interpreter;
 import org.apache.zeppelin.interpreter.InterpreterContext;
 import org.apache.zeppelin.interpreter.InterpreterResult;
-import org.apache.zeppelin.interpreter.Code;
+import org.apache.zeppelin.interpreter.xref.Code;
 import org.apache.zeppelin.interpreter.thrift.InterpreterCompletion;
 import org.apache.zeppelin.resource.Resource;
 import org.apache.zeppelin.resource.ResourcePool;

@@ -26,6 +26,8 @@ import java.util.stream.Stream;
 
 import org.apache.zeppelin.interpreter.*;
 import org.apache.zeppelin.interpreter.thrift.InterpreterCompletion;
+import org.apache.zeppelin.interpreter.xref.Code;
+import org.apache.zeppelin.interpreter.xref.FormType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

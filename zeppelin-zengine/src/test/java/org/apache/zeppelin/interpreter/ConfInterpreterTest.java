@@ -18,6 +18,7 @@
 package org.apache.zeppelin.interpreter;
 
 import org.apache.zeppelin.interpreter.remote.RemoteInterpreter;
+import org.apache.zeppelin.interpreter.xref.Code;
 import org.junit.Test;
 
 import static org.junit.Assert.assertEquals;

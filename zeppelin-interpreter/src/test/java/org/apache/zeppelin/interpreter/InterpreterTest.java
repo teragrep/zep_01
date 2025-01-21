@@ -17,6 +17,7 @@
 
 package org.apache.zeppelin.interpreter;
 
+import org.apache.zeppelin.interpreter.xref.FormType;
 import org.junit.Test;
 
 import java.util.Properties;

@@ -1607,7 +1607,7 @@ public class NotebookServer extends WebSocketServlet
    */
   @Override
   public void onOutputUpdated(String noteId, String paragraphId, int index,
-                              org.apache.zeppelin.interpreter.Type type, String output) {
+                              org.apache.zeppelin.interpreter.xref.Type type, String output) {
     if (!sendParagraphStatusToFrontend) {
       return;
     }

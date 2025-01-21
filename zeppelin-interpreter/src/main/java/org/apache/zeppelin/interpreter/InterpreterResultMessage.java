@@ -16,6 +16,8 @@
  */
 package org.apache.zeppelin.interpreter;
 
+import org.apache.zeppelin.interpreter.xref.Type;
+
 import java.io.Serializable;
 
 /**

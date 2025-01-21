@@ -19,6 +19,8 @@ package org.apache.zeppelin.interpreter;
 
 import com.google.gson.Gson;
 import org.apache.zeppelin.common.JsonSerializable;
+import org.apache.zeppelin.interpreter.xref.Code;
+import org.apache.zeppelin.interpreter.xref.Type;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

@@ -20,6 +20,7 @@ package org.apache.zeppelin.python;
 import net.jodah.concurrentunit.Waiter;
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.apache.zeppelin.interpreter.*;
+import org.apache.zeppelin.interpreter.xref.Code;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
