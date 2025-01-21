@@ -17,12 +17,11 @@
 
 package org.apache.zeppelin.interpreter;
 
-import com.google.common.collect.Lists;
+import org.apache.zeppelin.interpreter.xref.Interpreter;
 import org.apache.zeppelin.notebook.Note;
 import org.apache.zeppelin.notebook.NoteInfo;
 import org.apache.zeppelin.notebook.Notebook;
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

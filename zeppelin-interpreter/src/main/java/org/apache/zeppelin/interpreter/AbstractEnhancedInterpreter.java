@@ -19,6 +19,7 @@ package org.apache.zeppelin.interpreter;
 
 import org.apache.commons.text.StringSubstitutor;
 import org.apache.zeppelin.interpreter.thrift.InterpreterCompletion;
+import org.apache.zeppelin.interpreter.xref.EnhancedInterpreter;
 import org.apache.zeppelin.resource.ResourcePool;
 import org.apache.zeppelin.resource.ResourcePoolMap;
 

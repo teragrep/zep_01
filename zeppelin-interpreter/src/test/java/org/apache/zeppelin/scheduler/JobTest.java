@@ -17,7 +17,7 @@
 
 package org.apache.zeppelin.scheduler;
 
-import org.apache.zeppelin.interpreter.Interpreter;
+import org.apache.zeppelin.interpreter.xref.Interpreter;
 import org.apache.zeppelin.interpreter.InterpreterContext;
 import org.apache.zeppelin.interpreter.InterpreterException;
 import org.apache.zeppelin.interpreter.InterpreterResult;

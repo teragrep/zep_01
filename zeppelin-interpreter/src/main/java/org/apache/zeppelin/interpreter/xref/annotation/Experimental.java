@@ -14,12 +14,19 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+package org.apache.zeppelin.interpreter.xref.annotation;
 
-package org.apache.zeppelin.interpreter;
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
 
 /**
- * WrappedInterpreter
+ * Experimental API
+ * Might change or be removed at anytime, or be adopted as ZeppelinApi
  */
-public interface WrappedInterpreter {
-  Interpreter getInnerInterpreter();
+@Retention(RetentionPolicy.RUNTIME)
+@Target({ElementType.TYPE, ElementType.FIELD, ElementType.METHOD, ElementType.PARAMETER,
+    ElementType.CONSTRUCTOR, ElementType.LOCAL_VARIABLE, ElementType.PACKAGE})
+public @interface Experimental {
 }

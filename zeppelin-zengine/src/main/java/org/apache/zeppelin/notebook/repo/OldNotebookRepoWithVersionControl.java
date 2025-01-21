@@ -18,7 +18,7 @@
 package org.apache.zeppelin.notebook.repo;
 
 import org.apache.commons.lang3.StringUtils;
-import org.apache.zeppelin.annotation.ZeppelinApi;
+import org.apache.zeppelin.interpreter.xref.annotation.ZeppelinApi;
 import org.apache.zeppelin.notebook.Note;
 import org.apache.zeppelin.user.AuthenticationInfo;
 

@@ -16,6 +16,8 @@
  */
 package org.apache.zeppelin.interpreter;
 
+import org.apache.zeppelin.interpreter.xref.Interpreter;
+
 /**
  * InterpreterFactory Interface
  * Provides the interface to the ClusterManagerServer

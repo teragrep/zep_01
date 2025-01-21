@@ -17,6 +17,7 @@
 
 package org.apache.zeppelin.interpreter;
 
+import org.apache.zeppelin.interpreter.xref.Interpreter;
 import org.junit.Before;
 import org.junit.Test;
 import org.eclipse.aether.RepositoryException;

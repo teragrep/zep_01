@@ -1,9 +1,9 @@
-package org.apache.zeppelin.interpreter;
+package org.apache.zeppelin.interpreter.xref;
 
-import org.apache.zeppelin.annotation.Experimental;
-import org.apache.zeppelin.annotation.ZeppelinApi;
+import org.apache.zeppelin.interpreter.xref.annotation.Experimental;
+import org.apache.zeppelin.interpreter.xref.annotation.ZeppelinApi;
+import org.apache.zeppelin.interpreter.*;
 import org.apache.zeppelin.interpreter.thrift.InterpreterCompletion;
-import org.apache.zeppelin.interpreter.xref.FormType;
 import org.apache.zeppelin.scheduler.Scheduler;
 
 import java.net.URL;

@@ -19,6 +19,7 @@ package org.apache.zeppelin.interpreter;
 
 import javax.inject.Inject;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.zeppelin.interpreter.xref.Interpreter;
 
 /**
  * //TODO(zjffdu) considering to move to InterpreterSettingManager

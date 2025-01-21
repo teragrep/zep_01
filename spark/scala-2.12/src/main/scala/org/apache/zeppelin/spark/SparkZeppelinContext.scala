@@ -20,9 +20,9 @@ package org.apache.zeppelin.spark
 import java.util
 
 import org.apache.spark.SparkContext
-import org.apache.zeppelin.annotation.ZeppelinApi
 import org.apache.zeppelin.display.AngularObjectWatcher
 import org.apache.zeppelin.display.ui.OptionInput.ParamOption
+import org.apache.zeppelin.interpreter.xref.annotation.ZeppelinApi
 import org.apache.zeppelin.interpreter.{ZeppelinContext, InterpreterContext, InterpreterHookRegistry}
 
 import scala.collection.Seq

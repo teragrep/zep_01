@@ -20,6 +20,7 @@ package org.apache.zeppelin.interpreter;
 
 import org.apache.zeppelin.interpreter.remote.RemoteInterpreter;
 import org.apache.zeppelin.interpreter.xref.Code;
+import org.apache.zeppelin.interpreter.xref.Interpreter;
 import org.junit.Test;
 
 import java.util.ArrayList;
