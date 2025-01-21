@@ -60,13 +60,13 @@ public class LocalResourcePool implements ResourcePool {
    */
   @Override
   public Resource get(String name) {
-    ResourceId resourceId = new ResourceId(resourcePoolId, name);
+    ResourceId resourceId = new ResourceIdImpl(resourcePoolId, name);
     return resources.get(resourceId);
   }
 
   @Override
   public Resource get(String noteId, String paragraphId, String name) {
-    ResourceId resourceId = new ResourceId(resourcePoolId, noteId, paragraphId, name);
+    ResourceId resourceId = new ResourceIdImpl(resourcePoolId, noteId, paragraphId, name);
     return resources.get(resourceId);
   }
 
@@ -84,7 +84,7 @@ public class LocalResourcePool implements ResourcePool {
   @Override
   public void put(String name, Object object) {
     checkSize(name, object);
-    ResourceId resourceId = new ResourceId(resourcePoolId, name);
+    ResourceId resourceId = new ResourceIdImpl(resourcePoolId, name);
 
     Resource resource = new ResourceImpl(this, resourceId, object);
     resources.put(resourceId, resource);
@@ -93,7 +93,7 @@ public class LocalResourcePool implements ResourcePool {
   @Override
   public void put(String noteId, String paragraphId, String name, Object object) {
     checkSize(name, object);
-    ResourceId resourceId = new ResourceId(resourcePoolId, noteId, paragraphId, name);
+    ResourceId resourceId = new ResourceIdImpl(resourcePoolId, noteId, paragraphId, name);
 
     Resource resource = new ResourceImpl(this, resourceId, object);
     resources.put(resourceId, resource);
@@ -101,12 +101,12 @@ public class LocalResourcePool implements ResourcePool {
 
   @Override
   public Resource remove(String name) {
-    return resources.remove(new ResourceId(resourcePoolId, name));
+    return resources.remove(new ResourceIdImpl(resourcePoolId, name));
   }
 
   @Override
   public Resource remove(String noteId, String paragraphId, String name) {
-    return resources.remove(new ResourceId(resourcePoolId, noteId, paragraphId, name));
+    return resources.remove(new ResourceIdImpl(resourcePoolId, noteId, paragraphId, name));
   }
 
   // Check if we are approaching resource storage limits

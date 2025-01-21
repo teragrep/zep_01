@@ -29,8 +29,8 @@ public class ResourceSetTest {
   public void testFilterByName() {
     ResourceSetImpl set = new ResourceSetImpl();
 
-    set.add(new ResourceImpl(null, new ResourceId("poo1", "resource1"), "value1"));
-    set.add(new ResourceImpl(null, new ResourceId("poo1", "resource2"), new Integer(2)));
+    set.add(new ResourceImpl(null, new ResourceIdImpl("poo1", "resource1"), "value1"));
+    set.add(new ResourceImpl(null, new ResourceIdImpl("poo1", "resource2"), new Integer(2)));
     assertEquals(2, set.filterByNameRegex(".*").size());
     assertEquals(1, set.filterByNameRegex("resource1").size());
     assertEquals(1, set.filterByNameRegex("resource2").size());
@@ -42,8 +42,8 @@ public class ResourceSetTest {
   public void testFilterByClassName() {
     ResourceSetImpl set = new ResourceSetImpl();
 
-    set.add(new ResourceImpl(null, new ResourceId("poo1", "resource1"), "value1"));
-    set.add(new ResourceImpl(null, new ResourceId("poo1", "resource2"), new Integer(2)));
+    set.add(new ResourceImpl(null, new ResourceIdImpl("poo1", "resource1"), "value1"));
+    set.add(new ResourceImpl(null, new ResourceIdImpl("poo1", "resource2"), new Integer(2)));
 
     assertEquals(1, set.filterByClassnameRegex(".*String").size());
     assertEquals(1, set.filterByClassnameRegex(String.class.getName()).size());

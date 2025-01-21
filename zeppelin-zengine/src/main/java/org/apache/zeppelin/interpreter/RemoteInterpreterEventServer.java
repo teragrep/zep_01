@@ -358,7 +358,7 @@ public class RemoteInterpreterEventServer implements RemoteInterpreterEventServi
 
   @Override
   public ByteBuffer getResource(String resourceIdJson) throws InterpreterRPCException, TException {
-    ResourceId resourceId = ResourceId.fromJson(resourceIdJson);
+    ResourceId resourceId = ResourceIdImpl.fromJson(resourceIdJson);
     Object o = getResource(resourceId);
     ByteBuffer obj;
     if (o == null) {
