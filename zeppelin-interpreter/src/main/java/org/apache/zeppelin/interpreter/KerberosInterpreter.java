@@ -44,7 +44,7 @@ import org.slf4j.LoggerFactory;
  * is 1d.
  * KINIT_FAIL_THRESHOLD controls how many times should kinit retry. The default value is 5.
  */
-public abstract class KerberosInterpreter extends AbstractInterpreter {
+public abstract class KerberosInterpreter extends EnhancedInterpreter {
 
   private Integer kinitFailCount = 0;
   private ScheduledExecutorService scheduledExecutorService;

@@ -46,7 +46,7 @@ import java.util.concurrent.atomic.AtomicInteger;
  * SparkInterpreter of Java implementation. It delegates to different scala version AbstractSparkScalaInterpreter.
  *
  */
-public class SparkInterpreter extends AbstractInterpreter {
+public class SparkInterpreter extends EnhancedInterpreter {
 
   private static final Logger LOGGER = LoggerFactory.getLogger(SparkInterpreter.class);
   private static File scalaShellOutputDir;

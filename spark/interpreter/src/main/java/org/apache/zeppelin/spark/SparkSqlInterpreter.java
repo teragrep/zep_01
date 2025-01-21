@@ -37,7 +37,7 @@ import java.util.Properties;
 /**
  * Spark SQL interpreter for Zeppelin.
  */
-public class SparkSqlInterpreter extends AbstractInterpreter {
+public class SparkSqlInterpreter extends EnhancedInterpreter {
   private static final Logger LOGGER = LoggerFactory.getLogger(SparkSqlInterpreter.class);
 
   private SparkInterpreter sparkInterpreter;
