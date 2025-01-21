@@ -35,6 +35,7 @@ import org.apache.spark.sql.SQLContext;
 import org.apache.spark.sql.SparkSession;
 import org.apache.zeppelin.interpreter.*;
 import org.apache.zeppelin.interpreter.thrift.InterpreterCompletion;
+import org.apache.zeppelin.interpreter.xref.ZeppelinContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

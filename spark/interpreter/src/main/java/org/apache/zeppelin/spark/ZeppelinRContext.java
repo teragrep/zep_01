@@ -19,7 +19,7 @@ package org.apache.zeppelin.spark;
 
 import org.apache.spark.SparkContext;
 import org.apache.spark.api.java.JavaSparkContext;
-import org.apache.zeppelin.interpreter.ZeppelinContext;
+import org.apache.zeppelin.interpreter.xref.ZeppelinContext;
 
 /**
  * Contains the Spark and Zeppelin Contexts made available to SparkR.

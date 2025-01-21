@@ -23,7 +23,7 @@ import org.apache.spark.SparkContext
 import org.apache.zeppelin.display.AngularObjectWatcher
 import org.apache.zeppelin.display.ui.OptionInput.ParamOption
 import org.apache.zeppelin.interpreter.xref.annotation.ZeppelinApi
-import org.apache.zeppelin.interpreter.{ZeppelinContext, InterpreterContext, InterpreterHookRegistry}
+import org.apache.zeppelin.interpreter.{AbstractZeppelinContext, InterpreterContext, InterpreterHookRegistry}
 
 import scala.collection.Seq
 import scala.collection.JavaConverters._
@@ -35,7 +35,7 @@ import scala.collection.JavaConverters._
 class SparkZeppelinContext(val sc: SparkContext,
                            val sparkShims: SparkShims,
                            val hooks2: InterpreterHookRegistry,
-                           val maxResult2: Int) extends ZeppelinContext(hooks2, maxResult2) {
+                           val maxResult2: Int) extends AbstractZeppelinContext(hooks2, maxResult2) {
 
   private val interpreterClassMap = Map(
     "spark" -> "org.apache.zeppelin.spark.SparkInterpreter",

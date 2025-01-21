@@ -114,7 +114,7 @@ public class ZeppelinContextTest {
   }
 
 
-  public static class TestZeppelinContext extends ZeppelinContext {
+  public static class TestZeppelinContext extends AbstractZeppelinContext {
 
     public TestZeppelinContext(InterpreterHookRegistry hooks, int maxResult) {
       super(hooks, maxResult);

@@ -17,6 +17,7 @@
 
 package org.apache.zeppelin.interpreter;
 
+import org.apache.zeppelin.interpreter.xref.ZeppelinContext;
 import org.apache.zeppelin.interpreter.xref.annotation.Experimental;
 import org.apache.zeppelin.interpreter.xref.annotation.ZeppelinApi;
 import org.apache.zeppelin.display.AngularObject;
@@ -33,14 +34,13 @@ import org.slf4j.LoggerFactory;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 
 /**
  * Abstract class for ZeppelinContext
  */
-public abstract class ZeppelinContext {
+public abstract class AbstractZeppelinContext implements ZeppelinContext {
 
-  private static final Logger LOGGER = LoggerFactory.getLogger(ZeppelinContext.class);
+  private static final Logger LOGGER = LoggerFactory.getLogger(AbstractZeppelinContext.class);
 
   protected InterpreterContext interpreterContext;
   protected int maxResult;
@@ -48,33 +48,20 @@ public abstract class ZeppelinContext {
   protected GUI gui;
   protected GUI noteGui;
 
-  public ZeppelinContext(InterpreterHookRegistry hooks, int maxResult) {
+  public AbstractZeppelinContext(InterpreterHookRegistry hooks, int maxResult) {
     this.hooks = hooks;
     this.maxResult = maxResult;
   }
 
-  // Map interpreter class name (to be used by hook registry) from
-  // given replName in paragraph
-  public abstract Map<String, String> getInterpreterClassMap();
-
-  public abstract List<Class> getSupportedClasses();
-
+  @Override
   public int getMaxResult() {
     return this.maxResult;
   }
 
+  @Override
   public String showData(Object obj) {
     return showData(obj, maxResult);
   }
-
-  /**
-   * subclasses should implement this method to display specific data type
-   *
-   * @param obj
-   * @param maxResult  max number of rows to display
-   * @return
-   */
-  public abstract String showData(Object obj, int maxResult);
 
   /**
    * Create paragraph level dynamic form of textbox with empty value.
@@ -82,6 +69,7 @@ public abstract class ZeppelinContext {
    */
   @Deprecated
   @ZeppelinApi
+  @Override
   public Object input(String name) {
     return textbox(name);
   }
@@ -92,6 +80,7 @@ public abstract class ZeppelinContext {
    */
   @Deprecated
   @ZeppelinApi
+  @Override
   public Object input(String name, Object defaultValue) {
     return textbox(name, defaultValue.toString(), false);
   }
@@ -104,6 +93,7 @@ public abstract class ZeppelinContext {
    * @return text value of this textbox
    */
   @ZeppelinApi
+  @Override
   public Object textbox(String name) {
     return textbox(name, "");
   }
@@ -116,6 +106,7 @@ public abstract class ZeppelinContext {
    * @return text value of this textbox
    */
   @ZeppelinApi
+  @Override
   public Object textbox(String name, String defaultValue) {
     return textbox(name, defaultValue, false);
   }
@@ -127,6 +118,7 @@ public abstract class ZeppelinContext {
    * @return text value of this textbox
    */
   @ZeppelinApi
+  @Override
   public Object noteTextbox(String name) {
     return noteTextbox(name, "");
   }
@@ -139,6 +131,7 @@ public abstract class ZeppelinContext {
    * @return text value of this textbox
    */
   @ZeppelinApi
+  @Override
   public Object noteTextbox(String name, String defaultValue) {
     return textbox(name, defaultValue, true);
   }
@@ -158,6 +151,7 @@ public abstract class ZeppelinContext {
    * @return  text value of this password
    */
   @ZeppelinApi
+  @Override
   public Object password(String name) {
     return password(name, false);
   }
@@ -169,6 +163,7 @@ public abstract class ZeppelinContext {
    * @return text value of this password
    */
   @ZeppelinApi
+  @Override
   public Object notePassword(String name) {
     return password(name, true);
   }
@@ -189,6 +184,7 @@ public abstract class ZeppelinContext {
    * @return list of checked values of this checkbox
    */
   @ZeppelinApi
+  @Override
   public List<Object> checkbox(String name, ParamOption[] options) {
     return checkbox(name, options, null, false);
   }
@@ -202,9 +198,10 @@ public abstract class ZeppelinContext {
    * @return list of checked values of this checkbox
    */
   @ZeppelinApi
-  public List<Object> checkbox(String name,
-                               ParamOption[] options,
-                               List defaultChecked) {
+  @Override
+  public List<Object> checkbox(
+          String name, ParamOption[] options, List defaultChecked
+  ) {
     return checkbox(name, options, defaultChecked, false);
   }
 
@@ -219,9 +216,10 @@ public abstract class ZeppelinContext {
    */
   @Deprecated
   @ZeppelinApi
-  public List<Object> checkbox(String name,
-                               List<Object> defaultChecked,
-                               ParamOption[] options) {
+  @Override
+  public List<Object> checkbox(
+          String name, List<Object> defaultChecked, ParamOption[] options
+  ) {
     return checkbox(name, options, defaultChecked, false);
   }
 
@@ -233,6 +231,7 @@ public abstract class ZeppelinContext {
    * @return list of checked values of this checkbox
    */
   @ZeppelinApi
+  @Override
   public List<Object> noteCheckbox(String name, ParamOption[] options) {
     return checkbox(name, options, null, true);
   }
@@ -248,9 +247,10 @@ public abstract class ZeppelinContext {
    */
   @Deprecated
   @ZeppelinApi
-  public List<Object> noteCheckbox(String name,
-                                   List<Object> defaultChecked,
-                                   ParamOption[] options) {
+  @Override
+  public List<Object> noteCheckbox(
+          String name, List<Object> defaultChecked, ParamOption[] options
+  ) {
     return checkbox(name, options, defaultChecked, true);
   }
 
@@ -263,9 +263,10 @@ public abstract class ZeppelinContext {
    * @return list of checked values of this checkbox
    */
   @ZeppelinApi
-  public List<Object> noteCheckbox(String name,
-                                   ParamOption[] options,
-                                   List defaultChecked) {
+  @Override
+  public List<Object> noteCheckbox(
+          String name, ParamOption[] options, List defaultChecked
+  ) {
     return checkbox(name, options, defaultChecked, true);
   }
 
@@ -294,6 +295,7 @@ public abstract class ZeppelinContext {
    * @return text value of selected item
    */
   @ZeppelinApi
+  @Override
   public Object select(String name, ParamOption[] paramOptions) {
     return select(name, paramOptions, null, false);
   }
@@ -309,6 +311,7 @@ public abstract class ZeppelinContext {
    */
   @Deprecated
   @ZeppelinApi
+  @Override
   public Object select(String name, Object defaultValue, ParamOption[] paramOptions) {
     return select(name, paramOptions, defaultValue, false);
   }
@@ -322,6 +325,7 @@ public abstract class ZeppelinContext {
    * @return text value of selected item
    */
   @ZeppelinApi
+  @Override
   public Object select(String name, ParamOption[] paramOptions, Object defaultValue) {
     return select(name, paramOptions, defaultValue, false);
   }
@@ -334,6 +338,7 @@ public abstract class ZeppelinContext {
    * @return text value of selected item
    */
   @ZeppelinApi
+  @Override
   public Object noteSelect(String name, ParamOption[] paramOptions) {
     return select(name, null, paramOptions, true);
   }
@@ -349,6 +354,7 @@ public abstract class ZeppelinContext {
    */
   @Deprecated
   @ZeppelinApi
+  @Override
   public Object noteSelect(String name, Object defaultValue, ParamOption[] paramOptions) {
     return select(name, paramOptions, defaultValue, true);
   }
@@ -362,6 +368,7 @@ public abstract class ZeppelinContext {
    * @return text value of selected item
    */
   @ZeppelinApi
+  @Override
   public Object noteSelect(String name, ParamOption[] paramOptions, Object defaultValue) {
     return select(name, paramOptions, defaultValue, true);
   }
@@ -375,30 +382,37 @@ public abstract class ZeppelinContext {
     }
   }
 
+  @Override
   public void setGui(GUI o) {
     this.gui = o;
   }
 
+  @Override
   public GUI getGui() {
     return gui;
   }
 
+  @Override
   public GUI getNoteGui() {
     return noteGui;
   }
 
+  @Override
   public void setNoteGui(GUI noteGui) {
     this.noteGui = noteGui;
   }
 
+  @Override
   public InterpreterContext getInterpreterContext() {
     return interpreterContext;
   }
 
+  @Override
   public void setInterpreterContext(InterpreterContext interpreterContext) {
     this.interpreterContext = interpreterContext;
   }
 
+  @Override
   public void setMaxResult(int maxResult) {
     this.maxResult = maxResult;
   }
@@ -410,6 +424,7 @@ public abstract class ZeppelinContext {
    * @param o object
    */
   @ZeppelinApi
+  @Override
   public void show(Object o) {
     show(o, maxResult);
   }
@@ -422,6 +437,7 @@ public abstract class ZeppelinContext {
    * @param maxResult maximum number of rows to display
    */
   @ZeppelinApi
+  @Override
   public void show(Object o, int maxResult) {
     try {
       if (isSupportedObject(o)) {
@@ -451,6 +467,7 @@ public abstract class ZeppelinContext {
    * @param paragraphId
    */
   @ZeppelinApi
+  @Override
   public void run(String paragraphId) throws IOException {
     run(paragraphId, true);
   }
@@ -464,12 +481,14 @@ public abstract class ZeppelinContext {
    *          paragraph. Otherwise you would run current paragraph in infinite loop.
    */
   @ZeppelinApi
+  @Override
   public void run(String paragraphId, boolean checkCurrentParagraph) throws IOException {
     String noteId = interpreterContext.getNoteId();
     run(noteId, paragraphId, interpreterContext, checkCurrentParagraph);
   }
 
   @ZeppelinApi
+  @Override
   public void run(String noteId, String paragraphId)
       throws IOException {
     run(noteId, paragraphId, InterpreterContext.get(), true);
@@ -480,6 +499,7 @@ public abstract class ZeppelinContext {
    *
    * @param noteId
    */
+  @Override
   public void run(String noteId, String paragraphId, InterpreterContext context)
       throws IOException {
     run(noteId, paragraphId, context, true);
@@ -505,10 +525,12 @@ public abstract class ZeppelinContext {
   }
 
   @ZeppelinApi
+  @Override
   public void runNote(String noteId) throws IOException {
     runNote(noteId, interpreterContext);
   }
 
+  @Override
   public void runNote(String noteId, InterpreterContext context) throws IOException {
     List<String> paragraphIds = new ArrayList<>();
     List<Integer> paragraphIndices = new ArrayList<>();
@@ -522,6 +544,7 @@ public abstract class ZeppelinContext {
    * @param idx
    */
   @ZeppelinApi
+  @Override
   public void run(int idx) throws IOException {
     run(idx, true);
   }
@@ -533,6 +556,7 @@ public abstract class ZeppelinContext {
    *          paragraph. Otherwise you would run current paragraph in infinite loop.
    */
   @ZeppelinApi
+  @Override
   public void run(int idx, boolean checkCurrentParagraph) throws IOException {
     String noteId = interpreterContext.getNoteId();
     run(noteId, idx, interpreterContext, checkCurrentParagraph);
@@ -574,6 +598,7 @@ public abstract class ZeppelinContext {
    * @throws IOException
    */
   @ZeppelinApi
+  @Override
   public void runAll() throws IOException {
     runAll(interpreterContext);
   }
@@ -584,6 +609,7 @@ public abstract class ZeppelinContext {
    * @param context
    * @throws IOException
    */
+  @Override
   public void runAll(InterpreterContext context) throws IOException {
     runNote(context.getNoteId());
   }
@@ -605,6 +631,7 @@ public abstract class ZeppelinContext {
    * @return value
    */
   @ZeppelinApi
+  @Override
   public Object angular(String name) {
     AngularObject ao = getAngularObject(name, interpreterContext.getNoteId(),
             interpreterContext.getParagraphId(), interpreterContext);
@@ -622,6 +649,7 @@ public abstract class ZeppelinContext {
    * @param noteId
    * @return value
    */
+  @Override
   public Object angular(String name, String noteId) {
     AngularObject ao = getAngularObject(name, noteId,
             interpreterContext.getParagraphId(), interpreterContext);
@@ -640,6 +668,7 @@ public abstract class ZeppelinContext {
    * @param paragraphId
    * @return value
    */
+  @Override
   public Object angular(String name, String noteId, String paragraphId) {
     AngularObject ao = getAngularObject(name, noteId, paragraphId, interpreterContext);
     if (ao == null) {
@@ -656,6 +685,7 @@ public abstract class ZeppelinContext {
    * @return value
    */
   @Deprecated
+  @Override
   public Object angularGlobal(String name) {
     AngularObjectRegistry registry = interpreterContext.getAngularObjectRegistry();
     AngularObject ao = registry.get(name, null, null);
@@ -674,6 +704,7 @@ public abstract class ZeppelinContext {
    * @param o    value
    */
   @ZeppelinApi
+  @Override
   public void angularBind(String name, Object o) {
     angularBind(name, o, interpreterContext.getNoteId());
   }
@@ -686,6 +717,7 @@ public abstract class ZeppelinContext {
    * @param o    value
    */
   @Deprecated
+  @Override
   public void angularBindGlobal(String name, Object o) {
     angularBind(name, o, (String) null);
   }
@@ -699,6 +731,7 @@ public abstract class ZeppelinContext {
    * @param watcher watcher of the variable
    */
   @ZeppelinApi
+  @Override
   public void angularBind(String name, Object o, AngularObjectWatcher watcher) {
     angularBind(name, o, interpreterContext.getNoteId(), watcher);
   }
@@ -712,6 +745,7 @@ public abstract class ZeppelinContext {
    * @param watcher watcher of the variable
    */
   @Deprecated
+  @Override
   public void angularBindGlobal(String name, Object o, AngularObjectWatcher watcher) {
     angularBind(name, o, null, watcher);
   }
@@ -723,6 +757,7 @@ public abstract class ZeppelinContext {
    * @param watcher watcher
    */
   @ZeppelinApi
+  @Override
   public void angularWatch(String name, AngularObjectWatcher watcher) {
     angularWatch(name, interpreterContext.getNoteId(), watcher);
   }
@@ -734,6 +769,7 @@ public abstract class ZeppelinContext {
    * @param watcher watcher
    */
   @Deprecated
+  @Override
   public void angularWatchGlobal(String name, AngularObjectWatcher watcher) {
     angularWatch(name, null, watcher);
   }
@@ -746,6 +782,7 @@ public abstract class ZeppelinContext {
    * @param watcher
    */
   @ZeppelinApi
+  @Override
   public void angularUnwatch(String name, AngularObjectWatcher watcher) {
     angularUnwatch(name, interpreterContext.getNoteId(), watcher);
   }
@@ -757,6 +794,7 @@ public abstract class ZeppelinContext {
    * @param watcher
    */
   @Deprecated
+  @Override
   public void angularUnwatchGlobal(String name, AngularObjectWatcher watcher) {
     angularUnwatch(name, null, watcher);
   }
@@ -768,6 +806,7 @@ public abstract class ZeppelinContext {
    * @param name
    */
   @ZeppelinApi
+  @Override
   public void angularUnwatch(String name) {
     angularUnwatch(name, interpreterContext.getNoteId());
   }
@@ -778,6 +817,7 @@ public abstract class ZeppelinContext {
    * @param name
    */
   @Deprecated
+  @Override
   public void angularUnwatchGlobal(String name) {
     angularUnwatch(name, (String) null);
   }
@@ -788,6 +828,7 @@ public abstract class ZeppelinContext {
    * @param name
    */
   @ZeppelinApi
+  @Override
   public void angularUnbind(String name) {
     String noteId = interpreterContext.getNoteId();
     angularUnbind(name, noteId);
@@ -799,6 +840,7 @@ public abstract class ZeppelinContext {
    * @param name
    */
   @Deprecated
+  @Override
   public void angularUnbindGlobal(String name) {
     angularUnbind(name, null);
   }
@@ -811,6 +853,7 @@ public abstract class ZeppelinContext {
    * @param o    value
    * @param noteId
    */
+  @Override
   public void angularBind(String name, Object o, String noteId) {
     AngularObjectRegistry registry = interpreterContext.getAngularObjectRegistry();
 
@@ -830,6 +873,7 @@ public abstract class ZeppelinContext {
    * @param noteId
    * @param paragraphId
    */
+  @Override
   public void angularBind(String name, Object o, String noteId, String paragraphId) {
     AngularObjectRegistry registry = interpreterContext.getAngularObjectRegistry();
 
@@ -866,6 +910,7 @@ public abstract class ZeppelinContext {
    * @param name    name of the variable
    * @param watcher watcher
    */
+  @Override
   public void angularWatch(String name, String noteId, AngularObjectWatcher watcher) {
     AngularObjectRegistry registry = interpreterContext.getAngularObjectRegistry();
 
@@ -930,6 +975,7 @@ public abstract class ZeppelinContext {
    * @param replName Name of the interpreter
    */
   @Experimental
+  @Override
   public void registerHook(String event, String cmd, String replName) throws InvalidHookException {
     String className = getClassNameFromReplName(replName);
     hooks.register(null, className, event, cmd);
@@ -942,6 +988,7 @@ public abstract class ZeppelinContext {
    * @param cmd   The code to be executed by the interpreter on given event
    */
   @Experimental
+  @Override
   public void registerHook(String event, String cmd) throws InvalidHookException {
     String replClassName = interpreterContext.getInterpreterClassName();
     hooks.register(null, replClassName, event, cmd);
@@ -954,6 +1001,7 @@ public abstract class ZeppelinContext {
    * @throws InvalidHookException
    */
   @Experimental
+  @Override
   public void registerNoteHook(String event, String cmd, String noteId)
       throws InvalidHookException {
     String replClassName = interpreterContext.getInterpreterClassName();
@@ -961,6 +1009,7 @@ public abstract class ZeppelinContext {
   }
 
   @Experimental
+  @Override
   public void registerNoteHook(String event, String cmd, String noteId, String replName)
       throws InvalidHookException {
     String className = getClassNameFromReplName(replName);
@@ -974,6 +1023,7 @@ public abstract class ZeppelinContext {
    * @param replName Name of the interpreter
    */
   @Experimental
+  @Override
   public void unregisterHook(String event, String replName) {
     String className = getClassNameFromReplName(replName);
     hooks.unregister(null, className, event);
@@ -985,6 +1035,7 @@ public abstract class ZeppelinContext {
    * @param event The type of event to hook to (pre_exec, post_exec)
    */
   @Experimental
+  @Override
   public void unregisterHook(String event) {
     unregisterHook(event, interpreterContext.getReplName());
   }
@@ -996,6 +1047,7 @@ public abstract class ZeppelinContext {
    * @param event  The type of event to hook to (pre_exec, post_exec)
    */
   @Experimental
+  @Override
   public void unregisterNoteHook(String noteId, String event) {
     String className = interpreterContext.getInterpreterClassName();
     hooks.unregister(noteId, className, event);
@@ -1010,6 +1062,7 @@ public abstract class ZeppelinContext {
    * @param replName Name of the interpreter
    */
   @Experimental
+  @Override
   public void unregisterNoteHook(String noteId, String event, String replName) {
     String className = getClassNameFromReplName(replName);
     hooks.unregister(noteId, className, event);
@@ -1023,6 +1076,7 @@ public abstract class ZeppelinContext {
    * @param value
    */
   @ZeppelinApi
+  @Override
   public void put(String name, Object value) {
     ResourcePool resourcePool = interpreterContext.getResourcePool();
     resourcePool.put(name, value);
@@ -1036,6 +1090,7 @@ public abstract class ZeppelinContext {
    * @return null if resource not found
    */
   @ZeppelinApi
+  @Override
   public Object get(String name) {
     ResourcePool resourcePool = interpreterContext.getResourcePool();
     Resource resource = resourcePool.get(name);
@@ -1055,6 +1110,7 @@ public abstract class ZeppelinContext {
    * @return null if resource not found
    */
   @ZeppelinApi
+  @Override
   public <T> T get(String name, Class<T> clazz) {
     ResourcePool resourcePool = interpreterContext.getResourcePool();
     Resource resource = resourcePool.get(name);
@@ -1071,6 +1127,7 @@ public abstract class ZeppelinContext {
    * @param name
    */
   @ZeppelinApi
+  @Override
   public void remove(String name) {
     ResourcePool resourcePool = interpreterContext.getResourcePool();
     resourcePool.remove(name);
@@ -1083,6 +1140,7 @@ public abstract class ZeppelinContext {
    * @return
    */
   @ZeppelinApi
+  @Override
   public boolean containsKey(String name) {
     ResourcePool resourcePool = interpreterContext.getResourcePool();
     Resource resource = resourcePool.get(name);
@@ -1093,6 +1151,7 @@ public abstract class ZeppelinContext {
    * Get all resources
    */
   @ZeppelinApi
+  @Override
   public ResourceSet getAll() {
     ResourcePool resourcePool = interpreterContext.getResourcePool();
     return resourcePool.getAll();

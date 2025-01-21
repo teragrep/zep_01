@@ -34,6 +34,7 @@ import org.apache.hadoop.security.alias.CredentialProviderFactory;
 import org.apache.zeppelin.interpreter.*;
 import org.apache.zeppelin.interpreter.util.SqlSplitter;
 import org.apache.zeppelin.interpreter.xref.FormType;
+import org.apache.zeppelin.interpreter.xref.ZeppelinContext;
 import org.apache.zeppelin.jdbc.hive.HiveUtils;
 import org.apache.zeppelin.tabledata.TableDataUtils;
 import org.apache.zeppelin.util.PropertiesUtil;
