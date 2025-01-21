@@ -44,6 +44,7 @@ import org.apache.zeppelin.interpreter.thrift.RemoteInterpreterResultMessage;
 import org.apache.zeppelin.interpreter.thrift.RunParagraphsEvent;
 import org.apache.zeppelin.interpreter.thrift.WebUrlInfo;
 import org.apache.zeppelin.interpreter.xref.Resource;
+import org.apache.zeppelin.interpreter.xref.ResourceId;
 import org.apache.zeppelin.interpreter.xref.ResourceSet;
 import org.apache.zeppelin.interpreter.xref.Type;
 import org.apache.zeppelin.notebook.Note;

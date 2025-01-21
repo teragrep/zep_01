@@ -20,6 +20,7 @@ import com.google.gson.Gson;
 import java.io.Serializable;
 import org.apache.zeppelin.common.JsonSerializable;
 import org.apache.zeppelin.interpreter.xref.Resource;
+import org.apache.zeppelin.interpreter.xref.ResourceId;
 
 /**
  * Resource that can retrieve data from remote

@@ -18,6 +18,7 @@ package org.apache.zeppelin.resource;
 
 import org.apache.zeppelin.conf.ZeppelinConfiguration;
 import org.apache.zeppelin.interpreter.xref.Resource;
+import org.apache.zeppelin.interpreter.xref.ResourceId;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

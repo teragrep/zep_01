@@ -25,6 +25,7 @@ import org.apache.zeppelin.display.AngularObject;
 import org.apache.zeppelin.display.AngularObjectRegistryListener;
 import org.apache.zeppelin.interpreter.InterpreterResultMessage;
 import org.apache.zeppelin.interpreter.xref.Resource;
+import org.apache.zeppelin.interpreter.xref.ResourceId;
 import org.apache.zeppelin.interpreter.xref.ResourceSet;
 import org.apache.zeppelin.interpreter.xref.Type;
 import org.apache.zeppelin.interpreter.thrift.LibraryMetadata;

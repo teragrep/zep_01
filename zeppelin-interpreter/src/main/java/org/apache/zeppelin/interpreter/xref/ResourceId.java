@@ -1,4 +1,4 @@
-package org.apache.zeppelin.resource;
+package org.apache.zeppelin.interpreter.xref;
 
 import org.apache.zeppelin.common.JsonSerializable;
 
