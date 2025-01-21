@@ -18,10 +18,7 @@
 package org.apache.zeppelin.interpreter.remote.mock;
 
 
-import org.apache.zeppelin.interpreter.FormType;
-import org.apache.zeppelin.interpreter.Interpreter;
-import org.apache.zeppelin.interpreter.InterpreterContext;
-import org.apache.zeppelin.interpreter.InterpreterResult;
+import org.apache.zeppelin.interpreter.*;
 
 import java.util.Properties;
 
@@ -43,7 +40,8 @@ public class GetAngularObjectSizeInterpreter extends Interpreter {
 
   @Override
   public InterpreterResult interpret(String st, InterpreterContext context) {
-    return new InterpreterResult(InterpreterResult.Code.SUCCESS,
+    return new InterpreterResult(
+            Code.SUCCESS,
         "" + context.getAngularObjectRegistry().getRegistry().size());
   }
 

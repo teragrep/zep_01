@@ -16,10 +16,7 @@
  */
 package org.apache.zeppelin.interpreter.remote.mock;
 
-import org.apache.zeppelin.interpreter.FormType;
-import org.apache.zeppelin.interpreter.Interpreter;
-import org.apache.zeppelin.interpreter.InterpreterContext;
-import org.apache.zeppelin.interpreter.InterpreterResult;
+import org.apache.zeppelin.interpreter.*;
 import org.apache.zeppelin.interpreter.thrift.InterpreterCompletion;
 import org.apache.zeppelin.scheduler.Scheduler;
 import org.apache.zeppelin.scheduler.SchedulerFactory;
@@ -46,11 +43,11 @@ public class GetEnvPropertyInterpreter extends Interpreter {
   public InterpreterResult interpret(String st, InterpreterContext context) {
     String[] cmd = st.split(" ");
     if (cmd[0].equals("getEnv")) {
-      return new InterpreterResult(InterpreterResult.Code.SUCCESS, System.getenv(cmd[1]) == null ? "null" : System.getenv(cmd[1]));
+      return new InterpreterResult(Code.SUCCESS, System.getenv(cmd[1]) == null ? "null" : System.getenv(cmd[1]));
     } else if (cmd[0].equals("getProperty")){
-      return new InterpreterResult(InterpreterResult.Code.SUCCESS, System.getProperty(cmd[1]) == null ? "null" : System.getProperty(cmd[1]));
+      return new InterpreterResult(Code.SUCCESS, System.getProperty(cmd[1]) == null ? "null" : System.getProperty(cmd[1]));
     } else {
-      return new InterpreterResult(InterpreterResult.Code.ERROR, cmd[0]);
+      return new InterpreterResult(Code.ERROR, cmd[0]);
     }
   }
 

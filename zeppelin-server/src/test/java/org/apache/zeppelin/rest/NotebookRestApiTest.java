@@ -26,8 +26,7 @@ import static org.junit.Assert.assertThat;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 
-import org.apache.zeppelin.interpreter.InterpreterSetting;
-import org.apache.zeppelin.interpreter.InterpreterSettingManager;
+import org.apache.zeppelin.interpreter.*;
 import org.apache.zeppelin.notebook.Notebook;
 import org.apache.zeppelin.rest.message.ParametersRequest;
 import org.apache.zeppelin.socket.NotebookServer;
@@ -44,7 +43,6 @@ import java.util.Set;
 
 import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.util.EntityUtils;
-import org.apache.zeppelin.interpreter.InterpreterResult;
 import org.apache.zeppelin.notebook.Note;
 import org.apache.zeppelin.notebook.Paragraph;
 import org.apache.zeppelin.scheduler.Job;
@@ -541,8 +539,9 @@ public class NotebookRestApiTest extends AbstractTestRestApi {
     LOG.debug("Running testClearAllParagraphOutput");
     Note note = TestUtils.getInstance(Notebook.class).createNote("note1", anonymous);
     Paragraph p1 = note.addNewParagraph(AuthenticationInfo.ANONYMOUS);
-    InterpreterResult result = new InterpreterResult(InterpreterResult.Code.SUCCESS,
-            InterpreterResult.Type.TEXT, "result");
+    InterpreterResult result = new InterpreterResult(
+            Code.SUCCESS,
+            Type.TEXT, "result");
     p1.setResult(result);
 
     Paragraph p2 = note.addNewParagraph(AuthenticationInfo.ANONYMOUS);

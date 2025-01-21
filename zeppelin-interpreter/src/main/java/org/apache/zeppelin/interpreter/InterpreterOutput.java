@@ -87,7 +87,7 @@ public class InterpreterOutput extends OutputStream {
     }
   }
 
-  public void setType(InterpreterResult.Type type) throws IOException {
+  public void setType(Type type) throws IOException {
     InterpreterResultMessageOutput out = null;
 
     synchronized (resultMessageOutputs) {
@@ -221,9 +221,9 @@ public class InterpreterOutput extends OutputStream {
 
       if (++size > LIMIT) {
         if (b == NEW_LINE_CHAR && currentOut != null) {
-          InterpreterResult.Type type = currentOut.getType();
-          if (type == InterpreterResult.Type.TEXT || type == InterpreterResult.Type.TABLE) {
-            setType(InterpreterResult.Type.HTML);
+          Type type = currentOut.getType();
+          if (type == Type.TEXT || type == Type.TABLE) {
+            setType(Type.HTML);
             getCurrentOutput().write(ResultMessages.getExceedsLimitSizeMessage(LIMIT,
                 "ZEPPELIN_INTERPRETER_OUTPUT_LIMIT").getData().getBytes());
             truncated = true;
@@ -253,7 +253,7 @@ public class InterpreterOutput extends OutputStream {
       }
 
       if (b == NEW_LINE_CHAR) {
-        if (currentOut != null && currentOut.getType() == InterpreterResult.Type.TABLE) {
+        if (currentOut != null && currentOut.getType() == Type.TABLE) {
           if (previousChar == NEW_LINE_CHAR) {
             startOfTheNewLine = true;
             return;
@@ -268,7 +268,7 @@ public class InterpreterOutput extends OutputStream {
         if (b == ' ' || b == NEW_LINE_CHAR || b == '\t') {
           firstCharIsPercentSign = false;
           String displaySystem = buffer.toString();
-          for (InterpreterResult.Type type : InterpreterResult.Type.values()) {
+          for (Type type : Type.values()) {
             if (displaySystem.equals('%' + type.name().toLowerCase())) {
               // new type detected
               setType(type);
@@ -301,7 +301,7 @@ public class InterpreterOutput extends OutputStream {
       InterpreterResultMessageOutput out = getCurrentOutput();
       if (out == null) {
         // add text type result message
-        setType(InterpreterResult.Type.TEXT);
+        setType(Type.TEXT);
         out = getCurrentOutput();
       }
       return out;
@@ -363,8 +363,8 @@ public class InterpreterOutput extends OutputStream {
     synchronized (resultMessageOutputs) {
       for (InterpreterResultMessageOutput out : resultMessageOutputs) {
         InterpreterResultMessage msg = out.toInterpreterResultMessage();
-        if ((msg.getType() == InterpreterResult.Type.TEXT ||
-                msg.getType() == InterpreterResult.Type.HTML) &&
+        if ((msg.getType() == Type.TEXT ||
+                msg.getType() == Type.HTML) &&
                 StringUtils.isBlank(out.toInterpreterResultMessage().getData())) {
           // skip blank text/html, because when print table data we usually need to print '%text \n'
           // first to separate it from previous other kind of data. e.g. z.show(df)

@@ -16,13 +16,9 @@ package org.apache.zeppelin.jdbc;
 
 
 import org.apache.zeppelin.completer.CompletionType;
-import org.apache.zeppelin.interpreter.InterpreterContext;
-import org.apache.zeppelin.interpreter.InterpreterException;
+import org.apache.zeppelin.interpreter.*;
 
 import org.apache.commons.lang3.StringUtils;
-import org.apache.zeppelin.interpreter.InterpreterOutput;
-import org.apache.zeppelin.interpreter.InterpreterResult;
-import org.apache.zeppelin.interpreter.InterpreterResultMessage;
 import org.apache.zeppelin.interpreter.thrift.InterpreterCompletion;
 import org.apache.zeppelin.scheduler.FIFOScheduler;
 import org.apache.zeppelin.scheduler.ParallelScheduler;
@@ -36,7 +32,6 @@ import org.junit.jupiter.api.Test;
 
 import java.io.File;
 import java.io.IOException;
-import java.nio.file.Files;
 import java.nio.file.Path;
 import java.sql.Connection;
 import java.sql.DriverManager;
@@ -172,7 +167,7 @@ public class JDBCInterpreterTest extends BasicJDBCTestCaseAdapter {
     InterpreterResult interpreterResult = t.interpret(sqlQuery, context);
 
     // The result should be the same as that run with default config
-    assertEquals(InterpreterResult.Code.SUCCESS, interpreterResult.code());
+    assertEquals(Code.SUCCESS, interpreterResult.code());
     List<InterpreterResultMessage> resultMessages = context.out.toInterpreterResultMessage();
     assertEquals("ID\tNAME\na\ta_name\nb\tb_name\nc\tnull\n",
             resultMessages.get(0).getData());
@@ -205,9 +200,9 @@ public class JDBCInterpreterTest extends BasicJDBCTestCaseAdapter {
 
     InterpreterResult interpreterResult = t.interpret(sqlQuery, context);
 
-    assertEquals(InterpreterResult.Code.SUCCESS, interpreterResult.code());
+    assertEquals(Code.SUCCESS, interpreterResult.code());
     List<InterpreterResultMessage> resultMessages = context.out.toInterpreterResultMessage();
-    assertEquals(InterpreterResult.Type.TABLE, resultMessages.get(0).getType());
+    assertEquals(Type.TABLE, resultMessages.get(0).getType());
     assertEquals("ID\tNAME\na\ta_name\nb\tb_name\n", resultMessages.get(0).getData());
 
     context = getInterpreterContext();
@@ -215,8 +210,8 @@ public class JDBCInterpreterTest extends BasicJDBCTestCaseAdapter {
     interpreterResult = t.interpret(sqlQuery, context);
 
     resultMessages = context.out.toInterpreterResultMessage();
-    assertEquals(InterpreterResult.Code.SUCCESS, interpreterResult.code());
-    assertEquals(InterpreterResult.Type.TABLE, resultMessages.get(0).getType());
+    assertEquals(Code.SUCCESS, interpreterResult.code());
+    assertEquals(Type.TABLE, resultMessages.get(0).getType());
     assertEquals("ID\tNAME\na\ta_name\n", resultMessages.get(0).getData());
   }
 
@@ -239,7 +234,7 @@ public class JDBCInterpreterTest extends BasicJDBCTestCaseAdapter {
       String sqlQuery = "select * from test_table WHERE ID in ('a', 'b');";
       try {
         InterpreterResult interpreterResult = t.interpret(sqlQuery, context);
-        assertEquals(InterpreterResult.Code.ERROR, interpreterResult.code());
+        assertEquals(Code.ERROR, interpreterResult.code());
       } catch (InterpreterException e) {
         fail("Should not be here");
       }
@@ -269,7 +264,7 @@ public class JDBCInterpreterTest extends BasicJDBCTestCaseAdapter {
     String sqlQuery = "select * from invalid_table;";
 
     InterpreterResult interpreterResult = t.interpret(sqlQuery, context);
-    assertEquals(InterpreterResult.Code.ERROR, interpreterResult.code());
+    assertEquals(Code.ERROR, interpreterResult.code());
     assertTrue(interpreterResult.message()
             .get(0).getData().contains("Table \"INVALID_TABLE\" not found;"),
             interpreterResult.toString());
@@ -291,9 +286,10 @@ public class JDBCInterpreterTest extends BasicJDBCTestCaseAdapter {
 
     InterpreterResult interpreterResult = t.interpret(sqlQuery, context);
     List<InterpreterResultMessage> resultMessages = context.out.toInterpreterResultMessage();
-    assertEquals(InterpreterResult.Code.SUCCESS, interpreterResult.code(),
+    assertEquals(
+            Code.SUCCESS, interpreterResult.code(),
             interpreterResult.toString());
-    assertEquals(InterpreterResult.Type.TABLE, resultMessages.get(0).getType());
+    assertEquals(Type.TABLE, resultMessages.get(0).getType());
     assertEquals("SOME_OTHER_NAME\na_name\n", resultMessages.get(0).getData());
   }
 
@@ -349,12 +345,12 @@ public class JDBCInterpreterTest extends BasicJDBCTestCaseAdapter {
 
     InterpreterResult interpreterResult = t.interpret(sqlQuery, context);
 
-    assertEquals(InterpreterResult.Code.SUCCESS, interpreterResult.code());
+    assertEquals(Code.SUCCESS, interpreterResult.code());
     List<InterpreterResultMessage> resultMessages = context.out.toInterpreterResultMessage();
-    assertEquals(InterpreterResult.Type.TABLE, resultMessages.get(0).getType());
-    assertEquals(InterpreterResult.Type.TABLE, resultMessages.get(1).getType());
-    assertEquals(InterpreterResult.Type.TABLE, resultMessages.get(2).getType());
-    assertEquals(InterpreterResult.Type.TABLE, resultMessages.get(3).getType());
+    assertEquals(Type.TABLE, resultMessages.get(0).getType());
+    assertEquals(Type.TABLE, resultMessages.get(1).getType());
+    assertEquals(Type.TABLE, resultMessages.get(2).getType());
+    assertEquals(Type.TABLE, resultMessages.get(3).getType());
     assertEquals("'\\n'\t';'\n\\n\t;\n", resultMessages.get(0).getData());
     assertEquals("'Atext;B'\nAtext;B\n", resultMessages.get(1).getData());
     assertEquals("'\\'\t';'\n\\\t;\n", resultMessages.get(2).getData());
@@ -377,16 +373,16 @@ public class JDBCInterpreterTest extends BasicJDBCTestCaseAdapter {
     String sqlQuery = "select * from test_table;" +
         "select * from test_table WHERE ID = ';';";
     InterpreterResult interpreterResult = t.interpret(sqlQuery, context);
-    assertEquals(InterpreterResult.Code.SUCCESS, interpreterResult.code());
+    assertEquals(Code.SUCCESS, interpreterResult.code());
 
     List<InterpreterResultMessage> resultMessages = context.out.toInterpreterResultMessage();
     assertEquals(2, resultMessages.size());
 
-    assertEquals(InterpreterResult.Type.TABLE, resultMessages.get(0).getType());
+    assertEquals(Type.TABLE, resultMessages.get(0).getType());
     assertEquals("ID\tNAME\na\ta_name\nb\tb_name\nc\tnull\n",
             resultMessages.get(0).getData());
 
-    assertEquals(InterpreterResult.Type.TABLE, resultMessages.get(1).getType());
+    assertEquals(Type.TABLE, resultMessages.get(1).getType());
     assertEquals("ID\tNAME\n", resultMessages.get(1).getData());
   }
 
@@ -405,15 +401,15 @@ public class JDBCInterpreterTest extends BasicJDBCTestCaseAdapter {
     String sqlQuery = "select * from test_table;" +
         "select * from test_table WHERE ID = ';';";
     InterpreterResult interpreterResult = t.interpret(sqlQuery, context);
-    assertEquals(InterpreterResult.Code.SUCCESS, interpreterResult.code());
+    assertEquals(Code.SUCCESS, interpreterResult.code());
 
     List<InterpreterResultMessage> resultMessages = context.out.toInterpreterResultMessage();
     assertEquals(2, resultMessages.size());
 
-    assertEquals(InterpreterResult.Type.TABLE, resultMessages.get(0).getType());
+    assertEquals(Type.TABLE, resultMessages.get(0).getType());
     assertEquals("ID\tNAME\na\ta_name\nb\tb_name\nc\tnull\n",
             resultMessages.get(0).getData());
-    assertEquals(InterpreterResult.Type.TABLE, resultMessages.get(1).getType());
+    assertEquals(Type.TABLE, resultMessages.get(1).getType());
     assertEquals("ID\tNAME\n",
             resultMessages.get(1).getData());
   }
@@ -435,8 +431,8 @@ public class JDBCInterpreterTest extends BasicJDBCTestCaseAdapter {
     InterpreterResult interpreterResult = t.interpret(sqlQuery, context);
 
     List<InterpreterResultMessage> resultMessages = context.out.toInterpreterResultMessage();
-    assertEquals(InterpreterResult.Code.SUCCESS, interpreterResult.code());
-    assertEquals(InterpreterResult.Type.TABLE, resultMessages.get(0).getType());
+    assertEquals(Code.SUCCESS, interpreterResult.code());
+    assertEquals(Type.TABLE, resultMessages.get(0).getType());
     assertEquals("ID\tNAME\nc\tnull\n", resultMessages.get(0).getData());
   }
 
@@ -457,12 +453,12 @@ public class JDBCInterpreterTest extends BasicJDBCTestCaseAdapter {
 
     InterpreterResult interpreterResult = t.interpret(sqlQuery, context);
 
-    assertEquals(InterpreterResult.Code.SUCCESS, interpreterResult.code());
+    assertEquals(Code.SUCCESS, interpreterResult.code());
 
     List<InterpreterResultMessage> resultMessages = context.out.toInterpreterResultMessage();
-    assertEquals(InterpreterResult.Type.TABLE, resultMessages.get(0).getType());
+    assertEquals(Type.TABLE, resultMessages.get(0).getType());
     assertEquals("ID\tNAME\na\ta_name\n", resultMessages.get(0).getData());
-    assertEquals(InterpreterResult.Type.HTML, resultMessages.get(1).getType());
+    assertEquals(Type.HTML, resultMessages.get(1).getType());
     assertTrue(resultMessages.get(1).getData().contains("Output is truncated"));
   }
 
@@ -641,16 +637,16 @@ public class JDBCInterpreterTest extends BasicJDBCTestCaseAdapter {
 
     InterpreterResult interpreterResult = jdbcInterpreter.interpret(sqlQuery, context);
 
-    assertEquals(InterpreterResult.Code.SUCCESS, interpreterResult.code());
+    assertEquals(Code.SUCCESS, interpreterResult.code());
     List<InterpreterResultMessage> resultMessages = context.out.toInterpreterResultMessage();
     assertEquals(3, resultMessages.size());
-    assertEquals(InterpreterResult.Type.TEXT, resultMessages.get(0).getType());
+    assertEquals(Type.TEXT, resultMessages.get(0).getType());
     assertEquals("Query executed successfully. Affected rows : 0\n\n",
             resultMessages.get(0).getData());
-    assertEquals(InterpreterResult.Type.TEXT, resultMessages.get(1).getType());
+    assertEquals(Type.TEXT, resultMessages.get(1).getType());
     assertEquals("Query executed successfully. Affected rows : 1\n",
             resultMessages.get(1).getData());
-    assertEquals(InterpreterResult.Type.TABLE, resultMessages.get(2).getType());
+    assertEquals(Type.TABLE, resultMessages.get(2).getType());
     assertEquals("ID\n1\n", resultMessages.get(2).getData());
   }
 
@@ -671,8 +667,8 @@ public class JDBCInterpreterTest extends BasicJDBCTestCaseAdapter {
     jdbcInterpreter.open();
     InterpreterResult interpreterResult = jdbcInterpreter.executePrecode(context);
 
-    assertEquals(InterpreterResult.Code.ERROR, interpreterResult.code());
-    assertEquals(InterpreterResult.Type.TEXT, interpreterResult.message().get(0).getType());
+    assertEquals(Code.ERROR, interpreterResult.code());
+    assertEquals(Type.TEXT, interpreterResult.message().get(0).getType());
   }
 
 
@@ -691,9 +687,9 @@ public class JDBCInterpreterTest extends BasicJDBCTestCaseAdapter {
 
     InterpreterResult interpreterResult = jdbcInterpreter.interpret(sqlQuery, context);
 
-    assertEquals(InterpreterResult.Code.SUCCESS, interpreterResult.code());
+    assertEquals(Code.SUCCESS, interpreterResult.code());
     List<InterpreterResultMessage> resultMessages = context.out.toInterpreterResultMessage();
-    assertEquals(InterpreterResult.Type.TABLE, resultMessages.get(0).getType());
+    assertEquals(Type.TABLE, resultMessages.get(0).getType());
     assertEquals("@V\nstatement\n", resultMessages.get(0).getData());
   }
 
@@ -713,8 +709,8 @@ public class JDBCInterpreterTest extends BasicJDBCTestCaseAdapter {
 
     InterpreterResult interpreterResult = jdbcInterpreter.interpret(sqlQuery, context);
 
-    assertEquals(InterpreterResult.Code.ERROR, interpreterResult.code());
-    assertEquals(InterpreterResult.Type.TEXT, interpreterResult.message().get(0).getType());
+    assertEquals(Code.ERROR, interpreterResult.code());
+    assertEquals(Type.TEXT, interpreterResult.message().get(0).getType());
     assertTrue(interpreterResult.message().get(0).getData().contains("Syntax error"),
             interpreterResult.toString());
   }
@@ -745,7 +741,7 @@ public class JDBCInterpreterTest extends BasicJDBCTestCaseAdapter {
         "select * from test_table WHERE ID = '/*'; -- test";
 
     InterpreterResult interpreterResult = t.interpret(sqlQuery, context);
-    assertEquals(InterpreterResult.Code.SUCCESS, interpreterResult.code());
+    assertEquals(Code.SUCCESS, interpreterResult.code());
     List<InterpreterResultMessage> resultMessages = context.out.toInterpreterResultMessage();
     assertEquals(3, resultMessages.size());
   }
@@ -760,7 +756,7 @@ public class JDBCInterpreterTest extends BasicJDBCTestCaseAdapter {
     JDBCInterpreter jdbcInterpreter = new JDBCInterpreter(properties);
     jdbcInterpreter.open();
     InterpreterResult interpreterResult = jdbcInterpreter.interpret("SELECT 1", context);
-    assertEquals(InterpreterResult.Code.ERROR, interpreterResult.code());
+    assertEquals(Code.ERROR, interpreterResult.code());
     assertEquals("Connection URL contains improper configuration",
             interpreterResult.message().get(0).getData());
   }

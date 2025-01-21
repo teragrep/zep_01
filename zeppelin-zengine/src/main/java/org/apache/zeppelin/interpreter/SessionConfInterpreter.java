@@ -56,16 +56,17 @@ public class SessionConfInterpreter extends ConfInterpreter {
         if (intp instanceof RemoteInterpreter) {
           RemoteInterpreter remoteInterpreter = (RemoteInterpreter) intp;
           if (remoteInterpreter.isOpened()) {
-            return new InterpreterResult(InterpreterResult.Code.ERROR,
+            return new InterpreterResult(
+                    Code.ERROR,
                 "Can not change interpreter session properties after this session is started");
           }
           remoteInterpreter.setProperties(finalProperties);
         }
       }
-      return new InterpreterResult(InterpreterResult.Code.SUCCESS);
+      return new InterpreterResult(Code.SUCCESS);
     } catch (IOException e) {
       LOGGER.error("Fail to update interpreter setting", e);
-      return new InterpreterResult(InterpreterResult.Code.ERROR, ExceptionUtils.getStackTrace(e));
+      return new InterpreterResult(Code.ERROR, ExceptionUtils.getStackTrace(e));
     }
   }
 }

@@ -35,18 +35,8 @@ import org.apache.zeppelin.display.AngularObject;
 import org.apache.zeppelin.display.AngularObjectRegistry;
 import org.apache.zeppelin.display.GUI;
 import org.apache.zeppelin.display.Input;
-import org.apache.zeppelin.interpreter.Constants;
-import org.apache.zeppelin.interpreter.ExecutionContext;
-import org.apache.zeppelin.interpreter.Interpreter;
-import org.apache.zeppelin.interpreter.FormType;
-import org.apache.zeppelin.interpreter.InterpreterContext;
-import org.apache.zeppelin.interpreter.InterpreterException;
-import org.apache.zeppelin.interpreter.InterpreterNotFoundException;
-import org.apache.zeppelin.interpreter.InterpreterResult;
-import org.apache.zeppelin.interpreter.InterpreterResult.Code;
-import org.apache.zeppelin.interpreter.InterpreterResultMessage;
-import org.apache.zeppelin.interpreter.InterpreterSetting;
-import org.apache.zeppelin.interpreter.ManagedInterpreterGroup;
+import org.apache.zeppelin.interpreter.*;
+import org.apache.zeppelin.interpreter.Code;
 import org.apache.zeppelin.interpreter.remote.RemoteInterpreter;
 import org.apache.zeppelin.interpreter.thrift.InterpreterCompletion;
 import org.apache.zeppelin.resource.ResourcePool;
@@ -373,14 +363,16 @@ public class Paragraph extends JobWithProgressPoller<InterpreterResult> implemen
       }
     } catch (InterpreterNotFoundException e) {
       InterpreterResult intpResult =
-          new InterpreterResult(InterpreterResult.Code.ERROR,
+          new InterpreterResult(
+                  Code.ERROR,
                   String.format("Interpreter %s not found", this.intpText));
       setReturn(intpResult, e);
       setStatus(Job.Status.ERROR);
       return false;
     } catch (Throwable e) {
       InterpreterResult intpResult =
-              new InterpreterResult(InterpreterResult.Code.ERROR,
+              new InterpreterResult(
+                      Code.ERROR,
                       "Unexpected exception: " + ExceptionUtils.getStackTrace(e));
       setReturn(intpResult, e);
       setStatus(Job.Status.ERROR);
@@ -761,7 +753,7 @@ public class Paragraph extends JobWithProgressPoller<InterpreterResult> implemen
     return Note.getGSON().fromJson(json, Paragraph.class);
   }
 
-  public void updateOutputBuffer(int index, InterpreterResult.Type type, String output) {
+  public void updateOutputBuffer(int index, Type type, String output) {
     InterpreterResultMessage interpreterResultMessage = new InterpreterResultMessage(type, output);;
     if (outputBuffer.size() == index) {
       outputBuffer.add(interpreterResultMessage);
@@ -807,13 +799,15 @@ public class Paragraph extends JobWithProgressPoller<InterpreterResult> implemen
 
     } catch (InterpreterNotFoundException e) {
       InterpreterResult intpResult =
-              new InterpreterResult(InterpreterResult.Code.ERROR,
+              new InterpreterResult(
+                      Code.ERROR,
                       String.format("Interpreter %s not found", this.intpText));
       setReturn(intpResult, e);
       setStatus(Job.Status.ERROR);
     } catch (Throwable e) {
       InterpreterResult intpResult =
-              new InterpreterResult(InterpreterResult.Code.ERROR,
+              new InterpreterResult(
+                      Code.ERROR,
                       "Unexpected exception: " + ExceptionUtils.getStackTrace(e));
       setReturn(intpResult, e);
       setStatus(Job.Status.ERROR);

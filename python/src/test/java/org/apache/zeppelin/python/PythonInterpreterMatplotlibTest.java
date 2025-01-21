@@ -18,14 +18,7 @@
 package org.apache.zeppelin.python;
 
 import org.apache.zeppelin.display.AngularObjectRegistry;
-import org.apache.zeppelin.interpreter.Interpreter;
-import org.apache.zeppelin.interpreter.InterpreterContext;
-import org.apache.zeppelin.interpreter.InterpreterException;
-import org.apache.zeppelin.interpreter.InterpreterGroup;
-import org.apache.zeppelin.interpreter.InterpreterOutput;
-import org.apache.zeppelin.interpreter.InterpreterOutputListener;
-import org.apache.zeppelin.interpreter.InterpreterResult;
-import org.apache.zeppelin.interpreter.InterpreterResultMessageOutput;
+import org.apache.zeppelin.interpreter.*;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Disabled;
@@ -84,11 +77,11 @@ class PythonInterpreterMatplotlibTest implements InterpreterOutputListener {
   void dependenciesAreInstalled() throws InterpreterException {
     // matplotlib
     InterpreterResult ret = python.interpret("import matplotlib", context);
-    assertEquals(InterpreterResult.Code.SUCCESS, ret.code(), ret.message().toString());
+    assertEquals(Code.SUCCESS, ret.code(), ret.message().toString());
 
     // inline backend
     ret = python.interpret("import backend_zinline", context);
-    assertEquals(InterpreterResult.Code.SUCCESS, ret.code(), ret.message().toString());
+    assertEquals(Code.SUCCESS, ret.code(), ret.message().toString());
   }
 
   @Test
@@ -100,11 +93,14 @@ class PythonInterpreterMatplotlibTest implements InterpreterOutputListener {
     ret = python.interpret("plt.plot([1, 2, 3])", context);
     ret = python.interpret("plt.show()", context);
 
-    assertEquals(InterpreterResult.Code.SUCCESS, ret.code(),
+    assertEquals(
+            Code.SUCCESS, ret.code(),
         new String(out.getOutputAt(0).toByteArray()));
-    assertEquals(InterpreterResult.Type.TEXT, out.getOutputAt(0).getType(),
+    assertEquals(
+            Type.TEXT, out.getOutputAt(0).getType(),
         new String(out.getOutputAt(0).toByteArray()));
-    assertEquals(InterpreterResult.Type.HTML, out.getOutputAt(1).getType(),
+    assertEquals(
+            Type.HTML, out.getOutputAt(1).getType(),
         new String(out.getOutputAt(1).toByteArray()));
     assertTrue(new String(out.getOutputAt(1).toByteArray()).contains("data:image/png;base64"));
     assertTrue(new String(out.getOutputAt(1).toByteArray()).contains("<div>"));
@@ -127,7 +123,8 @@ class PythonInterpreterMatplotlibTest implements InterpreterOutputListener {
     // type to HTML.
     ret = python.interpret("plt.show()", context);
 
-    assertEquals(InterpreterResult.Code.SUCCESS, ret.code(),
+    assertEquals(
+            Code.SUCCESS, ret.code(),
         new String(out.getOutputAt(0).toByteArray()));
     assertEquals(0, ret.message().size());
 
@@ -135,11 +132,11 @@ class PythonInterpreterMatplotlibTest implements InterpreterOutputListener {
     // previous one.
     ret = python.interpret("plt.plot([1, 2, 3])", context);
     String msg1 = new String(out.getOutputAt(0).toByteArray());
-    InterpreterResult.Type type1 = out.getOutputAt(0).getType();
+    Type type1 = out.getOutputAt(0).getType();
 
     ret2 = python.interpret("plt.show()", context);
     String msg2 = new String(out.getOutputAt(0).toByteArray());
-    InterpreterResult.Type type2 = out.getOutputAt(0).getType();
+    Type type2 = out.getOutputAt(0).getType();
 
     assertEquals(msg1, msg2);
     assertEquals(type1, type2);

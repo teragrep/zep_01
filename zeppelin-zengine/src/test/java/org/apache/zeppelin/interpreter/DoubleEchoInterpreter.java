@@ -39,7 +39,7 @@ public class DoubleEchoInterpreter extends Interpreter {
 
   @Override
   public InterpreterResult interpret(String st, InterpreterContext context) {
-    return new InterpreterResult(InterpreterResult.Code.SUCCESS, st + "," + st);
+    return new InterpreterResult(Code.SUCCESS, st + "," + st);
   }
 
   @Override

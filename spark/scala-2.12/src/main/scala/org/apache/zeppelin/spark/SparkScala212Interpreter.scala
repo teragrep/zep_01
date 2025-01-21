@@ -19,9 +19,10 @@ package org.apache.zeppelin.spark
 
 import org.apache.spark.SparkConf
 import org.apache.spark.repl.SparkILoop
+import org.apache.zeppelin.interpreter
 import org.apache.zeppelin.interpreter.thrift.InterpreterCompletion
 import org.apache.zeppelin.interpreter.util.InterpreterOutputStream
-import org.apache.zeppelin.interpreter.{InterpreterContext, InterpreterException, InterpreterGroup, InterpreterResult}
+import org.apache.zeppelin.interpreter.{Code, InterpreterContext, InterpreterException, InterpreterGroup, InterpreterResult}
 import org.slf4j.{Logger, LoggerFactory}
 
 import java.io.{BufferedReader, File}
@@ -96,15 +97,15 @@ class SparkScala212Interpreter(conf: SparkConf,
     context.out.write("")
     val lastStatus = _interpret(code) match {
       case scala.tools.nsc.interpreter.IR.Success =>
-        InterpreterResult.Code.SUCCESS
+        Code.SUCCESS
       case scala.tools.nsc.interpreter.IR.Error =>
-        InterpreterResult.Code.ERROR
+        interpreter.Code.ERROR
       case scala.tools.nsc.interpreter.IR.Incomplete =>
-        InterpreterResult.Code.INCOMPLETE
+        interpreter.Code.INCOMPLETE
     }
 
     lastStatus match {
-      case InterpreterResult.Code.INCOMPLETE => new InterpreterResult(lastStatus, "Incomplete expression")
+      case interpreter.Code.INCOMPLETE => new InterpreterResult(lastStatus, "Incomplete expression")
       case _ => new InterpreterResult(lastStatus)
     }
   }

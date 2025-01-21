@@ -21,7 +21,9 @@ import java.util.Collection;
 import java.util.Map;
 import java.util.Set;
 
+import org.apache.zeppelin.interpreter.Code;
 import org.apache.zeppelin.interpreter.InterpreterResult;
+import org.apache.zeppelin.interpreter.Type;
 import org.apache.zeppelin.tabledata.Node;
 import org.apache.zeppelin.tabledata.Relationship;
 

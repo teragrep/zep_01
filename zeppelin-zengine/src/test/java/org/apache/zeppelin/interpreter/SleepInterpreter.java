@@ -46,9 +46,9 @@ public class SleepInterpreter extends Interpreter {
   public InterpreterResult interpret(String st, InterpreterContext context) {
     try {
       Thread.sleep(Long.parseLong(st));
-      return new InterpreterResult(InterpreterResult.Code.SUCCESS);
+      return new InterpreterResult(Code.SUCCESS);
     } catch (Exception e) {
-      return new InterpreterResult(InterpreterResult.Code.ERROR, e.getMessage());
+      return new InterpreterResult(Code.ERROR, e.getMessage());
     }
   }
 

@@ -22,7 +22,7 @@ import org.apache.spark.SparkContext;
 import org.apache.spark.sql.AnalysisException;
 import org.apache.spark.sql.SQLContext;
 import org.apache.zeppelin.interpreter.*;
-import org.apache.zeppelin.interpreter.InterpreterResult.Code;
+import org.apache.zeppelin.interpreter.Code;
 import org.apache.zeppelin.interpreter.util.SqlSplitter;
 import org.apache.zeppelin.scheduler.Scheduler;
 import org.apache.zeppelin.scheduler.SchedulerFactory;

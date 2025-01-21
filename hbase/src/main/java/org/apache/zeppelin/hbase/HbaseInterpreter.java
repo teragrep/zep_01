@@ -114,10 +114,10 @@ public class HbaseInterpreter extends Interpreter {
       this.scriptingContainer.runScriptlet(cmd);
       this.writer.flush();
       logger.debug(writer.toString());
-      return new InterpreterResult(InterpreterResult.Code.SUCCESS, writer.getBuffer().toString());
+      return new InterpreterResult(Code.SUCCESS, writer.getBuffer().toString());
     } catch (Throwable t) {
       logger.error("Can not run '" + cmd + "'", t);
-      return new InterpreterResult(InterpreterResult.Code.ERROR, t.getMessage());
+      return new InterpreterResult(Code.ERROR, t.getMessage());
     }
   }
 

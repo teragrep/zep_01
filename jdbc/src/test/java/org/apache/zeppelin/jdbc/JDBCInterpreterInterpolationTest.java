@@ -15,11 +15,7 @@
 package org.apache.zeppelin.jdbc;
 
 import com.mockrunner.jdbc.BasicJDBCTestCaseAdapter;
-import org.apache.zeppelin.interpreter.InterpreterContext;
-import org.apache.zeppelin.interpreter.InterpreterException;
-import org.apache.zeppelin.interpreter.InterpreterOutput;
-import org.apache.zeppelin.interpreter.InterpreterResult;
-import org.apache.zeppelin.interpreter.InterpreterResultMessage;
+import org.apache.zeppelin.interpreter.*;
 import org.apache.zeppelin.resource.LocalResourcePool;
 import org.apache.zeppelin.resource.ResourcePool;
 import org.apache.zeppelin.user.AuthenticationInfo;
@@ -29,7 +25,6 @@ import org.junit.jupiter.api.Test;
 
 import java.io.File;
 import java.io.IOException;
-import java.nio.file.Files;
 import java.nio.file.Path;
 import java.sql.Connection;
 import java.sql.DriverManager;
@@ -98,12 +93,12 @@ class JDBCInterpreterInterpolationTest extends BasicJDBCTestCaseAdapter {
     JDBCInterpreter t = new JDBCInterpreter(properties);
     t.open();
     InterpreterResult interpreterResult = t.interpret(sqlQuery, interpreterContext);
-    assertEquals(InterpreterResult.Code.SUCCESS, interpreterResult.code());
+    assertEquals(Code.SUCCESS, interpreterResult.code());
 
     List<InterpreterResultMessage> resultMessages =
             interpreterContext.out.toInterpreterResultMessage();
     assertEquals(1, resultMessages.size());
-    assertEquals(InterpreterResult.Type.TABLE, resultMessages.get(0).getType());
+    assertEquals(Type.TABLE, resultMessages.get(0).getType());
     assertEquals("ID\tNAME\n", resultMessages.get(0).getData());
 
     //
@@ -114,11 +109,11 @@ class JDBCInterpreterInterpolationTest extends BasicJDBCTestCaseAdapter {
     t.open();
     interpreterContext = getInterpreterContext();
     interpreterResult = t.interpret(sqlQuery, interpreterContext);
-    assertEquals(InterpreterResult.Code.SUCCESS, interpreterResult.code());
+    assertEquals(Code.SUCCESS, interpreterResult.code());
 
     resultMessages = interpreterContext.out.toInterpreterResultMessage();
     assertEquals(1, resultMessages.size());
-    assertEquals(InterpreterResult.Type.TABLE, resultMessages.get(0).getType());
+    assertEquals(Type.TABLE, resultMessages.get(0).getType());
     assertEquals("ID\tNAME\nmem\tmemory\n", resultMessages.get(0).getData());
   }
 
@@ -143,12 +138,12 @@ class JDBCInterpreterInterpolationTest extends BasicJDBCTestCaseAdapter {
     //
     String sqlQuery = "select * from test_table where id = '{kbd}'";
     InterpreterResult interpreterResult = t.interpret(sqlQuery, interpreterContext);
-    assertEquals(InterpreterResult.Code.SUCCESS, interpreterResult.code());
+    assertEquals(Code.SUCCESS, interpreterResult.code());
 
     List<InterpreterResultMessage> resultMessages =
             interpreterContext.out.toInterpreterResultMessage();
     assertEquals(1, resultMessages.size());
-    assertEquals(InterpreterResult.Type.TABLE, resultMessages.get(0).getType());
+    assertEquals(Type.TABLE, resultMessages.get(0).getType());
     assertEquals("ID\tNAME\n", resultMessages.get(0).getData());
 
     resourcePool.put("itemId", "key");
@@ -159,10 +154,10 @@ class JDBCInterpreterInterpolationTest extends BasicJDBCTestCaseAdapter {
     sqlQuery = "select * from test_table where id = '{itemId}'";
     interpreterContext = getInterpreterContext();
     interpreterResult = t.interpret(sqlQuery, interpreterContext);
-    assertEquals(InterpreterResult.Code.SUCCESS, interpreterResult.code());
+    assertEquals(Code.SUCCESS, interpreterResult.code());
     resultMessages = interpreterContext.out.toInterpreterResultMessage();
     assertEquals(1, resultMessages.size());
-    assertEquals(InterpreterResult.Type.TABLE, resultMessages.get(0).getType());
+    assertEquals(Type.TABLE, resultMessages.get(0).getType());
     assertEquals("ID\tNAME\nkey\tkeyboard\n", resultMessages.get(0).getData());
   }
 
@@ -187,11 +182,11 @@ class JDBCInterpreterInterpolationTest extends BasicJDBCTestCaseAdapter {
     //
     String sqlQuery = "select * from test_table where name regexp '[aeiou]{2}'";
     InterpreterResult interpreterResult = t.interpret(sqlQuery, interpreterContext);
-    assertEquals(InterpreterResult.Code.SUCCESS, interpreterResult.code());
+    assertEquals(Code.SUCCESS, interpreterResult.code());
     List<InterpreterResultMessage> resultMessages =
             interpreterContext.out.toInterpreterResultMessage();
     assertEquals(1, resultMessages.size());
-    assertEquals(InterpreterResult.Type.TABLE, resultMessages.get(0).getType());
+    assertEquals(Type.TABLE, resultMessages.get(0).getType());
     assertEquals("ID\tNAME\nkey\tkeyboard\nmou\tmouse\n", resultMessages.get(0).getData());
   }
 

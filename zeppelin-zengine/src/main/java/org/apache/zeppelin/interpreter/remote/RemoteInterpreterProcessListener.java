@@ -17,7 +17,7 @@
 package org.apache.zeppelin.interpreter.remote;
 
 import org.apache.thrift.TException;
-import org.apache.zeppelin.interpreter.InterpreterResult;
+import org.apache.zeppelin.interpreter.Type;
 import org.apache.zeppelin.interpreter.thrift.ParagraphInfo;
 
 import java.io.IOException;
@@ -46,7 +46,7 @@ public interface RemoteInterpreterProcessListener {
    * @param output
    */
   void onOutputUpdated(
-      String noteId, String paragraphId, int index, InterpreterResult.Type type, String output);
+      String noteId, String paragraphId, int index, Type type, String output);
 
   /**
    * Invoked when output is cleared.

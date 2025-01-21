@@ -47,7 +47,7 @@ public class InterpreterOutputTest implements InterpreterOutputListener {
   public void testDetectNewline() throws IOException {
     out.write("hello\nworld");
     assertEquals(1, out.size());
-    assertEquals(InterpreterResult.Type.TEXT, out.getOutputAt(0).getType());
+    assertEquals(Type.TEXT, out.getOutputAt(0).getType());
     assertEquals("hello\n", new String(out.getOutputAt(0).toByteArray()));
     assertEquals(1, numAppendEvent);
     assertEquals(1, numUpdateEvent);
@@ -73,7 +73,7 @@ public class InterpreterOutputTest implements InterpreterOutputListener {
     out.clear();
     out.write("%html div");
     assertEquals("", new String(out.getOutputAt(0).toByteArray()));
-    assertEquals(InterpreterResult.Type.HTML, out.getOutputAt(0).getType());
+    assertEquals(Type.HTML, out.getOutputAt(0).getType());
 
     out.flush();
     assertEquals("div", new String(out.getOutputAt(0).toByteArray()));
@@ -84,21 +84,21 @@ public class InterpreterOutputTest implements InterpreterOutputListener {
   public void testType() throws IOException {
     // default output stream type is TEXT
     out.write("Text\n");
-    assertEquals(InterpreterResult.Type.TEXT, out.getOutputAt(0).getType());
+    assertEquals(Type.TEXT, out.getOutputAt(0).getType());
     assertEquals("Text\n", new String(out.getOutputAt(0).toByteArray()));
     assertEquals(1, numAppendEvent);
     assertEquals(1, numUpdateEvent);
 
     // change type
     out.write("%html\n");
-    assertEquals(InterpreterResult.Type.HTML, out.getOutputAt(1).getType());
+    assertEquals(Type.HTML, out.getOutputAt(1).getType());
     assertEquals("", new String(out.getOutputAt(1).toByteArray()));
     assertEquals(1, numAppendEvent);
     assertEquals(1, numUpdateEvent);
 
     // none TEXT type output stream does not generate append event
     out.write("<div>html</div>\n");
-    assertEquals(InterpreterResult.Type.HTML, out.getOutputAt(1).getType());
+    assertEquals(Type.HTML, out.getOutputAt(1).getType());
     assertEquals(1, numAppendEvent);
     assertEquals(2, numUpdateEvent);
     out.flush();
@@ -106,7 +106,7 @@ public class InterpreterOutputTest implements InterpreterOutputListener {
 
     // change type to text again
     out.write("%text hello\n");
-    assertEquals(InterpreterResult.Type.TEXT, out.getOutputAt(2).getType());
+    assertEquals(Type.TEXT, out.getOutputAt(2).getType());
     assertEquals(2, numAppendEvent);
     assertEquals(4, numUpdateEvent);
     assertEquals("hello\n", new String(out.getOutputAt(2).toByteArray()));
@@ -115,39 +115,39 @@ public class InterpreterOutputTest implements InterpreterOutputListener {
   @Test
   public void testChangeTypeInTheBeginning() throws IOException {
     out.write("%html\nHello");
-    assertEquals(InterpreterResult.Type.HTML, out.getOutputAt(0).getType());
+    assertEquals(Type.HTML, out.getOutputAt(0).getType());
   }
 
   @Test
   public void testChangeTypeWithMultipleNewline() throws IOException {
     out.write("%html\n");
-    assertEquals(InterpreterResult.Type.HTML, out.getOutputAt(0).getType());
+    assertEquals(Type.HTML, out.getOutputAt(0).getType());
 
     out.write("%text\n");
-    assertEquals(InterpreterResult.Type.TEXT, out.getOutputAt(1).getType());
+    assertEquals(Type.TEXT, out.getOutputAt(1).getType());
 
     out.write("\n%html\n");
-    assertEquals(InterpreterResult.Type.HTML, out.getOutputAt(2).getType());
+    assertEquals(Type.HTML, out.getOutputAt(2).getType());
 
     out.write("\n\n%text\n");
-    assertEquals(InterpreterResult.Type.TEXT, out.getOutputAt(3).getType());
+    assertEquals(Type.TEXT, out.getOutputAt(3).getType());
 
     out.write("\n\n\n%html\n");
-    assertEquals(InterpreterResult.Type.HTML, out.getOutputAt(4).getType());
+    assertEquals(Type.HTML, out.getOutputAt(4).getType());
   }
 
   @Test
   public void testChangeTypeWithoutData() throws IOException {
     out.write("%html\n%table\n");
-    assertEquals(InterpreterResult.Type.HTML, out.getOutputAt(0).getType());
-    assertEquals(InterpreterResult.Type.TABLE, out.getOutputAt(1).getType());
+    assertEquals(Type.HTML, out.getOutputAt(0).getType());
+    assertEquals(Type.TABLE, out.getOutputAt(1).getType());
   }
 
   @Test
   public void testMagicData() throws IOException {
     out.write("%table col1\tcol2\n\n%html <h3> This is a hack </h3>\t234\n".getBytes());
-    assertEquals(InterpreterResult.Type.TABLE, out.getOutputAt(0).getType());
-    assertEquals(InterpreterResult.Type.HTML, out.getOutputAt(1).getType());
+    assertEquals(Type.TABLE, out.getOutputAt(0).getType());
+    assertEquals(Type.HTML, out.getOutputAt(1).getType());
     assertEquals("col1\tcol2\n", new String(out.getOutputAt(0).toByteArray()));
     out.flush();
     assertEquals("<h3> This is a hack </h3>\t234\n", new String(out.getOutputAt(1).toByteArray()));
@@ -157,7 +157,7 @@ public class InterpreterOutputTest implements InterpreterOutputListener {
   @Test
   public void testTableCellFormatting() throws IOException {
     out.write("%table col1\tcol2\n\n%html val1\tval2\n".getBytes());
-    assertEquals(InterpreterResult.Type.TABLE, out.getOutputAt(0).getType());
+    assertEquals(Type.TABLE, out.getOutputAt(0).getType());
     assertEquals("col1\tcol2\n", new String(out.getOutputAt(0).toByteArray()));
     out.flush();
     assertEquals("val1\tval2\n", new String(out.getOutputAt(1).toByteArray()));
@@ -166,10 +166,10 @@ public class InterpreterOutputTest implements InterpreterOutputListener {
   @Test
   public void testMixTableText() throws IOException {
     out.write("%table col1\tcol2\n\n%text val1".getBytes());
-    assertEquals(InterpreterResult.Type.TABLE, out.getOutputAt(0).getType());
+    assertEquals(Type.TABLE, out.getOutputAt(0).getType());
     assertEquals("col1\tcol2\n", new String(out.getOutputAt(0).toByteArray()));
     out.flush();
-    assertEquals(InterpreterResult.Type.TEXT, out.getOutputAt(1).getType());
+    assertEquals(Type.TEXT, out.getOutputAt(1).getType());
     assertEquals("val1", new String(out.getOutputAt(1).toByteArray()));
   }
 

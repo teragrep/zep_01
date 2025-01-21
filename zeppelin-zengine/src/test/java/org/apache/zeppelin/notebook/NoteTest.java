@@ -19,13 +19,7 @@ package org.apache.zeppelin.notebook;
 
 import org.apache.zeppelin.display.AngularObject;
 import org.apache.zeppelin.display.ui.TextBox;
-import org.apache.zeppelin.interpreter.Interpreter;
-import org.apache.zeppelin.interpreter.InterpreterFactory;
-import org.apache.zeppelin.interpreter.InterpreterNotFoundException;
-import org.apache.zeppelin.interpreter.InterpreterResult;
-import org.apache.zeppelin.interpreter.InterpreterSetting;
-import org.apache.zeppelin.interpreter.InterpreterSettingManager;
-import org.apache.zeppelin.interpreter.ManagedInterpreterGroup;
+import org.apache.zeppelin.interpreter.*;
 import org.apache.zeppelin.notebook.repo.NotebookRepo;
 import org.apache.zeppelin.scheduler.Scheduler;
 import org.apache.zeppelin.user.AuthenticationInfo;
@@ -158,7 +152,7 @@ public class NoteTest {
 
     Note note = new Note("test", "", interpreterFactory, interpreterSettingManager, paragraphJobListener, credentials, noteEventListener);
     Paragraph p1 = note.addNewParagraph(AuthenticationInfo.ANONYMOUS);
-    InterpreterResult result = new InterpreterResult(InterpreterResult.Code.SUCCESS, InterpreterResult.Type.TEXT, "result");
+    InterpreterResult result = new InterpreterResult(Code.SUCCESS, Type.TEXT, "result");
     p1.setResult(result);
 
     Paragraph p2 = note.addNewParagraph(AuthenticationInfo.ANONYMOUS);
@@ -194,7 +188,7 @@ public class NoteTest {
     String pText = "%spark sc.version";
     Paragraph p = note.addNewParagraph(AuthenticationInfo.ANONYMOUS);
     p.setText(pText);
-    p.setResult(new InterpreterResult(InterpreterResult.Code.SUCCESS, "1.6.2"));
+    p.setResult(new InterpreterResult(Code.SUCCESS, "1.6.2"));
     p.settings.getForms().put("textbox_1", new TextBox("name", "default_name"));
     p.settings.getParams().put("textbox_1", "my_name");
     note.getAngularObjects().put("ao_1", Arrays.asList(new AngularObject("name_1", "value_1", note.getId(), p.getId(), null)));

@@ -22,13 +22,7 @@ import org.apache.zeppelin.display.ui.CheckBox;
 import org.apache.zeppelin.display.ui.Password;
 import org.apache.zeppelin.display.ui.Select;
 import org.apache.zeppelin.display.ui.TextBox;
-import org.apache.zeppelin.interpreter.Interpreter;
-import org.apache.zeppelin.interpreter.InterpreterContext;
-import org.apache.zeppelin.interpreter.InterpreterException;
-import org.apache.zeppelin.interpreter.InterpreterGroup;
-import org.apache.zeppelin.interpreter.InterpreterOutput;
-import org.apache.zeppelin.interpreter.InterpreterResult;
-import org.apache.zeppelin.interpreter.InterpreterResultMessage;
+import org.apache.zeppelin.interpreter.*;
 import org.apache.zeppelin.interpreter.remote.RemoteInterpreterEventClient;
 import org.apache.zeppelin.interpreter.thrift.InterpreterCompletion;
 import org.junit.jupiter.api.AfterEach;
@@ -62,7 +56,7 @@ public abstract class BasePythonInterpreterTest extends ConcurrentTestCase {
     InterpreterContext context = getInterpreterContext();
     InterpreterResult result =
         interpreter.interpret("import sys\nprint(sys.version[0])", context);
-    assertEquals(InterpreterResult.Code.SUCCESS, result.code());
+    assertEquals(Code.SUCCESS, result.code());
     Thread.sleep(100);
     List<InterpreterResultMessage> interpreterResultMessages =
         context.out.toInterpreterResultMessage();
@@ -72,7 +66,7 @@ public abstract class BasePythonInterpreterTest extends ConcurrentTestCase {
     context = getInterpreterContext();
     result = interpreter.interpret("'hello world'", context);
     Thread.sleep(100);
-    assertEquals(InterpreterResult.Code.SUCCESS, result.code());
+    assertEquals(Code.SUCCESS, result.code());
     interpreterResultMessages = context.out.toInterpreterResultMessage();
     assertEquals(1, interpreterResultMessages.size());
     assertEquals("'hello world'", interpreterResultMessages.get(0).getData().trim());
@@ -81,7 +75,7 @@ public abstract class BasePythonInterpreterTest extends ConcurrentTestCase {
     context = getInterpreterContext();
     result = interpreter.interpret("print(u'你好')", context);
     Thread.sleep(100);
-    assertEquals(InterpreterResult.Code.SUCCESS, result.code());
+    assertEquals(Code.SUCCESS, result.code());
     interpreterResultMessages = context.out.toInterpreterResultMessage();
     assertEquals(1, interpreterResultMessages.size());
     assertEquals("你好\n", interpreterResultMessages.get(0).getData());
@@ -90,7 +84,7 @@ public abstract class BasePythonInterpreterTest extends ConcurrentTestCase {
     context = getInterpreterContext();
     result = interpreter.interpret("'hello world'\n'hello world2'", context);
     Thread.sleep(100);
-    assertEquals(InterpreterResult.Code.SUCCESS, result.code());
+    assertEquals(Code.SUCCESS, result.code());
     interpreterResultMessages = context.out.toInterpreterResultMessage();
     assertEquals(1, interpreterResultMessages.size());
     assertEquals("'hello world2'", interpreterResultMessages.get(0).getData().trim());
@@ -99,7 +93,7 @@ public abstract class BasePythonInterpreterTest extends ConcurrentTestCase {
     context = getInterpreterContext();
     result = interpreter.interpret("print('hello world')", context);
     Thread.sleep(100);
-    assertEquals(InterpreterResult.Code.SUCCESS, result.code());
+    assertEquals(Code.SUCCESS, result.code());
     interpreterResultMessages = context.out.toInterpreterResultMessage();
     assertEquals(1, interpreterResultMessages.size());
     assertEquals("hello world\n", interpreterResultMessages.get(0).getData());
@@ -108,7 +102,7 @@ public abstract class BasePythonInterpreterTest extends ConcurrentTestCase {
     context = getInterpreterContext();
     result = interpreter.interpret("print('hello world')\nprint('hello world2')", context);
     Thread.sleep(100);
-    assertEquals(InterpreterResult.Code.SUCCESS, result.code());
+    assertEquals(Code.SUCCESS, result.code());
     interpreterResultMessages = context.out.toInterpreterResultMessage();
     assertEquals(1, interpreterResultMessages.size());
     assertEquals("hello world\nhello world2\n", interpreterResultMessages.get(0).getData());
@@ -117,7 +111,7 @@ public abstract class BasePythonInterpreterTest extends ConcurrentTestCase {
     context = getInterpreterContext();
     result = interpreter.interpret("abc=1", context);
     Thread.sleep(100);
-    assertEquals(InterpreterResult.Code.SUCCESS, result.code());
+    assertEquals(Code.SUCCESS, result.code());
     interpreterResultMessages = context.out.toInterpreterResultMessage();
     assertEquals(0, interpreterResultMessages.size());
 
@@ -126,7 +120,7 @@ public abstract class BasePythonInterpreterTest extends ConcurrentTestCase {
     result =
         interpreter.interpret("if abc > 0:\n\tprint('True')\nelse:\n\tprint('False')", context);
     Thread.sleep(100);
-    assertEquals(InterpreterResult.Code.SUCCESS, result.code());
+    assertEquals(Code.SUCCESS, result.code());
     interpreterResultMessages = context.out.toInterpreterResultMessage();
     assertEquals(1, interpreterResultMessages.size());
     assertEquals("True\n", interpreterResultMessages.get(0).getData());
@@ -135,7 +129,7 @@ public abstract class BasePythonInterpreterTest extends ConcurrentTestCase {
     context = getInterpreterContext();
     result = interpreter.interpret("for i in range(3):\n\tprint(i)", context);
     Thread.sleep(100);
-    assertEquals(InterpreterResult.Code.SUCCESS, result.code());
+    assertEquals(Code.SUCCESS, result.code());
     interpreterResultMessages = context.out.toInterpreterResultMessage();
     assertEquals(1, interpreterResultMessages.size());
     assertEquals("0\n1\n2\n", interpreterResultMessages.get(0).getData());
@@ -144,14 +138,14 @@ public abstract class BasePythonInterpreterTest extends ConcurrentTestCase {
     context = getInterpreterContext();
     result = interpreter.interpret("print(unknown)", context);
     Thread.sleep(100);
-    assertEquals(InterpreterResult.Code.ERROR, result.code());
+    assertEquals(Code.ERROR, result.code());
     assertTrue(result.message().get(0).getData().contains("name 'unknown' is not defined"));
 
     // raise runtime exception
     context = getInterpreterContext();
     result = interpreter.interpret("1/0", context);
     Thread.sleep(100);
-    assertEquals(InterpreterResult.Code.ERROR, result.code());
+    assertEquals(Code.ERROR, result.code());
     assertTrue(result.message().get(0).getData().contains("ZeroDivisionError"));
 
     // ZEPPELIN-1133
@@ -163,7 +157,7 @@ public abstract class BasePythonInterpreterTest extends ConcurrentTestCase {
             "greet('Jack')",
         context);
     Thread.sleep(100);
-    assertEquals(InterpreterResult.Code.SUCCESS, result.code());
+    assertEquals(Code.SUCCESS, result.code());
     interpreterResultMessages = context.out.toInterpreterResultMessage();
     assertEquals(1, interpreterResultMessages.size());
     assertEquals("Hello Jack\n", interpreterResultMessages.get(0).getData());
@@ -172,7 +166,7 @@ public abstract class BasePythonInterpreterTest extends ConcurrentTestCase {
     context = getInterpreterContext();
     result = interpreter.interpret("print('there is no Error: ok')", context);
     Thread.sleep(100);
-    assertEquals(InterpreterResult.Code.SUCCESS, result.code());
+    assertEquals(Code.SUCCESS, result.code());
     interpreterResultMessages = context.out.toInterpreterResultMessage();
     assertEquals(1, interpreterResultMessages.size());
     assertEquals("there is no Error: ok\n", interpreterResultMessages.get(0).getData());
@@ -181,7 +175,7 @@ public abstract class BasePythonInterpreterTest extends ConcurrentTestCase {
     context = getInterpreterContext();
     result = interpreter.interpret("# print('Hello')", context);
     Thread.sleep(100);
-    assertEquals(InterpreterResult.Code.SUCCESS, result.code());
+    assertEquals(Code.SUCCESS, result.code());
     interpreterResultMessages = context.out.toInterpreterResultMessage();
     assertEquals(0, interpreterResultMessages.size());
 
@@ -189,7 +183,7 @@ public abstract class BasePythonInterpreterTest extends ConcurrentTestCase {
     result = interpreter.interpret(
         "# print('Hello')\n# print('How are u?')\n# time.sleep(1)", context);
     Thread.sleep(100);
-    assertEquals(InterpreterResult.Code.SUCCESS, result.code());
+    assertEquals(Code.SUCCESS, result.code());
     interpreterResultMessages = context.out.toInterpreterResultMessage();
     assertEquals(0, interpreterResultMessages.size());
 
@@ -197,7 +191,7 @@ public abstract class BasePythonInterpreterTest extends ConcurrentTestCase {
     context = getInterpreterContext();
     result = interpreter.interpret(
         "for i in range(1,4):\n" + "\tprint(i)", context);
-    assertEquals(InterpreterResult.Code.SUCCESS, result.code());
+    assertEquals(Code.SUCCESS, result.code());
     interpreterResultMessages = context.out.toInterpreterResultMessage();
     assertEquals(1, interpreterResultMessages.size());
     assertEquals("1\n2\n3\n", interpreterResultMessages.get(0).getData());
@@ -210,7 +204,7 @@ public abstract class BasePythonInterpreterTest extends ConcurrentTestCase {
     String st = "a='hello'";
     InterpreterResult result = interpreter.interpret(st, context);
     Thread.sleep(100);
-    assertEquals(InterpreterResult.Code.SUCCESS, result.code());
+    assertEquals(Code.SUCCESS, result.code());
 
     // now we can get the completion for `a.`
     context = getInterpreterContext();
@@ -241,7 +235,7 @@ public abstract class BasePythonInterpreterTest extends ConcurrentTestCase {
     InterpreterResult result =
         interpreter.interpret("z.input(name='text_1', defaultValue='value_1')", context);
     Thread.sleep(100);
-    assertEquals(InterpreterResult.Code.SUCCESS, result.code());
+    assertEquals(Code.SUCCESS, result.code());
     List<InterpreterResultMessage> interpreterResultMessages =
         context.out.toInterpreterResultMessage();
     assertTrue(interpreterResultMessages.get(0).getData().contains("'value_1'"));
@@ -256,7 +250,7 @@ public abstract class BasePythonInterpreterTest extends ConcurrentTestCase {
     result =
         interpreter.interpret("z.password(name='pwd_1')", context);
     Thread.sleep(100);
-    assertEquals(InterpreterResult.Code.SUCCESS, result.code());
+    assertEquals(Code.SUCCESS, result.code());
     assertInstanceOf(Password.class, context.getGui().getForms().get("pwd_1"));
     Password password = (Password) context.getGui().getForms().get("pwd_1");
     assertEquals("pwd_1", password.getName());
@@ -265,7 +259,7 @@ public abstract class BasePythonInterpreterTest extends ConcurrentTestCase {
     context = getInterpreterContext();
     result = interpreter.interpret("z.select(name='select_1'," +
         " options=[('value_1', 'name_1'), ('value_2', 'name_2')])", context);
-    assertEquals(InterpreterResult.Code.SUCCESS, result.code());
+    assertEquals(Code.SUCCESS, result.code());
     assertEquals(1, context.getGui().getForms().size());
     assertInstanceOf(Select.class, context.getGui().getForms().get("select_1"));
     Select select = (Select) context.getGui().getForms().get("select_1");
@@ -278,7 +272,7 @@ public abstract class BasePythonInterpreterTest extends ConcurrentTestCase {
     context = getInterpreterContext();
     result = interpreter.interpret("z.checkbox(name='checkbox_1'," +
         "options=[('value_1', 'name_1'), ('value_2', 'name_2')])", context);
-    assertEquals(InterpreterResult.Code.SUCCESS, result.code());
+    assertEquals(Code.SUCCESS, result.code());
     assertEquals(1, context.getGui().getForms().size());
     assertInstanceOf(CheckBox.class, context.getGui().getForms().get("checkbox_1"));
     CheckBox checkbox = (CheckBox) context.getGui().getForms().get("checkbox_1");
@@ -303,39 +297,46 @@ public abstract class BasePythonInterpreterTest extends ConcurrentTestCase {
 
     InterpreterContext context = getInterpreterContext();
     InterpreterResult result = interpreter.interpret(validCode, context);
-    assertEquals(InterpreterResult.Code.SUCCESS, result.code(),
+    assertEquals(
+            Code.SUCCESS, result.code(),
         context.out.toString() + ", " + result.toString());
 
     context = getInterpreterContext();
     result = interpreter.interpret(redefinitionCode, context);
-    assertEquals(InterpreterResult.Code.SUCCESS, result.code(),
+    assertEquals(
+            Code.SUCCESS, result.code(),
         context.out.toString() + ", " + result.toString());
 
     context = getInterpreterContext();
     result = interpreter.interpret(validCode, context);
-    assertEquals(InterpreterResult.Code.ERROR, result.code(),
+    assertEquals(
+            Code.ERROR, result.code(),
         context.out.toString() + ", " + result.toString());
 
     context = getInterpreterContext();
     result = interpreter.interpret(restoreCode, context);
-    assertEquals(InterpreterResult.Code.SUCCESS, result.code(),
+    assertEquals(
+            Code.SUCCESS, result.code(),
         context.out.toString() + ", " + result.toString());
 
     context = getInterpreterContext();
     result = interpreter.interpret("type(__zeppelin__)", context);
     System.out.println("result: " + context.out.toString() + ", " + result.toString());
-    assertEquals(InterpreterResult.Code.SUCCESS, result.code(),
+    assertEquals(
+            Code.SUCCESS, result.code(),
         context.out.toString() + ", " + result.toString());
 
     context = getInterpreterContext();
     result = interpreter.interpret("type(z)", context);
     System.out.println("result2: " + context.out.toString() + ", " + result.toString());
-    assertEquals(InterpreterResult.Code.SUCCESS, result.code(),
+    assertEquals(
+            Code.SUCCESS, result.code(),
         context.out.toString() + ", " + result.toString());
 
     context = getInterpreterContext();
     result = interpreter.interpret(validCode, context);
-    assertEquals(InterpreterResult.Code.SUCCESS, result.code(),
+    assertEquals(
+            Code.SUCCESS, result.code(),
         context.out.toString() + ", " + result.toString());
   }
 

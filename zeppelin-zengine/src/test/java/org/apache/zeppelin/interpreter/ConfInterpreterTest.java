@@ -18,7 +18,6 @@
 package org.apache.zeppelin.interpreter;
 
 import org.apache.zeppelin.interpreter.remote.RemoteInterpreter;
-import org.junit.Before;
 import org.junit.Test;
 
 import static org.junit.Assert.assertEquals;
@@ -40,7 +39,7 @@ public class ConfInterpreterTest extends AbstractInterpreterTest {
         .build();
 
     InterpreterResult result = confInterpreter.interpret("property_1\tnew_value\nnew_property\tdummy_value", context);
-    assertEquals(InterpreterResult.Code.SUCCESS, result.code);
+    assertEquals(Code.SUCCESS, result.code);
 
     assertTrue(interpreterFactory.getInterpreter("test", executionContext) instanceof RemoteInterpreter);
     RemoteInterpreter remoteInterpreter = (RemoteInterpreter) interpreterFactory.getInterpreter("test", executionContext);
@@ -52,11 +51,11 @@ public class ConfInterpreterTest extends AbstractInterpreterTest {
 
     // rerun the paragraph with the same properties would result in SUCCESS
     result = confInterpreter.interpret("property_1\tnew_value\nnew_property\tdummy_value", context);
-    assertEquals(InterpreterResult.Code.SUCCESS, result.code);
+    assertEquals(Code.SUCCESS, result.code);
 
     // run the paragraph with the same properties would result in ERROR
     result = confInterpreter.interpret("property_1\tnew_value_2\nnew_property\tdummy_value", context);
-    assertEquals(InterpreterResult.Code.ERROR, result.code);
+    assertEquals(Code.ERROR, result.code);
   }
 
   @Test
@@ -69,7 +68,7 @@ public class ConfInterpreterTest extends AbstractInterpreterTest {
         .setParagraphId("paragraphId")
         .build();
     InterpreterResult result = confInterpreter.interpret("", context);
-    assertEquals(InterpreterResult.Code.SUCCESS, result.code);
+    assertEquals(Code.SUCCESS, result.code);
 
     assertTrue(interpreterFactory.getInterpreter("test", executionContext) instanceof RemoteInterpreter);
     RemoteInterpreter remoteInterpreter = (RemoteInterpreter) interpreterFactory.getInterpreter("test", executionContext);
@@ -91,10 +90,10 @@ public class ConfInterpreterTest extends AbstractInterpreterTest {
 
     RemoteInterpreter remoteInterpreter = (RemoteInterpreter) interpreterFactory.getInterpreter("test", executionContext);
     InterpreterResult result = remoteInterpreter.interpret("hello world", context);
-    assertEquals(InterpreterResult.Code.SUCCESS, result.code);
+    assertEquals(Code.SUCCESS, result.code);
 
     result = confInterpreter.interpret("property_1\tnew_value\nnew_property\tdummy_value", context);
-    assertEquals(InterpreterResult.Code.ERROR, result.code);
+    assertEquals(Code.ERROR, result.code);
   }
 
 }

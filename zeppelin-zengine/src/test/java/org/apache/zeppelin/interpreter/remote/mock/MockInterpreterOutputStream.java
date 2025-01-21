@@ -59,7 +59,7 @@ public class MockInterpreterOutputStream extends Interpreter {
     } catch (IOException e) {
       throw new InterpreterException(e);
     }
-    return new InterpreterResult(InterpreterResult.Code.valueOf(ret[0]), (ret.length > 2) ?
+    return new InterpreterResult(Code.valueOf(ret[0]), (ret.length > 2) ?
             ret[2] : "");
   }
 

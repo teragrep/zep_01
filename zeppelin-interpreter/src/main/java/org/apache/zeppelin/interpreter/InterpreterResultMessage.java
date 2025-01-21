@@ -22,15 +22,15 @@ import java.io.Serializable;
  * Interpreter result message
  */
 public class InterpreterResultMessage implements Serializable {
-  InterpreterResult.Type type;
+  Type type;
   String data;
 
-  public InterpreterResultMessage(InterpreterResult.Type type, String data) {
+  public InterpreterResultMessage(Type type, String data) {
     this.type = type;
     this.data = data;
   }
 
-  public InterpreterResult.Type getType() {
+  public Type getType() {
     return type;
   }
 

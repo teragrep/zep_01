@@ -23,8 +23,8 @@ import org.apache.thrift.transport.TSocket;
 import org.apache.thrift.transport.TTransportException;
 import org.apache.zeppelin.display.AngularObject;
 import org.apache.zeppelin.display.AngularObjectRegistryListener;
-import org.apache.zeppelin.interpreter.InterpreterResult;
 import org.apache.zeppelin.interpreter.InterpreterResultMessage;
+import org.apache.zeppelin.interpreter.Type;
 import org.apache.zeppelin.interpreter.thrift.LibraryMetadata;
 import org.apache.zeppelin.interpreter.thrift.OutputAppendEvent;
 import org.apache.zeppelin.interpreter.thrift.OutputUpdateAllEvent;
@@ -233,7 +233,7 @@ public class RemoteInterpreterEventClient implements ResourcePoolConnector,
 
   public void onInterpreterOutputUpdate(
       String noteId, String paragraphId, int outputIndex,
-      InterpreterResult.Type type, String output) {
+      Type type, String output) {
     try {
       callRemoteFunction(client -> {
         client.updateOutput(

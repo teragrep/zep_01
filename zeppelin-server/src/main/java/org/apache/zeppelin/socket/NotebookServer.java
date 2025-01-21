@@ -47,7 +47,6 @@ import org.apache.zeppelin.display.AngularObjectRegistryListener;
 import org.apache.zeppelin.display.GUI;
 import org.apache.zeppelin.display.Input;
 import org.apache.zeppelin.interpreter.InterpreterGroup;
-import org.apache.zeppelin.interpreter.InterpreterResult;
 import org.apache.zeppelin.interpreter.InterpreterSetting;
 import org.apache.zeppelin.interpreter.remote.RemoteAngularObjectRegistry;
 import org.apache.zeppelin.interpreter.remote.RemoteInterpreterProcessListener;
@@ -75,7 +74,6 @@ import org.apache.zeppelin.service.SimpleServiceCallback;
 import org.apache.zeppelin.ticket.TicketContainer;
 import org.apache.zeppelin.types.InterpreterSettingsList;
 import org.apache.zeppelin.user.AuthenticationInfo;
-import org.apache.zeppelin.util.IdHashes;
 import org.apache.zeppelin.utils.CorsUtils;
 import org.apache.zeppelin.utils.TestUtils;
 import org.eclipse.jetty.util.annotation.ManagedAttribute;
@@ -1609,7 +1607,7 @@ public class NotebookServer extends WebSocketServlet
    */
   @Override
   public void onOutputUpdated(String noteId, String paragraphId, int index,
-                              InterpreterResult.Type type, String output) {
+                              org.apache.zeppelin.interpreter.Type type, String output) {
     if (!sendParagraphStatusToFrontend) {
       return;
     }

@@ -42,9 +42,9 @@ public class EchoInterpreter extends Interpreter {
   @Override
   public InterpreterResult interpret(String st, InterpreterContext context) {
     if (Boolean.parseBoolean(getProperty("zeppelin.interpreter.echo.fail", "false"))) {
-      return new InterpreterResult(InterpreterResult.Code.ERROR);
+      return new InterpreterResult(Code.ERROR);
     } else {
-      return new InterpreterResult(InterpreterResult.Code.SUCCESS, st);
+      return new InterpreterResult(Code.SUCCESS, st);
     }
   }
 

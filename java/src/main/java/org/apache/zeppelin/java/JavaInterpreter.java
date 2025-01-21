@@ -24,10 +24,7 @@ import java.util.Properties;
 import java.util.UUID;
 import java.util.stream.Stream;
 
-import org.apache.zeppelin.interpreter.FormType;
-import org.apache.zeppelin.interpreter.Interpreter;
-import org.apache.zeppelin.interpreter.InterpreterContext;
-import org.apache.zeppelin.interpreter.InterpreterResult;
+import org.apache.zeppelin.interpreter.*;
 import org.apache.zeppelin.interpreter.thrift.InterpreterCompletion;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -64,10 +61,10 @@ public class JavaInterpreter extends Interpreter {
 
     try {
       String res = StaticRepl.execute(generatedClassName, code);
-      return new InterpreterResult(InterpreterResult.Code.SUCCESS, res);
+      return new InterpreterResult(Code.SUCCESS, res);
     } catch (Exception e) {
       LOGGER.error("Exception in Interpreter while interpret", e);
-      return new InterpreterResult(InterpreterResult.Code.ERROR, e.getMessage());
+      return new InterpreterResult(Code.ERROR, e.getMessage());
 
     }
 

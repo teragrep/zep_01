@@ -19,8 +19,10 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 import java.util.Properties;
 
+import org.apache.zeppelin.interpreter.Code;
 import org.apache.zeppelin.interpreter.InterpreterException;
 import org.apache.zeppelin.interpreter.InterpreterResult;
+import org.apache.zeppelin.interpreter.Type;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
@@ -50,8 +52,8 @@ public class HbaseInterpreterTest {
   @Test
   void putsTest() {
     InterpreterResult result = hbaseInterpreter.interpret("puts \"Hello World\"", null);
-    assertEquals(InterpreterResult.Code.SUCCESS, result.code());
-    assertEquals(InterpreterResult.Type.TEXT, result.message().get(0).getType());
+    assertEquals(Code.SUCCESS, result.code());
+    assertEquals(Type.TEXT, result.message().get(0).getType());
     assertEquals("Hello World\n", result.message().get(0).getData());
   }
 
@@ -60,15 +62,15 @@ public class HbaseInterpreterTest {
   public void putsLoadPath() {
     InterpreterResult result = hbaseInterpreter.interpret(
             "require 'two_power'; puts twoToThePowerOf(4)", null);
-    assertEquals(InterpreterResult.Code.SUCCESS, result.code());
-    assertEquals(InterpreterResult.Type.TEXT, result.message().get(0).getType());
+    assertEquals(Code.SUCCESS, result.code());
+    assertEquals(Type.TEXT, result.message().get(0).getType());
     assertEquals("16\n", result.message().get(0).getData());
   }
 
   @Test
   void testException() {
     InterpreterResult result = hbaseInterpreter.interpret("plot practical joke", null);
-    assertEquals(InterpreterResult.Code.ERROR, result.code());
+    assertEquals(Code.ERROR, result.code());
     assertEquals("(NameError) undefined local variable or method `joke' for main:Object",
             result.message().get(0).getData());
   }

@@ -21,14 +21,7 @@ import org.apache.commons.io.IOUtils;
 import org.apache.zeppelin.conf.ZeppelinConfiguration;
 import org.apache.zeppelin.conf.ZeppelinConfiguration.ConfVars;
 import org.apache.zeppelin.display.AngularObjectRegistry;
-import org.apache.zeppelin.interpreter.AbstractInterpreterTest;
-import org.apache.zeppelin.interpreter.ExecutionContext;
-import org.apache.zeppelin.interpreter.InterpreterException;
-import org.apache.zeppelin.interpreter.InterpreterGroup;
-import org.apache.zeppelin.interpreter.InterpreterNotFoundException;
-import org.apache.zeppelin.interpreter.InterpreterOption;
-import org.apache.zeppelin.interpreter.InterpreterResult;
-import org.apache.zeppelin.interpreter.InterpreterSetting;
+import org.apache.zeppelin.interpreter.*;
 import org.apache.zeppelin.interpreter.remote.RemoteInterpreter;
 import org.apache.zeppelin.notebook.repo.NotebookRepo;
 import org.apache.zeppelin.notebook.repo.NotebookRepoSettingsInfo;
@@ -503,7 +496,7 @@ public class NotebookTest extends AbstractInterpreterTest implements ParagraphJo
     Thread.sleep(2 * 1000);
     assertEquals(Status.ERROR, p1.getStatus());
     InterpreterResult result = p1.getReturn();
-    assertEquals(InterpreterResult.Code.ERROR, result.code());
+    assertEquals(Code.ERROR, result.code());
     assertEquals("Interpreter invalid not found", result.message().get(0).getData());
     assertNull(p1.getDateStarted());
   }

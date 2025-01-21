@@ -18,14 +18,7 @@
 package org.apache.zeppelin.spark;
 
 import org.apache.zeppelin.display.AngularObjectRegistry;
-import org.apache.zeppelin.interpreter.Interpreter;
-import org.apache.zeppelin.interpreter.InterpreterContext;
-import org.apache.zeppelin.interpreter.InterpreterException;
-import org.apache.zeppelin.interpreter.InterpreterGroup;
-import org.apache.zeppelin.interpreter.InterpreterOutput;
-import org.apache.zeppelin.interpreter.InterpreterResult;
-import org.apache.zeppelin.interpreter.InterpreterResult.Type;
-import org.apache.zeppelin.interpreter.InterpreterResultMessage;
+import org.apache.zeppelin.interpreter.*;
 import org.apache.zeppelin.interpreter.remote.RemoteInterpreterEventClient;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Disabled;
@@ -33,7 +26,6 @@ import org.junit.jupiter.api.TestMethodOrder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.File;
 import java.io.IOException;
 import java.util.LinkedList;
 import java.util.List;
@@ -137,11 +129,11 @@ public class PySparkInterpreterMatplotlibTest {
   void dependenciesAreInstalled() throws InterpreterException {
     // matplotlib
     InterpreterResult ret = pyspark.interpret("import matplotlib", context);
-    assertEquals(InterpreterResult.Code.SUCCESS, ret.code(), ret.message().toString());
+    assertEquals(Code.SUCCESS, ret.code(), ret.message().toString());
 
     // inline backend
     ret = pyspark.interpret("import backend_zinline", context);
-    assertEquals(InterpreterResult.Code.SUCCESS, ret.code(), ret.message().toString());
+    assertEquals(Code.SUCCESS, ret.code(), ret.message().toString());
   }
 
   @Test
@@ -154,7 +146,7 @@ public class PySparkInterpreterMatplotlibTest {
     ret = pyspark.interpret("plt.plot([1, 2, 3])", context);
     ret = pyspark.interpret("plt.show()", context);
 
-    assertEquals(InterpreterResult.Code.SUCCESS, ret.code(), ret.message().toString());
+    assertEquals(Code.SUCCESS, ret.code(), ret.message().toString());
     assertEquals(Type.HTML, ret.message().get(0).getType(), ret.message().toString());
     assertTrue(ret.message().get(0).getData().contains("data:image/png;base64"));
     assertTrue(ret.message().get(0).getData().contains("<div>"));
@@ -204,7 +196,7 @@ public class PySparkInterpreterMatplotlibTest {
     // of FigureManager, causing show() to set the output
     // type to HTML even though the figure is inactive.
     ret = pyspark.interpret("plt.show()", context);
-    assertEquals(InterpreterResult.Code.SUCCESS, ret.code(), ret.message().toString());
+    assertEquals(Code.SUCCESS, ret.code(), ret.message().toString());
 
     // Now test that plot can be reshown if it is updated. It should be
     // different from the previous one because it will plot the same line
@@ -223,7 +215,7 @@ public class PySparkInterpreterMatplotlibTest {
     ret = pyspark.interpret("z.configure_mpl(interactive=False, close=False, angular=True)", context);
     ret = pyspark.interpret("plt.plot([1, 2, 3])", context);
     ret = pyspark.interpret("plt.show()", context);
-    assertEquals(InterpreterResult.Code.SUCCESS, ret.code(), ret.message().toString());
+    assertEquals(Code.SUCCESS, ret.code(), ret.message().toString());
     assertEquals(Type.ANGULAR, ret.message().get(0).getType(), ret.message().toString());
 
     // Check if the figure data is in the Angular Object Registry

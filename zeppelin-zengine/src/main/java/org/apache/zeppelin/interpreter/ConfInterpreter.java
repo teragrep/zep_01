@@ -70,10 +70,10 @@ public class ConfInterpreter extends Interpreter {
       finalProperties.putAll(newProperties);
       LOGGER.debug("Properties for InterpreterGroup: {} is {}", interpreterGroupId, finalProperties);
       interpreterSetting.setInterpreterGroupProperties(interpreterGroupId, finalProperties);
-      return new InterpreterResult(InterpreterResult.Code.SUCCESS);
+      return new InterpreterResult(Code.SUCCESS);
     } catch (IOException e) {
       LOGGER.error("Fail to update interpreter setting", e);
-      return new InterpreterResult(InterpreterResult.Code.ERROR, ExceptionUtils.getStackTrace(e));
+      return new InterpreterResult(Code.ERROR, ExceptionUtils.getStackTrace(e));
     }
   }
 

@@ -17,11 +17,7 @@
 
 package org.apache.zeppelin.scheduler;
 
-import org.apache.zeppelin.interpreter.AbstractInterpreterTest;
-import org.apache.zeppelin.interpreter.InterpreterContext;
-import org.apache.zeppelin.interpreter.InterpreterException;
-import org.apache.zeppelin.interpreter.InterpreterResult;
-import org.apache.zeppelin.interpreter.InterpreterSetting;
+import org.apache.zeppelin.interpreter.*;
 import org.apache.zeppelin.interpreter.remote.RemoteInterpreter;
 import org.apache.zeppelin.interpreter.remote.RemoteInterpreterProcessListener;
 import org.apache.zeppelin.interpreter.thrift.ParagraphInfo;
@@ -281,7 +277,7 @@ public class RemoteSchedulerTest extends AbstractInterpreterTest
   }
 
   @Override
-  public void onOutputUpdated(String noteId, String paragraphId, int index, InterpreterResult.Type type, String output) {
+  public void onOutputUpdated(String noteId, String paragraphId, int index, Type type, String output) {
 
   }
 

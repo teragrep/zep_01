@@ -42,19 +42,19 @@ public class InterpreterResultMessageOutput extends OutputStream {
   private final List<Object> outList = new LinkedList<>();
   private InterpreterOutputChangeWatcher watcher;
   private final InterpreterResultMessageOutputListener flushListener;
-  private InterpreterResult.Type type = InterpreterResult.Type.TEXT;
+  private Type type = Type.TEXT;
   private boolean firstWrite = true;
   private boolean enableTableAppend = true;
 
   public InterpreterResultMessageOutput(
-      InterpreterResult.Type type,
+      Type type,
       InterpreterResultMessageOutputListener listener) {
     this.type = type;
     this.flushListener = listener;
   }
 
   public InterpreterResultMessageOutput(
-      InterpreterResult.Type type,
+      Type type,
       InterpreterResultMessageOutputListener flushListener,
       InterpreterOutputChangeListener listener) throws IOException {
     this.type = type;
@@ -67,11 +67,11 @@ public class InterpreterResultMessageOutput extends OutputStream {
     this.enableTableAppend = enableTableAppend;
   }
 
-  public InterpreterResult.Type getType() {
+  public Type getType() {
     return type;
   }
 
-  public void setType(InterpreterResult.Type type) {
+  public void setType(Type type) {
     if (this.type != type) {
       clear();
       this.type = type;
@@ -245,7 +245,7 @@ public class InterpreterResultMessageOutput extends OutputStream {
   }
 
   public boolean isAppendSupported() {
-    return type == InterpreterResult.Type.TEXT || (type == InterpreterResult.Type.TABLE && enableTableAppend);
+    return type == Type.TEXT || (type == Type.TABLE && enableTableAppend);
   }
 
   private void copyStream(InputStream in, OutputStream out) throws IOException {

@@ -16,8 +16,8 @@
  */
 package org.apache.zeppelin.tabledata;
 
-import org.apache.zeppelin.interpreter.InterpreterResult;
 import org.apache.zeppelin.interpreter.InterpreterResultMessage;
+import org.apache.zeppelin.interpreter.Type;
 import org.junit.Test;
 
 import java.util.Iterator;
@@ -29,7 +29,7 @@ public class InterpreterResultTableDataTest {
   @Test
   public void test() {
     InterpreterResultMessage msg = new InterpreterResultMessage(
-        InterpreterResult.Type.TABLE,
+        Type.TABLE,
         "key\tvalue\nsun\t100\nmoon\t200\n");
     InterpreterResultTableData table = new InterpreterResultTableData(msg);
 

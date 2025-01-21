@@ -23,13 +23,7 @@ import org.apache.zeppelin.display.ui.CheckBox;
 import org.apache.zeppelin.display.ui.Password;
 import org.apache.zeppelin.display.ui.Select;
 import org.apache.zeppelin.display.ui.TextBox;
-import org.apache.zeppelin.interpreter.InterpreterContext;
-import org.apache.zeppelin.interpreter.InterpreterException;
-import org.apache.zeppelin.interpreter.InterpreterGroup;
-import org.apache.zeppelin.interpreter.InterpreterOutput;
-import org.apache.zeppelin.interpreter.InterpreterOutputListener;
-import org.apache.zeppelin.interpreter.InterpreterResult;
-import org.apache.zeppelin.interpreter.InterpreterResultMessageOutput;
+import org.apache.zeppelin.interpreter.*;
 import org.apache.zeppelin.interpreter.remote.RemoteInterpreterEventClient;
 import org.apache.zeppelin.interpreter.thrift.InterpreterCompletion;
 import org.junit.jupiter.api.AfterEach;
@@ -96,56 +90,56 @@ class SparkInterpreterTest {
     interpreter.open();
 
     InterpreterResult result = interpreter.interpret("val a=\"hello world\"", getInterpreterContext());
-    assertEquals(InterpreterResult.Code.SUCCESS, result.code());
+    assertEquals(Code.SUCCESS, result.code());
     // Use contains instead of equals, because there's behavior difference between different scala versions
     assertTrue(output.contains("a: String = hello world\n"), output);
 
     result = interpreter.interpret("print(a)", getInterpreterContext());
-    assertEquals(InterpreterResult.Code.SUCCESS, result.code());
+    assertEquals(Code.SUCCESS, result.code());
     assertEquals("hello world", output);
 
     // java stdout
     result = interpreter.interpret("System.out.print(a)", getInterpreterContext());
-    assertEquals(InterpreterResult.Code.SUCCESS, result.code());
+    assertEquals(Code.SUCCESS, result.code());
     assertEquals("hello world", output);
 
     // incomplete
     result = interpreter.interpret("println(a", getInterpreterContext());
-    assertEquals(InterpreterResult.Code.INCOMPLETE, result.code());
+    assertEquals(Code.INCOMPLETE, result.code());
 
     // syntax error
     result = interpreter.interpret("println(b)", getInterpreterContext());
-    assertEquals(InterpreterResult.Code.ERROR, result.code());
+    assertEquals(Code.ERROR, result.code());
     assertTrue(output.contains("not found: value b"));
 
     // multiple line
     result = interpreter.interpret("\"123\".\ntoInt", getInterpreterContext());
-    assertEquals(InterpreterResult.Code.SUCCESS, result.code());
+    assertEquals(Code.SUCCESS, result.code());
 
     // single line comment
     result = interpreter.interpret("print(\"hello world\")/*comment here*/", getInterpreterContext());
-    assertEquals(InterpreterResult.Code.SUCCESS, result.code());
+    assertEquals(Code.SUCCESS, result.code());
     assertEquals("hello world", output);
 
     result = interpreter.interpret("/*comment here*/\nprint(\"hello world\")", getInterpreterContext());
-    assertEquals(InterpreterResult.Code.SUCCESS, result.code());
+    assertEquals(Code.SUCCESS, result.code());
 
     if (!interpreter.isScala213()) {
       // multiple line comment, not supported by scala-2.13
       context = getInterpreterContext();
       result = interpreter.interpret("/*line 1 \n line 2*/", context);
-      assertEquals(InterpreterResult.Code.SUCCESS, result.code(), context.out.toString());
+      assertEquals(Code.SUCCESS, result.code(), context.out.toString());
     }
 
     // test function
     result = interpreter.interpret("def add(x:Int, y:Int)\n{ return x+y }", getInterpreterContext());
-    assertEquals(InterpreterResult.Code.SUCCESS, result.code());
+    assertEquals(Code.SUCCESS, result.code());
 
     result = interpreter.interpret("print(add(1,2))", getInterpreterContext());
-    assertEquals(InterpreterResult.Code.SUCCESS, result.code());
+    assertEquals(Code.SUCCESS, result.code());
 
     result = interpreter.interpret("/*line 1 \n line 2*/print(\"hello world\")", getInterpreterContext());
-    assertEquals(InterpreterResult.Code.SUCCESS, result.code());
+    assertEquals(Code.SUCCESS, result.code());
 
     // Companion object with case class
     result = interpreter.interpret("import scala.math._\n" +
@@ -158,7 +152,7 @@ class SparkInterpreterTest {
         "}\n" +
         "\n" +
         "val circle1 = new Circle(5.0)", getInterpreterContext());
-    assertEquals(InterpreterResult.Code.SUCCESS, result.code());
+    assertEquals(Code.SUCCESS, result.code());
 
     // use case class in spark
     //    context = getInterpreterContext();
@@ -167,16 +161,16 @@ class SparkInterpreterTest {
 
     // class extend
     result = interpreter.interpret("import java.util.ArrayList", getInterpreterContext());
-    assertEquals(InterpreterResult.Code.SUCCESS, result.code());
+    assertEquals(Code.SUCCESS, result.code());
 
     result = interpreter.interpret("class MyArrayList extends ArrayList{}", getInterpreterContext());
-    assertEquals(InterpreterResult.Code.SUCCESS, result.code());
+    assertEquals(Code.SUCCESS, result.code());
 
     // spark rdd operation
     context = getInterpreterContext();
     context.setParagraphId("pid_1");
     result = interpreter.interpret("sc\n.range(1, 10)\n.map(e=>e)\n.sum", context);
-    assertEquals(InterpreterResult.Code.SUCCESS, result.code());
+    assertEquals(Code.SUCCESS, result.code());
     assertTrue(output.contains("45"));
     ArgumentCaptor<Map> captorEvent = ArgumentCaptor.forClass(Map.class);
     verify(mockRemoteEventClient).onParaInfosReceived(captorEvent.capture());
@@ -186,7 +180,7 @@ class SparkInterpreterTest {
     context = getInterpreterContext();
     context.setParagraphId("pid_2");
     result = interpreter.interpret("sc\n.range(1, 10)\n.sum", context);
-    assertEquals(InterpreterResult.Code.SUCCESS, result.code());
+    assertEquals(Code.SUCCESS, result.code());
     assertTrue(output.contains("45"));
     captorEvent = ArgumentCaptor.forClass(Map.class);
     verify(mockRemoteEventClient).onParaInfosReceived(captorEvent.capture());
@@ -202,11 +196,11 @@ class SparkInterpreterTest {
     result = interpreter.interpret(
         "case class A(a: Integer, b: Integer)\n" +
         "sc.parallelize(Seq(A(10, 20), A(30, 40))).collect()", getInterpreterContext());
-    assertEquals(InterpreterResult.Code.SUCCESS, result.code());
+    assertEquals(Code.SUCCESS, result.code());
 
     // Dataset of case class objects
     result = interpreter.interpret("val bankText = sc.textFile(\"bank.csv\")", getInterpreterContext());
-    assertEquals(InterpreterResult.Code.SUCCESS, result.code());
+    assertEquals(Code.SUCCESS, result.code());
 
     context = getInterpreterContext();
     result = interpreter.interpret(
@@ -219,11 +213,11 @@ class SparkInterpreterTest {
             "            s(5).replaceAll(\"\\\"\", \"\").toInt\n" +
             "        )\n" +
             ").toDF()", context);
-    assertEquals(InterpreterResult.Code.SUCCESS, result.code(), context.out.toString());
+    assertEquals(Code.SUCCESS, result.code(), context.out.toString());
 
     // spark version
     result = interpreter.interpret("sc.version", getInterpreterContext());
-    assertEquals(InterpreterResult.Code.SUCCESS, result.code());
+    assertEquals(Code.SUCCESS, result.code());
 
     // spark sql test
     String version = output.trim();
@@ -234,15 +228,15 @@ class SparkInterpreterTest {
             "Person(2, \"jeff\", 23, \"China\"), Person(3, \"james\", 18, \"USA\")))\n" +
             "df2.printSchema\n" +
             "df2.show() ", context);
-    assertEquals(InterpreterResult.Code.SUCCESS, result.code());
+    assertEquals(Code.SUCCESS, result.code());
 
     result = interpreter.interpret("spark", getInterpreterContext());
-    assertEquals(InterpreterResult.Code.SUCCESS, result.code());
+    assertEquals(Code.SUCCESS, result.code());
 
     result = interpreter.interpret(
         "val df = spark.createDataFrame(Seq((1,\"a\"),(2, null)))\n" +
             "df.show()", getInterpreterContext());
-    assertEquals(InterpreterResult.Code.SUCCESS, result.code());
+    assertEquals(Code.SUCCESS, result.code());
     // SPARK-43063 changed the output of null to NULL
     assertTrue(StringUtils.containsIgnoreCase(output,
         "+---+----+\n" +
@@ -255,14 +249,14 @@ class SparkInterpreterTest {
     // ZeppelinContext
     context = getInterpreterContext();
     result = interpreter.interpret("z.show(df)", context);
-    assertEquals(InterpreterResult.Code.SUCCESS, result.code(), context.out.toString());
-    assertEquals(InterpreterResult.Type.TABLE, messageOutput.getType());
+    assertEquals(Code.SUCCESS, result.code(), context.out.toString());
+    assertEquals(Type.TABLE, messageOutput.getType());
     messageOutput.flush();
     assertEquals("_1\t_2\n1\ta\n2\tnull\n", messageOutput.toInterpreterResultMessage().getData());
 
     context = getInterpreterContext();
     result = interpreter.interpret("z.input(\"name\", \"default_name\")", context);
-    assertEquals(InterpreterResult.Code.SUCCESS, result.code());
+    assertEquals(Code.SUCCESS, result.code());
     assertEquals(1, context.getGui().getForms().size());
     assertInstanceOf(TextBox.class, context.getGui().getForms().get("name"));
     TextBox textBox = (TextBox) context.getGui().getForms().get("name");
@@ -271,7 +265,7 @@ class SparkInterpreterTest {
 
     context = getInterpreterContext();
     result = interpreter.interpret("z.password(\"pwd\")", context);
-    assertEquals(InterpreterResult.Code.SUCCESS, result.code());
+    assertEquals(Code.SUCCESS, result.code());
     assertEquals(1, context.getGui().getForms().size());
     assertInstanceOf(Password.class, context.getGui().getForms().get("pwd"));
     Password pwd = (Password) context.getGui().getForms().get("pwd");
@@ -279,7 +273,7 @@ class SparkInterpreterTest {
 
     context = getInterpreterContext();
     result = interpreter.interpret("z.checkbox(\"checkbox_1\", Seq((\"value_1\", \"name_1\"), (\"value_2\", \"name_2\")), Seq(\"value_2\"))", context);
-    assertEquals(InterpreterResult.Code.SUCCESS, result.code());
+    assertEquals(Code.SUCCESS, result.code());
     assertEquals(1, context.getGui().getForms().size());
     assertInstanceOf(CheckBox.class, context.getGui().getForms().get("checkbox_1"));
     CheckBox checkBox = (CheckBox) context.getGui().getForms().get("checkbox_1");
@@ -294,7 +288,7 @@ class SparkInterpreterTest {
 
     context = getInterpreterContext();
     result = interpreter.interpret("z.select(\"select_1\", Seq((\"value_1\", \"name_1\"), (\"value_2\", \"name_2\")), Seq(\"value_2\"))", context);
-    assertEquals(InterpreterResult.Code.SUCCESS, result.code());
+    assertEquals(Code.SUCCESS, result.code());
     assertEquals(1, context.getGui().getForms().size());
     assertInstanceOf(Select.class, context.getGui().getForms().get("select_1"));
     Select select = (Select) context.getGui().getForms().get("select_1");
@@ -328,14 +322,14 @@ class SparkInterpreterTest {
       // Zeppelin-Display
       result = interpreter.interpret("import org.apache.zeppelin.display.angular.notebookscope._\n" +
               "import AngularElem._", getInterpreterContext());
-      assertEquals(InterpreterResult.Code.SUCCESS, result.code());
+      assertEquals(Code.SUCCESS, result.code());
 
       context = getInterpreterContext();
       result = interpreter.interpret("<div style=\"color:blue\">\n" +
               "<h4>Hello Angular Display System</h4>\n" +
               "</div>.display", context);
-      assertEquals(InterpreterResult.Code.SUCCESS, result.code(), context.out.toString());
-      assertEquals(InterpreterResult.Type.ANGULAR, messageOutput.getType());
+      assertEquals(Code.SUCCESS, result.code(), context.out.toString());
+      assertEquals(Type.ANGULAR, messageOutput.getType());
       assertTrue(messageOutput.toInterpreterResultMessage().getData().contains("Hello Angular Display System"));
 
       result = interpreter.interpret("<div class=\"btn btn-success\">\n" +
@@ -343,8 +337,8 @@ class SparkInterpreterTest {
               "</div>.onClick{() =>\n" +
               "  println(\"hello world\")\n" +
               "}.display", getInterpreterContext());
-      assertEquals(InterpreterResult.Code.SUCCESS, result.code());
-      assertEquals(InterpreterResult.Type.ANGULAR, messageOutput.getType());
+      assertEquals(Code.SUCCESS, result.code());
+      assertEquals(Type.ANGULAR, messageOutput.getType());
       assertTrue(messageOutput.toInterpreterResultMessage().getData().contains("Click me"));
     }
 
@@ -360,7 +354,7 @@ class SparkInterpreterTest {
         } catch (InterpreterException e) {
           Assertions.fail("Failure happened: " + e.getMessage());
         }
-        assertEquals(InterpreterResult.Code.SUCCESS, result.code());
+        assertEquals(Code.SUCCESS, result.code());
       }
     };
     interpretThread.start();
@@ -388,7 +382,7 @@ class SparkInterpreterTest {
         } catch (InterpreterException e) {
           Assertions.fail("Failure happened: " + e.getMessage());
         }
-        assertEquals(InterpreterResult.Code.ERROR, result.code());
+        assertEquals(Code.ERROR, result.code());
         assertTrue(output.contains("cancelled"));
       }
     };
@@ -418,12 +412,12 @@ class SparkInterpreterTest {
     interpreter.open();
 
     InterpreterResult result = interpreter.interpret("val a=\"hello world\"", getInterpreterContext());
-    assertEquals(InterpreterResult.Code.SUCCESS, result.code());
+    assertEquals(Code.SUCCESS, result.code());
     // no output for define new variable
     assertEquals("", output);
 
     result = interpreter.interpret("print(a)", getInterpreterContext());
-    assertEquals(InterpreterResult.Code.SUCCESS, result.code());
+    assertEquals(Code.SUCCESS, result.code());
     // output from print statement will still be displayed
     assertEquals("hello world", output);
   }
@@ -446,12 +440,12 @@ class SparkInterpreterTest {
     interpreter.open();
 
     InterpreterResult result = interpreter.interpret("val a=\"hello world\"", getInterpreterContext());
-    assertEquals(InterpreterResult.Code.SUCCESS, result.code());
+    assertEquals(Code.SUCCESS, result.code());
     // Use contains instead of equals, because there's behavior different between different scala versions
     assertTrue(output.contains("a: String = hello world\n"), output);
 
     result = interpreter.interpret("print(a)", getInterpreterContext());
-    assertEquals(InterpreterResult.Code.SUCCESS, result.code());
+    assertEquals(Code.SUCCESS, result.code());
     // output from print statement will still be displayed
     assertEquals("hello world", output);
 
@@ -459,17 +453,17 @@ class SparkInterpreterTest {
     InterpreterContext context = getInterpreterContext();
     context.getLocalProperties().put("printREPLOutput", "false");
     result = interpreter.interpret("print(a)", context);
-    assertEquals(InterpreterResult.Code.SUCCESS, result.code());
+    assertEquals(Code.SUCCESS, result.code());
     // output from print statement will disappear
     assertEquals("", output);
 
     // REPL output get back if we don't set printREPLOutput in paragraph local properties
     result = interpreter.interpret("val a=\"hello world\"", getInterpreterContext());
-    assertEquals(InterpreterResult.Code.SUCCESS, result.code());
+    assertEquals(Code.SUCCESS, result.code());
     assertTrue(output.contains("a: String = hello world\n"), output);
 
     result = interpreter.interpret("print(a)", getInterpreterContext());
-    assertEquals(InterpreterResult.Code.SUCCESS, result.code());
+    assertEquals(Code.SUCCESS, result.code());
     // output from print statement will still be displayed
     assertEquals("hello world", output);
   }
@@ -494,12 +488,12 @@ class SparkInterpreterTest {
     InterpreterContext context = getInterpreterContext();
     context.getLocalProperties().put("pool", "pool1");
     InterpreterResult result = interpreter.interpret("sc.range(1, 10).sum", context);
-    assertEquals(InterpreterResult.Code.SUCCESS, result.code());
+    assertEquals(Code.SUCCESS, result.code());
     assertEquals("pool1", interpreter.getSparkContext().getLocalProperty("spark.scheduler.pool"));
 
     // pool is reset to null if user don't specify it via paragraph properties
     result = interpreter.interpret("sc.range(1, 10).sum", getInterpreterContext());
-    assertEquals(InterpreterResult.Code.SUCCESS, result.code());
+    assertEquals(Code.SUCCESS, result.code());
     assertNull(interpreter.getSparkContext().getLocalProperty("spark.scheduler.pool"));
   }
 
@@ -523,7 +517,7 @@ class SparkInterpreterTest {
 
     InterpreterContext context = getInterpreterContext();
     InterpreterResult result = interpreter.interpret("sc.range(1, 10).sum", context);
-    assertEquals(InterpreterResult.Code.SUCCESS, result.code());
+    assertEquals(Code.SUCCESS, result.code());
 
     // spark job url is not sent
     verify(mockRemoteEventClient, never()).onParaInfosReceived(any(Map.class));
@@ -549,7 +543,7 @@ class SparkInterpreterTest {
 
     InterpreterContext context = getInterpreterContext();
     InterpreterResult result = interpreter.interpret("sc.range(1, 10).sum", context);
-    assertEquals(InterpreterResult.Code.SUCCESS, result.code());
+    assertEquals(Code.SUCCESS, result.code());
 
     // spark job url is not sent
     verify(mockRemoteEventClient, never()).onParaInfosReceived(any(Map.class));
@@ -586,16 +580,16 @@ class SparkInterpreterTest {
     InterpreterContext context = getInterpreterContext();
 
     InterpreterResult result1 = interpreter1.interpret("sc.range(1, 10).sum", context);
-    assertEquals(InterpreterResult.Code.SUCCESS, result1.code());
+    assertEquals(Code.SUCCESS, result1.code());
 
     InterpreterResult result2 = interpreter2.interpret("sc.range(1, 10).sum", context);
-    assertEquals(InterpreterResult.Code.SUCCESS, result2.code());
+    assertEquals(Code.SUCCESS, result2.code());
 
     // interpreter2 continue to work after interpreter1 is closed
     interpreter1.close();
 
     result2 = interpreter2.interpret("sc.range(1, 10).sum", context);
-    assertEquals(InterpreterResult.Code.SUCCESS, result2.code());
+    assertEquals(Code.SUCCESS, result2.code());
     interpreter2.close();
   }
 

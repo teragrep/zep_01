@@ -19,12 +19,7 @@ package org.apache.zeppelin.python;
 
 import net.jodah.concurrentunit.Waiter;
 import org.apache.commons.lang3.exception.ExceptionUtils;
-import org.apache.zeppelin.interpreter.Interpreter;
-import org.apache.zeppelin.interpreter.InterpreterContext;
-import org.apache.zeppelin.interpreter.InterpreterException;
-import org.apache.zeppelin.interpreter.InterpreterGroup;
-import org.apache.zeppelin.interpreter.InterpreterResult;
-import org.apache.zeppelin.interpreter.LazyOpenInterpreter;
+import org.apache.zeppelin.interpreter.*;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
@@ -113,7 +108,8 @@ public class PythonInterpreterTest extends BasePythonInterpreterTest {
   @Disabled(value="This was disabled to begin with")
   @Test
   void testCancelIntp() throws InterruptedException, InterpreterException {
-    assertEquals(InterpreterResult.Code.SUCCESS,
+    assertEquals(
+            Code.SUCCESS,
         interpreter.interpret("a = 1\n", getInterpreterContext()).code());
     Thread t = new Thread(new infinityPythonJob());
     t.start();
@@ -134,7 +130,7 @@ public class PythonInterpreterTest extends BasePythonInterpreterTest {
         try {
           InterpreterResult result = interpreter.interpret("import time\ntime.sleep(1000)",
                   getInterpreterContext());
-          waiter.assertEquals(InterpreterResult.Code.ERROR, result.code());
+          waiter.assertEquals(Code.ERROR, result.code());
           waiter.assertEquals(
                   "Python process is abnormally exited, please check your code and log.",
                   result.message().get(0).getData());

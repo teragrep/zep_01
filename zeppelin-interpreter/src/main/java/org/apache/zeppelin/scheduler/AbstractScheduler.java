@@ -17,6 +17,7 @@
 
 package org.apache.zeppelin.scheduler;
 
+import org.apache.zeppelin.interpreter.Code;
 import org.apache.zeppelin.interpreter.InterpreterResult;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -141,7 +142,7 @@ public abstract class AbstractScheduler implements Scheduler {
                 runningJob.getReturn());
         runningJob.setStatus(Job.Status.ERROR);
       } else if (jobResult != null && jobResult instanceof InterpreterResult
-              && ((InterpreterResult) jobResult).code() == InterpreterResult.Code.ERROR) {
+              && ((InterpreterResult) jobResult).code() == Code.ERROR) {
         LOGGER.debug("Job Error, " + runningJob.getId() + ", " +
                 runningJob.getReturn());
         runningJob.setStatus(Job.Status.ERROR);

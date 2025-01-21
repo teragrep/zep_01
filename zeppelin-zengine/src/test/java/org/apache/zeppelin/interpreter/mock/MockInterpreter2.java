@@ -17,10 +17,7 @@
 
 package org.apache.zeppelin.interpreter.mock;
 
-import org.apache.zeppelin.interpreter.FormType;
-import org.apache.zeppelin.interpreter.Interpreter;
-import org.apache.zeppelin.interpreter.InterpreterContext;
-import org.apache.zeppelin.interpreter.InterpreterResult;
+import org.apache.zeppelin.interpreter.*;
 import org.apache.zeppelin.interpreter.thrift.InterpreterCompletion;
 import org.apache.zeppelin.scheduler.Scheduler;
 import org.apache.zeppelin.scheduler.SchedulerFactory;
@@ -60,16 +57,16 @@ public class MockInterpreter2 extends Interpreter{
 		st = st.trim();
 		if ("getId".equals(st)) {
 			// get unique id of this interpreter instance
-			result = new InterpreterResult(InterpreterResult.Code.SUCCESS, "" + this.hashCode());
+			result = new InterpreterResult(Code.SUCCESS, "" + this.hashCode());
 		} else if (st.startsWith("sleep")) {
 			try {
 				Thread.sleep(Integer.parseInt(st.split(" ")[1]));
 			} catch (InterruptedException e) {
 				// nothing to do
 			}
-			result = new InterpreterResult(InterpreterResult.Code.SUCCESS, "repl2: " + st);
+			result = new InterpreterResult(Code.SUCCESS, "repl2: " + st);
 		} else {
-			result = new InterpreterResult(InterpreterResult.Code.SUCCESS, "repl2: " + st);
+			result = new InterpreterResult(Code.SUCCESS, "repl2: " + st);
 		}
 
 		if (context.getResourcePool() != null) {

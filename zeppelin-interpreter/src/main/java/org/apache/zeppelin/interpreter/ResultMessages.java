@@ -33,13 +33,15 @@ public class ResultMessages {
           "</div>";
 
   public static InterpreterResultMessage getExceedsLimitRowsMessage(int amount, String variable) {
-    InterpreterResultMessage message = new InterpreterResultMessage(InterpreterResult.Type.HTML,
+    InterpreterResultMessage message = new InterpreterResultMessage(
+            Type.HTML,
         String.format(EXCEEDS_LIMIT, String.format(EXCEEDS_LIMIT_ROWS, amount, variable)));
     return message;
   }
 
   public static InterpreterResultMessage getExceedsLimitSizeMessage(int amount, String variable) {
-    InterpreterResultMessage message = new InterpreterResultMessage(InterpreterResult.Type.HTML,
+    InterpreterResultMessage message = new InterpreterResultMessage(
+            Type.HTML,
         String.format(EXCEEDS_LIMIT, String.format(EXCEEDS_LIMIT_SIZE, amount, variable)));
     return message;
   }

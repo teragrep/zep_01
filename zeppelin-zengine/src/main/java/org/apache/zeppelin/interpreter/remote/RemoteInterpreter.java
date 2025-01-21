@@ -196,7 +196,8 @@ public class RemoteInterpreter extends Interpreter {
       throw new InterpreterException(e);
     }
     if (!interpreterProcess.isRunning()) {
-      return new InterpreterResult(InterpreterResult.Code.ERROR,
+      return new InterpreterResult(
+              Code.ERROR,
               "Interpreter process is not running\n" + interpreterProcess.getErrorMessage());
     }
     return interpreterProcess.callRemoteFunction(client -> {
@@ -364,10 +365,10 @@ public class RemoteInterpreter extends Interpreter {
 
   private InterpreterResult convert(RemoteInterpreterResult result) {
     InterpreterResult r = new InterpreterResult(
-        InterpreterResult.Code.valueOf(result.getCode()));
+        Code.valueOf(result.getCode()));
 
     for (RemoteInterpreterResultMessage m : result.getMsg()) {
-      r.add(InterpreterResult.Type.valueOf(m.getType()), m.getData());
+      r.add(Type.valueOf(m.getType()), m.getData());
     }
 
     return r;

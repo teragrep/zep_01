@@ -54,7 +54,7 @@ public class SessionConfInterpreterTest {
     InterpreterResult result =
         confInterpreter.interpret("property_1\tupdated_value_1\nproperty_3\tvalue_3",
             mock(InterpreterContext.class));
-    assertEquals(InterpreterResult.Code.SUCCESS, result.code);
+    assertEquals(Code.SUCCESS, result.code);
     assertEquals(3, remoteInterpreter.getProperties().size());
     assertEquals("updated_value_1", remoteInterpreter.getProperty("property_1"));
     assertEquals("value_2", remoteInterpreter.getProperty("property_2"));
@@ -64,6 +64,6 @@ public class SessionConfInterpreterTest {
     result =
         confInterpreter.interpret("property_1\tupdated_value_1\nproperty_3\tvalue_3",
             mock(InterpreterContext.class));
-    assertEquals(InterpreterResult.Code.ERROR, result.code);
+    assertEquals(Code.ERROR, result.code);
   }
 }

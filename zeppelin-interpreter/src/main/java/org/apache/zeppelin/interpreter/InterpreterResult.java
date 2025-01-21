@@ -34,30 +34,6 @@ public class InterpreterResult implements Serializable, JsonSerializable {
   transient Logger logger = LoggerFactory.getLogger(InterpreterResult.class);
   private static final Gson gson = new Gson();
 
-  /**
-   *  Type of result after code execution.
-   */
-  public enum Code {
-    SUCCESS,
-    INCOMPLETE,
-    ERROR,
-    KEEP_PREVIOUS_RESULT
-  }
-
-  /**
-   * Type of Data.
-   */
-  public enum Type {
-    TEXT,
-    HTML,
-    ANGULAR,
-    TABLE,
-    IMG,
-    SVG,
-    NULL,
-    NETWORK
-  }
-
   Code code;
   List<InterpreterResultMessage> msg = new LinkedList<>();
 

@@ -30,7 +30,7 @@ public class LazyOpenInterpreterTest {
 
   @Test
   public void isOpenTest() throws InterpreterException {
-    InterpreterResult interpreterResult = new InterpreterResult(InterpreterResult.Code.SUCCESS, "");
+    InterpreterResult interpreterResult = new InterpreterResult(Code.SUCCESS, "");
     when(interpreter.interpret(any(String.class), any(InterpreterContext.class)))
         .thenReturn(interpreterResult);
 

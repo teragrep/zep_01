@@ -20,8 +20,6 @@ package org.apache.zeppelin.interpreter;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 
-import org.apache.commons.io.FileUtils;
-import org.apache.commons.lang3.StringUtils;
 import org.apache.thrift.TException;
 import org.apache.thrift.server.TThreadPoolServer;
 import org.apache.thrift.transport.TServerSocket;
@@ -55,11 +53,8 @@ import org.apache.zeppelin.user.AuthenticationInfo;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.File;
 import java.io.IOException;
 import java.nio.ByteBuffer;
-import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
@@ -220,7 +215,7 @@ public class RemoteInterpreterEventServer implements RemoteInterpreterEventServi
   public void updateOutput(OutputUpdateEvent event) throws InterpreterRPCException, TException {
     if (event.getAppId() == null) {
       listener.onOutputUpdated(event.getNoteId(), event.getParagraphId(), event.getIndex(),
-          InterpreterResult.Type.valueOf(event.getType()), event.getData());
+          Type.valueOf(event.getType()), event.getData());
     }
   }
 
@@ -230,7 +225,7 @@ public class RemoteInterpreterEventServer implements RemoteInterpreterEventServi
     for (int i = 0; i < event.getMsg().size(); i++) {
       RemoteInterpreterResultMessage msg = event.getMsg().get(i);
       listener.onOutputUpdated(event.getNoteId(), event.getParagraphId(), i,
-          InterpreterResult.Type.valueOf(msg.getType()), msg.getData());
+          Type.valueOf(msg.getType()), msg.getData());
     }
   }
 
