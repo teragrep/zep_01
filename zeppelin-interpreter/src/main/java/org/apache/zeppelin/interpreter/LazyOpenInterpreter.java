@@ -141,7 +141,8 @@ public class LazyOpenInterpreter
 
   @Override
   public List<InterpreterCompletion> completion(String buf, int cursor,
-      InterpreterContext interpreterContext) throws InterpreterException {
+          InterpreterContext interpreterContext
+  ) throws InterpreterException {
     open();
     List completion = intp.completion(buf, cursor, interpreterContext);
     return completion;

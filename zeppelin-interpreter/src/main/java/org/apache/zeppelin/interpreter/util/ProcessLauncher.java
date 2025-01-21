@@ -26,7 +26,7 @@ import org.apache.commons.exec.LogOutputStream;
 import org.apache.commons.exec.PumpStreamHandler;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.exception.ExceptionUtils;
-import org.apache.zeppelin.interpreter.InterpreterContext;
+import org.apache.zeppelin.interpreter.InterpreterContextImpl;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -76,7 +76,7 @@ public abstract class ProcessLauncher implements ExecuteResultHandler {
    * e.g. In %r.shiny for shiny app
    * @param redirectedContext
    */
-  public void setRedirectedContext(InterpreterContext redirectedContext) {
+  public void setRedirectedContext(InterpreterContextImpl redirectedContext) {
     if (redirectedContext != null) {
       LOGGER.info("Start to redirect process output to interpreter output");
     } else {
@@ -172,7 +172,7 @@ public abstract class ProcessLauncher implements ExecuteResultHandler {
 
     private boolean catchLaunchOutput = true;
     private StringBuilder launchOutput = new StringBuilder();
-    private InterpreterContext redirectedContext;
+    private InterpreterContextImpl redirectedContext;
 
     public void stopCatchLaunchOutput() {
       this.catchLaunchOutput = false;

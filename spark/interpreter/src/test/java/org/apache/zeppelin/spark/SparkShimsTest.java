@@ -29,6 +29,7 @@ import java.util.Map;
 import java.util.Properties;
 import org.apache.hadoop.util.VersionInfo;
 import org.apache.zeppelin.interpreter.InterpreterContext;
+import org.apache.zeppelin.interpreter.InterpreterContextImpl;
 import org.apache.zeppelin.interpreter.remote.RemoteInterpreterEventClient;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;
@@ -69,7 +70,7 @@ class SparkShimsTest {
             @Override
             public void setupSparkListener(String master,
                                            String sparkWebUrl,
-                                           InterpreterContext context) {}
+                    InterpreterContext context) {}
 
             @Override
             public String showDataFrame(Object obj, int maxResult, InterpreterContext context) {
@@ -87,12 +88,12 @@ class SparkShimsTest {
   @Nested
   class SingleTests {
     SparkShims sparkShims;
-    InterpreterContext mockContext;
+    InterpreterContextImpl mockContext;
     RemoteInterpreterEventClient mockIntpEventClient;
 
     @BeforeEach
     public void setUp() {
-      mockContext = mock(InterpreterContext.class);
+      mockContext = mock(InterpreterContextImpl.class);
       mockIntpEventClient = mock(RemoteInterpreterEventClient.class);
       when(mockContext.getIntpEventClient()).thenReturn(mockIntpEventClient);
 

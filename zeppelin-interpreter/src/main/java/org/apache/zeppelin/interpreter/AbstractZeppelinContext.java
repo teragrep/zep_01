@@ -442,11 +442,11 @@ public abstract class AbstractZeppelinContext implements ZeppelinContext {
   public void show(Object o, int maxResult) {
     try {
       if (isSupportedObject(o)) {
-        interpreterContext.out.write(showData(o));
+        interpreterContext.out().write(showData(o));
       } else {
-        interpreterContext.out.write("ZeppelinContext doesn't support to show type: "
+        interpreterContext.out().write("ZeppelinContext doesn't support to show type: "
             + o.getClass().getCanonicalName() + "\n");
-        interpreterContext.out.write(o.toString());
+        interpreterContext.out().write(o.toString());
       }
     } catch (IOException e) {
       throw new RuntimeException(e);
@@ -618,7 +618,8 @@ public abstract class AbstractZeppelinContext implements ZeppelinContext {
   private AngularObject getAngularObject(String name,
                                          String noteId,
                                          String paragraphId,
-                                         InterpreterContext interpreterContext) {
+                                         InterpreterContext interpreterContext
+  ) {
     AngularObjectRegistry registry = interpreterContext.getAngularObjectRegistry();
     AngularObject ao = registry.get(name, noteId, paragraphId);
     return ao;
@@ -635,7 +636,8 @@ public abstract class AbstractZeppelinContext implements ZeppelinContext {
   @Override
   public Object angular(String name) {
     AngularObject ao = getAngularObject(name, interpreterContext.getNoteId(),
-            interpreterContext.getParagraphId(), interpreterContext);
+            interpreterContext.getParagraphId(), interpreterContext
+    );
     if (ao == null) {
       return null;
     } else {
@@ -653,7 +655,8 @@ public abstract class AbstractZeppelinContext implements ZeppelinContext {
   @Override
   public Object angular(String name, String noteId) {
     AngularObject ao = getAngularObject(name, noteId,
-            interpreterContext.getParagraphId(), interpreterContext);
+            interpreterContext.getParagraphId(), interpreterContext
+    );
     if (ao == null) {
       return null;
     } else {

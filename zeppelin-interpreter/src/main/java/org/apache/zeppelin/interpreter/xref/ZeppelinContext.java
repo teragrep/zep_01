@@ -116,7 +116,7 @@ public interface ZeppelinContext {
 
     InterpreterContext getInterpreterContext();
 
-    void setInterpreterContext(InterpreterContext interpreterContext);
+    void setInterpreterContext(InterpreterContext interpreterContextImpl);
 
     void setMaxResult(int maxResult);
 

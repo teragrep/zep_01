@@ -57,7 +57,7 @@ class Utils {
   public static void printDeprecateMessage(SparkVersion sparkVersion,
                                            InterpreterContext context,
                                            Properties properties) throws InterpreterException {
-    context.out.clear();
+    context.out().clear();
     // print deprecated message only when zeppelin.spark.deprecatedMsg.show is true and
     // sparkVersion meets the certain requirements
   }

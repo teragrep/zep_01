@@ -657,7 +657,7 @@ public class RemoteInterpreterServer extends Thread
         JobListener listener,
         Interpreter interpreter,
         String script,
-        InterpreterContext context) {
+            InterpreterContext context) {
       super(jobId, jobName, listener);
       this.interpreter = interpreter;
       this.script = script;
@@ -726,7 +726,7 @@ public class RemoteInterpreterServer extends Thread
       try {
         InterpreterContextStore.set(context);
         // clear the result of last run in frontend before running this paragraph.
-        context.out.clear();
+        context.out().clear();
 
         InterpreterResult result = null;
 
@@ -755,8 +755,8 @@ public class RemoteInterpreterServer extends Thread
         }
 
         // data from context.out is prepended to InterpreterResult if both defined
-        context.out.flush();
-        List<InterpreterResultMessage> resultMessages = context.out.toInterpreterResultMessage();
+        context.out().flush();
+        List<InterpreterResultMessage> resultMessages = context.out().toInterpreterResultMessage();
 
         for (InterpreterResultMessage resultMessage : result.message()) {
           // only add non-empty InterpreterResultMessage
@@ -887,7 +887,7 @@ public class RemoteInterpreterServer extends Thread
   }
 
   private InterpreterContext convert(RemoteInterpreterContext ric, InterpreterOutput output) {
-    return InterpreterContext.builder()
+    return InterpreterContextImpl.builder()
         .setNoteId(ric.getNoteId())
         .setNoteName(ric.getNoteName())
         .setParagraphId(ric.getParagraphId())

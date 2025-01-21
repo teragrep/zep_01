@@ -98,24 +98,24 @@ public class SparkSqlInterpreter extends AbstractEnhancedInterpreter {
         curSql = sql;
         String result = sparkInterpreter.getZeppelinContext()
                 .showData(sqlContext.sql(sql), maxResult);
-        context.out.write(result);
+        context.out().write(result);
       }
-      context.out.flush();
+      context.out().flush();
     } catch (Exception e) {
       try {
         if (e.getCause() instanceof AnalysisException) {
           // just return the error message from spark if it is AnalysisException
-          context.out.write(e.getCause().getMessage());
-          context.out.flush();
+          context.out().write(e.getCause().getMessage());
+          context.out().flush();
           return new InterpreterResult(Code.ERROR);
         } else {
           LOGGER.error("Error happens in sql: {}", curSql, e);
-          context.out.write("\nError happens in sql: " + curSql + "\n");
+          context.out().write("\nError happens in sql: " + curSql + "\n");
           if (Boolean.parseBoolean(getProperty("zeppelin.spark.sql.stacktrace", "false"))) {
             if (e.getCause() != null) {
-              context.out.write(ExceptionUtils.getStackTrace(e.getCause()));
+              context.out().write(ExceptionUtils.getStackTrace(e.getCause()));
             } else {
-              context.out.write(ExceptionUtils.getStackTrace(e));
+              context.out().write(ExceptionUtils.getStackTrace(e));
             }
           } else {
             StringBuilder msgBuilder = new StringBuilder();
@@ -125,9 +125,9 @@ public class SparkSqlInterpreter extends AbstractEnhancedInterpreter {
               msgBuilder.append(e.getMessage());
             }
             msgBuilder.append("\nset zeppelin.spark.sql.stacktrace = true to see full stacktrace");
-            context.out.write(msgBuilder.toString());
+            context.out().write(msgBuilder.toString());
           }
-          context.out.flush();
+          context.out().flush();
           return new InterpreterResult(Code.ERROR);
         }
       } catch (IOException ex) {

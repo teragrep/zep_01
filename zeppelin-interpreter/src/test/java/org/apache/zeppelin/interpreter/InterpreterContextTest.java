@@ -29,7 +29,7 @@ public class InterpreterContextTest {
     InterpreterContextStore.remove();
     assertNull(InterpreterContextStore.get());
 
-    InterpreterContextStore.set(InterpreterContext.builder()
+    InterpreterContextStore.set(InterpreterContextImpl.builder()
         .build());
     assertNotNull(InterpreterContextStore.get());
 

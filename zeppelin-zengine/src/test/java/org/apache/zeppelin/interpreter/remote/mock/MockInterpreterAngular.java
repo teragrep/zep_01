@@ -20,8 +20,9 @@ package org.apache.zeppelin.interpreter.remote.mock;
 import org.apache.zeppelin.display.AngularObjectRegistry;
 import org.apache.zeppelin.display.AngularObjectWatcher;
 import org.apache.zeppelin.interpreter.AbstractInterpreter;
-import org.apache.zeppelin.interpreter.xref.FormType;
 import org.apache.zeppelin.interpreter.InterpreterContext;
+import org.apache.zeppelin.interpreter.InterpreterContextImpl;
+import org.apache.zeppelin.interpreter.xref.FormType;
 import org.apache.zeppelin.interpreter.InterpreterResult;
 import org.apache.zeppelin.interpreter.xref.Code;
 import org.apache.zeppelin.interpreter.thrift.InterpreterCompletion;
@@ -75,7 +76,7 @@ public class MockInterpreterAngular extends AbstractInterpreter {
 
         @Override
         public void watch(Object oldObject, Object newObject,
-            InterpreterContext context) {
+                InterpreterContext context) {
           numWatch.incrementAndGet();
         }
 
@@ -113,7 +114,8 @@ public class MockInterpreterAngular extends AbstractInterpreter {
 
   @Override
   public List<InterpreterCompletion> completion(String buf, int cursor,
-      InterpreterContext interpreterContext) {
+          InterpreterContext interpreterContext
+  ) {
     return null;
   }
 }

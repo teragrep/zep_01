@@ -18,7 +18,7 @@ package org.apache.zeppelin.resource;
 
 import com.google.gson.Gson;
 import org.apache.zeppelin.interpreter.AbstractInterpreterTest;
-import org.apache.zeppelin.interpreter.InterpreterContext;
+import org.apache.zeppelin.interpreter.InterpreterContextImpl;
 import org.apache.zeppelin.interpreter.xref.InterpreterException;
 import org.apache.zeppelin.interpreter.InterpreterResult;
 import org.apache.zeppelin.interpreter.InterpreterSetting;
@@ -46,7 +46,7 @@ public class DistributedResourcePoolTest extends AbstractInterpreterTest {
 
   private RemoteInterpreter intp1;
   private RemoteInterpreter intp2;
-  private InterpreterContext context;
+  private InterpreterContextImpl context;
 
 
   @Override
@@ -63,7 +63,7 @@ public class DistributedResourcePoolTest extends AbstractInterpreterTest {
     intp1 = (RemoteInterpreter) interpreterSetting.getInterpreter("user1", "note1", "mock_resource_pool");
     intp2 = (RemoteInterpreter) interpreterSetting.getInterpreter("user2", "note2", "mock_resource_pool");
 
-    context = InterpreterContext.builder()
+    context = InterpreterContextImpl.builder()
         .setNoteId("note")
         .setParagraphId("id")
         .build();

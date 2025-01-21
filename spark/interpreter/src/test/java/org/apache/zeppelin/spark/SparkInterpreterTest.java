@@ -81,7 +81,7 @@ class SparkInterpreterTest {
     properties.setProperty("zeppelin.spark.scala.color", "false");
     properties.setProperty("zeppelin.spark.deprecatedMsg.show", "false");
 
-    InterpreterContext context = InterpreterContext.builder()
+    InterpreterContextImpl context = InterpreterContextImpl.builder()
         .setInterpreterOut(new InterpreterOutput())
         .setIntpEventClient(mockRemoteEventClient)
         .setAngularObjectRegistry(new AngularObjectRegistry("spark", null))
@@ -346,7 +346,7 @@ class SparkInterpreterTest {
     }
 
     // getProgress
-    final InterpreterContext context2 = getInterpreterContext();
+    final InterpreterContextImpl context2 = getInterpreterContext();
     Thread interpretThread = new Thread() {
       @Override
       public void run() {
@@ -374,7 +374,7 @@ class SparkInterpreterTest {
     assertTrue(nonZeroProgress);
 
     // cancel
-    final InterpreterContext context3 = getInterpreterContext();
+    final InterpreterContextImpl context3 = getInterpreterContext();
     interpretThread = new Thread() {
       @Override
       public void run() {
@@ -453,7 +453,7 @@ class SparkInterpreterTest {
     assertEquals("hello world", output);
 
     // disable REPL output
-    InterpreterContext context = getInterpreterContext();
+    InterpreterContextImpl context = getInterpreterContext();
     context.getLocalProperties().put("printREPLOutput", "false");
     result = interpreter.interpret("print(a)", context);
     assertEquals(Code.SUCCESS, result.code());
@@ -488,7 +488,7 @@ class SparkInterpreterTest {
     InterpreterContextStore.set(getInterpreterContext());
     interpreter.open();
 
-    InterpreterContext context = getInterpreterContext();
+    InterpreterContextImpl context = getInterpreterContext();
     context.getLocalProperties().put("pool", "pool1");
     InterpreterResult result = interpreter.interpret("sc.range(1, 10).sum", context);
     assertEquals(Code.SUCCESS, result.code());
@@ -518,7 +518,7 @@ class SparkInterpreterTest {
     InterpreterContextStore.set(getInterpreterContext());
     interpreter.open();
 
-    InterpreterContext context = getInterpreterContext();
+    InterpreterContextImpl context = getInterpreterContext();
     InterpreterResult result = interpreter.interpret("sc.range(1, 10).sum", context);
     assertEquals(Code.SUCCESS, result.code());
 
@@ -544,7 +544,7 @@ class SparkInterpreterTest {
     InterpreterContextStore.set(getInterpreterContext());
     interpreter.open();
 
-    InterpreterContext context = getInterpreterContext();
+    InterpreterContextImpl context = getInterpreterContext();
     InterpreterResult result = interpreter.interpret("sc.range(1, 10).sum", context);
     assertEquals(Code.SUCCESS, result.code());
 
@@ -580,7 +580,7 @@ class SparkInterpreterTest {
     // check if there is any duplicated loaded class
     assertSame(interpreter1.getInnerInterpreter().getClass(), interpreter2.getInnerInterpreter().getClass());
 
-    InterpreterContext context = getInterpreterContext();
+    InterpreterContextImpl context = getInterpreterContext();
 
     InterpreterResult result1 = interpreter1.interpret("sc.range(1, 10).sum", context);
     assertEquals(Code.SUCCESS, result1.code());
@@ -604,9 +604,9 @@ class SparkInterpreterTest {
     SparkShims.reset();
   }
 
-  private InterpreterContext getInterpreterContext() {
+  private InterpreterContextImpl getInterpreterContext() {
     output = "";
-    InterpreterContext context = InterpreterContext.builder()
+    InterpreterContextImpl context = InterpreterContextImpl.builder()
         .setInterpreterOut(new InterpreterOutput())
         .setIntpEventClient(mockRemoteEventClient)
         .setAngularObjectRegistry(new AngularObjectRegistry("spark", null))

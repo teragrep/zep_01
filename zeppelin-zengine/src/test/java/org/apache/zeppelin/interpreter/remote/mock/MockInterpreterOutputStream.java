@@ -57,7 +57,7 @@ public class MockInterpreterOutputStream extends AbstractInterpreter {
     String[] ret = st.split(":");
     try {
       if (ret[1] != null) {
-        context.out.write(ret[1]);
+        context.out().write(ret[1]);
       }
     } catch (IOException e) {
       throw new InterpreterException(e);
@@ -83,7 +83,8 @@ public class MockInterpreterOutputStream extends AbstractInterpreter {
 
   @Override
   public List<InterpreterCompletion> completion(String buf, int cursor,
-      InterpreterContext interpreterContext) {
+          InterpreterContext interpreterContext
+  ) {
     return null;
   }
 

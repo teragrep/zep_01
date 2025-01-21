@@ -336,7 +336,7 @@ public class PythonInterpreter extends AbstractInterpreter {
   public InterpreterResult interpret(String st, InterpreterContext context)
       throws InterpreterException {
 
-    outputStream.setInterpreterOutput(context.out);
+    outputStream.setInterpreterOutput(context.out());
     ZeppelinContext z = getZeppelinContext();
     z.setInterpreterContext(context);
     z.setGui(context.getGui());
@@ -350,7 +350,7 @@ public class PythonInterpreter extends AbstractInterpreter {
       return new InterpreterResult(Code.ERROR, statementOutput);
     } else {
       try {
-        context.out.flush();
+        context.out().flush();
       } catch (IOException e) {
         throw new InterpreterException(e);
       }
@@ -395,7 +395,8 @@ public class PythonInterpreter extends AbstractInterpreter {
 
   @Override
   public List<InterpreterCompletion> completion(String buf, int cursor,
-                                                InterpreterContext interpreterContext)
+          InterpreterContext interpreterContext
+  )
       throws InterpreterException {
     if (buf.length() < cursor) {
       cursor = buf.length();

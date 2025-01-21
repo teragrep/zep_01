@@ -17,8 +17,8 @@
 
 package org.apache.zeppelin.scheduler;
 
+import org.apache.zeppelin.interpreter.InterpreterContextImpl;
 import org.apache.zeppelin.interpreter.xref.Interpreter;
-import org.apache.zeppelin.interpreter.InterpreterContext;
 import org.apache.zeppelin.interpreter.xref.InterpreterException;
 import org.apache.zeppelin.interpreter.InterpreterResult;
 import org.apache.zeppelin.interpreter.xref.Code;
@@ -42,7 +42,7 @@ public class JobTest {
 
   @Mock private JobListener mockJobListener;
   @Mock private Interpreter mockInterpreter;
-  @Mock private InterpreterContext mockInterpreterContext;
+  @Mock private InterpreterContextImpl mockInterpreterContextImpl;
   private InterpretJob spyInterpretJob;
 
   @Before
@@ -53,8 +53,8 @@ public class JobTest {
             "jobName",
             mockJobListener,
             mockInterpreter,
-            "script",
-            mockInterpreterContext);
+            "script", mockInterpreterContextImpl
+        );
     spyInterpretJob = spy(interpretJob);
   }
 

@@ -393,9 +393,10 @@ public class JDBCInterpreter extends KerberosInterpreter {
         basePropertiesMap.get(propertyKey).containsKey(PASSWORD_KEY);
   }
 
-  private UsernamePassword getUsernamePassword(InterpreterContext interpreterContext,
+  private UsernamePassword getUsernamePassword(
+          InterpreterContext interpreterContextImpl,
                                                String entity) {
-    UserCredentials uc = interpreterContext.getAuthenticationInfo().getUserCredentials();
+    UserCredentials uc = interpreterContextImpl.getAuthenticationInfo().getUserCredentials();
     if (uc != null) {
       return uc.getUsernamePassword(entity);
     }
@@ -725,13 +726,13 @@ public class JDBCInterpreter extends KerberosInterpreter {
     return updatedCount < 0 && columnCount <= 0 ? true : false;
   }
 
-  public InterpreterResult executePrecode(InterpreterContext interpreterContext)
+  public InterpreterResult executePrecode(InterpreterContextImpl interpreterContextImpl)
           throws InterpreterException {
     InterpreterResult interpreterResult = null;
     for (String propertyKey : basePropertiesMap.keySet()) {
       String precode = getProperty(String.format("%s.precode", propertyKey));
       if (StringUtils.isNotBlank(precode)) {
-        interpreterResult = executeSql(precode, interpreterContext);
+        interpreterResult = executeSql(precode, interpreterContextImpl);
         if (interpreterResult.code() != Code.SUCCESS) {
           break;
         }
@@ -834,7 +835,7 @@ public class JDBCInterpreter extends KerberosInterpreter {
             // Regards that the command is DDL.
             if (isDDLCommand(statement.getUpdateCount(),
                 resultSet.getMetaData().getColumnCount())) {
-              context.out.write("%text Query executed successfully.\n");
+              context.out().write("%text Query executed successfully.\n");
             } else {
               String template = context.getLocalProperties().get("template");
               if (!StringUtils.isBlank(template)) {
@@ -843,9 +844,9 @@ public class JDBCInterpreter extends KerberosInterpreter {
                         new SingleRowInterpreterResult(getFirstRow(resultSet), template, context);
 
                 if (isFirstRefreshMap.get(context.getParagraphId())) {
-                  context.out.write(singleRowResult.toAngular());
-                  context.out.write("\n%text ");
-                  context.out.flush();
+                  context.out().write(singleRowResult.toAngular());
+                  context.out().write("\n%text ");
+                  context.out().flush();
                   isFirstRefreshMap.put(context.getParagraphId(), false);
                 }
                 singleRowResult.pushAngularObjects();
@@ -853,15 +854,15 @@ public class JDBCInterpreter extends KerberosInterpreter {
               } else {
                 String results = getResults(resultSet,
                         !containsIgnoreCase(sqlToExecute, EXPLAIN_PREDICATE));
-                context.out.write(results);
-                context.out.write("\n%text ");
-                context.out.flush();
+                context.out().write(results);
+                context.out().write("\n%text ");
+                context.out().flush();
               }
             }
           } else {
             // Response contains either an update count or there are no results.
             int updateCount = statement.getUpdateCount();
-            context.out.write("\n%text " +
+            context.out().write("\n%text " +
                 "Query executed successfully. Affected rows : " +
                     updateCount + "\n");
           }
@@ -969,10 +970,10 @@ public class JDBCInterpreter extends KerberosInterpreter {
       isFirstRefreshMap.put(context.getParagraphId(), true);
       final AtomicReference<InterpreterResult> interpreterResultRef = new AtomicReference();
       refreshExecutor.scheduleAtFixedRate(() -> {
-        context.out.clear(false);
+        context.out().clear(false);
         try {
           InterpreterResult result = executeSql(cmd, context);
-          context.out.flush();
+          context.out().flush();
           interpreterResultRef.set(result);
           if (result.code() != Code.SUCCESS) {
             refreshExecutor.shutdownNow();
@@ -1026,14 +1027,14 @@ public class JDBCInterpreter extends KerberosInterpreter {
     String cancelReason = context.getLocalProperties().get(CANCEL_REASON);
     if (StringUtils.isNotBlank(cancelReason)) {
       try {
-        context.out.write(cancelReason);
+        context.out().write(cancelReason);
       } catch (IOException e) {
         LOGGER.error("Fail to write cancel reason");
       }
     }
   }
 
-  public void cancel(InterpreterContext context, String errorMessage) {
+  public void cancel(InterpreterContextImpl context, String errorMessage) {
     context.getLocalProperties().put(CANCEL_REASON, errorMessage);
     cancel(context);
   }
@@ -1079,7 +1080,7 @@ public class JDBCInterpreter extends KerberosInterpreter {
 
   @Override
   public List<InterpreterCompletion> completion(String buf, int cursor,
-      InterpreterContext context) throws InterpreterException {
+          InterpreterContext context) throws InterpreterException {
     List<InterpreterCompletion> candidates = new ArrayList<>();
     String sqlCompleterKey =
         String.format("%s.%s", getUser(context), DEFAULT_KEY);

@@ -95,7 +95,7 @@ public class RemoteSchedulerTest extends AbstractInterpreterTest
 
       @Override
       protected Object jobRun() throws Throwable {
-        intpA.interpret("1000", InterpreterContext.builder()
+        intpA.interpret("1000", InterpreterContextImpl.builder()
                 .setNoteId("noteId")
                 .setParagraphId("jobId")
                 .setResourcePool(new LocalResourcePool("pool1"))
@@ -147,7 +147,7 @@ public class RemoteSchedulerTest extends AbstractInterpreterTest
 
     Job<Object> job1 = new JobImpl<Object>("jobId1", "jobName1", null) {
       Object results;
-      InterpreterContext context = InterpreterContext.builder()
+      InterpreterContextImpl context = InterpreterContextImpl.builder()
           .setNoteId("noteId")
           .setParagraphId("jobId1")
           .setResourcePool(new LocalResourcePool("pool1"))
@@ -194,7 +194,7 @@ public class RemoteSchedulerTest extends AbstractInterpreterTest
 
     Job<Object> job2 = new JobImpl<Object>("jobId2", "jobName2", null) {
       public Object results;
-      InterpreterContext context = InterpreterContext.builder()
+      InterpreterContextImpl context = InterpreterContextImpl.builder()
           .setNoteId("noteId")
           .setParagraphId("jobId2")
           .setResourcePool(new LocalResourcePool("pool1"))

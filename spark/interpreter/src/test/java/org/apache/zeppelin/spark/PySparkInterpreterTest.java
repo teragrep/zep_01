@@ -60,7 +60,7 @@ class PySparkInterpreterTest extends PythonInterpreterTest {
     intpGroup = new InterpreterGroup();
     intpGroup.put("note", new LinkedList<>());
 
-    InterpreterContext context = InterpreterContext.builder()
+    InterpreterContextImpl context = InterpreterContextImpl.builder()
         .setInterpreterOut(new InterpreterOutput())
         .setIntpEventClient(mockRemoteEventClient)
         .build();
@@ -123,8 +123,8 @@ class PySparkInterpreterTest extends PythonInterpreterTest {
   }
 
   @Override
-  protected InterpreterContext getInterpreterContext() {
-    InterpreterContext context = super.getInterpreterContext();
+  protected InterpreterContextImpl getInterpreterContext() {
+    InterpreterContextImpl context = super.getInterpreterContext();
     context.setIntpEventClient(mockRemoteEventClient);
     return context;
   }

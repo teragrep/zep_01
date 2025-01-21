@@ -23,7 +23,7 @@ import org.apache.zeppelin.interpreter
 import org.apache.zeppelin.interpreter.thrift.InterpreterCompletion
 import org.apache.zeppelin.interpreter.util.InterpreterOutputStream
 import org.apache.zeppelin.interpreter.xref.{Code, InterpreterException}
-import org.apache.zeppelin.interpreter.{InterpreterContext, InterpreterContextStore, InterpreterGroup, InterpreterResult, xref}
+import org.apache.zeppelin.interpreter.{InterpreterContext, InterpreterContextImpl, InterpreterContextStore, InterpreterGroup, InterpreterResult, xref}
 import org.slf4j.{Logger, LoggerFactory}
 
 import java.io.{BufferedReader, File}
@@ -111,9 +111,7 @@ class SparkScala212Interpreter(conf: SparkConf,
     }
   }
 
-  override def completion(buf: String,
-                          cursor: Int,
-                          context: InterpreterContext): java.util.List[InterpreterCompletion] = {
+  override def completion(buf: String, cursor: Int, context: InterpreterContext): java.util.List[InterpreterCompletion] = {
     scalaCompletion.complete(buf.substring(0, cursor), cursor)
       .candidates
       .map(e => new InterpreterCompletion(e, e, null))

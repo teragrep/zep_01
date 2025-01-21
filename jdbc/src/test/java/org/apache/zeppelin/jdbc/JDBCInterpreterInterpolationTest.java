@@ -45,7 +45,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 class JDBCInterpreterInterpolationTest extends BasicJDBCTestCaseAdapter {
 
   private static String jdbcConnection;
-  private InterpreterContext interpreterContext;
+  private InterpreterContextImpl interpreterContextImpl;
   private ResourcePool resourcePool;
 
   private String getJdbcConnection() throws IOException {
@@ -74,7 +74,7 @@ class JDBCInterpreterInterpolationTest extends BasicJDBCTestCaseAdapter {
                 "('mou', 'mouse');");
     resourcePool = new LocalResourcePool("JdbcInterpolationTest");
 
-    interpreterContext = getInterpreterContext();
+    interpreterContextImpl = getInterpreterContext();
   }
 
   @Test
@@ -95,11 +95,11 @@ class JDBCInterpreterInterpolationTest extends BasicJDBCTestCaseAdapter {
     //
     JDBCInterpreter t = new JDBCInterpreter(properties);
     t.open();
-    InterpreterResult interpreterResult = t.interpret(sqlQuery, interpreterContext);
+    InterpreterResult interpreterResult = t.interpret(sqlQuery, interpreterContextImpl);
     assertEquals(Code.SUCCESS, interpreterResult.code());
 
     List<InterpreterResultMessage> resultMessages =
-            interpreterContext.out.toInterpreterResultMessage();
+            interpreterContextImpl.out.toInterpreterResultMessage();
     assertEquals(1, resultMessages.size());
     assertEquals(Type.TABLE, resultMessages.get(0).getType());
     assertEquals("ID\tNAME\n", resultMessages.get(0).getData());
@@ -110,11 +110,11 @@ class JDBCInterpreterInterpolationTest extends BasicJDBCTestCaseAdapter {
     properties.setProperty("zeppelin.jdbc.interpolation", "true");
     t = new JDBCInterpreter(properties);
     t.open();
-    interpreterContext = getInterpreterContext();
-    interpreterResult = t.interpret(sqlQuery, interpreterContext);
+    interpreterContextImpl = getInterpreterContext();
+    interpreterResult = t.interpret(sqlQuery, interpreterContextImpl);
     assertEquals(Code.SUCCESS, interpreterResult.code());
 
-    resultMessages = interpreterContext.out.toInterpreterResultMessage();
+    resultMessages = interpreterContextImpl.out.toInterpreterResultMessage();
     assertEquals(1, resultMessages.size());
     assertEquals(Type.TABLE, resultMessages.get(0).getType());
     assertEquals("ID\tNAME\nmem\tmemory\n", resultMessages.get(0).getData());
@@ -140,11 +140,11 @@ class JDBCInterpreterInterpolationTest extends BasicJDBCTestCaseAdapter {
     // Empty result expected because "kbd" is not defined ...
     //
     String sqlQuery = "select * from test_table where id = '{kbd}'";
-    InterpreterResult interpreterResult = t.interpret(sqlQuery, interpreterContext);
+    InterpreterResult interpreterResult = t.interpret(sqlQuery, interpreterContextImpl);
     assertEquals(Code.SUCCESS, interpreterResult.code());
 
     List<InterpreterResultMessage> resultMessages =
-            interpreterContext.out.toInterpreterResultMessage();
+            interpreterContextImpl.out.toInterpreterResultMessage();
     assertEquals(1, resultMessages.size());
     assertEquals(Type.TABLE, resultMessages.get(0).getType());
     assertEquals("ID\tNAME\n", resultMessages.get(0).getData());
@@ -155,10 +155,10 @@ class JDBCInterpreterInterpolationTest extends BasicJDBCTestCaseAdapter {
     // 1 result expected because z-variable 'item' is 'key' ...
     //
     sqlQuery = "select * from test_table where id = '{itemId}'";
-    interpreterContext = getInterpreterContext();
-    interpreterResult = t.interpret(sqlQuery, interpreterContext);
+    interpreterContextImpl = getInterpreterContext();
+    interpreterResult = t.interpret(sqlQuery, interpreterContextImpl);
     assertEquals(Code.SUCCESS, interpreterResult.code());
-    resultMessages = interpreterContext.out.toInterpreterResultMessage();
+    resultMessages = interpreterContextImpl.out.toInterpreterResultMessage();
     assertEquals(1, resultMessages.size());
     assertEquals(Type.TABLE, resultMessages.get(0).getType());
     assertEquals("ID\tNAME\nkey\tkeyboard\n", resultMessages.get(0).getData());
@@ -184,17 +184,17 @@ class JDBCInterpreterInterpolationTest extends BasicJDBCTestCaseAdapter {
     // The 'regexp' keyword is specific to H2 database
     //
     String sqlQuery = "select * from test_table where name regexp '[aeiou]{2}'";
-    InterpreterResult interpreterResult = t.interpret(sqlQuery, interpreterContext);
+    InterpreterResult interpreterResult = t.interpret(sqlQuery, interpreterContextImpl);
     assertEquals(Code.SUCCESS, interpreterResult.code());
     List<InterpreterResultMessage> resultMessages =
-            interpreterContext.out.toInterpreterResultMessage();
+            interpreterContextImpl.out.toInterpreterResultMessage();
     assertEquals(1, resultMessages.size());
     assertEquals(Type.TABLE, resultMessages.get(0).getType());
     assertEquals("ID\tNAME\nkey\tkeyboard\nmou\tmouse\n", resultMessages.get(0).getData());
   }
 
-  private InterpreterContext getInterpreterContext() {
-    return InterpreterContext.builder()
+  private InterpreterContextImpl getInterpreterContext() {
+    return InterpreterContextImpl.builder()
             .setParagraphId("paragraph_1")
             .setAuthenticationInfo(new AuthenticationInfo("testUser"))
             .setResourcePool(resourcePool)

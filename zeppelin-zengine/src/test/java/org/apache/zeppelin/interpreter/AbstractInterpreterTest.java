@@ -33,7 +33,6 @@ import java.io.File;
 import java.time.Instant;
 
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
 
 /**
  * This class will load configuration files under
@@ -95,8 +94,8 @@ public abstract class AbstractInterpreterTest {
     return new Note("test", "test", interpreterFactory, interpreterSettingManager, null, null, null);
   }
 
-  protected InterpreterContext createDummyInterpreterContext() {
-    return InterpreterContext.builder()
+  protected InterpreterContextImpl createDummyInterpreterContext() {
+    return InterpreterContextImpl.builder()
         .setNoteId("noteId")
         .setParagraphId("paragraphId")
         .build();

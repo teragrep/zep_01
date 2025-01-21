@@ -282,7 +282,7 @@ public class ParagraphTest extends AbstractInterpreterTest {
     doReturn(mockJobListener).when(spyParagraph).getListener();
 
     InterpreterResult mockInterpreterResult = mock(InterpreterResult.class);
-    when(mockInterpreter.interpret(anyString(), Mockito.<InterpreterContext>any())).thenReturn(mockInterpreterResult);
+    when(mockInterpreter.interpret(anyString(), Mockito.<InterpreterContextImpl>any())).thenReturn(mockInterpreterResult);
     when(mockInterpreterResult.code()).thenReturn(Code.SUCCESS);
 
     // Actual test
@@ -296,7 +296,7 @@ public class ParagraphTest extends AbstractInterpreterTest {
     Paragraph p1 = spyParagraph.getUserParagraph(user1.getUser());
 
     mockInterpreterResult = mock(InterpreterResult.class);
-    when(mockInterpreter.interpret(anyString(), Mockito.<InterpreterContext>any())).thenReturn(mockInterpreterResult);
+    when(mockInterpreter.interpret(anyString(), Mockito.<InterpreterContextImpl>any())).thenReturn(mockInterpreterResult);
     when(mockInterpreterResult.code()).thenReturn(Code.SUCCESS);
 
     List<InterpreterResultMessage> result2 = new ArrayList<>();
@@ -373,7 +373,7 @@ public class ParagraphTest extends AbstractInterpreterTest {
     doReturn(mockJobListener).when(spyParagraph).getListener();
 
     InterpreterResult mockInterpreterResult = mock(InterpreterResult.class);
-    when(mockInterpreter.interpret(anyString(), Mockito.<InterpreterContext>any())).thenReturn(mockInterpreterResult);
+    when(mockInterpreter.interpret(anyString(), Mockito.<InterpreterContextImpl>any())).thenReturn(mockInterpreterResult);
     when(mockInterpreterResult.code()).thenReturn(Code.SUCCESS);
 
     AuthenticationInfo user1 = new AuthenticationInfo("user1");
@@ -384,18 +384,18 @@ public class ParagraphTest extends AbstractInterpreterTest {
     // Credentials should only be injected when it is enabled for an interpreter or when specified in a local property
     when(mockInterpreter.getProperty(Constants.INJECT_CREDENTIALS, "false")).thenReturn("false");
     spyParagraph.jobRun();
-    verify(mockInterpreter).interpret(eq("val x = \"usr={user.ent}&pass={password.ent}\""), any(InterpreterContext.class));
+    verify(mockInterpreter).interpret(eq("val x = \"usr={user.ent}&pass={password.ent}\""), any(InterpreterContextImpl.class));
 
     when(mockInterpreter.getProperty(Constants.INJECT_CREDENTIALS, "false")).thenReturn("true");
     mockInterpreter.setProperty(Constants.INJECT_CREDENTIALS, "true");
     spyParagraph.jobRun();
-    verify(mockInterpreter).interpret(eq("val x = \"usr=user&pass=pwd\""), any(InterpreterContext.class));
+    verify(mockInterpreter).interpret(eq("val x = \"usr=user&pass=pwd\""), any(InterpreterContextImpl.class));
 
     // Check if local property override works
     when(mockInterpreter.getProperty(Constants.INJECT_CREDENTIALS, "false")).thenReturn("true");
     spyParagraph.getLocalProperties().put(Constants.INJECT_CREDENTIALS, "true");
     spyParagraph.jobRun();
-    verify(mockInterpreter).interpret(eq("val x = \"usr=user&pass=pwd\""), any(InterpreterContext.class));
+    verify(mockInterpreter).interpret(eq("val x = \"usr=user&pass=pwd\""), any(InterpreterContextImpl.class));
 
   }
 }

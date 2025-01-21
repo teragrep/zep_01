@@ -53,8 +53,8 @@ public class RemoteInterpreterOutputTestStream extends AbstractInterpreterTest
     interpreterSetting.close();
   }
 
-  private InterpreterContext createInterpreterContext() {
-    return InterpreterContext.builder()
+  private InterpreterContextImpl createInterpreterContext() {
+    return InterpreterContextImpl.builder()
         .setNoteId("noteId")
         .setParagraphId("id")
         .build();

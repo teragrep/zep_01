@@ -161,11 +161,12 @@ public abstract class AbstractSparkScalaInterpreter {
   }
 
   public abstract InterpreterResult interpret(String st,
-                                              InterpreterContext context) throws InterpreterException;
+          InterpreterContext context) throws InterpreterException;
 
   public abstract List<InterpreterCompletion> completion(String buf,
                                                          int cursor,
-                                                         InterpreterContext interpreterContext) throws InterpreterException;
+                                                         InterpreterContext interpreterContext
+  ) throws InterpreterException;
 
   public abstract void bind(String name,
                             String tpe,

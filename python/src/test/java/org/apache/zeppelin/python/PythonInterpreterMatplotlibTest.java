@@ -42,7 +42,7 @@ class PythonInterpreterMatplotlibTest implements InterpreterOutputListener {
   private InterpreterGroup intpGroup;
   private PythonInterpreter python;
 
-  private InterpreterContext context;
+  private InterpreterContextImpl context;
   InterpreterOutput out;
 
   @BeforeEach
@@ -63,7 +63,7 @@ class PythonInterpreterMatplotlibTest implements InterpreterOutputListener {
 
     out = new InterpreterOutput(this);
 
-    context = InterpreterContext.builder()
+    context = InterpreterContextImpl.builder()
         .setInterpreterOut(out)
         .setAngularObjectRegistry(new AngularObjectRegistry(intpGroup.getId(), null))
         .build();

@@ -92,7 +92,7 @@ public abstract class SparkShims {
    */
   public abstract void setupSparkListener(String master,
                                           String sparkWebUrl,
-                                          InterpreterContext context);
+          InterpreterContext context);
 
   public abstract String showDataFrame(Object obj, int maxResult, InterpreterContext context);
 

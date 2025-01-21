@@ -1,20 +1,3 @@
-/*
- * Licensed to the Apache Software Foundation (ASF) under one or more
- * contributor license agreements.  See the NOTICE file distributed with
- * this work for additional information regarding copyright ownership.
- * The ASF licenses this file to You under the Apache License, Version 2.0
- * (the "License"); you may not use this file except in compliance with
- * the License.  You may obtain a copy of the License at
- *
- *    http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
-
 package org.apache.zeppelin.interpreter;
 
 import org.apache.zeppelin.display.AngularObjectRegistry;
@@ -23,257 +6,62 @@ import org.apache.zeppelin.interpreter.remote.RemoteInterpreterEventClient;
 import org.apache.zeppelin.resource.ResourcePool;
 import org.apache.zeppelin.user.AuthenticationInfo;
 
-import java.util.HashMap;
 import java.util.Map;
 
-/**
- * Interpreter context
- */
-public class InterpreterContext {
+public interface InterpreterContext {
 
-  public InterpreterOutput out;
+    String getNoteId();
 
-  private String noteId;
-  private String noteName;
-  private String replName;
-  private String paragraphTitle;
-  private String paragraphId;
-  private String paragraphText;
-  private AuthenticationInfo authenticationInfo;
-  private Map<String, Object> config = new HashMap<>();
-  private GUI gui = new GUI();
-  private GUI noteGui = new GUI();
-  private AngularObjectRegistry angularObjectRegistry;
-  private ResourcePool resourcePool;
-  private String interpreterClassName;
-  private Map<String, Integer> progressMap;
-  private Map<String, String> localProperties = new HashMap<>();
-  private RemoteInterpreterEventClient intpEventClient;
+    String getNoteName();
 
-  /**
-   * Builder class for InterpreterContext
-   */
-  public static class Builder {
-    private InterpreterContext context;
+    String getReplName();
 
-    public Builder() {
-      context = new InterpreterContext();
-    }
+    String getParagraphId();
 
-    public Builder setNoteId(String noteId) {
-      context.noteId = noteId;
-      return this;
-    }
+    void setParagraphId(String paragraphId);
 
-    public Builder setNoteName(String noteName) {
-      context.noteName = noteName;
-      return this;
-    }
+    String getParagraphText();
 
-    public Builder setParagraphId(String paragraphId) {
-      context.paragraphId = paragraphId;
-      return this;
-    }
+    String getParagraphTitle();
 
-    public Builder setInterpreterClassName(String intpClassName) {
-      context.interpreterClassName = intpClassName;
-      return this;
-    }
+    Map<String, String> getLocalProperties();
 
-    public Builder setAngularObjectRegistry(AngularObjectRegistry angularObjectRegistry) {
-      context.angularObjectRegistry = angularObjectRegistry;
-      return this;
-    }
+    String getStringLocalProperty(String key, String defaultValue);
 
-    public Builder setResourcePool(ResourcePool resourcePool) {
-      context.resourcePool = resourcePool;
-      return this;
-    }
+    int getIntLocalProperty(String key, int defaultValue);
 
-    public Builder setReplName(String replName) {
-      context.replName = replName;
-      return this;
-    }
+    long getLongLocalProperty(String key, int defaultValue);
 
-    public Builder setAuthenticationInfo(AuthenticationInfo authenticationInfo) {
-      context.authenticationInfo = authenticationInfo;
-      return this;
-    }
+    double getDoubleLocalProperty(String key, double defaultValue);
 
-    public Builder setConfig(Map<String, Object> config) {
-      if (config != null) {
-        context.config = new HashMap<>(config);
-      }
-      return this;
-    }
+    boolean getBooleanLocalProperty(String key, boolean defaultValue);
 
-    public Builder setGUI(GUI gui) {
-      context.gui = gui;
-      return this;
-    }
+    AuthenticationInfo getAuthenticationInfo();
 
-    public Builder setNoteGUI(GUI noteGUI) {
-      context.noteGui = noteGUI;
-      return this;
-    }
+    Map<String, Object> getConfig();
 
-    public Builder setInterpreterOut(InterpreterOutput out) {
-      context.out = out;
-      return this;
-    }
+    GUI getGui();
 
-    public Builder setIntpEventClient(RemoteInterpreterEventClient intpEventClient) {
-      context.intpEventClient = intpEventClient;
-      return this;
-    }
+    GUI getNoteGui();
 
-    public Builder setProgressMap(Map<String, Integer> progressMap) {
-      context.progressMap = progressMap;
-      return this;
-    }
+    AngularObjectRegistry getAngularObjectRegistry();
 
-    public Builder setParagraphText(String paragraphText) {
-      context.paragraphText = paragraphText;
-      return this;
-    }
+    void setAngularObjectRegistry(AngularObjectRegistry angularObjectRegistry);
 
-    public Builder setParagraphTitle(String paragraphTitle) {
-      context.paragraphTitle = paragraphTitle;
-      return this;
-    }
+    ResourcePool getResourcePool();
 
-    public Builder setLocalProperties(Map<String, String> localProperties) {
-      context.localProperties = localProperties;
-      return this;
-    }
+    void setResourcePool(ResourcePool resourcePool);
 
-    public InterpreterContext build() {
-      return context;
-    }
-  }
+    String getInterpreterClassName();
 
-  public static Builder builder() {
-    return new Builder();
-  }
+    void setInterpreterClassName(String className);
 
-  private InterpreterContext() {
+    RemoteInterpreterEventClient getIntpEventClient();
 
-  }
+    void setIntpEventClient(RemoteInterpreterEventClient intpEventClient);
 
+    InterpreterOutput out();
 
-  public String getNoteId() {
-    return noteId;
-  }
+    void setProgress(int n);
 
-  public String getNoteName() {
-    return noteName;
-  }
-
-  public String getReplName() {
-    return replName;
-  }
-
-  public String getParagraphId() {
-    return paragraphId;
-  }
-
-  public void setParagraphId(String paragraphId) {
-    this.paragraphId = paragraphId;
-  }
-
-  public String getParagraphText() {
-    return paragraphText;
-  }
-
-  public String getParagraphTitle() {
-    return paragraphTitle;
-  }
-
-  public Map<String, String> getLocalProperties() {
-    return localProperties;
-  }
-
-  public String getStringLocalProperty(String key, String defaultValue) {
-    return localProperties.getOrDefault(key, defaultValue);
-  }
-
-  public int getIntLocalProperty(String key, int defaultValue) {
-    return Integer.parseInt(localProperties.getOrDefault(key, defaultValue + ""));
-  }
-
-  public long getLongLocalProperty(String key, int defaultValue) {
-    return Long.parseLong(localProperties.getOrDefault(key, defaultValue + ""));
-  }
-
-  public double getDoubleLocalProperty(String key, double defaultValue) {
-    return Double.parseDouble(localProperties.getOrDefault(key, defaultValue + ""));
-  }
-
-  public boolean getBooleanLocalProperty(String key, boolean defaultValue) {
-    return Boolean.parseBoolean(localProperties.getOrDefault(key, defaultValue + ""));
-  }
-
-  public AuthenticationInfo getAuthenticationInfo() {
-    return authenticationInfo;
-  }
-
-  public Map<String, Object> getConfig() {
-    return config;
-  }
-
-  public GUI getGui() {
-    return gui;
-  }
-
-  public GUI getNoteGui() {
-    return noteGui;
-  }
-
-  public AngularObjectRegistry getAngularObjectRegistry() {
-    return angularObjectRegistry;
-  }
-
-  public void setAngularObjectRegistry(AngularObjectRegistry angularObjectRegistry) {
-    this.angularObjectRegistry = angularObjectRegistry;
-  }
-
-  public ResourcePool getResourcePool() {
-    return resourcePool;
-  }
-
-  public void setResourcePool(ResourcePool resourcePool) {
-    this.resourcePool = resourcePool;
-  }
-
-  public String getInterpreterClassName() {
-    return interpreterClassName;
-  }
-
-  public void setInterpreterClassName(String className) {
-    this.interpreterClassName = className;
-  }
-
-  public RemoteInterpreterEventClient getIntpEventClient() {
-    return intpEventClient;
-  }
-
-  public void setIntpEventClient(RemoteInterpreterEventClient intpEventClient) {
-    this.intpEventClient = intpEventClient;
-  }
-
-  public InterpreterOutput out() {
-    return out;
-  }
-
-  /**
-   * Set progress of paragraph manually
-   * @param n integer from 0 to 100
-   */
-  public void setProgress(int n) {
-    if (progressMap != null) {
-      n = Math.max(n, 0);
-      n = Math.min(n, 100);
-      progressMap.put(paragraphId, new Integer(n));
-    }
-  }
 }

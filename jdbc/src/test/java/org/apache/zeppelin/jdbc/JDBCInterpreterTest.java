@@ -71,7 +71,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
  */
 public class JDBCInterpreterTest extends BasicJDBCTestCaseAdapter {
   static String jdbcConnection;
-  InterpreterContext context;
+  InterpreterContextImpl context;
 
   private static String getJdbcConnection() throws IOException {
     if (null == jdbcConnection) {
@@ -111,7 +111,7 @@ public class JDBCInterpreterTest extends BasicJDBCTestCaseAdapter {
             "insert into test_table(id, name) values ('a', 'a_name'),('b', 'b_name'),('c', ?);");
     insertStatement.setString(1, null);
     insertStatement.execute();
-    context = InterpreterContext.builder()
+    context = InterpreterContextImpl.builder()
         .setAuthenticationInfo(new AuthenticationInfo("testUser"))
         .setParagraphId("paragraphId")
         .setInterpreterOut(new InterpreterOutput())
@@ -122,24 +122,24 @@ public class JDBCInterpreterTest extends BasicJDBCTestCaseAdapter {
   void testForParsePropertyKey() {
     JDBCInterpreter t = new JDBCInterpreter(new Properties());
     Map<String, String> localProperties = new HashMap<>();
-    InterpreterContext interpreterContext = InterpreterContext.builder()
+    InterpreterContextImpl interpreterContextImpl = InterpreterContextImpl.builder()
         .setLocalProperties(localProperties)
         .build();
-    assertEquals(JDBCInterpreter.DEFAULT_KEY, t.getDBPrefix(interpreterContext));
+    assertEquals(JDBCInterpreter.DEFAULT_KEY, t.getDBPrefix(interpreterContextImpl));
 
     localProperties = new HashMap<>();
     localProperties.put("db", "mysql");
-    interpreterContext = InterpreterContext.builder()
+    interpreterContextImpl = InterpreterContextImpl.builder()
         .setLocalProperties(localProperties)
         .build();
-    assertEquals("mysql", t.getDBPrefix(interpreterContext));
+    assertEquals("mysql", t.getDBPrefix(interpreterContextImpl));
 
     localProperties = new HashMap<>();
     localProperties.put("hive", "hive");
-    interpreterContext = InterpreterContext.builder()
+    interpreterContextImpl = InterpreterContextImpl.builder()
         .setLocalProperties(localProperties)
         .build();
-    assertEquals("hive", t.getDBPrefix(interpreterContext));
+    assertEquals("hive", t.getDBPrefix(interpreterContextImpl));
   }
 
   /**
@@ -161,7 +161,7 @@ public class JDBCInterpreterTest extends BasicJDBCTestCaseAdapter {
     String sqlQuery = "select * from test_table";
     Map<String, String> localProperties = new HashMap<>();
     localProperties.put("db", "fake");
-    InterpreterContext context = InterpreterContext.builder()
+    InterpreterContextImpl context = InterpreterContextImpl.builder()
         .setAuthenticationInfo(new AuthenticationInfo("testUser"))
         .setLocalProperties(localProperties)
         .setParagraphId("paragraphId")
@@ -559,7 +559,7 @@ public class JDBCInterpreterTest extends BasicJDBCTestCaseAdapter {
     jdbc.open();
 
     // user1 runs default
-    InterpreterContext context = InterpreterContext.builder()
+    InterpreterContextImpl context = InterpreterContextImpl.builder()
             .setAuthenticationInfo(user1Credential)
             .setInterpreterOut(new InterpreterOutput())
             .setReplName("jdbc")
@@ -571,7 +571,7 @@ public class JDBCInterpreterTest extends BasicJDBCTestCaseAdapter {
     assertEquals("dbpassword", user1JDBC1Conf.getProperty().get("password"));
 
     // user2 run default
-    context = InterpreterContext.builder()
+    context = InterpreterContextImpl.builder()
         .setAuthenticationInfo(user2Credential)
         .setInterpreterOut(new InterpreterOutput())
         .setReplName("jdbc")
@@ -597,7 +597,7 @@ public class JDBCInterpreterTest extends BasicJDBCTestCaseAdapter {
     jdbc.open();
 
     // user1 runs default
-    InterpreterContext context = InterpreterContext.builder()
+    InterpreterContextImpl context = InterpreterContextImpl.builder()
             .setAuthenticationInfo(user1Credential)
             .setInterpreterOut(new InterpreterOutput())
             .setReplName("hive")
@@ -609,7 +609,7 @@ public class JDBCInterpreterTest extends BasicJDBCTestCaseAdapter {
     assertEquals("user1Pw", user1JDBC1Conf.getProperty().get("password"));
 
     // user2 run default
-    context = InterpreterContext.builder()
+    context = InterpreterContextImpl.builder()
             .setAuthenticationInfo(user2Credential)
             .setInterpreterOut(new InterpreterOutput())
             .setReplName("hive")
@@ -764,8 +764,8 @@ public class JDBCInterpreterTest extends BasicJDBCTestCaseAdapter {
             interpreterResult.message().get(0).getData());
   }
 
-  private InterpreterContext getInterpreterContext() {
-    return InterpreterContext.builder()
+  private InterpreterContextImpl getInterpreterContext() {
+    return InterpreterContextImpl.builder()
             .setAuthenticationInfo(new AuthenticationInfo("testUser"))
             .setParagraphId("paragraphId")
             .setInterpreterOut(new InterpreterOutput())

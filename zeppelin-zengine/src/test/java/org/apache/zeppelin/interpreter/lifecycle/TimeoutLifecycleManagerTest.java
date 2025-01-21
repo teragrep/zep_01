@@ -20,7 +20,7 @@ package org.apache.zeppelin.interpreter.lifecycle;
 import org.apache.zeppelin.conf.ZeppelinConfiguration;
 import org.apache.zeppelin.interpreter.AbstractInterpreterTest;
 import org.apache.zeppelin.interpreter.ExecutionContext;
-import org.apache.zeppelin.interpreter.InterpreterContext;
+import org.apache.zeppelin.interpreter.InterpreterContextImpl;
 import org.apache.zeppelin.interpreter.xref.InterpreterException;
 import org.apache.zeppelin.interpreter.InterpreterSetting;
 import org.apache.zeppelin.interpreter.remote.RemoteInterpreter;
@@ -68,7 +68,7 @@ public class TimeoutLifecycleManagerTest extends AbstractInterpreterTest {
     // InterpreterGroup is not removed after 15 seconds, as TimeoutLifecycleManager only manage it after it is started
     assertEquals(1, interpreterSetting.getAllInterpreterGroups().size());
 
-    InterpreterContext context = InterpreterContext.builder()
+    InterpreterContextImpl context = InterpreterContextImpl.builder()
         .setNoteId("noteId")
         .setParagraphId("paragraphId")
         .build();
@@ -105,7 +105,7 @@ public class TimeoutLifecycleManagerTest extends AbstractInterpreterTest {
 
       @Override
       protected Object jobRun() throws Throwable {
-        InterpreterContext context = InterpreterContext.builder()
+        InterpreterContextImpl context = InterpreterContextImpl.builder()
             .setNoteId("noteId")
             .setParagraphId("paragraphId")
             .build();

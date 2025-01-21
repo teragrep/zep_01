@@ -86,8 +86,8 @@ public class HiveUtils {
           LOGGER.debug("Hive job output: {}", logsOutput);
           boolean displayLogProperty = context.getBooleanLocalProperty("displayLog", displayLog);
           if (!StringUtils.isBlank(logsOutput) && displayLogProperty) {
-            context.out.write(logsOutput + "\n");
-            context.out.flush();
+            context.out().write(logsOutput + "\n");
+            context.out().flush();
           }
           if (!StringUtils.isBlank(logsOutput) && progressBar != null && displayLogProperty) {
             progressBar.operationLogShowedToUser();
@@ -116,7 +116,7 @@ public class HiveUtils {
       // Move codes into ProgressBar to delay NoClassDefFoundError of InPlaceUpdateStream
       // until ProgressBar instanced.
       // When hive < 2.3, ProgressBar will not be instanced, so it works well.
-      progressBar.setInPlaceUpdateStream(hiveStmt, context.out);
+      progressBar.setInPlaceUpdateStream(hiveStmt, context.out());
     }
   }
 

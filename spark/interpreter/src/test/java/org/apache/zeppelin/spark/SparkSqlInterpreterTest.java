@@ -43,7 +43,7 @@ public class SparkSqlInterpreterTest {
 
   private static SparkSqlInterpreter sqlInterpreter;
   private static SparkInterpreter sparkInterpreter;
-  private static InterpreterContext context;
+  private static InterpreterContextImpl context;
   private static InterpreterGroup intpGroup;
 
   @BeforeAll
@@ -74,8 +74,8 @@ public class SparkSqlInterpreterTest {
     sqlInterpreter.open();
   }
 
-  private static InterpreterContext getInterpreterContext() {
-    return InterpreterContext.builder()
+  private static InterpreterContextImpl getInterpreterContext() {
+    return InterpreterContextImpl.builder()
             .setNoteId("noteId")
             .setParagraphId("paragraphId")
             .setParagraphTitle("title")
@@ -187,7 +187,7 @@ public class SparkSqlInterpreterTest {
             context);
     sparkInterpreter.interpret("gr.toDF.registerTempTable(\"gr\")", context);
 
-    context = InterpreterContext.builder()
+    context = InterpreterContextImpl.builder()
             .setNoteId("noteId")
             .setParagraphId("paragraphId")
             .setParagraphTitle("title")
@@ -290,7 +290,7 @@ public class SparkSqlInterpreterTest {
 
   @Test
   void testDDL() throws InterpreterException, IOException {
-    InterpreterContext context = getInterpreterContext();
+    InterpreterContextImpl context = getInterpreterContext();
     InterpreterResult ret = sqlInterpreter.interpret("create table t1(id int, name string)", context);
     assertEquals(Code.SUCCESS, ret.code(), context.out.toString());
     // spark 1.x will still return DataFrame with non-empty columns.

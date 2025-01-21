@@ -34,7 +34,7 @@ public abstract class AbstractEnhancedInterpreter extends AbstractInterpreter im
 
   @Override
   public InterpreterResult interpret(String st,
-                                     InterpreterContext context) throws InterpreterException {
+          InterpreterContext context) throws InterpreterException {
     InterpreterContextStore.set(context);
     ZeppelinContext z = getZeppelinContext();
     if (z != null) {
@@ -82,7 +82,8 @@ public abstract class AbstractEnhancedInterpreter extends AbstractInterpreter im
   @Override
   public List<InterpreterCompletion> completion(String buf,
                                                 int cursor,
-                                                InterpreterContext interpreterContext) throws InterpreterException {
+          InterpreterContext interpreterContext
+  ) throws InterpreterException {
     return new ArrayList<>();
   }
 }

@@ -22,8 +22,9 @@ import java.util.List;
 import java.util.Properties;
 
 import org.apache.zeppelin.interpreter.AbstractInterpreter;
-import org.apache.zeppelin.interpreter.xref.FormType;
 import org.apache.zeppelin.interpreter.InterpreterContext;
+import org.apache.zeppelin.interpreter.xref.FormType;
+import org.apache.zeppelin.interpreter.InterpreterContextImpl;
 import org.apache.zeppelin.interpreter.InterpreterResult;
 import org.apache.zeppelin.interpreter.xref.Code;
 import org.apache.zeppelin.interpreter.xref.Type;
@@ -69,7 +70,8 @@ public class AngularInterpreter extends AbstractInterpreter {
 
   @Override
   public List<InterpreterCompletion> completion(String buf, int cursor,
-      InterpreterContext interpreterContext) {
+          InterpreterContext interpreterContextImpl
+  ) {
     return new LinkedList<>();
   }
 

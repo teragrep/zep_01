@@ -312,7 +312,7 @@ public abstract class AbstractInterpreter implements Interpreter {
   }
 
   /**
-   * Replace markers #{contextFieldName} by values from {@link InterpreterContext} fields
+   * Replace markers #{contextFieldName} by values from {@link InterpreterContextImpl} fields
    * with same name and marker #{user}. If value == null then replace by empty string.
    */
   private void replaceContextParameters(Properties properties) {
@@ -325,7 +325,7 @@ public abstract class AbstractInterpreter implements Interpreter {
       for (String key : properties.stringPropertyNames()) {
         String p = properties.getProperty(key);
         if (StringUtils.isNotEmpty(p)) {
-          for (Field field : InterpreterContext.class.getDeclaredFields()) {
+          for (Field field : InterpreterContextImpl.class.getDeclaredFields()) {
             Class<?> clazz = field.getType();
             if (!skipFields.contains(field.getName()) && (typesToProcess.contains(clazz)
                 || clazz.isPrimitive())) {

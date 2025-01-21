@@ -81,7 +81,8 @@ public class MockInterpreterA extends AbstractInterpreter {
 
   @Override
   public List<InterpreterCompletion> completion(String buf, int cursor,
-      InterpreterContext interpreterContext) {
+          InterpreterContext interpreterContext
+  ) {
     return null;
   }
 

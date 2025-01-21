@@ -20,9 +20,10 @@ package org.apache.zeppelin.spark;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.spark.SparkConf;
 import org.apache.spark.api.java.JavaSparkContext;
+import org.apache.zeppelin.interpreter.InterpreterContext;
 import org.apache.zeppelin.interpreter.InterpreterContextStore;
 import org.apache.zeppelin.interpreter.xref.ZeppelinContext;
-import org.apache.zeppelin.interpreter.InterpreterContext;
+import org.apache.zeppelin.interpreter.InterpreterContextImpl;
 import org.apache.zeppelin.interpreter.xref.InterpreterException;
 import org.apache.zeppelin.interpreter.InterpreterResult;
 import org.apache.zeppelin.python.PythonInterpreter;
@@ -119,8 +120,8 @@ public class PySparkInterpreter extends PythonInterpreter {
     PrintStream originalStdout = System.out;
     PrintStream originalStderr = System.err;
     try {
-      System.setOut(new PrintStream(context.out));
-      System.setErr(new PrintStream(context.out));
+      System.setOut(new PrintStream(context.out()));
+      System.setErr(new PrintStream(context.out()));
       Utils.printDeprecateMessage(sparkInterpreter.getSparkVersion(), context, properties);
 
       return super.interpret(st, context);

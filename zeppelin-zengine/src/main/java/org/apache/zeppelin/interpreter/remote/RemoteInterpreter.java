@@ -300,7 +300,8 @@ public class RemoteInterpreter extends AbstractInterpreter {
 
   @Override
   public List<InterpreterCompletion> completion(final String buf, final int cursor,
-                                                final InterpreterContext interpreterContext)
+                                                final InterpreterContext interpreterContext
+  )
       throws InterpreterException {
     if (!isOpened) {
       open();

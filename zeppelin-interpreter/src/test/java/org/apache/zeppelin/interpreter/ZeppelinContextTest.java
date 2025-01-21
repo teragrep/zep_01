@@ -34,7 +34,7 @@ public class ZeppelinContextTest {
   public void testHooks() throws InvalidHookException {
     InterpreterHookRegistry hookRegistry = new InterpreterHookRegistry();
     TestZeppelinContext z = new TestZeppelinContext(hookRegistry, 10);
-    InterpreterContext context = InterpreterContext.builder()
+    InterpreterContextImpl context = InterpreterContextImpl.builder()
         .setNoteId("note_1")
         .setNoteName("note_name_1")
         .setParagraphId("paragraph_1")

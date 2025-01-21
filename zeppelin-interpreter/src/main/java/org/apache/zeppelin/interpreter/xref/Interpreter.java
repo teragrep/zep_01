@@ -63,7 +63,7 @@ public interface Interpreter {
 
     @ZeppelinApi
     List<InterpreterCompletion> completion(
-            String buf, int cursor, InterpreterContext interpreterContext
+            String buf, int cursor, InterpreterContext interpreterContextImpl
     ) throws InterpreterException;
 
     @ZeppelinApi

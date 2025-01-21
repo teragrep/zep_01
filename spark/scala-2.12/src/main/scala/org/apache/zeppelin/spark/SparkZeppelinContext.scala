@@ -18,7 +18,6 @@
 package org.apache.zeppelin.spark
 
 import java.util
-
 import org.apache.spark.SparkContext
 import org.apache.zeppelin.display.AngularObjectWatcher
 import org.apache.zeppelin.display.ui.OptionInput.ParamOption

@@ -34,14 +34,14 @@ public class LazyOpenInterpreterTest {
   @Test
   public void isOpenTest() throws InterpreterException {
     InterpreterResult interpreterResult = new InterpreterResult(Code.SUCCESS, "");
-    when(interpreter.interpret(any(String.class), any(InterpreterContext.class)))
+    when(interpreter.interpret(any(String.class), any(InterpreterContextImpl.class)))
         .thenReturn(interpreterResult);
 
     LazyOpenInterpreter lazyOpenInterpreter = new LazyOpenInterpreter(interpreter);
 
     assertFalse("Interpreter is not open", lazyOpenInterpreter.isOpen());
-    InterpreterContext interpreterContext = mock(InterpreterContext.class);
-    lazyOpenInterpreter.interpret("intp 1", interpreterContext);
+    InterpreterContextImpl interpreterContextImpl = mock(InterpreterContextImpl.class);
+    lazyOpenInterpreter.interpret("intp 1", interpreterContextImpl);
     assertTrue("Interpeter is open", lazyOpenInterpreter.isOpen());
   }
 }

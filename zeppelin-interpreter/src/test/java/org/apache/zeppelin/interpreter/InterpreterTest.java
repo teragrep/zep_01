@@ -61,7 +61,7 @@ public class InterpreterTest {
     String paragraphId = "testParagraphId";
     String user = "username";
     InterpreterContextStore.set(
-        InterpreterContext.builder()
+        InterpreterContextImpl.builder()
             .setNoteId(noteId)
             .setParagraphId(paragraphId)
             .setParagraphText(paragraphText)

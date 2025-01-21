@@ -35,7 +35,7 @@ public class ConfInterpreterTest extends AbstractInterpreterTest {
     assertTrue(interpreterFactory.getInterpreter("test.conf", executionContext) instanceof ConfInterpreter);
     ConfInterpreter confInterpreter = (ConfInterpreter) interpreterFactory.getInterpreter("test.conf", executionContext);
 
-    InterpreterContext context = InterpreterContext.builder()
+    InterpreterContextImpl context = InterpreterContextImpl.builder()
         .setNoteId("noteId")
         .setParagraphId("paragraphId")
         .build();
@@ -65,7 +65,7 @@ public class ConfInterpreterTest extends AbstractInterpreterTest {
     assertTrue(interpreterFactory.getInterpreter("test.conf", executionContext) instanceof ConfInterpreter);
     ConfInterpreter confInterpreter = (ConfInterpreter) interpreterFactory.getInterpreter("test.conf", executionContext);
 
-    InterpreterContext context = InterpreterContext.builder()
+    InterpreterContextImpl context = InterpreterContextImpl.builder()
         .setNoteId("noteId")
         .setParagraphId("paragraphId")
         .build();
@@ -85,7 +85,7 @@ public class ConfInterpreterTest extends AbstractInterpreterTest {
     assertTrue(interpreterFactory.getInterpreter("test.conf", executionContext) instanceof ConfInterpreter);
     ConfInterpreter confInterpreter = (ConfInterpreter) interpreterFactory.getInterpreter("test.conf", executionContext);
 
-    InterpreterContext context = InterpreterContext.builder()
+    InterpreterContextImpl context = InterpreterContextImpl.builder()
         .setNoteId("noteId")
         .setParagraphId("paragraphId")
         .build();

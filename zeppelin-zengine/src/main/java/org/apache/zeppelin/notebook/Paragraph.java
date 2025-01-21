@@ -250,10 +250,10 @@ public class Paragraph extends JobWithProgressPoller<InterpreterResult> implemen
       return new ArrayList<>();
     }
     cursor = calculateCursorPosition(buffer, cursor);
-    InterpreterContext interpreterContext = getInterpreterContext();
+    InterpreterContextImpl interpreterContextImpl = getInterpreterContext();
 
     try {
-      return this.interpreter.completion(this.scriptText, cursor, interpreterContext);
+      return this.interpreter.completion(this.scriptText, cursor, interpreterContextImpl);
     } catch (InterpreterException e) {
       LOGGER.warn("Fail to get completion", e);
       return new ArrayList<>();
@@ -454,7 +454,7 @@ public class Paragraph extends JobWithProgressPoller<InterpreterResult> implemen
 
       LOGGER.debug("RUN : " + script);
       try {
-        InterpreterContext context = getInterpreterContext();
+        InterpreterContextImpl context = getInterpreterContext();
         InterpreterContextStore.set(context);
 
         // Inject credentials
@@ -513,7 +513,7 @@ public class Paragraph extends JobWithProgressPoller<InterpreterResult> implemen
     return true;
   }
 
-  private InterpreterContext getInterpreterContext() {
+  private InterpreterContextImpl getInterpreterContext() {
     AngularObjectRegistry registry = null;
     ResourcePool resourcePool = null;
     String replName = null;
@@ -537,7 +537,7 @@ public class Paragraph extends JobWithProgressPoller<InterpreterResult> implemen
       subject.setUserCredentials(userCredentials);
     }
 
-    return InterpreterContext.builder()
+    return InterpreterContextImpl.builder()
             .setNoteId(note.getId())
             .setNoteName(note.getName())
             .setParagraphId(getId())

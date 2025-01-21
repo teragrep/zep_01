@@ -31,7 +31,7 @@ public class SingleRowInterpreterResultTest {
   public void testHtml() {
     List<Serializable> list = Arrays.asList("2020-01-01", 10);
     String template = "Total count:{1} for {0}";
-    InterpreterContext context = InterpreterContext.builder().build();
+    InterpreterContextImpl context = InterpreterContextImpl.builder().build();
     SingleRowInterpreterResult singleRowInterpreterResult = new SingleRowInterpreterResult(list, template, context);
     String htmlOutput = singleRowInterpreterResult.toHtml();
     assertEquals("%html Total count:10 for 2020-01-01", htmlOutput);
@@ -41,7 +41,7 @@ public class SingleRowInterpreterResultTest {
   public void testAngular() {
     List<Serializable> list = Arrays.asList("2020-01-01", 10);
     String template = "Total count:{1} for {0}";
-    InterpreterContext context = InterpreterContext.builder().build();
+    InterpreterContextImpl context = InterpreterContextImpl.builder().build();
     SingleRowInterpreterResult singleRowInterpreterResult = new SingleRowInterpreterResult(list, template, context);
     String angularOutput = singleRowInterpreterResult.toAngular();
     assertEquals("%angular Total count:{{value_1}} for {{value_0}}", angularOutput);

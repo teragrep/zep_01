@@ -51,7 +51,7 @@ public class PySparkInterpreterMatplotlibTest {
   static PySparkInterpreter pyspark;
   static InterpreterGroup intpGroup;
   static Logger LOGGER = LoggerFactory.getLogger(PySparkInterpreterTest.class);
-  static InterpreterContext context;
+  static InterpreterContextImpl context;
 
   public static class AltPySparkInterpreter extends PySparkInterpreter {
     /**
@@ -70,12 +70,12 @@ public class PySparkInterpreterMatplotlibTest {
      */
     @Override
     public InterpreterResult interpret(String st, InterpreterContext context) throws InterpreterException {
-      context.out.clear();
+      context.out().clear();
       InterpreterResult result = super.interpret(st, context);
       List<InterpreterResultMessage> resultMessages = null;
       try {
-        context.out.flush();
-        resultMessages = context.out.toInterpreterResultMessage();
+        context.out().flush();
+        resultMessages = context.out().toInterpreterResultMessage();
       } catch (IOException e) {
         Assertions.fail("Failure happened: " + e.getMessage());
       }
@@ -103,7 +103,7 @@ public class PySparkInterpreterMatplotlibTest {
   public static void setUp() throws Exception {
     intpGroup = new InterpreterGroup();
     intpGroup.put("note", new LinkedList<>());
-    context = InterpreterContext.builder()
+    context = InterpreterContextImpl.builder()
         .setNoteId("note")
         .setInterpreterOut(new InterpreterOutput())
         .setIntpEventClient(mock(RemoteInterpreterEventClient.class))

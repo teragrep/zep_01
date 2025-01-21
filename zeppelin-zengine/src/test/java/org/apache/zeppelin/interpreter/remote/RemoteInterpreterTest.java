@@ -89,7 +89,7 @@ public class RemoteInterpreterTest extends AbstractInterpreterTest {
 
     assertEquals(remoteInterpreter1.getScheduler(), remoteInterpreter2.getScheduler());
 
-    InterpreterContext context1 = createDummyInterpreterContext();
+    InterpreterContextImpl context1 = createDummyInterpreterContext();
     assertEquals("hello", remoteInterpreter1.interpret("hello", context1).message().get(0).getData());
     assertEquals(FormType.NATIVE, interpreter1.getFormType());
     assertEquals(0, remoteInterpreter1.getProgress(context1));
@@ -123,7 +123,7 @@ public class RemoteInterpreterTest extends AbstractInterpreterTest {
 
     assertNotEquals(interpreter1.getScheduler(), interpreter2.getScheduler());
 
-    InterpreterContext context1 = createDummyInterpreterContext();
+    InterpreterContextImpl context1 = createDummyInterpreterContext();
     assertEquals("hello", remoteInterpreter1.interpret("hello", context1).message().get(0).getData());
     assertEquals("hello", remoteInterpreter2.interpret("hello", context1).message().get(0).getData());
     assertEquals(FormType.NATIVE, interpreter1.getFormType());
@@ -166,7 +166,7 @@ public class RemoteInterpreterTest extends AbstractInterpreterTest {
 
     assertNotEquals(interpreter1.getScheduler(), interpreter2.getScheduler());
 
-    InterpreterContext context1 = createDummyInterpreterContext();
+    InterpreterContextImpl context1 = createDummyInterpreterContext();
     assertEquals("hello", remoteInterpreter1.interpret("hello", context1).message().get(0).getData());
     assertEquals("hello", remoteInterpreter2.interpret("hello", context1).message().get(0).getData());
     assertEquals(FormType.NATIVE, interpreter1.getFormType());
@@ -203,7 +203,7 @@ public class RemoteInterpreterTest extends AbstractInterpreterTest {
     interpreterSetting.getOption().setPerUser(InterpreterOption.SHARED);
     interpreterSetting.setProperty("zeppelin.SleepInterpreter.precode", "fail test");
     Interpreter interpreter1 = interpreterSetting.getInterpreter("user1", "note1", "sleep");
-    InterpreterContext context1 = createDummyInterpreterContext();;
+    InterpreterContextImpl context1 = createDummyInterpreterContext();;
     assertEquals(Code.ERROR, interpreter1.interpret("10", context1).code());
   }
 
@@ -213,7 +213,7 @@ public class RemoteInterpreterTest extends AbstractInterpreterTest {
     interpreterSetting.getOption().setPerUser(InterpreterOption.SHARED);
     interpreterSetting.setProperty("zeppelin.SleepInterpreter.precode", "1");
     Interpreter interpreter1 = interpreterSetting.getInterpreter("user1", "note1", "sleep");
-    InterpreterContext context1 = createDummyInterpreterContext();
+    InterpreterContextImpl context1 = createDummyInterpreterContext();
     assertEquals(Code.SUCCESS, interpreter1.interpret("10", context1).code());
   }
 
@@ -226,7 +226,7 @@ public class RemoteInterpreterTest extends AbstractInterpreterTest {
     assertTrue(interpreter1 instanceof RemoteInterpreter);
     RemoteInterpreter remoteInterpreter1 = (RemoteInterpreter) interpreter1;
 
-    InterpreterContext context1 = createDummyInterpreterContext();;
+    InterpreterContextImpl context1 = createDummyInterpreterContext();;
     assertEquals(Code.ERROR, remoteInterpreter1.interpret("hello", context1).code());
   }
 
@@ -237,7 +237,7 @@ public class RemoteInterpreterTest extends AbstractInterpreterTest {
     // by default SleepInterpreter would use FIFOScheduler
 
     final Interpreter interpreter1 = interpreterSetting.getInterpreter("user1", "note1", "sleep");
-    final InterpreterContext context1 = createDummyInterpreterContext();
+    final InterpreterContextImpl context1 = createDummyInterpreterContext();
     // run this dummy interpret method first to launch the RemoteInterpreterProcess to avoid the
     // time overhead of launching the process.
     interpreter1.interpret("1", context1);
@@ -277,7 +277,7 @@ public class RemoteInterpreterTest extends AbstractInterpreterTest {
     interpreterSetting.setProperty("zeppelin.SleepInterpreter.parallel", "true");
 
     final Interpreter interpreter1 = interpreterSetting.getInterpreter("user1", "note1", "sleep");
-    final InterpreterContext context1 = createDummyInterpreterContext();
+    final InterpreterContextImpl context1 = createDummyInterpreterContext();
 
     // run this dummy interpret method first to launch the RemoteInterpreterProcess to avoid the
     // time overhead of launching the process.
@@ -348,7 +348,7 @@ public class RemoteInterpreterTest extends AbstractInterpreterTest {
     Interpreter interpreter = interpreterSetting.getInterpreter("user1", "note1", "angular_obj");
     interpreter.getInterpreterGroup().setAngularObjectRegistry(registry);
 
-    final InterpreterContext context = createDummyInterpreterContext();
+    final InterpreterContextImpl context = createDummyInterpreterContext();
     InterpreterResult result = interpreter.interpret("dummy", context);
     assertEquals(Code.SUCCESS, result.code());
     assertEquals("2", result.message().get(0).getData());
@@ -372,7 +372,7 @@ public class RemoteInterpreterTest extends AbstractInterpreterTest {
     interpreterSetting.setProperty("property_1", "value_1");
 
     final Interpreter interpreter1 = interpreterSetting.getInterpreter("user1", "note1", "get");
-    final InterpreterContext context1 = createDummyInterpreterContext();
+    final InterpreterContextImpl context1 = createDummyInterpreterContext();
 
     assertEquals("VALUE_1", interpreter1.interpret("getEnv ENV_1", context1).message().get(0).getData());
     assertEquals("null", interpreter1.interpret("getEnv ENV_2", context1).message().get(0).getData());
@@ -396,7 +396,7 @@ public class RemoteInterpreterTest extends AbstractInterpreterTest {
     gui.textbox("textbox_id");
     Map<String, Input> expected = new LinkedHashMap<>(gui.getForms());
     Interpreter interpreter = interpreterSetting.getDefaultInterpreter("user1", "note1");
-    InterpreterContext context = createDummyInterpreterContext();
+    InterpreterContextImpl context = createDummyInterpreterContext();
 
     interpreter.interpret("text", context);
     assertArrayEquals(expected.values().toArray(), gui.getForms().values().toArray());
@@ -407,7 +407,7 @@ public class RemoteInterpreterTest extends AbstractInterpreterTest {
   public void testFailToLaunchInterpreterProcess_InvalidRunner() {
     System.setProperty(ZeppelinConfiguration.ConfVars.ZEPPELIN_INTERPRETER_REMOTE_RUNNER.getVarName(), "invalid_runner");
     final Interpreter interpreter1 = interpreterSetting.getInterpreter("user1", "note1", "sleep");
-    final InterpreterContext context1 = createDummyInterpreterContext();
+    final InterpreterContextImpl context1 = createDummyInterpreterContext();
     // run this dummy interpret method first to launch the RemoteInterpreterProcess to avoid the
     // time overhead of launching the process.
     try {
@@ -424,7 +424,7 @@ public class RemoteInterpreterTest extends AbstractInterpreterTest {
     System.setProperty(ZeppelinConfiguration.ConfVars.ZEPPELIN_INTERPRETER_REMOTE_RUNNER.getVarName(),
              zeppelinHome.getAbsolutePath() + "/zeppelin-zengine/src/test/resources/bin/interpreter_invalid.sh");
     final Interpreter interpreter1 = interpreterSetting.getInterpreter("user1", "note1", "sleep");
-    final InterpreterContext context1 = createDummyInterpreterContext();
+    final InterpreterContextImpl context1 = createDummyInterpreterContext();
     // run this dummy interpret method first to launch the RemoteInterpreterProcess to avoid the
     // time overhead of launching the process.
     try {
@@ -442,7 +442,7 @@ public class RemoteInterpreterTest extends AbstractInterpreterTest {
             zeppelinHome.getAbsolutePath() + "/zeppelin-zengine/src/test/resources/bin/interpreter_timeout.sh");
     System.setProperty(ZeppelinConfiguration.ConfVars.ZEPPELIN_INTERPRETER_CONNECT_TIMEOUT.getVarName(), "10000");
     final Interpreter interpreter1 = interpreterSetting.getInterpreter("user1", "note1", "sleep");
-    final InterpreterContext context1 = createDummyInterpreterContext();
+    final InterpreterContextImpl context1 = createDummyInterpreterContext();
     // run this dummy interpret method first to launch the RemoteInterpreterProcess to avoid the
     // time overhead of launching the process.
     try {

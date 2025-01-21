@@ -21,7 +21,7 @@ package org.apache.zeppelin.interpreter.recovery;
 import org.apache.zeppelin.conf.ZeppelinConfiguration;
 import org.apache.zeppelin.interpreter.AbstractInterpreterTest;
 import org.apache.zeppelin.interpreter.xref.Interpreter;
-import org.apache.zeppelin.interpreter.InterpreterContext;
+import org.apache.zeppelin.interpreter.InterpreterContextImpl;
 import org.apache.zeppelin.interpreter.xref.InterpreterException;
 import org.apache.zeppelin.interpreter.InterpreterOption;
 import org.apache.zeppelin.interpreter.InterpreterSetting;
@@ -69,7 +69,7 @@ public class LocalRecoveryStorageTest extends AbstractInterpreterTest {
 
     Interpreter interpreter1 = interpreterSetting.getDefaultInterpreter("user1", "note1");
     RemoteInterpreter remoteInterpreter1 = (RemoteInterpreter) interpreter1;
-    InterpreterContext context1 = InterpreterContext.builder()
+    InterpreterContextImpl context1 = InterpreterContextImpl.builder()
             .setNoteId("noteId")
             .setParagraphId("paragraphId")
             .build();
@@ -88,7 +88,7 @@ public class LocalRecoveryStorageTest extends AbstractInterpreterTest {
 
     Interpreter interpreter1 = interpreterSetting.getDefaultInterpreter("user1", "note1");
     RemoteInterpreter remoteInterpreter1 = (RemoteInterpreter) interpreter1;
-    InterpreterContext context1 = InterpreterContext.builder()
+    InterpreterContextImpl context1 = InterpreterContextImpl.builder()
             .setNoteId("noteId")
             .setParagraphId("paragraphId")
             .build();
@@ -97,7 +97,7 @@ public class LocalRecoveryStorageTest extends AbstractInterpreterTest {
 
     Interpreter interpreter2 = interpreterSetting.getDefaultInterpreter("user2", "note2");
     RemoteInterpreter remoteInterpreter2 = (RemoteInterpreter) interpreter2;
-    InterpreterContext context2 = InterpreterContext.builder()
+    InterpreterContextImpl context2 = InterpreterContextImpl.builder()
             .setNoteId("noteId")
             .setParagraphId("paragraphId")
             .build();

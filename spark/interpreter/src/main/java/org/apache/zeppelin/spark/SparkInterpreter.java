@@ -196,8 +196,8 @@ public class SparkInterpreter extends AbstractEnhancedInterpreter {
 
   @Override
   public InterpreterResult internalInterpret(String st,
-                                             InterpreterContext context) throws InterpreterException {
-    context.out.clear();
+          InterpreterContext context) throws InterpreterException {
+    context.out().clear();
     sc.setJobGroup(Utils.buildJobGroupId(context), Utils.buildJobDesc(context), false);
     // set spark.scheduler.pool to null to clear the pool assosiated with this paragraph
     // sc.setLocalProperty("spark.scheduler.pool", null) will clean the pool
@@ -214,7 +214,8 @@ public class SparkInterpreter extends AbstractEnhancedInterpreter {
   @Override
   public List<InterpreterCompletion> completion(String buf,
                                                 int cursor,
-                                                InterpreterContext interpreterContext) throws InterpreterException {
+          InterpreterContext interpreterContext
+  ) throws InterpreterException {
     return innerInterpreter.completion(buf, cursor, interpreterContext);
   }
 

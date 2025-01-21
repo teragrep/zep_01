@@ -56,7 +56,7 @@ public abstract class BasePythonInterpreterTest extends ConcurrentTestCase {
   @Test
   public void testPythonBasics() throws InterpreterException, InterruptedException, IOException {
 
-    InterpreterContext context = getInterpreterContext();
+    InterpreterContextImpl context = getInterpreterContext();
     InterpreterResult result =
         interpreter.interpret("import sys\nprint(sys.version[0])", context);
     assertEquals(Code.SUCCESS, result.code());
@@ -203,7 +203,7 @@ public abstract class BasePythonInterpreterTest extends ConcurrentTestCase {
   @Test
   public void testCodeCompletion() throws InterpreterException, IOException, InterruptedException {
     // define `a` first
-    InterpreterContext context = getInterpreterContext();
+    InterpreterContextImpl context = getInterpreterContext();
     String st = "a='hello'";
     InterpreterResult result = interpreter.interpret(st, context);
     Thread.sleep(100);
@@ -234,7 +234,7 @@ public abstract class BasePythonInterpreterTest extends ConcurrentTestCase {
   @Test
   public void testZeppelinContext() throws InterpreterException, InterruptedException, IOException {
     // TextBox
-    InterpreterContext context = getInterpreterContext();
+    InterpreterContextImpl context = getInterpreterContext();
     InterpreterResult result =
         interpreter.interpret("z.input(name='text_1', defaultValue='value_1')", context);
     Thread.sleep(100);
@@ -298,7 +298,7 @@ public abstract class BasePythonInterpreterTest extends ConcurrentTestCase {
     String restoreCode = "z = __zeppelin__\n";
     String validCode = "z.input(\"test\")\n";
 
-    InterpreterContext context = getInterpreterContext();
+    InterpreterContextImpl context = getInterpreterContext();
     InterpreterResult result = interpreter.interpret(validCode, context);
     assertEquals(
             Code.SUCCESS, result.code(),
@@ -343,8 +343,8 @@ public abstract class BasePythonInterpreterTest extends ConcurrentTestCase {
         context.out.toString() + ", " + result.toString());
   }
 
-  protected InterpreterContext getInterpreterContext() {
-    return InterpreterContext.builder()
+  protected InterpreterContextImpl getInterpreterContext() {
+    return InterpreterContextImpl.builder()
         .setNoteId("noteId")
         .setParagraphId("paragraphId")
         .setInterpreterOut(new InterpreterOutput())

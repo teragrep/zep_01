@@ -216,7 +216,7 @@ public class RemoteInterpreterServerTest {
         return new InterpreterResult(Code.ERROR, "SINGLE_OUTPUT_ERROR");
       } else if (st.equals("COMBO_OUTPUT_SUCCESS")) {
         try {
-          context.out.write("INTERPRETER_OUT");
+          context.out().write("INTERPRETER_OUT");
         } catch (IOException e) {
           fail("Failure happened: " + e.getMessage());
         }

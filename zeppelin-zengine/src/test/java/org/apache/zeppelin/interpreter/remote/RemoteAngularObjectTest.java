@@ -21,7 +21,7 @@ import org.apache.zeppelin.display.AngularObject;
 import org.apache.zeppelin.display.AngularObjectRegistry;
 import org.apache.zeppelin.display.AngularObjectRegistryListener;
 import org.apache.zeppelin.interpreter.AbstractInterpreterTest;
-import org.apache.zeppelin.interpreter.InterpreterContext;
+import org.apache.zeppelin.interpreter.InterpreterContextImpl;
 import org.apache.zeppelin.interpreter.xref.InterpreterException;
 import org.apache.zeppelin.interpreter.InterpreterResult;
 import org.apache.zeppelin.interpreter.InterpreterSetting;
@@ -42,7 +42,7 @@ public class RemoteAngularObjectTest extends AbstractInterpreterTest
     implements AngularObjectRegistryListener {
 
   private RemoteInterpreter intp;
-  private InterpreterContext context;
+  private InterpreterContextImpl context;
   private RemoteAngularObjectRegistry localRegistry;
   private InterpreterSetting interpreterSetting;
 
@@ -64,7 +64,7 @@ public class RemoteAngularObjectTest extends AbstractInterpreterTest
     intp = (RemoteInterpreter) interpreterSetting.getInterpreter("user1", "note1", "mock_ao");
     localRegistry = (RemoteAngularObjectRegistry) intp.getInterpreterGroup().getAngularObjectRegistry();
 
-    context = InterpreterContext.builder()
+    context = InterpreterContextImpl.builder()
         .setNoteId("note")
         .setParagraphId("id")
         .setAngularObjectRegistry(new AngularObjectRegistry(intp.getInterpreterGroup().getId(), null))

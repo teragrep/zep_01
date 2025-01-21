@@ -97,11 +97,11 @@ service RemoteInterpreterService {
   void open(1: string sessionId, 2: string className) throws (1: InterpreterRPCException ex);
   void close(1: string sessionId, 2: string className) throws (1: InterpreterRPCException ex);
   void reconnect(1: string host, 2: i32 port) throws (1: InterpreterRPCException ex);
-  RemoteInterpreterResult interpret(1: string sessionId, 2: string className, 3: string st, 4: RemoteInterpreterContext interpreterContext) throws (1: InterpreterRPCException ex);
-  void cancel(1: string sessionId, 2: string className, 3: RemoteInterpreterContext interpreterContext) throws (1: InterpreterRPCException ex);
-  i32 getProgress(1: string sessionId, 2: string className, 3: RemoteInterpreterContext interpreterContext) throws (1: InterpreterRPCException ex);
+  RemoteInterpreterResult interpret(1: string sessionId, 2: string className, 3: string st, 4: RemoteInterpreterContext interpreterContextImpl) throws (1: InterpreterRPCException ex);
+  void cancel(1: string sessionId, 2: string className, 3: RemoteInterpreterContext interpreterContextImpl) throws (1: InterpreterRPCException ex);
+  i32 getProgress(1: string sessionId, 2: string className, 3: RemoteInterpreterContext interpreterContextImpl) throws (1: InterpreterRPCException ex);
   string getFormType(1: string sessionId, 2: string className) throws (1: InterpreterRPCException ex);
-  list<InterpreterCompletion> completion(1: string sessionId, 2: string className, 3: string buf, 4: i32 cursor, 5: RemoteInterpreterContext interpreterContext) throws (1: InterpreterRPCException ex);
+  list<InterpreterCompletion> completion(1: string sessionId, 2: string className, 3: string buf, 4: i32 cursor, 5: RemoteInterpreterContext interpreterContextImpl) throws (1: InterpreterRPCException ex);
   void shutdown();
 
   string getStatus(1: string sessionId, 2:string jobId) throws (1: InterpreterRPCException ex);
