@@ -21,6 +21,7 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 
+import org.apache.zeppelin.interpreter.xref.Job;
 import org.apache.zeppelin.util.ExecutorUtil;
 
 /**
@@ -37,7 +38,7 @@ public class FIFOScheduler extends AbstractScheduler {
   }
 
   @Override
-  public void runJobInScheduler(final JobImpl job) {
+  public void runJobInScheduler(final Job job) {
     // run job in the SingleThreadExecutor since this is FIFO.
     executor.execute(() -> runJob(job));
   }

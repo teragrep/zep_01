@@ -17,13 +17,14 @@
 
 package org.apache.zeppelin.notebook;
 
+import org.apache.zeppelin.interpreter.InterpreterResult;
 import org.apache.zeppelin.interpreter.xref.JobListener;
 
 
 /**
  * Listener for Paragraph Job.
  */
-public interface ParagraphJobListener extends JobListener<Paragraph> {
+public interface ParagraphJobListener extends JobListener<InterpreterResult, Paragraph> {
   //TODO(savalek) Temporary solution. Need to refactor cron to be able to notify frontend directly.
   void noteRunningStatusChange(String noteId, boolean newStatus);
 }

@@ -55,7 +55,7 @@ import com.google.common.annotations.VisibleForTesting;
  * Paragraph is a representation of an execution unit.
  */
 public class Paragraph extends JobWithProgressPoller<InterpreterResult> implements Cloneable,
-    JsonSerializable {
+    JsonSerializable, Job<InterpreterResult> {
 
   private static final Logger LOGGER = LoggerFactory.getLogger(Paragraph.class);
 

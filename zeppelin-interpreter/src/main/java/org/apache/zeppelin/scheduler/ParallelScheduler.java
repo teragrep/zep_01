@@ -21,6 +21,7 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 
+import org.apache.zeppelin.interpreter.xref.Job;
 import org.apache.zeppelin.util.ExecutorUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -41,7 +42,7 @@ public class ParallelScheduler extends AbstractScheduler {
   }
 
   @Override
-  public void runJobInScheduler(final JobImpl runningJob) {
+  public void runJobInScheduler(final Job runningJob) {
     // submit this job to a FixedThreadPool so that at most maxConcurrencyJobs running
     executor.execute(() -> runJob(runningJob));
   }

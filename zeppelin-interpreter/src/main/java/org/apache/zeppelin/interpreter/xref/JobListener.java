@@ -20,7 +20,7 @@ package org.apache.zeppelin.interpreter.xref;
 /**
  * Listener for job execution.
  */
-public interface JobListener<T extends Job<T>> {
+public interface JobListener<U, T extends Job<U>> {
   void onProgressUpdate(T job, int progress);
 
   void onStatusChange(T job, Status before, Status after);

@@ -25,7 +25,7 @@ import org.slf4j.LoggerFactory;
 /**
  * Polls job progress with given interval
  *
- * @see JobImpl#progress()
+ * @see Job#progress()
  * @see JobListener#onProgressUpdate(Job, int)
  *
  * TODO(moon) : add description.
