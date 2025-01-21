@@ -24,7 +24,7 @@ import org.apache.zeppelin.interpreter.xref.FormType;
 import java.util.Properties;
 
 
-public class DoubleEchoInterpreter extends Interpreter {
+public class DoubleEchoInterpreter extends AbstractInterpreter {
 
   public DoubleEchoInterpreter(Properties property) {
     super(property);

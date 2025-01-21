@@ -26,7 +26,7 @@ import java.util.Properties;
 /**
  * Just return the received statement back
  */
-public class EchoInterpreter extends Interpreter {
+public class EchoInterpreter extends AbstractInterpreter {
 
   public EchoInterpreter(Properties property) {
     super(property);

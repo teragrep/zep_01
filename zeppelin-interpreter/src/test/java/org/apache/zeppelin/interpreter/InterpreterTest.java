@@ -84,7 +84,7 @@ public class InterpreterTest {
     );
   }
 
-  public static class DummyInterpreter extends Interpreter {
+  public static class DummyInterpreter extends AbstractInterpreter {
 
     public DummyInterpreter(Properties property) {
       super(property);

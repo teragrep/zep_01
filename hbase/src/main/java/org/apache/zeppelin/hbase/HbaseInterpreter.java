@@ -51,7 +51,7 @@ import org.apache.zeppelin.scheduler.SchedulerFactory;
  *                          Path is relative to hbase.home. Default: lib/ruby
  * zeppelin.hbase.test.mode: (Testing only) Disable checks for unit and manual tests. Default: false
  */
-public class HbaseInterpreter extends Interpreter {
+public class HbaseInterpreter extends AbstractInterpreter {
   public static final String HBASE_HOME = "hbase.home";
   public static final String HBASE_RUBY_SRC = "hbase.ruby.sources";
   public static final String HBASE_TEST_MODE = "zeppelin.hbase.test.mode";

@@ -27,7 +27,7 @@ import java.util.List;
 import java.util.Properties;
 
 
-public class GetEnvPropertyInterpreter extends Interpreter {
+public class GetEnvPropertyInterpreter extends AbstractInterpreter {
 
   public GetEnvPropertyInterpreter(Properties property) {
     super(property);

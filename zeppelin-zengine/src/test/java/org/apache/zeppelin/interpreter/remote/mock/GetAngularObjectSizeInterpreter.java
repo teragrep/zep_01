@@ -24,7 +24,7 @@ import org.apache.zeppelin.interpreter.xref.FormType;
 
 import java.util.Properties;
 
-public class GetAngularObjectSizeInterpreter extends Interpreter {
+public class GetAngularObjectSizeInterpreter extends AbstractInterpreter {
 
   public GetAngularObjectSizeInterpreter(Properties property) {
     super(property);

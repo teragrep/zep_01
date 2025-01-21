@@ -34,7 +34,7 @@ import org.slf4j.LoggerFactory;
 /**
  * Java interpreter
  */
-public class JavaInterpreter extends Interpreter {
+public class JavaInterpreter extends AbstractInterpreter {
 
   private static final Logger LOGGER = LoggerFactory.getLogger(JavaInterpreter.class);
 

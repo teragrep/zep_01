@@ -31,7 +31,7 @@ import java.util.Properties;
  * Special Interpreter for Interpreter Configuration customization. It is attached to each
  * InterpreterGroup implicitly by Zeppelin.
  */
-public class ConfInterpreter extends Interpreter {
+public class ConfInterpreter extends AbstractInterpreter {
 
   private static final Logger LOGGER = LoggerFactory.getLogger(ConfInterpreter.class);
 

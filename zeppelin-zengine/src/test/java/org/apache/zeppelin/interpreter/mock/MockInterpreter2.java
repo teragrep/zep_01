@@ -29,7 +29,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 
-public class MockInterpreter2 extends Interpreter{
+public class MockInterpreter2 extends AbstractInterpreter {
   Map<String, Object> vars = new HashMap<>();
 
 	public MockInterpreter2(Properties property) {

@@ -29,7 +29,7 @@ import org.apache.zeppelin.scheduler.Scheduler;
  * Interpreter wrapper for lazy initialization
  */
 public class LazyOpenInterpreter
-    extends Interpreter
+    extends AbstractInterpreter
     implements WrappedInterpreter {
   private Interpreter intp;
   volatile boolean opened = false;

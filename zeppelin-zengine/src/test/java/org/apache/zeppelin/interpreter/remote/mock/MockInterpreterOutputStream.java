@@ -30,7 +30,7 @@ import java.util.Properties;
 /**
  * MockInterpreter to test outputstream
  */
-public class MockInterpreterOutputStream extends Interpreter {
+public class MockInterpreterOutputStream extends AbstractInterpreter {
   private String lastSt;
 
   public MockInterpreterOutputStream(Properties property) {

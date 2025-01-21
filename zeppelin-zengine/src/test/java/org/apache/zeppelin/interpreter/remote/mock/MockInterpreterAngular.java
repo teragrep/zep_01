@@ -19,8 +19,8 @@ package org.apache.zeppelin.interpreter.remote.mock;
 
 import org.apache.zeppelin.display.AngularObjectRegistry;
 import org.apache.zeppelin.display.AngularObjectWatcher;
+import org.apache.zeppelin.interpreter.AbstractInterpreter;
 import org.apache.zeppelin.interpreter.xref.FormType;
-import org.apache.zeppelin.interpreter.Interpreter;
 import org.apache.zeppelin.interpreter.InterpreterContext;
 import org.apache.zeppelin.interpreter.InterpreterResult;
 import org.apache.zeppelin.interpreter.xref.Code;
@@ -34,7 +34,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 import static org.junit.Assert.fail;
 
-public class MockInterpreterAngular extends Interpreter {
+public class MockInterpreterAngular extends AbstractInterpreter {
 
   private static final Logger LOGGER = LoggerFactory.getLogger(MockInterpreterAngular.class);
 

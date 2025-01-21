@@ -34,7 +34,7 @@ import org.slf4j.LoggerFactory;
 /**
  * MarkdownInterpreter interpreter for Zeppelin.
  */
-public class Markdown extends Interpreter {
+public class Markdown extends AbstractInterpreter {
   private static final Logger LOGGER = LoggerFactory.getLogger(Markdown.class);
 
   private MarkdownParser parser;

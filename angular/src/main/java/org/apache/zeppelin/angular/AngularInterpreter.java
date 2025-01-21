@@ -21,8 +21,8 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Properties;
 
+import org.apache.zeppelin.interpreter.AbstractInterpreter;
 import org.apache.zeppelin.interpreter.xref.FormType;
-import org.apache.zeppelin.interpreter.Interpreter;
 import org.apache.zeppelin.interpreter.InterpreterContext;
 import org.apache.zeppelin.interpreter.InterpreterResult;
 import org.apache.zeppelin.interpreter.xref.Code;
@@ -34,7 +34,7 @@ import org.apache.zeppelin.scheduler.SchedulerFactory;
 /**
  *
  */
-public class AngularInterpreter extends Interpreter {
+public class AngularInterpreter extends AbstractInterpreter {
 
   public AngularInterpreter(Properties property) {
     super(property);

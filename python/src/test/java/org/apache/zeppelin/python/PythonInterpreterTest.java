@@ -61,7 +61,7 @@ public class PythonInterpreterTest extends BasePythonInterpreterTest {
 
     interpreter = new LazyOpenInterpreter(new PythonInterpreter(properties));
 
-    intpGroup.put("note", new LinkedList<Interpreter>());
+    intpGroup.put("note", new LinkedList<AbstractInterpreter>());
     intpGroup.get("note").add(interpreter);
     interpreter.setInterpreterGroup(intpGroup);
 
@@ -162,7 +162,7 @@ public class PythonInterpreterTest extends BasePythonInterpreterTest {
 
     interpreter = new LazyOpenInterpreter(new PythonInterpreter(properties));
 
-    intpGroup.put("note", new LinkedList<Interpreter>());
+    intpGroup.put("note", new LinkedList<AbstractInterpreter>());
     intpGroup.get("note").add(interpreter);
     interpreter.setInterpreterGroup(intpGroup);
 

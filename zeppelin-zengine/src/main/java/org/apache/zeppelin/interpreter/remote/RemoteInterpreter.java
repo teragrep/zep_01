@@ -49,7 +49,7 @@ import java.util.Properties;
 /**
  * Proxy for Interpreter instance that runs on separate process
  */
-public class RemoteInterpreter extends Interpreter {
+public class RemoteInterpreter extends AbstractInterpreter {
   private static final Logger LOGGER = LoggerFactory.getLogger(RemoteInterpreter.class);
   private static final Gson GSON = new Gson();
 

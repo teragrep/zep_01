@@ -27,7 +27,7 @@ import org.apache.zeppelin.scheduler.SchedulerFactory;
 import java.util.List;
 import java.util.Properties;
 
-public class MockInterpreterA extends Interpreter {
+public class MockInterpreterA extends AbstractInterpreter {
 
   private String lastSt;
 

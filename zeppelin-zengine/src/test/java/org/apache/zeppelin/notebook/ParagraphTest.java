@@ -41,19 +41,11 @@ import org.apache.zeppelin.display.AngularObject;
 import org.apache.zeppelin.display.AngularObjectBuilder;
 import org.apache.zeppelin.display.AngularObjectRegistry;
 import org.apache.zeppelin.display.Input;
-import org.apache.zeppelin.interpreter.AbstractInterpreterTest;
-import org.apache.zeppelin.interpreter.Constants;
-import org.apache.zeppelin.interpreter.Interpreter;
+import org.apache.zeppelin.interpreter.*;
 import org.apache.zeppelin.interpreter.xref.FormType;
-import org.apache.zeppelin.interpreter.InterpreterContext;
-import org.apache.zeppelin.interpreter.InterpreterOption;
-import org.apache.zeppelin.interpreter.InterpreterResult;
 import org.apache.zeppelin.interpreter.xref.Code;
 import org.apache.zeppelin.interpreter.xref.Type;
-import org.apache.zeppelin.interpreter.InterpreterResultMessage;
-import org.apache.zeppelin.interpreter.InterpreterSetting;
 import org.apache.zeppelin.interpreter.InterpreterSetting.Status;
-import org.apache.zeppelin.interpreter.ManagedInterpreterGroup;
 import org.apache.zeppelin.resource.ResourcePool;
 import org.apache.zeppelin.user.AuthenticationInfo;
 import org.apache.zeppelin.user.Credentials;
@@ -260,7 +252,7 @@ public class ParagraphTest extends AbstractInterpreterTest {
     when(mockNote.getCredentials()).thenReturn(mock(Credentials.class));
     Paragraph spyParagraph = spy(new Paragraph("para_1", mockNote,  null));
 
-    Interpreter mockInterpreter = mock(Interpreter.class);
+    Interpreter mockInterpreter = mock(AbstractInterpreter.class);
     spyParagraph.setInterpreter(mockInterpreter);
     doReturn(mockInterpreter).when(spyParagraph).getBindedInterpreter();
 
@@ -365,7 +357,7 @@ public class ParagraphTest extends AbstractInterpreterTest {
     UsernamePassword up = new UsernamePassword("user", "pwd");
     when(uc.getUsernamePassword("ent")).thenReturn(up );
 
-    Interpreter mockInterpreter = mock(Interpreter.class);
+    Interpreter mockInterpreter = mock(AbstractInterpreter.class);
     spyParagraph.setInterpreter(mockInterpreter);
     doReturn(mockInterpreter).when(spyParagraph).getBindedInterpreter();
 

@@ -27,7 +27,7 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 public class LazyOpenInterpreterTest {
-  Interpreter interpreter = mock(Interpreter.class);
+  Interpreter interpreter = mock(AbstractInterpreter.class);
 
   @Test
   public void isOpenTest() throws InterpreterException {

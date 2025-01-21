@@ -31,7 +31,7 @@ import java.util.Map;
 import java.util.Properties;
 import java.util.concurrent.atomic.AtomicInteger;
 
-public class MockInterpreter1 extends Interpreter {
+public class MockInterpreter1 extends AbstractInterpreter {
 
 	private static AtomicInteger IdGenerator = new AtomicInteger();
 

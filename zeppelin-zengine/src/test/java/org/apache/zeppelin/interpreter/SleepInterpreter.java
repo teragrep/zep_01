@@ -28,7 +28,7 @@ import java.util.Properties;
 /**
  * Interpreter that only accept long value and sleep for such period
  */
-public class SleepInterpreter extends Interpreter {
+public class SleepInterpreter extends AbstractInterpreter {
 
   public SleepInterpreter(Properties property) {
     super(property);

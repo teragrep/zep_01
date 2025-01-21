@@ -193,7 +193,7 @@ public class RemoteInterpreterServerTest {
     assertTrue(interpreter1.closed.get());
   }
 
-  public static class Test1Interpreter extends Interpreter {
+  public static class Test1Interpreter extends AbstractInterpreter {
 
     AtomicBoolean cancelled = new AtomicBoolean();
     AtomicBoolean closed = new AtomicBoolean();
@@ -253,7 +253,7 @@ public class RemoteInterpreterServerTest {
 
   }
 
-  public static class Test2Interpreter extends Interpreter {
+  public static class Test2Interpreter extends AbstractInterpreter {
 
 
     public Test2Interpreter(Properties properties) {

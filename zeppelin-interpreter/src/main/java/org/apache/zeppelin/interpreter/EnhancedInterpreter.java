@@ -24,7 +24,7 @@ import org.apache.zeppelin.resource.ResourcePoolMap;
 
 import java.util.*;
 
-public abstract class EnhancedInterpreter extends Interpreter {
+public abstract class EnhancedInterpreter extends AbstractInterpreter {
   public EnhancedInterpreter(Properties properties) {
     super(properties);
   }

@@ -19,12 +19,7 @@ package org.apache.zeppelin.spark;
 
 
 import org.apache.commons.lang3.exception.ExceptionUtils;
-import org.apache.zeppelin.interpreter.Interpreter;
-import org.apache.zeppelin.interpreter.InterpreterContext;
-import org.apache.zeppelin.interpreter.InterpreterException;
-import org.apache.zeppelin.interpreter.InterpreterGroup;
-import org.apache.zeppelin.interpreter.InterpreterOutput;
-import org.apache.zeppelin.interpreter.LazyOpenInterpreter;
+import org.apache.zeppelin.interpreter.*;
 import org.apache.zeppelin.interpreter.remote.RemoteInterpreterEventClient;
 import org.apache.zeppelin.python.PythonInterpreterTest;
 import org.junit.jupiter.api.AfterEach;
@@ -32,8 +27,6 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
-import java.io.IOException;
-import java.nio.file.Files;
 import java.util.LinkedList;
 import java.util.Properties;
 
@@ -63,7 +56,7 @@ class PySparkInterpreterTest extends PythonInterpreterTest {
 
     // create interpreter group
     intpGroup = new InterpreterGroup();
-    intpGroup.put("note", new LinkedList<Interpreter>());
+    intpGroup.put("note", new LinkedList<AbstractInterpreter>());
 
     InterpreterContext context = InterpreterContext.builder()
         .setInterpreterOut(new InterpreterOutput())
@@ -111,7 +104,7 @@ class PySparkInterpreterTest extends PythonInterpreterTest {
             new LazyOpenInterpreter(new SparkInterpreter(properties));
     sparkInterpreter.setInterpreterGroup(intpGroup);
 
-    intpGroup.put("note", new LinkedList<Interpreter>());
+    intpGroup.put("note", new LinkedList<AbstractInterpreter>());
     intpGroup.get("note").add(interpreter);
     intpGroup.get("note").add(sparkInterpreter);
 

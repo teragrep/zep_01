@@ -49,7 +49,7 @@ import java.util.Properties;
  * features compared to IPythonInterpreter, but requires less prerequisites than
  * IPythonInterpreter, only python installation is required.
  */
-public class PythonInterpreter extends Interpreter {
+public class PythonInterpreter extends AbstractInterpreter {
   private static final Logger LOGGER = LoggerFactory.getLogger(PythonInterpreter.class);
   private static final int MAX_TIMEOUT_SEC = 30;
 
