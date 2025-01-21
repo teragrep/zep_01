@@ -57,6 +57,7 @@ import org.apache.zeppelin.notebook.ParagraphTextParser;
 import org.apache.zeppelin.resource.Resource;
 import org.apache.zeppelin.resource.ResourcePool;
 import org.apache.zeppelin.resource.ResourceSet;
+import org.apache.zeppelin.resource.ResourceSetImpl;
 import org.apache.zeppelin.scheduler.Job;
 import org.apache.zeppelin.user.AuthenticationInfo;
 import org.apache.zeppelin.util.ReflectionUtils;
@@ -641,7 +642,7 @@ public class InterpreterSettingManager implements NoteEventListener {
   }
 
   private ResourceSet getAllResourcesExcept(String interpreterGroupExcludsion) {
-    ResourceSet resourceSet = new ResourceSet();
+    ResourceSetImpl resourceSet = new ResourceSetImpl();
     for (ManagedInterpreterGroup intpGroup : getAllInterpreterGroup()) {
       if (interpreterGroupExcludsion != null &&
           intpGroup.getId().equals(interpreterGroupExcludsion)) {
@@ -672,7 +673,7 @@ public class InterpreterSettingManager implements NoteEventListener {
 
   public void removeResourcesBelongsToParagraph(String noteId, String paragraphId) {
     for (ManagedInterpreterGroup intpGroup : getAllInterpreterGroup()) {
-      ResourceSet resourceSet = new ResourceSet();
+      ResourceSetImpl resourceSet = new ResourceSetImpl();
       RemoteInterpreterProcess remoteInterpreterProcess = intpGroup.getRemoteInterpreterProcess();
       if (remoteInterpreterProcess == null) {
         ResourcePool localPool = intpGroup.getResourcePool();

@@ -27,7 +27,7 @@ public class ResourceSetTest {
 
   @Test
   public void testFilterByName() {
-    ResourceSet set = new ResourceSet();
+    ResourceSetImpl set = new ResourceSetImpl();
 
     set.add(new Resource(null, new ResourceId("poo1", "resource1"), "value1"));
     set.add(new Resource(null, new ResourceId("poo1", "resource2"), new Integer(2)));
@@ -40,7 +40,7 @@ public class ResourceSetTest {
 
   @Test
   public void testFilterByClassName() {
-    ResourceSet set = new ResourceSet();
+    ResourceSetImpl set = new ResourceSetImpl();
 
     set.add(new Resource(null, new ResourceId("poo1", "resource1"), "value1"));
     set.add(new Resource(null, new ResourceId("poo1", "resource2"), new Integer(2)));

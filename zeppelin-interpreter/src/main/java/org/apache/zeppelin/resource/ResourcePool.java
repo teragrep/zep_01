@@ -46,7 +46,7 @@ public interface ResourcePool {
    * Get all resources
    * @return
    */
-  ResourceSet getAll();
+  ResourceSetImpl getAll();
 
   /**
    * Put an object into resource pool

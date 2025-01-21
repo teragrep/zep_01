@@ -45,11 +45,7 @@ import org.apache.zeppelin.interpreter.thrift.RunParagraphsEvent;
 import org.apache.zeppelin.interpreter.thrift.WebUrlInfo;
 import org.apache.zeppelin.interpreter.xref.Type;
 import org.apache.zeppelin.notebook.Note;
-import org.apache.zeppelin.resource.RemoteResource;
-import org.apache.zeppelin.resource.Resource;
-import org.apache.zeppelin.resource.ResourceId;
-import org.apache.zeppelin.resource.ResourcePool;
-import org.apache.zeppelin.resource.ResourceSet;
+import org.apache.zeppelin.resource.*;
 import org.apache.zeppelin.user.AuthenticationInfo;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -494,7 +490,7 @@ public class RemoteInterpreterEventServer implements RemoteInterpreterEventServi
   }
 
   private ResourceSet getAllResourcePoolExcept(String interpreterGroupId) {
-    ResourceSet resourceSet = new ResourceSet();
+    ResourceSetImpl resourceSet = new ResourceSetImpl();
     for (ManagedInterpreterGroup intpGroup : interpreterSettingManager.getAllInterpreterGroup()) {
       if (intpGroup.getId().equals(interpreterGroupId)) {
         continue;

@@ -70,8 +70,8 @@ public class LocalResourcePool implements ResourcePool {
   }
 
   @Override
-  public ResourceSet getAll() {
-    return new ResourceSet(resources.values());
+  public ResourceSetImpl getAll() {
+    return new ResourceSetImpl(resources.values());
   }
 
   /**

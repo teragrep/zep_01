@@ -95,7 +95,7 @@ public class DistributedResourcePool extends LocalResourcePool {
   }
 
   @Override
-  public ResourceSet getAll() {
+  public ResourceSetImpl getAll() {
     return getAll(true);
   }
 
@@ -104,8 +104,8 @@ public class DistributedResourcePool extends LocalResourcePool {
    * @param remote false only return local resource
    * @return
    */
-  public ResourceSet getAll(boolean remote) {
-    ResourceSet all = super.getAll();
+  public ResourceSetImpl getAll(boolean remote) {
+    ResourceSetImpl all = super.getAll();
     if (remote) {
       all.addAll(connector.getAllResources());
     }

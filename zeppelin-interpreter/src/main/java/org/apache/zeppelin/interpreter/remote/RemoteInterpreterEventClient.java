@@ -34,11 +34,7 @@ import org.apache.zeppelin.interpreter.thrift.RegisterInfo;
 import org.apache.zeppelin.interpreter.thrift.RemoteInterpreterEventService;
 import org.apache.zeppelin.interpreter.thrift.RunParagraphsEvent;
 import org.apache.zeppelin.interpreter.thrift.WebUrlInfo;
-import org.apache.zeppelin.resource.RemoteResource;
-import org.apache.zeppelin.resource.Resource;
-import org.apache.zeppelin.resource.ResourceId;
-import org.apache.zeppelin.resource.ResourcePoolConnector;
-import org.apache.zeppelin.resource.ResourceSet;
+import org.apache.zeppelin.resource.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -111,7 +107,7 @@ public class RemoteInterpreterEventClient implements ResourcePoolConnector,
   public ResourceSet getAllResources() {
     try {
       List<String> resources = callRemoteFunction(client -> client.getAllResources(intpGroupId));
-      ResourceSet resourceSet = new ResourceSet();
+      ResourceSetImpl resourceSet = new ResourceSetImpl();
       for (String res : resources) {
         RemoteResource resource = RemoteResource.fromJson(res);
         resource.setResourcePoolConnector(this);
