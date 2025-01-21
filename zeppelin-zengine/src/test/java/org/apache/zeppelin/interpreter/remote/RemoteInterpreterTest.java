@@ -24,14 +24,8 @@ import org.apache.zeppelin.display.AngularObjectRegistry;
 import org.apache.zeppelin.display.GUI;
 import org.apache.zeppelin.display.Input;
 import org.apache.zeppelin.display.ui.OptionInput;
-import org.apache.zeppelin.interpreter.AbstractInterpreterTest;
-import org.apache.zeppelin.interpreter.Interpreter;
-import org.apache.zeppelin.interpreter.InterpreterContext;
-import org.apache.zeppelin.interpreter.InterpreterException;
-import org.apache.zeppelin.interpreter.InterpreterOption;
-import org.apache.zeppelin.interpreter.InterpreterResult;
+import org.apache.zeppelin.interpreter.*;
 import org.apache.zeppelin.interpreter.InterpreterResult.Code;
-import org.apache.zeppelin.interpreter.InterpreterSetting;
 import org.apache.zeppelin.notebook.Note;
 import org.apache.zeppelin.notebook.NoteInfo;
 import org.junit.After;
@@ -94,7 +88,7 @@ public class RemoteInterpreterTest extends AbstractInterpreterTest {
 
     InterpreterContext context1 = createDummyInterpreterContext();
     assertEquals("hello", remoteInterpreter1.interpret("hello", context1).message().get(0).getData());
-    assertEquals(Interpreter.FormType.NATIVE, interpreter1.getFormType());
+    assertEquals(FormType.NATIVE, interpreter1.getFormType());
     assertEquals(0, remoteInterpreter1.getProgress(context1));
     assertNotNull(remoteInterpreter1.getOrCreateInterpreterProcess());
     assertTrue(remoteInterpreter1.getInterpreterGroup().getRemoteInterpreterProcess().isRunning());
@@ -129,7 +123,7 @@ public class RemoteInterpreterTest extends AbstractInterpreterTest {
     InterpreterContext context1 = createDummyInterpreterContext();
     assertEquals("hello", remoteInterpreter1.interpret("hello", context1).message().get(0).getData());
     assertEquals("hello", remoteInterpreter2.interpret("hello", context1).message().get(0).getData());
-    assertEquals(Interpreter.FormType.NATIVE, interpreter1.getFormType());
+    assertEquals(FormType.NATIVE, interpreter1.getFormType());
     assertEquals(0, remoteInterpreter1.getProgress(context1));
 
     assertNotNull(remoteInterpreter1.getOrCreateInterpreterProcess());
@@ -172,7 +166,7 @@ public class RemoteInterpreterTest extends AbstractInterpreterTest {
     InterpreterContext context1 = createDummyInterpreterContext();
     assertEquals("hello", remoteInterpreter1.interpret("hello", context1).message().get(0).getData());
     assertEquals("hello", remoteInterpreter2.interpret("hello", context1).message().get(0).getData());
-    assertEquals(Interpreter.FormType.NATIVE, interpreter1.getFormType());
+    assertEquals(FormType.NATIVE, interpreter1.getFormType());
     assertEquals(0, remoteInterpreter1.getProgress(context1));
     assertNotNull(remoteInterpreter1.getOrCreateInterpreterProcess());
     assertTrue(remoteInterpreter1.getInterpreterGroup().getRemoteInterpreterProcess().isRunning());

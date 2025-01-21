@@ -32,9 +32,7 @@ import java.lang.reflect.Field;
 import java.net.URL;
 import java.util.Arrays;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.Properties;
 
 /**
@@ -367,13 +365,6 @@ public abstract class Interpreter {
         }
       }
     }
-  }
-
-  /**
-   * Type of interpreter.
-   */
-  public enum FormType {
-    NATIVE, SIMPLE, NONE
   }
 
   /**

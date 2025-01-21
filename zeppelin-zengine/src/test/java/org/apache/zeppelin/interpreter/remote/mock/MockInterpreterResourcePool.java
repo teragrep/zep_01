@@ -18,6 +18,7 @@
 package org.apache.zeppelin.interpreter.remote.mock;
 
 import com.google.gson.Gson;
+import org.apache.zeppelin.interpreter.FormType;
 import org.apache.zeppelin.interpreter.Interpreter;
 import org.apache.zeppelin.interpreter.InterpreterContext;
 import org.apache.zeppelin.interpreter.InterpreterResult;

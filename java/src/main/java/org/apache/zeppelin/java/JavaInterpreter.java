@@ -24,6 +24,7 @@ import java.util.Properties;
 import java.util.UUID;
 import java.util.stream.Stream;
 
+import org.apache.zeppelin.interpreter.FormType;
 import org.apache.zeppelin.interpreter.Interpreter;
 import org.apache.zeppelin.interpreter.InterpreterContext;
 import org.apache.zeppelin.interpreter.InterpreterResult;
