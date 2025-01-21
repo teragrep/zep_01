@@ -24,7 +24,7 @@ import org.apache.zeppelin.interpreter.InterpreterContext;
 import org.apache.zeppelin.interpreter.xref.InterpreterException;
 import org.apache.zeppelin.interpreter.InterpreterSetting;
 import org.apache.zeppelin.interpreter.remote.RemoteInterpreter;
-import org.apache.zeppelin.scheduler.Job;
+import org.apache.zeppelin.scheduler.JobImpl;
 import org.junit.Ignore;
 import org.junit.Test;
 
@@ -87,7 +87,7 @@ public class TimeoutLifecycleManagerTest extends AbstractInterpreterTest {
     final RemoteInterpreter remoteInterpreter = (RemoteInterpreter) interpreterFactory.getInterpreter("test.sleep", new ExecutionContext("user1", "note1", "test"));
 
     // simulate how zeppelin submit paragraph
-    remoteInterpreter.getScheduler().submit(new Job<Object>("test-job", null) {
+    remoteInterpreter.getScheduler().submit(new JobImpl<Object>("test-job", null) {
       @Override
       public Object getReturn() {
         return null;

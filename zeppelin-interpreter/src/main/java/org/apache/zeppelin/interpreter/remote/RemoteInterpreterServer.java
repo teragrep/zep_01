@@ -47,12 +47,8 @@ import org.apache.zeppelin.interpreter.xref.Resource;
 import org.apache.zeppelin.resource.ResourceImpl;
 import org.apache.zeppelin.resource.ResourcePool;
 import org.apache.zeppelin.interpreter.xref.ResourceSet;
-import org.apache.zeppelin.scheduler.ExecutorFactory;
-import org.apache.zeppelin.scheduler.Job;
-import org.apache.zeppelin.scheduler.Status;
-import org.apache.zeppelin.scheduler.JobListener;
+import org.apache.zeppelin.scheduler.*;
 import org.apache.zeppelin.interpreter.xref.Scheduler;
-import org.apache.zeppelin.scheduler.SchedulerFactory;
 import org.apache.zeppelin.user.AuthenticationInfo;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -653,7 +649,7 @@ public class RemoteInterpreterServer extends Thread
     }
   }
 
-  public static class InterpretJob extends Job<InterpreterResult> {
+  public static class InterpretJob extends JobImpl<InterpreterResult> {
 
     private Interpreter interpreter;
     private String script;

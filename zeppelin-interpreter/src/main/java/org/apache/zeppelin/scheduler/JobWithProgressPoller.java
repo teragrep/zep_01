@@ -18,7 +18,7 @@
 package org.apache.zeppelin.scheduler;
 
 
-public abstract class JobWithProgressPoller<T> extends Job<T> {
+public abstract class JobWithProgressPoller<T> extends JobImpl<T> {
 
   private transient JobProgressPoller progressPoller;
   private long progressUpdateIntervalMs;

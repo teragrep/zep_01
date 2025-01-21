@@ -23,7 +23,7 @@ import org.slf4j.LoggerFactory;
 /**
  * Polls job progress with given interval
  *
- * @see Job#progress()
+ * @see JobImpl#progress()
  * @see JobListener#onProgressUpdate(org.apache.zeppelin.scheduler.Job, int)
  *
  * TODO(moon) : add description.

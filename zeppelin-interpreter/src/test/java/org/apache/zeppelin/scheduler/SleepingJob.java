@@ -26,7 +26,7 @@ import java.util.Map;
 /**
  *
  */
-public class SleepingJob extends Job {
+public class SleepingJob extends JobImpl {
 
   private int time;
   boolean abort = false;

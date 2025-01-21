@@ -44,7 +44,7 @@ public class RemoteScheduler extends AbstractScheduler {
   }
 
   @Override
-  public void runJobInScheduler(Job job) {
+  public void runJobInScheduler(JobImpl job) {
     JobRunner jobRunner = new JobRunner(this, job);
     executor.execute(jobRunner);
     String executionMode =
@@ -154,11 +154,11 @@ public class RemoteScheduler extends AbstractScheduler {
   private class JobRunner implements Runnable, JobListener {
     private final Logger logger = LoggerFactory.getLogger(JobRunner.class);
     private RemoteScheduler scheduler;
-    private Job job;
+    private JobImpl job;
     private volatile boolean jobExecuted;
     private volatile boolean jobSubmittedRemotely;
 
-    public JobRunner(RemoteScheduler scheduler, Job job) {
+    public JobRunner(RemoteScheduler scheduler, JobImpl job) {
       this.scheduler = scheduler;
       this.job = job;
       jobExecuted = false;

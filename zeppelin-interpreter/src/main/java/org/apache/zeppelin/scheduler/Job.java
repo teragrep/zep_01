@@ -1,236 +1,64 @@
-/*
- * Licensed to the Apache Software Foundation (ASF) under one or more
- * contributor license agreements.  See the NOTICE file distributed with
- * this work for additional information regarding copyright ownership.
- * The ASF licenses this file to You under the Apache License, Version 2.0
- * (the "License"); you may not use this file except in compliance with
- * the License.  You may obtain a copy of the License at
- *
- *    http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
-
 package org.apache.zeppelin.scheduler;
 
-import org.apache.commons.lang3.exception.ExceptionUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Map;
 
+public interface Job<T> {
 
-/**
- * Skeletal implementation of the Job concept.
- * - designed for inheritance
- * - should be run on a separate thread
- * - maintains internal state: it's status
- * - supports listeners who are updated on status change
- *
- * Job class is serialized/deserialized and used server<->client communication
- * and saving/loading jobs from disk.
- * Changing/adding/deleting non transitive field name need consideration of that.
- */
-public abstract class Job<T> {
-  private static final Logger LOGGER = LoggerFactory.getLogger(Job.class);
-  private static SimpleDateFormat JOB_DATE_FORMAT = new SimpleDateFormat("yyyyMMdd-HHmmss");
+    void setId(String id);
 
-  private String jobName;
-  private String id;
+    String getId();
 
-  private Date dateCreated;
-  private Date dateStarted;
-  private Date dateFinished;
-  protected volatile Status status;
+    Status getStatus();
 
-  transient boolean aborted = false;
-  private volatile String errorMessage;
-  private transient volatile Throwable exception;
-  private transient JobListener listener;
+    void setStatusWithoutNotification(Status status);
 
-  public Job(String jobName, JobListener listener) {
-    this.jobName = jobName;
-    this.listener = listener;
-    dateCreated = new Date();
-    id = JOB_DATE_FORMAT.format(dateCreated) + "_" + jobName;
-    setStatus(Status.READY);
-  }
+    void setStatus(Status status);
 
-  public Job(String jobId, String jobName, JobListener listener) {
-    this.jobName = jobName;
-    this.listener = listener;
-    dateCreated = new Date();
-    id = jobId;
-    setStatus(Status.READY);
-  }
+    void setListener(JobListener listener);
 
-  public void setId(String id) {
-    this.id = id;
-  }
+    JobListener getListener();
 
-  public String getId() {
-    return id;
-  }
+    boolean isTerminated();
 
-  @Override
-  public int hashCode() {
-    return id.hashCode();
-  }
+    boolean isRunning();
 
-  @Override
-  public boolean equals(Object o) {
-    return ((Job) o).id.equals(id);
-  }
+    void onJobStarted();
 
-  public Status getStatus() {
-    return status;
-  }
+    void onJobEnded();
 
-  /**
-   * just set status without notifying to listeners for spell.
-   */
-  public void setStatusWithoutNotification(Status status) {
-    this.status = status;
-  }
+    void run();
 
-  public void setStatus(Status status) {
-    if (this.status == status) {
-      return;
-    }
-    Status before = this.status;
-    Status after = status;
-    this.status = status;
-    if (listener != null && before != null && before != after) {
-      listener.onStatusChange(this, before, after);
-    }
-  }
+    Throwable getException();
 
-  public void setListener(JobListener listener) {
-    this.listener = listener;
-  }
+    T getReturn();
 
-  public JobListener getListener() {
-    return listener;
-  }
+    String getJobName();
 
-  public boolean isTerminated() {
-    return !this.status.isReady() && !this.status.isRunning() && !this.status.isPending();
-  }
+    void setJobName(String jobName);
 
-  public boolean isRunning() {
-    return this.status.isRunning();
-  }
+    int progress();
 
-  public void onJobStarted() {
-    dateStarted = new Date();
-  }
+    Map<String, Object> info();
 
-  public void onJobEnded() {
-    dateFinished = new Date();
-  }
+    void abort();
 
-  public void run() {
-    try {
-      onJobStarted();
-      completeWithSuccess(jobRun());
-    } catch (Throwable e) {
-      LOGGER.error("Job failed", e);
-      completeWithError(e);
-    } finally {
-      onJobEnded();
-    }
-  }
+    boolean isAborted();
 
-  private void completeWithSuccess(T result) {
-    setResult(result);
-    exception = null;
-    errorMessage = null;
-  }
+    Date getDateCreated();
 
-  private void completeWithError(Throwable error) {
-    setException(error);
-    errorMessage = getJobExceptionStack(error);
-  }
+    Date getDateStarted();
 
-  private String getJobExceptionStack(Throwable e) {
-    if (e == null) {
-      return "";
-    }
-    Throwable cause = ExceptionUtils.getRootCause(e);
-    if (cause != null) {
-      return ExceptionUtils.getStackTrace(cause);
-    } else {
-      return ExceptionUtils.getStackTrace(e);
-    }
-  }
+    void setDateStarted(Date startedAt);
 
-  public Throwable getException() {
-    return exception;
-  }
+    Date getDateFinished();
 
-  protected void setException(Throwable t) {
-    exception = t;
-  }
+    void setDateFinished(Date finishedAt);
 
-  public abstract T getReturn();
+    void setResult(T result);
 
-  public String getJobName() {
-    return jobName;
-  }
+    String getErrorMessage();
 
-  public void setJobName(String jobName) {
-    this.jobName = jobName;
-  }
+    void setErrorMessage(String errorMessage);
 
-  public abstract int progress();
-
-  public abstract Map<String, Object> info();
-
-  protected abstract T jobRun() throws Throwable;
-
-  protected abstract boolean jobAbort();
-
-  public void abort() {
-    aborted = jobAbort();
-  }
-
-  public boolean isAborted() {
-    return aborted;
-  }
-
-  public Date getDateCreated() {
-    return dateCreated;
-  }
-
-  public Date getDateStarted() {
-    return dateStarted;
-  }
-
-  public void setDateStarted(Date startedAt) {
-    dateStarted = startedAt;
-  }
-
-  public Date getDateFinished() {
-    return dateFinished;
-  }
-
-  public void setDateFinished(Date finishedAt) {
-    dateFinished = finishedAt;
-  }
-
-  public abstract void setResult(T result);
-
-  public String getErrorMessage() {
-    return errorMessage;
-  }
-
-  public void setErrorMessage(String errorMessage) {
-    this.errorMessage = errorMessage;
-  }
 }
