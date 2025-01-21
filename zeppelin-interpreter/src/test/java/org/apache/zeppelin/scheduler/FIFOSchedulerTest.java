@@ -23,6 +23,7 @@ import static org.junit.Assert.assertTrue;
 
 import org.apache.zeppelin.interpreter.xref.Job;
 import org.apache.zeppelin.interpreter.xref.Scheduler;
+import org.apache.zeppelin.interpreter.xref.Status;
 import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;

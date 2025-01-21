@@ -35,7 +35,7 @@ import org.apache.zeppelin.interpreter.xref.*;
 import org.apache.zeppelin.scheduler.RemoteScheduler;
 import org.apache.zeppelin.interpreter.xref.Scheduler;
 import org.apache.zeppelin.scheduler.SchedulerFactory;
-import org.apache.zeppelin.scheduler.Status;
+import org.apache.zeppelin.interpreter.xref.Status;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

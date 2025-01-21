@@ -59,7 +59,7 @@ import org.apache.zeppelin.resource.ResourceImpl;
 import org.apache.zeppelin.resource.ResourcePool;
 import org.apache.zeppelin.interpreter.xref.ResourceSet;
 import org.apache.zeppelin.resource.ResourceSetImpl;
-import org.apache.zeppelin.scheduler.Status;
+import org.apache.zeppelin.interpreter.xref.Status;
 import org.apache.zeppelin.user.AuthenticationInfo;
 import org.apache.zeppelin.util.ReflectionUtils;
 import org.apache.zeppelin.storage.ConfigStorage;

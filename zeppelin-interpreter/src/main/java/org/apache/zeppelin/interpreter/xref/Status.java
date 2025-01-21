@@ -1,4 +1,4 @@
-package org.apache.zeppelin.scheduler;
+package org.apache.zeppelin.interpreter.xref;
 
 /**
  * Job status.

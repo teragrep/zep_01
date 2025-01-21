@@ -19,7 +19,7 @@ package org.apache.zeppelin.rest.message;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.zeppelin.notebook.Paragraph;
-import org.apache.zeppelin.scheduler.Status;
+import org.apache.zeppelin.interpreter.xref.Status;
 
 public class ParagraphJobStatus {
   private String id;

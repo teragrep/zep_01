@@ -31,7 +31,7 @@ import org.apache.zeppelin.interpreter.xref.Code;
 import org.apache.zeppelin.interpreter.xref.Type;
 import org.apache.zeppelin.notebook.Notebook;
 import org.apache.zeppelin.rest.message.ParametersRequest;
-import org.apache.zeppelin.scheduler.Status;
+import org.apache.zeppelin.interpreter.xref.Status;
 import org.apache.zeppelin.socket.NotebookServer;
 import org.apache.zeppelin.utils.TestUtils;
 import org.junit.*;

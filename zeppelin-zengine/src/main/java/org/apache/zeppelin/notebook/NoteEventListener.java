@@ -16,7 +16,7 @@
  */
 package org.apache.zeppelin.notebook;
 
-import org.apache.zeppelin.scheduler.Status;
+import org.apache.zeppelin.interpreter.xref.Status;
 import org.apache.zeppelin.user.AuthenticationInfo;
 
 import java.io.IOException;

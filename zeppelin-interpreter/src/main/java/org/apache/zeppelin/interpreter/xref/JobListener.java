@@ -17,8 +17,6 @@
 
 package org.apache.zeppelin.interpreter.xref;
 
-import org.apache.zeppelin.scheduler.Status;
-
 /**
  * Listener for job execution.
  */

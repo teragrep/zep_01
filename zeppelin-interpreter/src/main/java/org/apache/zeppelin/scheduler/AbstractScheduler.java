@@ -21,6 +21,7 @@ import org.apache.zeppelin.interpreter.xref.Code;
 import org.apache.zeppelin.interpreter.InterpreterResult;
 import org.apache.zeppelin.interpreter.xref.Job;
 import org.apache.zeppelin.interpreter.xref.Scheduler;
+import org.apache.zeppelin.interpreter.xref.Status;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

@@ -20,6 +20,7 @@ package org.apache.zeppelin.scheduler;
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.apache.zeppelin.interpreter.xref.Job;
 import org.apache.zeppelin.interpreter.xref.JobListener;
+import org.apache.zeppelin.interpreter.xref.Status;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
