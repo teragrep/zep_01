@@ -367,11 +367,4 @@ public abstract class Interpreter {
     }
   }
 
-  /**
-   * Type of Scheduling.
-   */
-  public enum SchedulingMode {
-    FIFO, PARALLEL
-  }
-
 }
