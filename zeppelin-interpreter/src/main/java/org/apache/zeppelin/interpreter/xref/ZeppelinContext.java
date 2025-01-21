@@ -6,7 +6,6 @@ import org.apache.zeppelin.display.ui.OptionInput;
 import org.apache.zeppelin.interpreter.InterpreterContext;
 import org.apache.zeppelin.interpreter.xref.annotation.Experimental;
 import org.apache.zeppelin.interpreter.xref.annotation.ZeppelinApi;
-import org.apache.zeppelin.resource.ResourceSet;
 
 import java.io.IOException;
 import java.util.List;

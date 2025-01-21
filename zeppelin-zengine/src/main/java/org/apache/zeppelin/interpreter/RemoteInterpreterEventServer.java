@@ -43,6 +43,7 @@ import org.apache.zeppelin.interpreter.thrift.RemoteInterpreterEventService;
 import org.apache.zeppelin.interpreter.thrift.RemoteInterpreterResultMessage;
 import org.apache.zeppelin.interpreter.thrift.RunParagraphsEvent;
 import org.apache.zeppelin.interpreter.thrift.WebUrlInfo;
+import org.apache.zeppelin.interpreter.xref.ResourceSet;
 import org.apache.zeppelin.interpreter.xref.Type;
 import org.apache.zeppelin.notebook.Note;
 import org.apache.zeppelin.resource.*;
