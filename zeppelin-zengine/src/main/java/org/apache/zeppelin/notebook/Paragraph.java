@@ -40,7 +40,7 @@ import org.apache.zeppelin.interpreter.xref.*;
 import org.apache.zeppelin.interpreter.remote.RemoteInterpreter;
 import org.apache.zeppelin.interpreter.thrift.InterpreterCompletion;
 import org.apache.zeppelin.resource.ResourcePool;
-import org.apache.zeppelin.scheduler.JobListener;
+import org.apache.zeppelin.interpreter.xref.JobListener;
 import org.apache.zeppelin.scheduler.JobWithProgressPoller;
 import org.apache.zeppelin.scheduler.Status;
 import org.apache.zeppelin.user.AuthenticationInfo;

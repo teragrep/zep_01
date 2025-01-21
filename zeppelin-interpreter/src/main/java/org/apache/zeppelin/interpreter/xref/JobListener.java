@@ -15,9 +15,9 @@
  * limitations under the License.
  */
 
-package org.apache.zeppelin.scheduler;
+package org.apache.zeppelin.interpreter.xref;
 
-import org.apache.zeppelin.interpreter.xref.Job;
+import org.apache.zeppelin.scheduler.Status;
 
 /**
  * Listener for job execution.

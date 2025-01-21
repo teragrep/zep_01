@@ -1,6 +1,5 @@
 package org.apache.zeppelin.interpreter.xref;
 
-import org.apache.zeppelin.scheduler.JobListener;
 import org.apache.zeppelin.scheduler.Status;
 
 import java.util.Date;

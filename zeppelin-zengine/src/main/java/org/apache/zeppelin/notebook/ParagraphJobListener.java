@@ -17,7 +17,7 @@
 
 package org.apache.zeppelin.notebook;
 
-import org.apache.zeppelin.scheduler.JobListener;
+import org.apache.zeppelin.interpreter.xref.JobListener;
 
 
 /**

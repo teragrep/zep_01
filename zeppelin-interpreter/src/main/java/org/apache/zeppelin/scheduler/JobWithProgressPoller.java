@@ -17,6 +17,7 @@
 
 package org.apache.zeppelin.scheduler;
 
+import org.apache.zeppelin.interpreter.xref.JobListener;
 
 public abstract class JobWithProgressPoller<T> extends JobImpl<T> {
 

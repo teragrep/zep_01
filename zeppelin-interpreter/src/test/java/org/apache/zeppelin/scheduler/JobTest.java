@@ -23,6 +23,7 @@ import org.apache.zeppelin.interpreter.xref.InterpreterException;
 import org.apache.zeppelin.interpreter.InterpreterResult;
 import org.apache.zeppelin.interpreter.xref.Code;
 import org.apache.zeppelin.interpreter.remote.RemoteInterpreterServer.InterpretJob;
+import org.apache.zeppelin.interpreter.xref.JobListener;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
