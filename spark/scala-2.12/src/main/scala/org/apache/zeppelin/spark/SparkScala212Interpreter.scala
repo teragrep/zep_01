@@ -22,8 +22,8 @@ import org.apache.spark.repl.SparkILoop
 import org.apache.zeppelin.interpreter
 import org.apache.zeppelin.interpreter.thrift.InterpreterCompletion
 import org.apache.zeppelin.interpreter.util.InterpreterOutputStream
-import org.apache.zeppelin.interpreter.xref.{Code, InterpreterException}
-import org.apache.zeppelin.interpreter.{InterpreterContext, InterpreterContextImpl, InterpreterContextStore, InterpreterGroup, InterpreterResult, xref}
+import org.apache.zeppelin.interpreter.xref.{Code, InterpreterContext, InterpreterException}
+import org.apache.zeppelin.interpreter.{InterpreterContextImpl, InterpreterContextStore, InterpreterGroup, InterpreterResult, xref}
 import org.slf4j.{Logger, LoggerFactory}
 
 import java.io.{BufferedReader, File}

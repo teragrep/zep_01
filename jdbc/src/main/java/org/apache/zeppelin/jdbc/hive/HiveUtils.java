@@ -19,7 +19,7 @@ import org.apache.commons.dbcp2.DelegatingStatement;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.hive.common.util.HiveVersionInfo;
 import org.apache.hive.jdbc.HiveStatement;
-import org.apache.zeppelin.interpreter.InterpreterContext;
+import org.apache.zeppelin.interpreter.xref.InterpreterContext;
 import org.apache.zeppelin.jdbc.JDBCInterpreter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

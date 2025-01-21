@@ -21,6 +21,7 @@ package org.apache.zeppelin.interpreter.remote.mock;
 import org.apache.zeppelin.interpreter.*;
 import org.apache.zeppelin.interpreter.xref.Code;
 import org.apache.zeppelin.interpreter.xref.FormType;
+import org.apache.zeppelin.interpreter.xref.InterpreterContext;
 
 import java.util.Properties;
 

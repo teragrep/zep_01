@@ -20,6 +20,7 @@ package org.apache.zeppelin.interpreter;
 import org.apache.commons.text.StringSubstitutor;
 import org.apache.zeppelin.interpreter.thrift.InterpreterCompletion;
 import org.apache.zeppelin.interpreter.xref.EnhancedInterpreter;
+import org.apache.zeppelin.interpreter.xref.InterpreterContext;
 import org.apache.zeppelin.interpreter.xref.InterpreterException;
 import org.apache.zeppelin.interpreter.xref.ZeppelinContext;
 import org.apache.zeppelin.resource.ResourcePool;

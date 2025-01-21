@@ -20,7 +20,7 @@ package org.apache.zeppelin.spark;
 
 import org.apache.hadoop.util.VersionInfo;
 import org.apache.hadoop.util.VersionUtil;
-import org.apache.zeppelin.interpreter.InterpreterContext;
+import org.apache.zeppelin.interpreter.xref.InterpreterContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

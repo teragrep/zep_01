@@ -25,6 +25,7 @@ import org.apache.zeppelin.interpreter.*;
 import org.apache.zeppelin.interpreter.xref.Code;
 import org.apache.zeppelin.interpreter.util.SqlSplitter;
 import org.apache.zeppelin.interpreter.xref.FormType;
+import org.apache.zeppelin.interpreter.xref.InterpreterContext;
 import org.apache.zeppelin.interpreter.xref.InterpreterException;
 import org.apache.zeppelin.interpreter.xref.ZeppelinContext;
 import org.apache.zeppelin.interpreter.xref.Scheduler;
@@ -73,7 +74,7 @@ public class SparkSqlInterpreter extends AbstractEnhancedInterpreter {
   }
 
   @Override
-  public InterpreterResult internalInterpret(String st, InterpreterContext context)
+  public InterpreterResult internalInterpret(String st, org.apache.zeppelin.interpreter.xref.InterpreterContext context)
       throws InterpreterException {
     if (sparkInterpreter.isUnsupportedSparkVersion()) {
       return new InterpreterResult(Code.ERROR, "Spark "
@@ -143,7 +144,7 @@ public class SparkSqlInterpreter extends AbstractEnhancedInterpreter {
   }
 
   @Override
-  public void cancel(InterpreterContext context) throws InterpreterException {
+  public void cancel(org.apache.zeppelin.interpreter.xref.InterpreterContext context) throws InterpreterException {
     SparkContext sc = sparkInterpreter.getSparkContext();
     sc.cancelJobGroup(Utils.buildJobGroupId(context));
   }

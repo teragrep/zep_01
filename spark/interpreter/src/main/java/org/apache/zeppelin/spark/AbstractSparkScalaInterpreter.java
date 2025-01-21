@@ -35,6 +35,7 @@ import org.apache.spark.sql.SQLContext;
 import org.apache.spark.sql.SparkSession;
 import org.apache.zeppelin.interpreter.*;
 import org.apache.zeppelin.interpreter.thrift.InterpreterCompletion;
+import org.apache.zeppelin.interpreter.xref.InterpreterContext;
 import org.apache.zeppelin.interpreter.xref.InterpreterException;
 import org.apache.zeppelin.interpreter.xref.ZeppelinContext;
 import org.slf4j.Logger;
@@ -156,16 +157,16 @@ public abstract class AbstractSparkScalaInterpreter {
 
   public abstract void createZeppelinContext() throws InterpreterException;
 
-  public void cancel(InterpreterContext context) throws InterpreterException {
+  public void cancel(org.apache.zeppelin.interpreter.xref.InterpreterContext context) throws InterpreterException {
     getSparkContext().cancelJobGroup(Utils.buildJobGroupId(context));
   }
 
   public abstract InterpreterResult interpret(String st,
-          InterpreterContext context) throws InterpreterException;
+          org.apache.zeppelin.interpreter.xref.InterpreterContext context) throws InterpreterException;
 
   public abstract List<InterpreterCompletion> completion(String buf,
                                                          int cursor,
-                                                         InterpreterContext interpreterContext
+                                                         org.apache.zeppelin.interpreter.xref.InterpreterContext interpreterContext
   ) throws InterpreterException;
 
   public abstract void bind(String name,

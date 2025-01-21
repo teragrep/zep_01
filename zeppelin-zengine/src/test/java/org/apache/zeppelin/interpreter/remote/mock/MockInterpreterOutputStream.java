@@ -18,10 +18,7 @@ package org.apache.zeppelin.interpreter.remote.mock;
 
 import org.apache.zeppelin.interpreter.*;
 import org.apache.zeppelin.interpreter.thrift.InterpreterCompletion;
-import org.apache.zeppelin.interpreter.xref.Code;
-import org.apache.zeppelin.interpreter.xref.FormType;
-import org.apache.zeppelin.interpreter.xref.InterpreterException;
-import org.apache.zeppelin.interpreter.xref.Scheduler;
+import org.apache.zeppelin.interpreter.xref.*;
 import org.apache.zeppelin.scheduler.SchedulerFactory;
 
 import java.io.IOException;

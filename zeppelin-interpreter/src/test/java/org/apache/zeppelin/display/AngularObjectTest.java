@@ -18,8 +18,7 @@
 package org.apache.zeppelin.display;
 
 import org.apache.thrift.TException;
-import org.apache.zeppelin.interpreter.InterpreterContext;
-import org.apache.zeppelin.interpreter.InterpreterContextImpl;
+import org.apache.zeppelin.interpreter.xref.InterpreterContext;
 import org.junit.Ignore;
 import org.junit.Test;
 

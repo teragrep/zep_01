@@ -26,6 +26,7 @@ import org.apache.zeppelin.interpreter.*;
 import org.apache.zeppelin.interpreter.xref.Code;
 import org.apache.zeppelin.interpreter.thrift.InterpreterCompletion;
 import org.apache.zeppelin.interpreter.xref.FormType;
+import org.apache.zeppelin.interpreter.xref.InterpreterContext;
 import org.apache.zeppelin.interpreter.xref.Scheduler;
 import org.apache.zeppelin.scheduler.SchedulerFactory;
 import org.slf4j.Logger;
@@ -55,7 +56,7 @@ public class Markdown extends AbstractInterpreter {
   }
 
   @Override
-  public InterpreterResult interpret(String markdownText, InterpreterContext interpreterContext) {
+  public InterpreterResult interpret(String markdownText, org.apache.zeppelin.interpreter.xref.InterpreterContext interpreterContext) {
     String html;
 
     try {
@@ -91,7 +92,7 @@ public class Markdown extends AbstractInterpreter {
   }
 
   @Override
-  public void cancel(InterpreterContext context) {
+  public void cancel(org.apache.zeppelin.interpreter.xref.InterpreterContext context) {
   }
 
   @Override
@@ -100,7 +101,7 @@ public class Markdown extends AbstractInterpreter {
   }
 
   @Override
-  public int getProgress(InterpreterContext context) {
+  public int getProgress(org.apache.zeppelin.interpreter.xref.InterpreterContext context) {
     return 0;
   }
 

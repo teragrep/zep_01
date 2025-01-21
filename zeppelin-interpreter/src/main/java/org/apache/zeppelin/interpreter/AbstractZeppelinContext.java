@@ -17,8 +17,7 @@
 
 package org.apache.zeppelin.interpreter;
 
-import org.apache.zeppelin.interpreter.xref.InvalidHookException;
-import org.apache.zeppelin.interpreter.xref.ZeppelinContext;
+import org.apache.zeppelin.interpreter.xref.*;
 import org.apache.zeppelin.interpreter.xref.annotation.Experimental;
 import org.apache.zeppelin.interpreter.xref.annotation.ZeppelinApi;
 import org.apache.zeppelin.display.AngularObject;
@@ -26,9 +25,7 @@ import org.apache.zeppelin.display.AngularObjectRegistry;
 import org.apache.zeppelin.display.AngularObjectWatcher;
 import org.apache.zeppelin.display.GUI;
 import org.apache.zeppelin.display.ui.OptionInput.ParamOption;
-import org.apache.zeppelin.interpreter.xref.Resource;
 import org.apache.zeppelin.resource.ResourcePool;
-import org.apache.zeppelin.interpreter.xref.ResourceSet;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

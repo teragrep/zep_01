@@ -34,6 +34,7 @@ import org.apache.hadoop.security.alias.CredentialProviderFactory;
 import org.apache.zeppelin.interpreter.*;
 import org.apache.zeppelin.interpreter.util.SqlSplitter;
 import org.apache.zeppelin.interpreter.xref.FormType;
+import org.apache.zeppelin.interpreter.xref.InterpreterContext;
 import org.apache.zeppelin.interpreter.xref.InterpreterException;
 import org.apache.zeppelin.interpreter.xref.ZeppelinContext;
 import org.apache.zeppelin.jdbc.hive.HiveUtils;
@@ -359,7 +360,7 @@ public class JDBCInterpreter extends KerberosInterpreter {
    * 1. If shiro is enabled, use the login user
    * 2. Otherwise try to get it from interpreter setting, e.g. default.user
    */
-  private String getUser(InterpreterContext context) {
+  private String getUser(org.apache.zeppelin.interpreter.xref.InterpreterContext context) {
     String user = context.getAuthenticationInfo().getUser();
 
     if ("anonymous".equalsIgnoreCase(user) && basePropertiesMap.containsKey(DEFAULT_KEY)) {
@@ -394,7 +395,7 @@ public class JDBCInterpreter extends KerberosInterpreter {
   }
 
   private UsernamePassword getUsernamePassword(
-          InterpreterContext interpreterContextImpl,
+          org.apache.zeppelin.interpreter.xref.InterpreterContext interpreterContextImpl,
                                                String entity) {
     UserCredentials uc = interpreterContextImpl.getAuthenticationInfo().getUserCredentials();
     if (uc != null) {
@@ -421,7 +422,7 @@ public class JDBCInterpreter extends KerberosInterpreter {
     }
   }
 
-  private void setUserProperty(InterpreterContext context)
+  private void setUserProperty(org.apache.zeppelin.interpreter.xref.InterpreterContext context)
       throws SQLException, IOException, InterpreterException {
 
     String user = getUser(context);
@@ -522,7 +523,7 @@ public class JDBCInterpreter extends KerberosInterpreter {
     return DriverManager.getConnection(jdbcDriver);
   }
 
-  public Connection getConnection(InterpreterContext context)
+  public Connection getConnection(org.apache.zeppelin.interpreter.xref.InterpreterContext context)
       throws ClassNotFoundException, SQLException, InterpreterException, IOException {
 
     if (basePropertiesMap.get(DEFAULT_KEY) == null) {
@@ -616,7 +617,7 @@ public class JDBCInterpreter extends KerberosInterpreter {
   }
 
   // only add tags for hive jdbc
-  private String appendTagsToURL(String url, InterpreterContext context) {
+  private String appendTagsToURL(String url, org.apache.zeppelin.interpreter.xref.InterpreterContext context) {
     if (!Boolean.parseBoolean(getProperty("zeppelin.jdbc.hive.engines.tag.enable", "true"))) {
       return url;
     }
@@ -756,7 +757,7 @@ public class JDBCInterpreter extends KerberosInterpreter {
    * @throws InterpreterException
    */
   private InterpreterResult executeSql(String sql,
-      InterpreterContext context) throws InterpreterException {
+      org.apache.zeppelin.interpreter.xref.InterpreterContext context) throws InterpreterException {
     Connection connection = null;
     Statement statement;
     ResultSet resultSet = null;
@@ -947,12 +948,12 @@ public class JDBCInterpreter extends KerberosInterpreter {
     return Boolean.parseBoolean(getProperty("zeppelin.jdbc.interpolation", "false"));
   }
 
-  private boolean isRefreshMode(InterpreterContext context) {
+  private boolean isRefreshMode(org.apache.zeppelin.interpreter.xref.InterpreterContext context) {
     return context.getLocalProperties().get("refreshInterval") != null;
   }
 
   @Override
-  public InterpreterResult internalInterpret(String cmd, InterpreterContext context)
+  public InterpreterResult internalInterpret(String cmd, org.apache.zeppelin.interpreter.xref.InterpreterContext context)
           throws InterpreterException {
     String dbprefix = getDBPrefix(context);
     if (!StringUtils.equals(dbprefix, DEFAULT_KEY)) {
@@ -1002,7 +1003,7 @@ public class JDBCInterpreter extends KerberosInterpreter {
   }
 
   @Override
-  public void cancel(InterpreterContext context) {
+  public void cancel(org.apache.zeppelin.interpreter.xref.InterpreterContext context) {
 
     if (isRefreshMode(context)) {
       LOGGER.info("Shutdown refreshExecutorService for paragraph: {}", context.getParagraphId());
@@ -1044,7 +1045,7 @@ public class JDBCInterpreter extends KerberosInterpreter {
    * @param context
    * @return
    */
-  public String getDBPrefix(InterpreterContext context) {
+  public String getDBPrefix(org.apache.zeppelin.interpreter.xref.InterpreterContext context) {
     Map<String, String> localProperties = context.getLocalProperties();
     // It is recommended to use this kind of format: %jdbc(db=mysql)
     if (localProperties.containsKey("db")) {
@@ -1065,7 +1066,7 @@ public class JDBCInterpreter extends KerberosInterpreter {
   }
 
   @Override
-  public int getProgress(InterpreterContext context) {
+  public int getProgress(org.apache.zeppelin.interpreter.xref.InterpreterContext context) {
     return 0;
   }
 

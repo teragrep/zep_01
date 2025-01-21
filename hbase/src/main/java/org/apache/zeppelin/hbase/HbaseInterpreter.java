@@ -17,6 +17,7 @@ package org.apache.zeppelin.hbase;
 import org.apache.zeppelin.interpreter.*;
 import org.apache.zeppelin.interpreter.xref.Code;
 import org.apache.zeppelin.interpreter.xref.FormType;
+import org.apache.zeppelin.interpreter.xref.InterpreterContext;
 import org.apache.zeppelin.interpreter.xref.InterpreterException;
 import org.jruby.embed.LocalContextScope;
 import org.jruby.embed.ScriptingContainer;
@@ -110,7 +111,7 @@ public class HbaseInterpreter extends AbstractInterpreter {
   }
 
   @Override
-  public InterpreterResult interpret(String cmd, InterpreterContext interpreterContext) {
+  public InterpreterResult interpret(String cmd, org.apache.zeppelin.interpreter.xref.InterpreterContext interpreterContext) {
     try {
       logger.info(cmd);
       this.writer.getBuffer().setLength(0);
@@ -125,7 +126,7 @@ public class HbaseInterpreter extends AbstractInterpreter {
   }
 
   @Override
-  public void cancel(InterpreterContext context) {}
+  public void cancel(org.apache.zeppelin.interpreter.xref.InterpreterContext context) {}
 
   @Override
   public FormType getFormType() {
@@ -133,7 +134,7 @@ public class HbaseInterpreter extends AbstractInterpreter {
   }
 
   @Override
-  public int getProgress(InterpreterContext context) {
+  public int getProgress(org.apache.zeppelin.interpreter.xref.InterpreterContext context) {
     return 0;
   }
 

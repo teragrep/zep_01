@@ -1,5 +1,7 @@
 package org.apache.zeppelin.interpreter;
 
+import org.apache.zeppelin.interpreter.xref.InterpreterContext;
+
 import java.util.concurrent.ConcurrentHashMap;
 
 public class InterpreterContextStore {
