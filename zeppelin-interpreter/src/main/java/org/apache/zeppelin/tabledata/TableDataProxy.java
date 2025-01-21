@@ -16,7 +16,7 @@
  */
 package org.apache.zeppelin.tabledata;
 
-import org.apache.zeppelin.resource.Resource;
+import org.apache.zeppelin.interpreter.xref.Resource;
 
 import java.util.Iterator;
 

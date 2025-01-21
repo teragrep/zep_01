@@ -21,6 +21,7 @@ import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
 import com.google.gson.internal.Primitives;
+import org.apache.zeppelin.interpreter.xref.Resource;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

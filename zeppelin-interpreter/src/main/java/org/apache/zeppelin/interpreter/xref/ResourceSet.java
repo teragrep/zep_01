@@ -1,7 +1,6 @@
 package org.apache.zeppelin.interpreter.xref;
 
 import org.apache.zeppelin.common.JsonSerializable;
-import org.apache.zeppelin.resource.Resource;
 
 import java.util.List;
 

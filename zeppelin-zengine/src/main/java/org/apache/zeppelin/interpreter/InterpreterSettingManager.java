@@ -54,7 +54,7 @@ import org.apache.zeppelin.notebook.NoteEventListener;
 import org.apache.zeppelin.notebook.Notebook;
 import org.apache.zeppelin.notebook.Paragraph;
 import org.apache.zeppelin.notebook.ParagraphTextParser;
-import org.apache.zeppelin.resource.Resource;
+import org.apache.zeppelin.interpreter.xref.Resource;
 import org.apache.zeppelin.resource.ResourceImpl;
 import org.apache.zeppelin.resource.ResourcePool;
 import org.apache.zeppelin.interpreter.xref.ResourceSet;

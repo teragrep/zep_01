@@ -16,6 +16,8 @@
  */
 package org.apache.zeppelin.resource;
 
+import org.apache.zeppelin.interpreter.xref.Resource;
+
 /**
  * Interface for ResourcePool
  */

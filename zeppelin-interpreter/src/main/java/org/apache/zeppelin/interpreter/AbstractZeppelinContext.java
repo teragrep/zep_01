@@ -26,7 +26,7 @@ import org.apache.zeppelin.display.AngularObjectRegistry;
 import org.apache.zeppelin.display.AngularObjectWatcher;
 import org.apache.zeppelin.display.GUI;
 import org.apache.zeppelin.display.ui.OptionInput.ParamOption;
-import org.apache.zeppelin.resource.Resource;
+import org.apache.zeppelin.interpreter.xref.Resource;
 import org.apache.zeppelin.resource.ResourcePool;
 import org.apache.zeppelin.interpreter.xref.ResourceSet;
 import org.slf4j.Logger;

@@ -19,6 +19,8 @@ package org.apache.zeppelin.resource;
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.Arrays;
+
+import org.apache.zeppelin.interpreter.xref.Resource;
 import org.junit.Test;
 
 import java.io.IOException;

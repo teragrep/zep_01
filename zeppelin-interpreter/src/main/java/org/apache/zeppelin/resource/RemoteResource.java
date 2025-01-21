@@ -19,6 +19,7 @@ package org.apache.zeppelin.resource;
 import com.google.gson.Gson;
 import java.io.Serializable;
 import org.apache.zeppelin.common.JsonSerializable;
+import org.apache.zeppelin.interpreter.xref.Resource;
 
 /**
  * Resource that can retrieve data from remote
