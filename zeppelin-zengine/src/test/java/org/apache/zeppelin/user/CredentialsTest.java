@@ -17,6 +17,7 @@
 
 package org.apache.zeppelin.user;
 
+import org.apache.zeppelin.interpreter.xref.user.UserCredentials;
 import org.junit.Test;
 
 import java.io.IOException;

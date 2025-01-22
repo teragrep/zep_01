@@ -1,7 +1,6 @@
 package org.apache.zeppelin.interpreter.xref.user;
 
 import org.apache.zeppelin.common.JsonSerializable;
-import org.apache.zeppelin.user.UserCredentials;
 
 import java.util.List;
 import java.util.Set;

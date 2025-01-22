@@ -36,7 +36,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.zeppelin.server.JsonResponse;
 import org.apache.zeppelin.service.AuthenticationService;
 import org.apache.zeppelin.user.Credentials;
-import org.apache.zeppelin.user.UserCredentials;
+import org.apache.zeppelin.interpreter.xref.user.UserCredentials;
 import org.apache.zeppelin.user.UsernamePassword;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

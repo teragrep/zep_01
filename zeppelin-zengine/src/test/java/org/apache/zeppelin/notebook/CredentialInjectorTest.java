@@ -24,7 +24,7 @@ import static org.mockito.Mockito.when;
 
 import org.apache.zeppelin.interpreter.InterpreterResult;
 import org.apache.zeppelin.interpreter.xref.Code;
-import org.apache.zeppelin.user.UserCredentials;
+import org.apache.zeppelin.interpreter.xref.user.UserCredentials;
 import org.apache.zeppelin.user.UserCredentialsImpl;
 import org.apache.zeppelin.user.UsernamePassword;
 import org.junit.Test;

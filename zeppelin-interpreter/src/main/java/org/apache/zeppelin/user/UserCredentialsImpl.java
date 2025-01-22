@@ -17,6 +17,8 @@
 
 package org.apache.zeppelin.user;
 
+import org.apache.zeppelin.interpreter.xref.user.UserCredentials;
+
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 

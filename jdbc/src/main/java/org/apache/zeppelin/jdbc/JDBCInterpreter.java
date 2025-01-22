@@ -70,7 +70,7 @@ import org.apache.zeppelin.interpreter.thrift.InterpreterCompletion;
 import org.apache.zeppelin.jdbc.security.JDBCSecurityImpl;
 import org.apache.zeppelin.interpreter.xref.Scheduler;
 import org.apache.zeppelin.scheduler.SchedulerFactory;
-import org.apache.zeppelin.user.UserCredentials;
+import org.apache.zeppelin.interpreter.xref.user.UserCredentials;
 import org.apache.zeppelin.user.UsernamePassword;
 
 /**

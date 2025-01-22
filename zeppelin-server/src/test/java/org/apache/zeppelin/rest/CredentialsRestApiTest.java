@@ -23,7 +23,6 @@ import static org.junit.Assert.assertNull;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 import java.io.IOException;
-import java.nio.file.Files;
 import java.util.Map;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
@@ -31,7 +30,7 @@ import javax.ws.rs.core.Response.Status;
 import org.apache.zeppelin.service.AuthenticationService;
 import org.apache.zeppelin.service.NoAuthenticationService;
 import org.apache.zeppelin.user.Credentials;
-import org.apache.zeppelin.user.UserCredentials;
+import org.apache.zeppelin.interpreter.xref.user.UserCredentials;
 import org.junit.Before;
 import org.junit.Test;
 

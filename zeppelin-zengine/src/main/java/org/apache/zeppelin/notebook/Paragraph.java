@@ -47,7 +47,7 @@ import org.apache.zeppelin.scheduler.JobWithProgressPoller;
 import org.apache.zeppelin.interpreter.xref.Status;
 import org.apache.zeppelin.interpreter.xref.user.AuthenticationInfo;
 import org.apache.zeppelin.user.Credentials;
-import org.apache.zeppelin.user.UserCredentials;
+import org.apache.zeppelin.interpreter.xref.user.UserCredentials;
 import org.apache.zeppelin.user.UserCredentialsImpl;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
