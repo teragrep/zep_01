@@ -46,7 +46,7 @@ import org.apache.zeppelin.resource.DistributedResourcePool;
 import org.apache.zeppelin.resource.ResourceImpl;
 import org.apache.zeppelin.interpreter.xref.ResourcePool;
 import org.apache.zeppelin.scheduler.*;
-import org.apache.zeppelin.user.AuthenticationInfo;
+import org.apache.zeppelin.user.AuthenticationInfoImpl;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import java.io.IOException;
@@ -898,7 +898,7 @@ public class RemoteInterpreterServer extends Thread
         .setParagraphTitle(ric.getParagraphTitle())
         .setParagraphText(ric.getParagraphText())
         .setLocalProperties(ric.getLocalProperties())
-        .setAuthenticationInfo(AuthenticationInfo.fromJson(ric.getAuthenticationInfo()))
+        .setAuthenticationInfo(AuthenticationInfoImpl.fromJson(ric.getAuthenticationInfo()))
         .setGUI(GUIImpl.fromJson(ric.getGui()))
         .setConfig(gson.fromJson(ric.getConfig(),
                    new TypeToken<Map<String, Object>>() {}.getType()))

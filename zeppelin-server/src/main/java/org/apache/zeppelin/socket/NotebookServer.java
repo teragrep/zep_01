@@ -75,6 +75,7 @@ import org.apache.zeppelin.service.SimpleServiceCallback;
 import org.apache.zeppelin.ticket.TicketContainer;
 import org.apache.zeppelin.types.InterpreterSettingsList;
 import org.apache.zeppelin.user.AuthenticationInfo;
+import org.apache.zeppelin.user.AuthenticationInfoImpl;
 import org.apache.zeppelin.utils.CorsUtils;
 import org.apache.zeppelin.utils.TestUtils;
 import org.eclipse.jetty.util.annotation.ManagedAttribute;
@@ -507,7 +508,7 @@ public class NotebookServer extends WebSocketServlet
   }
 
   public void broadcastUpdateNoteJobInfo(Note note, long lastUpdateUnixTime) throws IOException {
-    ServiceContext context = new ServiceContext(new AuthenticationInfo(),
+    ServiceContext context = new ServiceContext(new AuthenticationInfoImpl(),
             getNotebookAuthorizationService().getOwners(note.getId()));
     getJobManagerService().getNoteJobInfoByUnixTime(lastUpdateUnixTime, context,
         new WebSocketServiceCallback<List<JobManagerService.NoteJobInfo>>(null) {
@@ -1715,7 +1716,7 @@ public class NotebookServer extends WebSocketServlet
   @Override
   public void onParagraphRemove(Paragraph p) {
     try {
-      ServiceContext context = new ServiceContext(new AuthenticationInfo(),
+      ServiceContext context = new ServiceContext(new AuthenticationInfoImpl(),
               getNotebookAuthorizationService().getOwners(p.getNote().getId()));
       getJobManagerService().getNoteJobInfoByUnixTime(System.currentTimeMillis() - 5000, context,
           new JobManagerServiceCallback());
@@ -1850,7 +1851,7 @@ public class NotebookServer extends WebSocketServlet
     try {
       Note note = getNotebook().getNote(noteId);
       note.getParagraph(paragraphId).checkpointOutput();
-      getNotebook().saveNote(note, AuthenticationInfo.ANONYMOUS);
+      getNotebook().saveNote(note, AuthenticationInfoImpl.ANONYMOUS);
     } catch (IOException e) {
       LOG.warn("Fail to save note: " + noteId , e);
     }
@@ -2028,7 +2029,7 @@ public class NotebookServer extends WebSocketServlet
 
           paragraph
                   .updateRuntimeInfos(label, tooltip, metaInfos, setting.getGroup(), setting.getId());
-          getNotebook().saveNote(note, AuthenticationInfo.ANONYMOUS);
+          getNotebook().saveNote(note, AuthenticationInfoImpl.ANONYMOUS);
           getConnectionManager().broadcast(
                   note.getId(),
                   new Message(OP.PARAS_INFO).put("id", paragraphId).put("infos",
@@ -2127,7 +2128,7 @@ public class NotebookServer extends WebSocketServlet
 
   private ServiceContext getServiceContext(TicketContainer.Entry ticketEntry) {
     AuthenticationInfo authInfo =
-        new AuthenticationInfo(ticketEntry.getPrincipal(), ticketEntry.getRoles(), ticketEntry.getTicket());
+        new AuthenticationInfoImpl(ticketEntry.getPrincipal(), ticketEntry.getRoles(), ticketEntry.getTicket());
     Set<String> userAndRoles = new HashSet<>();
     userAndRoles.add(authInfo.getUser());
     userAndRoles.addAll(authInfo.getRoles());

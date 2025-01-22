@@ -87,7 +87,7 @@ import org.apache.zeppelin.service.*;
 import org.apache.zeppelin.service.AuthenticationService;
 import org.apache.zeppelin.socket.ConnectionManager;
 import org.apache.zeppelin.socket.NotebookServer;
-import org.apache.zeppelin.user.AuthenticationInfo;
+import org.apache.zeppelin.user.AuthenticationInfoImpl;
 import org.apache.zeppelin.user.Credentials;
 import org.apache.zeppelin.utils.PEMImporter;
 import org.eclipse.jetty.http.HttpScheme;
@@ -384,7 +384,7 @@ public class ZeppelinServer extends ResourceConfig {
       String base64EncodedJsonSerializedServiceContext = conf.getNotebookRunServiceContext();
       if (StringUtils.isEmpty(base64EncodedJsonSerializedServiceContext)) {
         LOG.info("No service context provided. use ANONYMOUS");
-        serviceContext = new ServiceContext(AuthenticationInfo.ANONYMOUS, new HashSet<String>() {});
+        serviceContext = new ServiceContext(AuthenticationInfoImpl.ANONYMOUS, new HashSet<String>() {});
       } else {
         serviceContext = new Gson().fromJson(
                 new String(Base64.getDecoder().decode(base64EncodedJsonSerializedServiceContext)),

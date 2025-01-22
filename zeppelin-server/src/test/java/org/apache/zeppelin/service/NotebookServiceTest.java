@@ -59,7 +59,7 @@ import org.apache.zeppelin.notebook.repo.VFSNotebookRepo;
 import org.apache.zeppelin.notebook.scheduler.QuartzSchedulerService;
 import org.apache.zeppelin.search.LuceneSearch;
 import org.apache.zeppelin.search.SearchService;
-import org.apache.zeppelin.user.AuthenticationInfo;
+import org.apache.zeppelin.user.AuthenticationInfoImpl;
 import org.apache.zeppelin.user.Credentials;
 import org.junit.After;
 import org.junit.Before;
@@ -75,7 +75,7 @@ public class NotebookServiceTest {
   private File notebookDir;
   private SearchService searchService;
   private ServiceContext context =
-      new ServiceContext(AuthenticationInfo.ANONYMOUS, new HashSet<>());
+      new ServiceContext(AuthenticationInfoImpl.ANONYMOUS, new HashSet<>());
 
   private ServiceCallback callback = mock(ServiceCallback.class);
 

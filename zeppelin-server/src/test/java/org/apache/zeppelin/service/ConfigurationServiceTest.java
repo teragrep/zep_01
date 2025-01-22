@@ -18,15 +18,11 @@
 
 package org.apache.zeppelin.service;
 
-import org.apache.zeppelin.conf.ZeppelinConfiguration;
 import org.apache.zeppelin.rest.AbstractTestRestApi;
-import org.apache.zeppelin.server.ZeppelinServer;
-import org.apache.zeppelin.socket.NotebookServer;
-import org.apache.zeppelin.user.AuthenticationInfo;
+import org.apache.zeppelin.user.AuthenticationInfoImpl;
 import org.apache.zeppelin.utils.TestUtils;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
-import org.junit.Ignore;
 import org.junit.Test;
 
 import java.io.IOException;
@@ -44,7 +40,7 @@ public class ConfigurationServiceTest extends AbstractTestRestApi {
   private static ConfigurationService configurationService;
 
   private ServiceContext context =
-      new ServiceContext(AuthenticationInfo.ANONYMOUS, new HashSet<>());
+      new ServiceContext(AuthenticationInfoImpl.ANONYMOUS, new HashSet<>());
 
   private ServiceCallback callback = mock(ServiceCallback.class);
 

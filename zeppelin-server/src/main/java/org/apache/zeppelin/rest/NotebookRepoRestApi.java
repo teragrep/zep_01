@@ -24,6 +24,7 @@ import javax.inject.Singleton;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.zeppelin.service.AuthenticationService;
 import org.apache.zeppelin.service.ServiceContext;
+import org.apache.zeppelin.user.AuthenticationInfoImpl;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -76,7 +77,7 @@ public class NotebookRepoRestApi {
   @GET
   @ZeppelinApi
   public Response listRepoSettings() {
-    AuthenticationInfo subject = new AuthenticationInfo(authenticationService.getPrincipal());
+    AuthenticationInfo subject = new AuthenticationInfoImpl(authenticationService.getPrincipal());
     LOG.info("Getting list of NoteRepo with Settings for user {}", subject.getUser());
     List<NotebookRepoWithSettings> settings = noteRepos.getNotebookRepos(subject);
     return new JsonResponse<>(Status.OK, "", settings).build();
@@ -89,7 +90,7 @@ public class NotebookRepoRestApi {
   @Path("reload")
   @ZeppelinApi
   public Response refreshRepo(){
-    AuthenticationInfo subject = new AuthenticationInfo(authenticationService.getPrincipal());
+    AuthenticationInfo subject = new AuthenticationInfoImpl(authenticationService.getPrincipal());
     LOG.info("Reloading notebook repository for user {}", subject.getUser());
     try {
       notebookWsServer.broadcastReloadedNoteList(getServiceContext());
@@ -100,7 +101,7 @@ public class NotebookRepoRestApi {
   }
 
   private ServiceContext getServiceContext() {
-    AuthenticationInfo authInfo = new AuthenticationInfo(authenticationService.getPrincipal());
+    AuthenticationInfo authInfo = new AuthenticationInfoImpl(authenticationService.getPrincipal());
     Set<String> userAndRoles = new HashSet<>();
     userAndRoles.add(authenticationService.getPrincipal());
     userAndRoles.addAll(authenticationService.getAssociatedRoles());
@@ -119,7 +120,7 @@ public class NotebookRepoRestApi {
     if (StringUtils.isBlank(payload)) {
       return new JsonResponse<>(Status.NOT_FOUND, "", Collections.emptyMap()).build();
     }
-    AuthenticationInfo subject = new AuthenticationInfo(authenticationService.getPrincipal());
+    AuthenticationInfo subject = new AuthenticationInfoImpl(authenticationService.getPrincipal());
     NotebookRepoSettingsRequest newSettings;
     try {
       newSettings = NotebookRepoSettingsRequest.fromJson(payload);

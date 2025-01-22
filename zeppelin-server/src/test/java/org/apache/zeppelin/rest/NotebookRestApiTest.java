@@ -33,6 +33,7 @@ import org.apache.zeppelin.notebook.Notebook;
 import org.apache.zeppelin.rest.message.ParametersRequest;
 import org.apache.zeppelin.interpreter.xref.Status;
 import org.apache.zeppelin.socket.NotebookServer;
+import org.apache.zeppelin.user.AuthenticationInfoImpl;
 import org.apache.zeppelin.utils.TestUtils;
 import org.junit.*;
 import org.junit.runners.MethodSorters;
@@ -72,14 +73,14 @@ public class NotebookRestApiTest extends AbstractTestRestApi {
 
   @Before
   public void setUp() {
-    anonymous = new AuthenticationInfo("anonymous");
+    anonymous = new AuthenticationInfoImpl("anonymous");
   }
 
   @Test
   public void testGetReloadNote() throws IOException {
     LOG.debug("Running testGetNote");
     Note note1 = TestUtils.getInstance(Notebook.class).createNote("note1", anonymous);
-    note1.addNewParagraph(AuthenticationInfo.ANONYMOUS);
+    note1.addNewParagraph(AuthenticationInfoImpl.ANONYMOUS);
     TestUtils.getInstance(Notebook.class).saveNote(note1, anonymous);
     CloseableHttpResponse get = httpGet("/notebook/" + note1.getId());
     assertThat(get, isAllowed());
@@ -89,7 +90,7 @@ public class NotebookRestApiTest extends AbstractTestRestApi {
     assertEquals(1, ((List)noteObject.get("paragraphs")).size());
 
     // add one new paragraph, but don't save it and reload it again
-    note1.addNewParagraph(AuthenticationInfo.ANONYMOUS);
+    note1.addNewParagraph(AuthenticationInfoImpl.ANONYMOUS);
 
     get = httpGet("/notebook/" + note1.getId() + "?reload=true");
     assertThat(get, isAllowed());
@@ -104,7 +105,7 @@ public class NotebookRestApiTest extends AbstractTestRestApi {
   public void testGetNoteParagraphJobStatus() throws IOException {
     LOG.debug("Running testGetNoteParagraphJobStatus");
     Note note1 = TestUtils.getInstance(Notebook.class).createNote("note1", anonymous);
-    note1.addNewParagraph(AuthenticationInfo.ANONYMOUS);
+    note1.addNewParagraph(AuthenticationInfoImpl.ANONYMOUS);
 
     String paragraphId = note1.getLastParagraph().getId();
 
@@ -124,9 +125,9 @@ public class NotebookRestApiTest extends AbstractTestRestApi {
   public void testRunParagraphJob() throws Exception {
     LOG.debug("Running testRunParagraphJob");
     Note note1 = TestUtils.getInstance(Notebook.class).createNote("note1", anonymous);
-    note1.addNewParagraph(AuthenticationInfo.ANONYMOUS);
+    note1.addNewParagraph(AuthenticationInfoImpl.ANONYMOUS);
 
-    Paragraph p = note1.addNewParagraph(AuthenticationInfo.ANONYMOUS);
+    Paragraph p = note1.addNewParagraph(AuthenticationInfoImpl.ANONYMOUS);
 
     // run blank paragraph
     CloseableHttpResponse post = httpPost("/notebook/job/" + note1.getId() + "/" + p.getId(), "");
@@ -154,9 +155,9 @@ public class NotebookRestApiTest extends AbstractTestRestApi {
   public void testRunParagraphSynchronously() throws IOException {
     LOG.debug("Running testRunParagraphSynchronously");
     Note note1 = TestUtils.getInstance(Notebook.class).createNote("note1", anonymous);
-    note1.addNewParagraph(AuthenticationInfo.ANONYMOUS);
+    note1.addNewParagraph(AuthenticationInfoImpl.ANONYMOUS);
 
-    Paragraph p = note1.addNewParagraph(AuthenticationInfo.ANONYMOUS);
+    Paragraph p = note1.addNewParagraph(AuthenticationInfoImpl.ANONYMOUS);
 
     // run non-blank paragraph
     String title = "title";
@@ -246,8 +247,8 @@ public class NotebookRestApiTest extends AbstractTestRestApi {
       //    %python
       //    print(user)
       //
-      Paragraph p1 = note1.addNewParagraph(AuthenticationInfo.ANONYMOUS);
-      Paragraph p2 = note1.addNewParagraph(AuthenticationInfo.ANONYMOUS);
+      Paragraph p1 = note1.addNewParagraph(AuthenticationInfoImpl.ANONYMOUS);
+      Paragraph p2 = note1.addNewParagraph(AuthenticationInfoImpl.ANONYMOUS);
       p1.setText("%python from __future__ import print_function\nimport time\ntime.sleep(1)\nuser='abc'");
       p2.setText("%python print(user)");
 
@@ -279,8 +280,8 @@ public class NotebookRestApiTest extends AbstractTestRestApi {
     //    %%sh(interpolate=true)
     //    echo '{name}'
     //
-    Paragraph p1 = note1.addNewParagraph(AuthenticationInfo.ANONYMOUS);
-    Paragraph p2 = note1.addNewParagraph(AuthenticationInfo.ANONYMOUS);
+    Paragraph p1 = note1.addNewParagraph(AuthenticationInfoImpl.ANONYMOUS);
+    Paragraph p2 = note1.addNewParagraph(AuthenticationInfoImpl.ANONYMOUS);
     p1.setText("%python import time\ntime.sleep(5)\nname='hello'\nz.put('name', name)");
     p2.setText("%sh(interpolate=true) echo '{name}'");
 
@@ -319,8 +320,8 @@ public class NotebookRestApiTest extends AbstractTestRestApi {
     //    %python
     //    print(user)
     //
-    Paragraph p1 = note1.addNewParagraph(AuthenticationInfo.ANONYMOUS);
-    Paragraph p2 = note1.addNewParagraph(AuthenticationInfo.ANONYMOUS);
+    Paragraph p1 = note1.addNewParagraph(AuthenticationInfoImpl.ANONYMOUS);
+    Paragraph p2 = note1.addNewParagraph(AuthenticationInfoImpl.ANONYMOUS);
     p1.setText("%python from __future__ import print_function\nimport time\ntime.sleep(1)\nuser='abc'");
     p2.setText("%python print(user)");
 
@@ -359,8 +360,8 @@ public class NotebookRestApiTest extends AbstractTestRestApi {
     //    %python
     //    print(user)
     //
-    Paragraph p1 = note1.addNewParagraph(AuthenticationInfo.ANONYMOUS);
-    Paragraph p2 = note1.addNewParagraph(AuthenticationInfo.ANONYMOUS);
+    Paragraph p1 = note1.addNewParagraph(AuthenticationInfoImpl.ANONYMOUS);
+    Paragraph p2 = note1.addNewParagraph(AuthenticationInfoImpl.ANONYMOUS);
     p1.setText("%python from __future__ import print_function\nimport time\ntime.sleep(1)\nuser='abc'");
     p2.setText("%python print(user)");
 
@@ -395,8 +396,8 @@ public class NotebookRestApiTest extends AbstractTestRestApi {
     //    %sh
     //    echo ${name|world}
     //
-    Paragraph p1 = note1.addNewParagraph(AuthenticationInfo.ANONYMOUS);
-    Paragraph p2 = note1.addNewParagraph(AuthenticationInfo.ANONYMOUS);
+    Paragraph p1 = note1.addNewParagraph(AuthenticationInfoImpl.ANONYMOUS);
+    Paragraph p2 = note1.addNewParagraph(AuthenticationInfoImpl.ANONYMOUS);
     p1.setText("%python name = z.input('name', 'world')\nprint(name)");
     p2.setText("%sh echo '${name=world}'");
 
@@ -455,8 +456,8 @@ public class NotebookRestApiTest extends AbstractTestRestApi {
     //    user2='abc'
     //    print(user2)
     //
-    Paragraph p1 = note1.addNewParagraph(AuthenticationInfo.ANONYMOUS);
-    Paragraph p2 = note1.addNewParagraph(AuthenticationInfo.ANONYMOUS);
+    Paragraph p1 = note1.addNewParagraph(AuthenticationInfoImpl.ANONYMOUS);
+    Paragraph p2 = note1.addNewParagraph(AuthenticationInfoImpl.ANONYMOUS);
     p1.setText("%python from __future__ import print_function\nimport time\ntime.sleep(1)\nprint(user2)");
     p2.setText("%python user2='abc'\nprint(user2)");
 
@@ -516,7 +517,7 @@ public class NotebookRestApiTest extends AbstractTestRestApi {
     LOG.debug("Running testUpdateParagraphConfig");
     Note note = TestUtils.getInstance(Notebook.class).createNote("note1", anonymous);
     String noteId = note.getId();
-    Paragraph p = note.addNewParagraph(AuthenticationInfo.ANONYMOUS);
+    Paragraph p = note.addNewParagraph(AuthenticationInfoImpl.ANONYMOUS);
     assertNull(p.getConfig().get("colWidth"));
     String paragraphId = p.getId();
     String jsonRequest = "{\"colWidth\": 6.0}";
@@ -540,13 +541,13 @@ public class NotebookRestApiTest extends AbstractTestRestApi {
   public void testClearAllParagraphOutput() throws IOException {
     LOG.debug("Running testClearAllParagraphOutput");
     Note note = TestUtils.getInstance(Notebook.class).createNote("note1", anonymous);
-    Paragraph p1 = note.addNewParagraph(AuthenticationInfo.ANONYMOUS);
+    Paragraph p1 = note.addNewParagraph(AuthenticationInfoImpl.ANONYMOUS);
     InterpreterResult result = new InterpreterResult(
             Code.SUCCESS,
             Type.TEXT, "result");
     p1.setResult(result);
 
-    Paragraph p2 = note.addNewParagraph(AuthenticationInfo.ANONYMOUS);
+    Paragraph p2 = note.addNewParagraph(AuthenticationInfoImpl.ANONYMOUS);
     p2.setReturn(result, new Throwable());
 
     // clear paragraph result
@@ -588,8 +589,8 @@ public class NotebookRestApiTest extends AbstractTestRestApi {
     //    %python
     //    print(user)
     //
-    Paragraph p1 = note1.addNewParagraph(AuthenticationInfo.ANONYMOUS);
-    Paragraph p2 = note1.addNewParagraph(AuthenticationInfo.ANONYMOUS);
+    Paragraph p1 = note1.addNewParagraph(AuthenticationInfoImpl.ANONYMOUS);
+    Paragraph p2 = note1.addNewParagraph(AuthenticationInfoImpl.ANONYMOUS);
     p1.setText("%python from __future__ import print_function\nimport time\ntime.sleep(1)\nuser='abc'");
     p2.setText("%python print(user)");
 

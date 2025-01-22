@@ -33,6 +33,7 @@ import org.apache.zeppelin.rest.AbstractTestRestApi;
 import org.apache.zeppelin.interpreter.xref.Status;
 import org.apache.zeppelin.server.ZeppelinServer;
 import org.apache.zeppelin.user.AuthenticationInfo;
+import org.apache.zeppelin.user.AuthenticationInfoImpl;
 import org.apache.zeppelin.utils.TestUtils;
 import org.junit.After;
 import org.junit.Before;
@@ -55,7 +56,7 @@ public class RecoveryTest extends AbstractTestRestApi {
 
   private Notebook notebook;
 
-  private AuthenticationInfo anonymous = new AuthenticationInfo("anonymous");
+  private AuthenticationInfo anonymous = new AuthenticationInfoImpl("anonymous");
 
   @Before
   public void init() throws Exception {
@@ -83,7 +84,7 @@ public class RecoveryTest extends AbstractTestRestApi {
     Note note1 = notebook.createNote("note1", anonymous);
 
     // run python interpreter and create new variable `user`
-    Paragraph p1 = note1.addNewParagraph(AuthenticationInfo.ANONYMOUS);
+    Paragraph p1 = note1.addNewParagraph(AuthenticationInfoImpl.ANONYMOUS);
     p1.setText("%python user='abc'");
     CloseableHttpResponse post = httpPost("/notebook/job/" + note1.getId() +"?blocking=true", "");
     assertThat(post, isAllowed());
@@ -114,10 +115,10 @@ public class RecoveryTest extends AbstractTestRestApi {
   @Test
   public void testRecovery_2() throws Exception {
     LOG.debug("Test testRecovery_2");
-    Note note1 = notebook.createNote("note2", AuthenticationInfo.ANONYMOUS);
+    Note note1 = notebook.createNote("note2", AuthenticationInfoImpl.ANONYMOUS);
 
     // run python interpreter and create new variable `user`
-    Paragraph p1 = note1.addNewParagraph(AuthenticationInfo.ANONYMOUS);
+    Paragraph p1 = note1.addNewParagraph(AuthenticationInfoImpl.ANONYMOUS);
     p1.setText("%python user='abc'");
     CloseableHttpResponse post = httpPost("/notebook/job/" + note1.getId() + "?blocking=true", "");
     assertThat(post, isAllowed());
@@ -126,7 +127,7 @@ public class RecoveryTest extends AbstractTestRestApi {
     assertEquals("OK", resp.get("status"));
     post.close();
     assertEquals(Status.FINISHED, p1.getStatus());
-    TestUtils.getInstance(Notebook.class).saveNote(note1, AuthenticationInfo.ANONYMOUS);
+    TestUtils.getInstance(Notebook.class).saveNote(note1, AuthenticationInfoImpl.ANONYMOUS);
     // restart the python interpreter
     TestUtils.getInstance(Notebook.class).getInterpreterSettingManager().restart(
         ((ManagedInterpreterGroup) p1.getBindedInterpreter().getInterpreterGroup())
@@ -152,10 +153,10 @@ public class RecoveryTest extends AbstractTestRestApi {
   @Test
   public void testRecovery_3() throws Exception {
     LOG.debug("Test testRecovery_3");
-    Note note1 = TestUtils.getInstance(Notebook.class).createNote("note3", AuthenticationInfo.ANONYMOUS);
+    Note note1 = TestUtils.getInstance(Notebook.class).createNote("note3", AuthenticationInfoImpl.ANONYMOUS);
 
     // run python interpreter and create new variable `user`
-    Paragraph p1 = note1.addNewParagraph(AuthenticationInfo.ANONYMOUS);
+    Paragraph p1 = note1.addNewParagraph(AuthenticationInfoImpl.ANONYMOUS);
     p1.setText("%python user='abc'");
     CloseableHttpResponse post = httpPost("/notebook/job/" + note1.getId() + "?blocking=true", "");
     assertThat(post, isAllowed());
@@ -164,7 +165,7 @@ public class RecoveryTest extends AbstractTestRestApi {
     assertEquals("OK", resp.get("status"));
     post.close();
     assertEquals(Status.FINISHED, p1.getStatus());
-    TestUtils.getInstance(Notebook.class).saveNote(note1, AuthenticationInfo.ANONYMOUS);
+    TestUtils.getInstance(Notebook.class).saveNote(note1, AuthenticationInfoImpl.ANONYMOUS);
 
     // shutdown zeppelin and restart it
     shutDown();
@@ -192,10 +193,10 @@ public class RecoveryTest extends AbstractTestRestApi {
     interpreterSetting.setProperty("zeppelin.python.useIPython", "false");
     interpreterSetting.setProperty("zeppelin.interpreter.result.cache", "100");
 
-    Note note1 = TestUtils.getInstance(Notebook.class).createNote("note4", AuthenticationInfo.ANONYMOUS);
+    Note note1 = TestUtils.getInstance(Notebook.class).createNote("note4", AuthenticationInfoImpl.ANONYMOUS);
 
     // run  paragraph async, print 'hello' after 10 seconds
-    Paragraph p1 = note1.addNewParagraph(AuthenticationInfo.ANONYMOUS);
+    Paragraph p1 = note1.addNewParagraph(AuthenticationInfoImpl.ANONYMOUS);
     p1.setText("%python import time\n" +
             "for i in range(1, 10):\n" +
             "    time.sleep(1)\n" +

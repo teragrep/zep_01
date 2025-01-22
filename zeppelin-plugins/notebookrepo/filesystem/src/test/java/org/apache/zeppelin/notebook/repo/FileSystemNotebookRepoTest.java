@@ -18,7 +18,6 @@
 package org.apache.zeppelin.notebook.repo;
 
 
-import org.apache.commons.io.FileUtils;
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.fs.FileSystem;
 import org.apache.hadoop.fs.Path;
@@ -26,14 +25,13 @@ import org.apache.zeppelin.conf.ZeppelinConfiguration;
 import org.apache.zeppelin.notebook.Note;
 import org.apache.zeppelin.notebook.NoteInfo;
 import org.apache.zeppelin.user.AuthenticationInfo;
-import org.junit.After;
+import org.apache.zeppelin.user.AuthenticationInfoImpl;
 import org.junit.Before;
 import org.junit.Test;
 
 import java.io.File;
 import java.io.IOException;
 import java.io.OutputStream;
-import java.nio.file.Files;
 import java.time.Instant;
 import java.util.HashMap;
 import java.util.Map;
@@ -47,7 +45,7 @@ public class FileSystemNotebookRepoTest {
   private FileSystem fs;
   private FileSystemNotebookRepo hdfsNotebookRepo;
   private String notebookDir;
-  private AuthenticationInfo authInfo = AuthenticationInfo.ANONYMOUS;
+  private AuthenticationInfo authInfo = AuthenticationInfoImpl.ANONYMOUS;
 
   @Before
   public void setUp() throws IOException {

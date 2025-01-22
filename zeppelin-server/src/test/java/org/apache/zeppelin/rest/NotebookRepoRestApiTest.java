@@ -27,6 +27,7 @@ import com.google.gson.reflect.TypeToken;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.util.EntityUtils;
+import org.apache.zeppelin.user.AuthenticationInfoImpl;
 import org.junit.*;
 import org.junit.runners.MethodSorters;
 
@@ -57,7 +58,7 @@ public class NotebookRepoRestApiTest extends AbstractTestRestApi {
 
   @Before
   public void setUp() {
-    anonymous = new AuthenticationInfo("anonymous");
+    anonymous = new AuthenticationInfoImpl("anonymous");
   }
 
   private List<Map<String, Object>> getListOfReposotiry() throws IOException {

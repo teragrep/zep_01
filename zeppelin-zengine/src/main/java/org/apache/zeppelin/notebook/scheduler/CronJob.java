@@ -20,6 +20,7 @@ package org.apache.zeppelin.notebook.scheduler;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.zeppelin.notebook.Note;
 import org.apache.zeppelin.user.AuthenticationInfo;
+import org.apache.zeppelin.user.AuthenticationInfoImpl;
 import org.quartz.JobDataMap;
 import org.quartz.JobExecutionContext;
 import org.slf4j.Logger;
@@ -54,7 +55,7 @@ public class CronJob implements org.quartz.Job {
       cronExecutingUser = "anonymous";
     }
     AuthenticationInfo authenticationInfo =
-            new AuthenticationInfo(
+            new AuthenticationInfoImpl(
                     cronExecutingUser,
                     StringUtils.isEmpty(cronExecutingRoles) ? null : cronExecutingRoles,
                     null);

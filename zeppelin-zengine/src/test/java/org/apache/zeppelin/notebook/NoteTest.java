@@ -26,6 +26,7 @@ import org.apache.zeppelin.interpreter.xref.Type;
 import org.apache.zeppelin.notebook.repo.NotebookRepo;
 import org.apache.zeppelin.interpreter.xref.Scheduler;
 import org.apache.zeppelin.user.AuthenticationInfo;
+import org.apache.zeppelin.user.AuthenticationInfoImpl;
 import org.apache.zeppelin.user.Credentials;
 import org.junit.Before;
 import org.junit.Test;
@@ -73,7 +74,7 @@ public class NoteTest {
   @Mock
   InterpreterSettingManager interpreterSettingManager;
 
-  private AuthenticationInfo anonymous = new AuthenticationInfo("anonymous");
+  private AuthenticationInfo anonymous = new AuthenticationInfoImpl("anonymous");
 
   @Before
   public void setUp() {
@@ -89,7 +90,7 @@ public class NoteTest {
     String pText = "%spark sc.version";
     Note note = new Note("test", "test", interpreterFactory, interpreterSettingManager, paragraphJobListener, credentials, noteEventListener);
 
-    Paragraph p = note.addNewParagraph(AuthenticationInfo.ANONYMOUS);
+    Paragraph p = note.addNewParagraph(AuthenticationInfoImpl.ANONYMOUS);
     p.setText(pText);
     p.setAuthenticationInfo(anonymous);
     note.run(p.getId());
@@ -104,7 +105,7 @@ public class NoteTest {
   @Test
   public void addParagraphWithEmptyReplNameTest() {
     Note note = new Note("test", "", interpreterFactory, interpreterSettingManager, paragraphJobListener, credentials, noteEventListener);
-    Paragraph p = note.addNewParagraph(AuthenticationInfo.ANONYMOUS);
+    Paragraph p = note.addNewParagraph(AuthenticationInfoImpl.ANONYMOUS);
     assertNull(p.getText());
   }
 
@@ -112,9 +113,9 @@ public class NoteTest {
   public void addParagraphWithLastReplNameTest() throws InterpreterNotFoundException {
     when(interpreterFactory.getInterpreter(eq("spark"), any())).thenReturn(interpreter);
     Note note = new Note("test", "", interpreterFactory, interpreterSettingManager, paragraphJobListener, credentials, noteEventListener);
-    Paragraph p1 = note.addNewParagraph(AuthenticationInfo.ANONYMOUS);
+    Paragraph p1 = note.addNewParagraph(AuthenticationInfoImpl.ANONYMOUS);
     p1.setText("%spark ");
-    Paragraph p2 = note.addNewParagraph(AuthenticationInfo.ANONYMOUS);
+    Paragraph p2 = note.addNewParagraph(AuthenticationInfoImpl.ANONYMOUS);
 
     assertEquals("%spark\n", p2.getText());
   }
@@ -123,9 +124,9 @@ public class NoteTest {
   public void insertParagraphWithLastReplNameTest() throws InterpreterNotFoundException {
     when(interpreterFactory.getInterpreter(eq("spark"), any())).thenReturn(interpreter);
     Note note = new Note("test", "", interpreterFactory, interpreterSettingManager, paragraphJobListener, credentials, noteEventListener);
-    Paragraph p1 = note.addNewParagraph(AuthenticationInfo.ANONYMOUS);
+    Paragraph p1 = note.addNewParagraph(AuthenticationInfoImpl.ANONYMOUS);
     p1.setText("%spark ");
-    Paragraph p2 = note.insertNewParagraph(note.getParagraphs().size(), AuthenticationInfo.ANONYMOUS);
+    Paragraph p2 = note.insertNewParagraph(note.getParagraphs().size(), AuthenticationInfoImpl.ANONYMOUS);
 
     assertEquals("%spark\n", p2.getText());
   }
@@ -134,9 +135,9 @@ public class NoteTest {
   public void insertParagraphWithInvalidReplNameTest() throws InterpreterNotFoundException {
     when(interpreterFactory.getInterpreter(eq("invalid"), any())).thenReturn(null);
     Note note = new Note("test", "", interpreterFactory, interpreterSettingManager, paragraphJobListener, credentials, noteEventListener);
-    Paragraph p1 = note.addNewParagraph(AuthenticationInfo.ANONYMOUS);
+    Paragraph p1 = note.addNewParagraph(AuthenticationInfoImpl.ANONYMOUS);
     p1.setText("%invalid ");
-    Paragraph p2 = note.insertNewParagraph(note.getParagraphs().size(), AuthenticationInfo.ANONYMOUS);
+    Paragraph p2 = note.insertNewParagraph(note.getParagraphs().size(), AuthenticationInfoImpl.ANONYMOUS);
 
     assertNull(p2.getText());
   }
@@ -144,7 +145,7 @@ public class NoteTest {
   @Test
   public void insertParagraphwithUser() {
     Note note = new Note("test", "", interpreterFactory, interpreterSettingManager, paragraphJobListener, credentials, noteEventListener);
-    Paragraph p = note.insertNewParagraph(note.getParagraphs().size(), AuthenticationInfo.ANONYMOUS);
+    Paragraph p = note.insertNewParagraph(note.getParagraphs().size(), AuthenticationInfoImpl.ANONYMOUS);
     assertEquals("anonymous", p.getUser());
   }
 
@@ -154,11 +155,11 @@ public class NoteTest {
     when(interpreter.getScheduler()).thenReturn(scheduler);
 
     Note note = new Note("test", "", interpreterFactory, interpreterSettingManager, paragraphJobListener, credentials, noteEventListener);
-    Paragraph p1 = note.addNewParagraph(AuthenticationInfo.ANONYMOUS);
+    Paragraph p1 = note.addNewParagraph(AuthenticationInfoImpl.ANONYMOUS);
     InterpreterResult result = new InterpreterResult(Code.SUCCESS, Type.TEXT, "result");
     p1.setResult(result);
 
-    Paragraph p2 = note.addNewParagraph(AuthenticationInfo.ANONYMOUS);
+    Paragraph p2 = note.addNewParagraph(AuthenticationInfoImpl.ANONYMOUS);
     p2.setReturn(result, new Throwable());
 
     note.clearAllParagraphOutput();
@@ -174,7 +175,7 @@ public class NoteTest {
     String user1 = "user1";
     String user2 = "user2";
     note.setPersonalizedMode(true);
-    note.addNewParagraph(new AuthenticationInfo(user1));
+    note.addNewParagraph(new AuthenticationInfoImpl(user1));
     Paragraph baseParagraph = note.getParagraphs().get(0);
     Paragraph user1Paragraph = baseParagraph.getUserParagraph(user1);
     Paragraph user2Paragraph = baseParagraph.getUserParagraph(user2);
@@ -189,7 +190,7 @@ public class NoteTest {
     note.getConfig().put("config_1", "value_1");
     note.getInfo().put("info_1", "value_1");
     String pText = "%spark sc.version";
-    Paragraph p = note.addNewParagraph(AuthenticationInfo.ANONYMOUS);
+    Paragraph p = note.addNewParagraph(AuthenticationInfoImpl.ANONYMOUS);
     p.setText(pText);
     p.setResult(new InterpreterResult(Code.SUCCESS, "1.6.2"));
     p.settings.getForms().put("textbox_1", new TextBox("name", "default_name"));

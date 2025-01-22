@@ -22,7 +22,7 @@ import org.apache.zeppelin.interpreter.xref.InterpreterResultMessage;
 import org.apache.zeppelin.interpreter.xref.Type;
 import org.apache.zeppelin.resource.LocalResourcePool;
 import org.apache.zeppelin.interpreter.xref.ResourcePool;
-import org.apache.zeppelin.user.AuthenticationInfo;
+import org.apache.zeppelin.user.AuthenticationInfoImpl;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
@@ -197,7 +197,7 @@ class JDBCInterpreterInterpolationTest extends BasicJDBCTestCaseAdapter {
   private InterpreterContextImpl getInterpreterContext() {
     return InterpreterContextImpl.builder()
             .setParagraphId("paragraph_1")
-            .setAuthenticationInfo(new AuthenticationInfo("testUser"))
+            .setAuthenticationInfo(new AuthenticationInfoImpl("testUser"))
             .setResourcePool(resourcePool)
             .setInterpreterOut(new InterpreterOutputImpl())
             .build();

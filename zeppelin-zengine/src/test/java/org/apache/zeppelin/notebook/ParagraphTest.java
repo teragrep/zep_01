@@ -46,10 +46,7 @@ import org.apache.zeppelin.interpreter.*;
 import org.apache.zeppelin.interpreter.xref.*;
 import org.apache.zeppelin.interpreter.InterpreterSetting.Status;
 import org.apache.zeppelin.interpreter.xref.ResourcePool;
-import org.apache.zeppelin.user.AuthenticationInfo;
-import org.apache.zeppelin.user.Credentials;
-import org.apache.zeppelin.user.UserCredentials;
-import org.apache.zeppelin.user.UsernamePassword;
+import org.apache.zeppelin.user.*;
 import org.junit.Ignore;
 import org.junit.Rule;
 import org.junit.Test;
@@ -288,7 +285,7 @@ public class ParagraphTest extends AbstractInterpreterTest {
     result1.add(new InterpreterResultMessageImpl(Type.TEXT, "result1"));
     when(mockInterpreterResult.message()).thenReturn(result1);
 
-    AuthenticationInfo user1 = new AuthenticationInfo("user1");
+    AuthenticationInfo user1 = new AuthenticationInfoImpl("user1");
     spyParagraph.setAuthenticationInfo(user1);
     spyParagraph.jobRun();
     Paragraph p1 = spyParagraph.getUserParagraph(user1.getUser());
@@ -301,7 +298,7 @@ public class ParagraphTest extends AbstractInterpreterTest {
     result2.add(new InterpreterResultMessageImpl(Type.TEXT, "result2"));
     when(mockInterpreterResult.message()).thenReturn(result2);
 
-    AuthenticationInfo user2 = new AuthenticationInfo("user2");
+    AuthenticationInfo user2 = new AuthenticationInfoImpl("user2");
     spyParagraph.setAuthenticationInfo(user2);
     spyParagraph.jobRun();
     Paragraph p2 = spyParagraph.getUserParagraph(user2.getUser());
@@ -374,7 +371,7 @@ public class ParagraphTest extends AbstractInterpreterTest {
     when(mockInterpreter.interpret(anyString(), Mockito.<InterpreterContextImpl>any())).thenReturn(mockInterpreterResult);
     when(mockInterpreterResult.code()).thenReturn(Code.SUCCESS);
 
-    AuthenticationInfo user1 = new AuthenticationInfo("user1");
+    AuthenticationInfo user1 = new AuthenticationInfoImpl("user1");
     spyParagraph.setAuthenticationInfo(user1);
 
     spyParagraph.setText("val x = \"usr={user.ent}&pass={password.ent}\"");

@@ -26,6 +26,7 @@ import org.apache.zeppelin.service.AuthenticationService;
 import org.apache.zeppelin.service.ServiceContext;
 import org.apache.zeppelin.service.SimpleServiceCallback;
 import org.apache.zeppelin.user.AuthenticationInfo;
+import org.apache.zeppelin.user.AuthenticationInfoImpl;
 
 public class AbstractRestApi {
 
@@ -36,7 +37,7 @@ public class AbstractRestApi {
   }
 
   protected ServiceContext getServiceContext() {
-    AuthenticationInfo authInfo = new AuthenticationInfo(authenticationService.getPrincipal());
+    AuthenticationInfo authInfo = new AuthenticationInfoImpl(authenticationService.getPrincipal());
     Set<String> userAndRoles = new HashSet<>();
     userAndRoles.add(authenticationService.getPrincipal());
     userAndRoles.addAll(authenticationService.getAssociatedRoles());

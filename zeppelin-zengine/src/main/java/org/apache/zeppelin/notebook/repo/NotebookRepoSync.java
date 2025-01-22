@@ -25,6 +25,7 @@ import org.apache.zeppelin.notebook.OldNoteInfo;
 import org.apache.zeppelin.notebook.Paragraph;
 import org.apache.zeppelin.plugin.PluginManager;
 import org.apache.zeppelin.user.AuthenticationInfo;
+import org.apache.zeppelin.user.AuthenticationInfoImpl;
 import org.apache.zeppelin.util.Util;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -95,7 +96,7 @@ public class NotebookRepoSync implements NotebookRepoWithVersionControl {
     // sync for anonymous mode on start
     if (getRepoCount() > 1 && conf.isAnonymousAllowed()) {
       try {
-        sync(AuthenticationInfo.ANONYMOUS);
+        sync(AuthenticationInfoImpl.ANONYMOUS);
       } catch (IOException e) {
         LOGGER.error("Couldn't sync anonymous mode on start ", e);
       }
@@ -111,24 +112,24 @@ public class NotebookRepoSync implements NotebookRepoWithVersionControl {
       OldNotebookRepo oldNotebookRepo =
               PluginManager.get().loadOldNotebookRepo(newNotebookRepo.getClass().getCanonicalName());
       oldNotebookRepo.init(conf);
-      List<OldNoteInfo> oldNotesInfo = oldNotebookRepo.list(AuthenticationInfo.ANONYMOUS);
+      List<OldNoteInfo> oldNotesInfo = oldNotebookRepo.list(AuthenticationInfoImpl.ANONYMOUS);
       LOGGER.info("Convert old note file to new style, note count: {}", oldNotesInfo.size());
       LOGGER.info("Delete old note: {}", deleteOld);
       for (OldNoteInfo oldNoteInfo : oldNotesInfo) {
         LOGGER.info("Converting note, id: {}", oldNoteInfo.getId());
-        Note note = oldNotebookRepo.get(oldNoteInfo.getId(), AuthenticationInfo.ANONYMOUS);
+        Note note = oldNotebookRepo.get(oldNoteInfo.getId(), AuthenticationInfoImpl.ANONYMOUS);
         note.setPath(note.getName());
         note.setVersion(Util.getVersion());
-        newNotebookRepo.save(note, AuthenticationInfo.ANONYMOUS);
+        newNotebookRepo.save(note, AuthenticationInfoImpl.ANONYMOUS);
         if (newNotebookRepo instanceof NotebookRepoWithVersionControl) {
           ((NotebookRepoWithVersionControl) newNotebookRepo).checkpoint(
                   note.getId(),
                   note.getPath(),
                   "Upgrade note '" + note.getName() + "' to " + Util.getVersion(),
-                  AuthenticationInfo.ANONYMOUS);
+                  AuthenticationInfoImpl.ANONYMOUS);
         }
         if (deleteOld) {
-          oldNotebookRepo.remove(note.getId(), AuthenticationInfo.ANONYMOUS);
+          oldNotebookRepo.remove(note.getId(), AuthenticationInfoImpl.ANONYMOUS);
           LOGGER.info("Remote old note: {}", note.getId());
           // TODO(zjffdu) no commit when deleting note, This is an issue of
           // NotebookRepoWithVersionControl

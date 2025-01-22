@@ -48,6 +48,7 @@ import org.apache.zeppelin.notebook.repo.zeppelinhub.model.UserSessionContainer;
 import org.apache.zeppelin.notebook.repo.zeppelinhub.websocket.utils.ZeppelinhubUtils;
 import org.apache.zeppelin.service.ServiceContext;
 import org.apache.zeppelin.socket.NotebookServer;
+import org.apache.zeppelin.user.AuthenticationInfoImpl;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -223,7 +224,7 @@ public class ZeppelinHubRealm extends AuthorizingRealm {
     HashSet<String> userAndRoles = new HashSet<>();
     userAndRoles.add(username);
     ServiceContext context = new ServiceContext(
-        new org.apache.zeppelin.user.AuthenticationInfo(username), userAndRoles);
+        new AuthenticationInfoImpl(username), userAndRoles);
     try {
       // This can failed to get NotebookServer instance with very rare cases
       NotebookServer.getInstance().broadcastReloadedNoteList(context);

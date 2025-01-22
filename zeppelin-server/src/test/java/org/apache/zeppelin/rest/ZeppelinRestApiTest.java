@@ -32,6 +32,7 @@ import org.apache.http.util.EntityUtils;
 import org.apache.zeppelin.notebook.AuthorizationService;
 import org.apache.zeppelin.notebook.Notebook;
 import org.apache.zeppelin.rest.message.NoteJobStatus;
+import org.apache.zeppelin.user.AuthenticationInfoImpl;
 import org.apache.zeppelin.utils.TestUtils;
 import org.junit.*;
 import org.junit.runners.MethodSorters;
@@ -71,7 +72,7 @@ public class ZeppelinRestApiTest extends AbstractTestRestApi {
 
   @Before
   public void setUp() {
-    anonymous = new AuthenticationInfo("anonymous");
+    anonymous = new AuthenticationInfoImpl("anonymous");
   }
 
   /**
@@ -92,7 +93,7 @@ public class ZeppelinRestApiTest extends AbstractTestRestApi {
     Note note = TestUtils.getInstance(Notebook.class).createNote("note1", anonymous);
     assertNotNull("can't create new note", note);
     note.setName("note");
-    Paragraph paragraph = note.addNewParagraph(AuthenticationInfo.ANONYMOUS);
+    Paragraph paragraph = note.addNewParagraph(AuthenticationInfoImpl.ANONYMOUS);
     Map<String, Object> config = paragraph.getConfig();
     config.put("enabled", true);
     paragraph.setConfig(config);
@@ -228,7 +229,7 @@ public class ZeppelinRestApiTest extends AbstractTestRestApi {
     Note note = TestUtils.getInstance(Notebook.class).createNote("note1_testExportNote", anonymous);
     assertNotNull("can't create new note", note);
     note.setName("source note for export");
-    Paragraph paragraph = note.addNewParagraph(AuthenticationInfo.ANONYMOUS);
+    Paragraph paragraph = note.addNewParagraph(AuthenticationInfoImpl.ANONYMOUS);
     Map<String, Object> config = paragraph.getConfig();
     config.put("enabled", true);
     paragraph.setConfig(config);
@@ -262,7 +263,7 @@ public class ZeppelinRestApiTest extends AbstractTestRestApi {
     Note note = TestUtils.getInstance(Notebook.class).createNote("note1_testImportNotebook", anonymous);
     assertNotNull("can't create new note", note);
     note.setName(noteName);
-    Paragraph paragraph = note.addNewParagraph(AuthenticationInfo.ANONYMOUS);
+    Paragraph paragraph = note.addNewParagraph(AuthenticationInfoImpl.ANONYMOUS);
     Map<String, Object> config = paragraph.getConfig();
     config.put("enabled", true);
     paragraph.setConfig(config);
@@ -327,7 +328,7 @@ public class ZeppelinRestApiTest extends AbstractTestRestApi {
     Note note = TestUtils.getInstance(Notebook.class).createNote("note1_testCloneNote", anonymous);
     assertNotNull("can't create new note", note);
     note.setName("source note for clone");
-    Paragraph paragraph = note.addNewParagraph(AuthenticationInfo.ANONYMOUS);
+    Paragraph paragraph = note.addNewParagraph(AuthenticationInfoImpl.ANONYMOUS);
     Map<String, Object> config = paragraph.getConfig();
     config.put("enabled", true);
     paragraph.setConfig(config);
@@ -380,7 +381,7 @@ public class ZeppelinRestApiTest extends AbstractTestRestApi {
     Note note = TestUtils.getInstance(Notebook.class).createNote("note1_testNoteJobs", anonymous);
     assertNotNull("can't create new note", note);
     note.setName("note for run test");
-    Paragraph paragraph = note.addNewParagraph(AuthenticationInfo.ANONYMOUS);
+    Paragraph paragraph = note.addNewParagraph(AuthenticationInfoImpl.ANONYMOUS);
 
     Map<String, Object> config = paragraph.getConfig();
     config.put("enabled", true);
@@ -431,7 +432,7 @@ public class ZeppelinRestApiTest extends AbstractTestRestApi {
     Note note = TestUtils.getInstance(Notebook.class).createNote("note1_testGetNoteJob", anonymous);
     assertNotNull("can't create new note", note);
     note.setName("note for run test");
-    Paragraph paragraph = note.addNewParagraph(AuthenticationInfo.ANONYMOUS);
+    Paragraph paragraph = note.addNewParagraph(AuthenticationInfoImpl.ANONYMOUS);
 
     Map<String, Object> config = paragraph.getConfig();
     config.put("enabled", true);
@@ -476,7 +477,7 @@ public class ZeppelinRestApiTest extends AbstractTestRestApi {
     Note note = TestUtils.getInstance(Notebook.class).createNote("note1_testRunParagraphWithParams", anonymous);
     assertNotNull("can't create new note", note);
     note.setName("note for run test");
-    Paragraph paragraph = note.addNewParagraph(AuthenticationInfo.ANONYMOUS);
+    Paragraph paragraph = note.addNewParagraph(AuthenticationInfoImpl.ANONYMOUS);
 
     Map<String, Object> config = paragraph.getConfig();
     config.put("enabled", true);
@@ -509,14 +510,14 @@ public class ZeppelinRestApiTest extends AbstractTestRestApi {
     Note note = TestUtils.getInstance(Notebook.class).createNote("note1_testJobs", anonymous);
 
     note.setName("note for run test");
-    Paragraph paragraph = note.addNewParagraph(AuthenticationInfo.ANONYMOUS);
+    Paragraph paragraph = note.addNewParagraph(AuthenticationInfoImpl.ANONYMOUS);
     paragraph.setText("%md This is test paragraph.");
 
     Map<String, Object> config = paragraph.getConfig();
     config.put("enabled", true);
     paragraph.setConfig(config);
 
-    note.runAll(AuthenticationInfo.ANONYMOUS, false, false, new HashMap<>());
+    note.runAll(AuthenticationInfoImpl.ANONYMOUS, false, false, new HashMap<>());
 
     String jsonRequest = "{\"cron\":\"* * * * * ?\" }";
     // right cron expression but not exist note.
@@ -550,14 +551,14 @@ public class ZeppelinRestApiTest extends AbstractTestRestApi {
     Note note = TestUtils.getInstance(Notebook.class).createNote("note1_testCronDisable", anonymous);
 
     note.setName("note for run test");
-    Paragraph paragraph = note.addNewParagraph(AuthenticationInfo.ANONYMOUS);
+    Paragraph paragraph = note.addNewParagraph(AuthenticationInfoImpl.ANONYMOUS);
     paragraph.setText("%md This is test paragraph.");
 
     Map<String, Object> config = paragraph.getConfig();
     config.put("enabled", true);
     paragraph.setConfig(config);
 
-    note.runAll(AuthenticationInfo.ANONYMOUS, true, true, new HashMap<>());
+    note.runAll(AuthenticationInfoImpl.ANONYMOUS, true, true, new HashMap<>());
 
     String jsonRequest = "{\"cron\":\"* * * * * ?\" }";
     // right cron expression.
@@ -569,7 +570,7 @@ public class ZeppelinRestApiTest extends AbstractTestRestApi {
     System.setProperty(ConfVars.ZEPPELIN_NOTEBOOK_CRON_FOLDERS.getVarName(), "/System");
 
     note.setName("System/test2");
-    note.runAll(AuthenticationInfo.ANONYMOUS, true, true, new HashMap<>());
+    note.runAll(AuthenticationInfoImpl.ANONYMOUS, true, true, new HashMap<>());
     postCron = httpPost("/notebook/cron/" + note.getId(), jsonRequest);
     assertThat("", postCron, isAllowed());
     postCron.close();
@@ -588,9 +589,9 @@ public class ZeppelinRestApiTest extends AbstractTestRestApi {
   public void testRegressionZEPPELIN_527() throws Exception {
     Note note = TestUtils.getInstance(Notebook.class).createNote("note1_testRegressionZEPPELIN_527", anonymous);
     note.setName("note for run test");
-    Paragraph paragraph = note.addNewParagraph(AuthenticationInfo.ANONYMOUS);
+    Paragraph paragraph = note.addNewParagraph(AuthenticationInfoImpl.ANONYMOUS);
     paragraph.setText("%spark\nval param = z.input(\"param\").toString\nprintln(param)");
-    note.runAll(AuthenticationInfo.ANONYMOUS, true, false, new HashMap<>());
+    note.runAll(AuthenticationInfoImpl.ANONYMOUS, true, false, new HashMap<>());
     TestUtils.getInstance(Notebook.class).saveNote(note, anonymous);
 
     CloseableHttpResponse getNoteJobs = httpGet("/notebook/job/" + note.getId());
@@ -705,7 +706,7 @@ public class ZeppelinRestApiTest extends AbstractTestRestApi {
   public void testGetParagraph() throws IOException {
     Note note = TestUtils.getInstance(Notebook.class).createNote("note1_testGetParagraph", anonymous);
 
-    Paragraph p = note.addNewParagraph(AuthenticationInfo.ANONYMOUS);
+    Paragraph p = note.addNewParagraph(AuthenticationInfoImpl.ANONYMOUS);
     p.setTitle("hello");
     p.setText("world");
     TestUtils.getInstance(Notebook.class).saveNote(note, anonymous);
@@ -733,11 +734,11 @@ public class ZeppelinRestApiTest extends AbstractTestRestApi {
   public void testMoveParagraph() throws IOException {
     Note note = TestUtils.getInstance(Notebook.class).createNote("note1_testMoveParagraph", anonymous);
 
-    Paragraph p = note.addNewParagraph(AuthenticationInfo.ANONYMOUS);
+    Paragraph p = note.addNewParagraph(AuthenticationInfoImpl.ANONYMOUS);
     p.setTitle("title1");
     p.setText("text1");
 
-    Paragraph p2 = note.addNewParagraph(AuthenticationInfo.ANONYMOUS);
+    Paragraph p2 = note.addNewParagraph(AuthenticationInfoImpl.ANONYMOUS);
     p2.setTitle("title2");
     p2.setText("text2");
 
@@ -765,7 +766,7 @@ public class ZeppelinRestApiTest extends AbstractTestRestApi {
   public void testDeleteParagraph() throws IOException {
     Note note = TestUtils.getInstance(Notebook.class).createNote("note1_testDeleteParagraph", anonymous);
 
-    Paragraph p = note.addNewParagraph(AuthenticationInfo.ANONYMOUS);
+    Paragraph p = note.addNewParagraph(AuthenticationInfoImpl.ANONYMOUS);
     p.setTitle("title1");
     p.setText("text1");
 

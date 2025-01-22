@@ -19,7 +19,6 @@
 package org.apache.zeppelin.service;
 
 import org.apache.zeppelin.conf.ZeppelinConfiguration;
-import org.apache.zeppelin.interpreter.InterpreterGroup;
 import org.apache.zeppelin.interpreter.InterpreterSettingManager;
 import org.apache.zeppelin.interpreter.ManagedInterpreterGroup;
 import org.apache.zeppelin.interpreter.remote.RemoteInterpreterProcess;
@@ -27,7 +26,7 @@ import org.apache.zeppelin.notebook.Note;
 import org.apache.zeppelin.notebook.Notebook;
 import org.apache.zeppelin.common.SessionInfo;
 import org.apache.zeppelin.scheduler.ExecutorFactory;
-import org.apache.zeppelin.user.AuthenticationInfo;
+import org.apache.zeppelin.user.AuthenticationInfoImpl;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -71,7 +70,7 @@ public class SessionManagerService {
           if (sessionInfo != null && sessionInfo.getState().equalsIgnoreCase("Stopped")) {
             LOGGER.info("Session {} has been stopped, remove it and its associated note", entry.getKey());
             try {
-              notebook.removeNote(sessionInfo.getNoteId(), AuthenticationInfo.ANONYMOUS);
+              notebook.removeNote(sessionInfo.getNoteId(), AuthenticationInfoImpl.ANONYMOUS);
             } catch (IOException e) {
               LOGGER.warn("Fail to remove session note: " + sessionInfo.getNoteId(), e);
             }
@@ -111,7 +110,7 @@ public class SessionManagerService {
       throw new Exception("Unable to generate session id");
     }
 
-    Note sessionNote = notebook.createNote(buildNotePath(interpreter, sessionId), AuthenticationInfo.ANONYMOUS);
+    Note sessionNote = notebook.createNote(buildNotePath(interpreter, sessionId), AuthenticationInfoImpl.ANONYMOUS);
     SessionInfo sessionInfo = new SessionInfo(sessionId, sessionNote.getId(), interpreter);
     sessions.put(sessionId, sessionInfo);
     return sessionInfo;
@@ -142,7 +141,7 @@ public class SessionManagerService {
     interpreterGroup.getInterpreterSetting().closeInterpreters(sessionId);
 
     // remove associated session note
-    notebook.removeNote(sessionInfo.getNoteId(), AuthenticationInfo.ANONYMOUS);
+    notebook.removeNote(sessionInfo.getNoteId(), AuthenticationInfoImpl.ANONYMOUS);
   }
 
   /**

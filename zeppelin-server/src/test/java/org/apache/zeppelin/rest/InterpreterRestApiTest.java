@@ -30,6 +30,7 @@ import org.apache.zeppelin.notebook.Notebook;
 import org.apache.zeppelin.notebook.Paragraph;
 import org.apache.zeppelin.interpreter.xref.Status;
 import org.apache.zeppelin.user.AuthenticationInfo;
+import org.apache.zeppelin.user.AuthenticationInfoImpl;
 import org.apache.zeppelin.utils.TestUtils;
 import org.junit.*;
 import org.junit.runners.MethodSorters;
@@ -64,7 +65,7 @@ public class InterpreterRestApiTest extends AbstractTestRestApi {
 
   @Before
   public void setUp() {
-    anonymous = new AuthenticationInfo("anonymous");
+    anonymous = new AuthenticationInfoImpl("anonymous");
   }
 
   @Test
@@ -221,7 +222,7 @@ public class InterpreterRestApiTest extends AbstractTestRestApi {
   @Test
   public void testInterpreterRestart() throws IOException, InterruptedException {
     Note note = TestUtils.getInstance(Notebook.class).createNote("note1", anonymous);
-    note.addNewParagraph(AuthenticationInfo.ANONYMOUS);
+    note.addNewParagraph(AuthenticationInfoImpl.ANONYMOUS);
     Paragraph p = note.getLastParagraph();
     Map config = p.getConfig();
     config.put("enabled", true);
@@ -248,7 +249,7 @@ public class InterpreterRestApiTest extends AbstractTestRestApi {
     }
 
     // when: run markdown paragraph, again
-    p = note.addNewParagraph(AuthenticationInfo.ANONYMOUS);
+    p = note.addNewParagraph(AuthenticationInfoImpl.ANONYMOUS);
     p.setConfig(config);
     p.setText("%md markdown restarted");
     p.setAuthenticationInfo(anonymous);
@@ -265,7 +266,7 @@ public class InterpreterRestApiTest extends AbstractTestRestApi {
   @Test
   public void testRestartInterpreterPerNote() throws IOException, InterruptedException {
     Note note = TestUtils.getInstance(Notebook.class).createNote("note2", anonymous);
-    note.addNewParagraph(AuthenticationInfo.ANONYMOUS);
+    note.addNewParagraph(AuthenticationInfoImpl.ANONYMOUS);
     Paragraph p = note.getLastParagraph();
     Map config = p.getConfig();
     config.put("enabled", true);

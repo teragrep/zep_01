@@ -35,6 +35,7 @@ import org.apache.zeppelin.interpreter.xref.Job;
 import org.apache.zeppelin.interpreter.xref.Status;
 import org.apache.zeppelin.search.SearchService;
 import org.apache.zeppelin.user.AuthenticationInfo;
+import org.apache.zeppelin.user.AuthenticationInfoImpl;
 import org.apache.zeppelin.user.Credentials;
 import org.junit.After;
 import org.junit.Before;
@@ -80,7 +81,7 @@ public class NotebookTest extends AbstractInterpreterTest implements ParagraphJo
   private NotebookRepo notebookRepo;
   private AuthorizationService authorizationService;
   private Credentials credentials;
-  private AuthenticationInfo anonymous = AuthenticationInfo.ANONYMOUS;
+  private AuthenticationInfo anonymous = AuthenticationInfoImpl.ANONYMOUS;
   private StatusChangedListener afterStatusChangedListener;
   private QuartzSchedulerService schedulerService;
 
@@ -276,7 +277,7 @@ public class NotebookTest extends AbstractInterpreterTest implements ParagraphJo
   public void testSelectingReplImplementation() throws IOException {
     Note note = notebook.createNote("note1", anonymous);
     // run with default repl
-    Paragraph p1 = note.addNewParagraph(AuthenticationInfo.ANONYMOUS);
+    Paragraph p1 = note.addNewParagraph(AuthenticationInfoImpl.ANONYMOUS);
     Map<String, Object> config = p1.getConfig();
     config.put("enabled", true);
     p1.setConfig(config);
@@ -287,7 +288,7 @@ public class NotebookTest extends AbstractInterpreterTest implements ParagraphJo
     assertEquals("repl1: hello world", p1.getReturn().message().get(0).getData());
 
     // run with specific repl
-    Paragraph p2 = note.addNewParagraph(AuthenticationInfo.ANONYMOUS);
+    Paragraph p2 = note.addNewParagraph(AuthenticationInfoImpl.ANONYMOUS);
     p2.setConfig(config);
     p2.setText("%mock2 hello world");
     p2.setAuthenticationInfo(anonymous);
@@ -299,10 +300,10 @@ public class NotebookTest extends AbstractInterpreterTest implements ParagraphJo
 
   @Test
   public void testReloadAndSetInterpreter() throws IOException {
-    Note note = notebook.createNote("note1", AuthenticationInfo.ANONYMOUS);
-    Paragraph p1 = note.insertNewParagraph(0, AuthenticationInfo.ANONYMOUS);
+    Note note = notebook.createNote("note1", AuthenticationInfoImpl.ANONYMOUS);
+    Paragraph p1 = note.insertNewParagraph(0, AuthenticationInfoImpl.ANONYMOUS);
     p1.setText("%md hello world");
-    notebook.saveNote(note, AuthenticationInfo.ANONYMOUS);
+    notebook.saveNote(note, AuthenticationInfoImpl.ANONYMOUS);
 
     // when load
     notebook.reloadAllNotes(anonymous);
@@ -320,11 +321,11 @@ public class NotebookTest extends AbstractInterpreterTest implements ParagraphJo
 
   @Test
   public void testReloadAllNotes() throws IOException {
-    Note note1 = notebook.createNote("note1", AuthenticationInfo.ANONYMOUS);
-    Paragraph p1 = note1.insertNewParagraph(0, AuthenticationInfo.ANONYMOUS);
+    Note note1 = notebook.createNote("note1", AuthenticationInfoImpl.ANONYMOUS);
+    Paragraph p1 = note1.insertNewParagraph(0, AuthenticationInfoImpl.ANONYMOUS);
     p1.setText("%md hello world");
 
-    Note note2 = notebook.cloneNote(note1.getId(), "copied note", AuthenticationInfo.ANONYMOUS);
+    Note note2 = notebook.cloneNote(note1.getId(), "copied note", AuthenticationInfoImpl.ANONYMOUS);
 
     // load copied notebook on memory when reloadAllNotes() is called
     Note copiedNote = notebookRepo.get(note2.getId(), note2.getPath(), anonymous);
@@ -356,7 +357,7 @@ public class NotebookTest extends AbstractInterpreterTest implements ParagraphJo
     try {
       assertEquals(0, notebook.getAllNotes().size());
       note = notebook.createNote("note1", anonymous);
-      Paragraph p1 = note.addNewParagraph(AuthenticationInfo.ANONYMOUS);
+      Paragraph p1 = note.addNewParagraph(AuthenticationInfoImpl.ANONYMOUS);
       Map<String, Object> config = p1.getConfig();
       config.put("enabled", true);
       p1.setConfig(config);
@@ -374,7 +375,7 @@ public class NotebookTest extends AbstractInterpreterTest implements ParagraphJo
     Note note = notebook.createNote("note1", anonymous);
 
     // run with default repl
-    Paragraph p1 = note.addNewParagraph(AuthenticationInfo.ANONYMOUS);
+    Paragraph p1 = note.addNewParagraph(AuthenticationInfoImpl.ANONYMOUS);
     Map<String, Object> config = p1.getConfig();
     config.put("enabled", true);
     p1.setConfig(config);
@@ -391,7 +392,7 @@ public class NotebookTest extends AbstractInterpreterTest implements ParagraphJo
 
   @Test
   public void testCreateNoteWithSubject() throws IOException, SchedulerException, RepositoryException {
-    AuthenticationInfo subject = new AuthenticationInfo("user1");
+    AuthenticationInfo subject = new AuthenticationInfoImpl("user1");
     Note note = notebook.createNote("note1", subject);
 
     assertNotNull(authorizationService.getOwners(note.getId()));
@@ -405,7 +406,7 @@ public class NotebookTest extends AbstractInterpreterTest implements ParagraphJo
   @Test
   public void testClearParagraphOutput() throws IOException, SchedulerException {
     Note note = notebook.createNote("note1", anonymous);
-    Paragraph p1 = note.addNewParagraph(AuthenticationInfo.ANONYMOUS);
+    Paragraph p1 = note.addNewParagraph(AuthenticationInfoImpl.ANONYMOUS);
     Map<String, Object> config = p1.getConfig();
     config.put("enabled", true);
     p1.setConfig(config);
@@ -425,7 +426,7 @@ public class NotebookTest extends AbstractInterpreterTest implements ParagraphJo
   @Test
   public void testRunBlankParagraph() throws IOException, SchedulerException, InterruptedException {
     Note note = notebook.createNote("note1", anonymous);
-    Paragraph p1 = note.addNewParagraph(AuthenticationInfo.ANONYMOUS);
+    Paragraph p1 = note.addNewParagraph(AuthenticationInfoImpl.ANONYMOUS);
     p1.setText("");
     p1.setAuthenticationInfo(anonymous);
     note.run(p1.getId());
@@ -443,7 +444,7 @@ public class NotebookTest extends AbstractInterpreterTest implements ParagraphJo
       // create a note and a paragraph
       Note note = notebook.createNote("note1", anonymous);
       int mock1ProcessNum = interpreterSettingManager.getByName("mock1").getAllInterpreterGroups().size();
-      Paragraph p = note.addNewParagraph(AuthenticationInfo.ANONYMOUS);
+      Paragraph p = note.addNewParagraph(AuthenticationInfoImpl.ANONYMOUS);
       Map<String, Object> config = new HashMap<>();
       p.setConfig(config);
       p.setText("%mock1 sleep 100000");
@@ -490,7 +491,7 @@ public class NotebookTest extends AbstractInterpreterTest implements ParagraphJo
   @Test
   public void testInvalidInterpreter() throws IOException, InterruptedException {
     Note note = notebook.createNote("note1", anonymous);
-    Paragraph p1 = note.addNewParagraph(AuthenticationInfo.ANONYMOUS);
+    Paragraph p1 = note.addNewParagraph(AuthenticationInfoImpl.ANONYMOUS);
     p1.setText("%invalid abc");
     p1.setAuthenticationInfo(anonymous);
     note.run(p1.getId());
@@ -508,21 +509,21 @@ public class NotebookTest extends AbstractInterpreterTest implements ParagraphJo
     Note note = notebook.createNote("note1", anonymous);
 
     // p1
-    Paragraph p1 = note.addNewParagraph(AuthenticationInfo.ANONYMOUS);
+    Paragraph p1 = note.addNewParagraph(AuthenticationInfoImpl.ANONYMOUS);
     Map<String, Object> config1 = p1.getConfig();
     config1.put("enabled", true);
     p1.setConfig(config1);
     p1.setText("%mock1 p1");
 
     // p2
-    Paragraph p2 = note.addNewParagraph(AuthenticationInfo.ANONYMOUS);
+    Paragraph p2 = note.addNewParagraph(AuthenticationInfoImpl.ANONYMOUS);
     Map<String, Object> config2 = p2.getConfig();
     config2.put("enabled", false);
     p2.setConfig(config2);
     p2.setText("%mock1 p2");
 
     // p3
-    Paragraph p3 = note.addNewParagraph(AuthenticationInfo.ANONYMOUS);
+    Paragraph p3 = note.addNewParagraph(AuthenticationInfoImpl.ANONYMOUS);
     p3.setText("%mock1 p3");
 
     // when
@@ -538,7 +539,7 @@ public class NotebookTest extends AbstractInterpreterTest implements ParagraphJo
   public void testSchedule() throws InterruptedException, IOException {
     // create a note and a paragraph
     Note note = notebook.createNote("note1", anonymous);
-    Paragraph p = note.addNewParagraph(AuthenticationInfo.ANONYMOUS);
+    Paragraph p = note.addNewParagraph(AuthenticationInfoImpl.ANONYMOUS);
     Map<String, Object> config = new HashMap<>();
     p.setConfig(config);
     p.setText("p1");
@@ -571,7 +572,7 @@ public class NotebookTest extends AbstractInterpreterTest implements ParagraphJo
     Note note = notebook.createNote("note1", anonymous);
     // append running and pending paragraphs to the note
     for (Status status : new Status[]{Status.RUNNING, Status.PENDING}) {
-      Paragraph p = note.addNewParagraph(AuthenticationInfo.ANONYMOUS);
+      Paragraph p = note.addNewParagraph(AuthenticationInfoImpl.ANONYMOUS);
       Map<String, Object> config = new HashMap<>();
       p.setConfig(config);
       p.setText("p");
@@ -624,7 +625,7 @@ public class NotebookTest extends AbstractInterpreterTest implements ParagraphJo
   }
 
   private void executeNewParagraphByCron(Note note, String cron) {
-    Paragraph paragraph = note.addNewParagraph(AuthenticationInfo.ANONYMOUS);
+    Paragraph paragraph = note.addNewParagraph(AuthenticationInfoImpl.ANONYMOUS);
     paragraph.setText("p");
     Map<String, Object> config = note.getConfig();
     config.put("enabled", true);
@@ -710,12 +711,12 @@ public class NotebookTest extends AbstractInterpreterTest implements ParagraphJo
     // create a note and a paragraph
     Note note = notebook.createNote("note1", anonymous);
 
-    Paragraph p = note.addNewParagraph(AuthenticationInfo.ANONYMOUS);
+    Paragraph p = note.addNewParagraph(AuthenticationInfoImpl.ANONYMOUS);
     Map<String, Object> config = new HashMap<>();
     p.setConfig(config);
     p.setText("%mock1 sleep 1000");
 
-    Paragraph p2 = note.addNewParagraph(AuthenticationInfo.ANONYMOUS);
+    Paragraph p2 = note.addNewParagraph(AuthenticationInfoImpl.ANONYMOUS);
     p2.setConfig(config);
     p2.setText("%mock2 sleep 500");
 
@@ -768,7 +769,7 @@ public class NotebookTest extends AbstractInterpreterTest implements ParagraphJo
         (RemoteInterpreter) interpreterFactory.getInterpreter("mock1", new ExecutionContext(anonymous.getUser(), cronNote.getId(), "test"));
 
     // create a paragraph of the cron scheduled note.
-    Paragraph cronNoteParagraph = cronNote.addNewParagraph(AuthenticationInfo.ANONYMOUS);
+    Paragraph cronNoteParagraph = cronNote.addNewParagraph(AuthenticationInfoImpl.ANONYMOUS);
     config = new HashMap<>();
     config.put("enabled", true);
     cronNoteParagraph.setConfig(config);
@@ -781,7 +782,7 @@ public class NotebookTest extends AbstractInterpreterTest implements ParagraphJo
         (RemoteInterpreter) interpreterFactory.getInterpreter("mock2", new ExecutionContext(anonymous.getUser(), anotherNote.getId(), "test"));
 
     // create a paragraph of another note
-    Paragraph anotherNoteParagraph = anotherNote.addNewParagraph(AuthenticationInfo.ANONYMOUS);
+    Paragraph anotherNoteParagraph = anotherNote.addNewParagraph(AuthenticationInfoImpl.ANONYMOUS);
     config = new HashMap<>();
     config.put("enabled", true);
     anotherNoteParagraph.setConfig(config);
@@ -835,7 +836,7 @@ public class NotebookTest extends AbstractInterpreterTest implements ParagraphJo
   public void testExportAndImportNote() throws Exception {
     Note note = notebook.createNote("note1", anonymous);
 
-    final Paragraph p = note.addNewParagraph(AuthenticationInfo.ANONYMOUS);
+    final Paragraph p = note.addNewParagraph(AuthenticationInfoImpl.ANONYMOUS);
     String simpleText = "hello world";
     p.setText(simpleText);
 
@@ -853,7 +854,7 @@ public class NotebookTest extends AbstractInterpreterTest implements ParagraphJo
     assertEquals(p.getReturn().message().get(0).getData(), p2.getReturn().message().get(0).getData());
 
     // Verify import note with subject
-    AuthenticationInfo subject = new AuthenticationInfo("user1");
+    AuthenticationInfo subject = new AuthenticationInfoImpl("user1");
     Note importedNote2 = notebook.importNote(exportedNoteJson, "Title2", subject);
     assertNotNull(authorizationService.getOwners(importedNote2.getId()));
     assertEquals(1, authorizationService.getOwners(importedNote2.getId()).size());
@@ -866,7 +867,7 @@ public class NotebookTest extends AbstractInterpreterTest implements ParagraphJo
   public void testCloneNote() throws Exception {
     Note note = notebook.createNote("note1", anonymous);
 
-    final Paragraph p = note.addNewParagraph(AuthenticationInfo.ANONYMOUS);
+    final Paragraph p = note.addNewParagraph(AuthenticationInfoImpl.ANONYMOUS);
     p.setText("hello world");
     note.runAll(anonymous, true, false, new HashMap<>());
 
@@ -881,7 +882,7 @@ public class NotebookTest extends AbstractInterpreterTest implements ParagraphJo
     assertEquals(cp.getReturn().message().get(0).getData(), p.getReturn().message().get(0).getData());
 
     // Verify clone note with subject
-    AuthenticationInfo subject = new AuthenticationInfo("user1");
+    AuthenticationInfo subject = new AuthenticationInfoImpl("user1");
     Note cloneNote2 = notebook.cloneNote(note.getId(), "clone note2", subject);
     assertNotNull(authorizationService.getOwners(cloneNote2.getId()));
     assertEquals(1, authorizationService.getOwners(cloneNote2.getId()).size());
@@ -894,9 +895,9 @@ public class NotebookTest extends AbstractInterpreterTest implements ParagraphJo
   public void testResourceRemovealOnParagraphNoteRemove() throws Exception {
     Note note = notebook.createNote("note1", anonymous);
 
-    Paragraph p1 = note.addNewParagraph(AuthenticationInfo.ANONYMOUS);
+    Paragraph p1 = note.addNewParagraph(AuthenticationInfoImpl.ANONYMOUS);
     p1.setText("%mock1 hello");
-    Paragraph p2 = note.addNewParagraph(AuthenticationInfo.ANONYMOUS);
+    Paragraph p2 = note.addNewParagraph(AuthenticationInfoImpl.ANONYMOUS);
     p2.setText("%mock2 world");
     for (InterpreterGroup intpGroup : interpreterSettingManager.getAllInterpreterGroup()) {
       intpGroup.setResourcePool(new LocalResourcePool(intpGroup.getId()));
@@ -923,7 +924,7 @@ public class NotebookTest extends AbstractInterpreterTest implements ParagraphJo
     AngularObjectRegistry registry = note.getBindedInterpreterSettings(new ArrayList<>()).get(0).getOrCreateInterpreterGroup(anonymous.getUser(), note.getId())
         .getAngularObjectRegistry();
 
-    Paragraph p1 = note.addNewParagraph(AuthenticationInfo.ANONYMOUS);
+    Paragraph p1 = note.addNewParagraph(AuthenticationInfoImpl.ANONYMOUS);
 
     // add paragraph scope object
     registry.add("o1", "object1", note.getId(), p1.getId());
@@ -954,7 +955,7 @@ public class NotebookTest extends AbstractInterpreterTest implements ParagraphJo
     AngularObjectRegistry registry = note.getBindedInterpreterSettings(new ArrayList<>()).get(0).getOrCreateInterpreterGroup(anonymous.getUser(), note.getId())
         .getAngularObjectRegistry();
 
-    Paragraph p1 = note.addNewParagraph(AuthenticationInfo.ANONYMOUS);
+    Paragraph p1 = note.addNewParagraph(AuthenticationInfoImpl.ANONYMOUS);
 
     // add paragraph scope object
     registry.add("o1", "object1", note.getId(), p1.getId());
@@ -1061,7 +1062,7 @@ public class NotebookTest extends AbstractInterpreterTest implements ParagraphJo
     authorizationService.setRoles(user1, roles);
     authorizationService.setRoles(user2, roles);
 
-    Note note = notebook.createNote("note1", new AuthenticationInfo(user1));
+    Note note = notebook.createNote("note1", new AuthenticationInfoImpl(user1));
 
     // check that user1 is owner, reader, runner and writer
     assertTrue(authorizationService.isOwner(note.getId(),
@@ -1168,7 +1169,7 @@ public class NotebookTest extends AbstractInterpreterTest implements ParagraphJo
     p3.setText("%mock1 sleep 1000");
 
 
-    note.runAll(AuthenticationInfo.ANONYMOUS, false, false, new HashMap<>());
+    note.runAll(AuthenticationInfoImpl.ANONYMOUS, false, false, new HashMap<>());
 
     // wait until first paragraph finishes and second paragraph starts
     while (p1.getStatus() != Status.FINISHED || p2.getStatus() != Status.RUNNING) Thread.yield();
@@ -1191,7 +1192,7 @@ public class NotebookTest extends AbstractInterpreterTest implements ParagraphJo
   public void testPerSessionInterpreterCloseOnNoteRemoval() throws IOException, InterpreterException {
     // create a notes
     Note note1 = notebook.createNote("note1", anonymous);
-    Paragraph p1 = note1.addNewParagraph(AuthenticationInfo.ANONYMOUS);
+    Paragraph p1 = note1.addNewParagraph(AuthenticationInfoImpl.ANONYMOUS);
     p1.setText("%mock1 getId");
     p1.setAuthenticationInfo(anonymous);
 
@@ -1208,7 +1209,7 @@ public class NotebookTest extends AbstractInterpreterTest implements ParagraphJo
     // remove note and recreate
     notebook.removeNote(note1, anonymous);
     note1 = notebook.createNote("note1", anonymous);
-    p1 = note1.addNewParagraph(AuthenticationInfo.ANONYMOUS);
+    p1 = note1.addNewParagraph(AuthenticationInfoImpl.ANONYMOUS);
     p1.setText("%mock1 getId");
     p1.setAuthenticationInfo(anonymous);
 
@@ -1222,10 +1223,10 @@ public class NotebookTest extends AbstractInterpreterTest implements ParagraphJo
   public void testPerSessionInterpreter() throws IOException, InterpreterException {
     // create two notes
     Note note1 = notebook.createNote("note1", anonymous);
-    Paragraph p1 = note1.addNewParagraph(AuthenticationInfo.ANONYMOUS);
+    Paragraph p1 = note1.addNewParagraph(AuthenticationInfoImpl.ANONYMOUS);
 
     Note note2 = notebook.createNote("note2", anonymous);
-    Paragraph p2 = note2.addNewParagraph(AuthenticationInfo.ANONYMOUS);
+    Paragraph p2 = note2.addNewParagraph(AuthenticationInfoImpl.ANONYMOUS);
 
     p1.setText("%mock1 getId");
     p1.setAuthenticationInfo(anonymous);
@@ -1264,10 +1265,10 @@ public class NotebookTest extends AbstractInterpreterTest implements ParagraphJo
   public void testPerNoteSessionInterpreter() throws IOException, InterpreterException {
     // create two notes
     Note note1 = notebook.createNote("note1", anonymous);
-    Paragraph p1 = note1.addNewParagraph(AuthenticationInfo.ANONYMOUS);
+    Paragraph p1 = note1.addNewParagraph(AuthenticationInfoImpl.ANONYMOUS);
 
     Note note2 = notebook.createNote("note2", anonymous);
-    Paragraph p2 = note2.addNewParagraph(AuthenticationInfo.ANONYMOUS);
+    Paragraph p2 = note2.addNewParagraph(AuthenticationInfoImpl.ANONYMOUS);
 
     p1.setText("%mock1 getId");
     p1.setAuthenticationInfo(anonymous);
@@ -1362,10 +1363,10 @@ public class NotebookTest extends AbstractInterpreterTest implements ParagraphJo
     Note note1 = notebook.createNote("note1", anonymous);
     assertEquals(1, onNoteCreate.get());
 
-    Paragraph p1 = note1.addNewParagraph(AuthenticationInfo.ANONYMOUS);
+    Paragraph p1 = note1.addNewParagraph(AuthenticationInfoImpl.ANONYMOUS);
     assertEquals(1, onParagraphCreate.get());
 
-    note1.addCloneParagraph(p1, AuthenticationInfo.ANONYMOUS);
+    note1.addCloneParagraph(p1, AuthenticationInfoImpl.ANONYMOUS);
     assertEquals(2, onParagraphCreate.get());
 
     note1.removeParagraph(anonymous.getUser(), p1.getId());
@@ -1417,7 +1418,7 @@ public class NotebookTest extends AbstractInterpreterTest implements ParagraphJo
     assertEquals(0, notes2.size());
 
     //creates note and sets user1 owner
-    Note note1 = notebook.createNote("note1", new AuthenticationInfo("user1"));
+    Note note1 = notebook.createNote("note1", new AuthenticationInfoImpl("user1"));
 
     // note is public since readers and writers empty
     notes1 = notebook.getAllNotes(note -> authorizationService.isReader(note.getId(), new HashSet<>(Arrays.asList("user1"))));
@@ -1457,7 +1458,7 @@ public class NotebookTest extends AbstractInterpreterTest implements ParagraphJo
     assertEquals(0, notes2.size());
 
     // user1 creates note
-    Note notePublic = notebook.createNote("note1", new AuthenticationInfo("user1"));
+    Note notePublic = notebook.createNote("note1", new AuthenticationInfoImpl("user1"));
 
     // both users have note
     notes1 = notebook.getAllNotes(note -> authorizationService.isReader(note.getId(), new HashSet<>(Arrays.asList("user1"))));
@@ -1487,7 +1488,7 @@ public class NotebookTest extends AbstractInterpreterTest implements ParagraphJo
     assertEquals(1, notes2.size());
 
     // create private note
-    Note notePrivate = notebook.createNote("note2", new AuthenticationInfo("user1"));
+    Note notePrivate = notebook.createNote("note2", new AuthenticationInfoImpl("user1"));
 
     // only user1 have notePrivate right after creation
     notes1 = notebook.getAllNotes(note -> authorizationService.isReader(note.getId(), new HashSet<>(Arrays.asList("user1"))));
@@ -1506,21 +1507,21 @@ public class NotebookTest extends AbstractInterpreterTest implements ParagraphJo
 
   @Test
   public void testCloneImportCheck() throws IOException {
-    Note sourceNote = notebook.createNote("note1", new AuthenticationInfo("user"));
+    Note sourceNote = notebook.createNote("note1", new AuthenticationInfoImpl("user"));
     sourceNote.setName("TestNote");
 
     assertEquals("TestNote",sourceNote.getName());
 
-    Paragraph sourceParagraph = sourceNote.addNewParagraph(AuthenticationInfo.ANONYMOUS);
+    Paragraph sourceParagraph = sourceNote.addNewParagraph(AuthenticationInfoImpl.ANONYMOUS);
     assertEquals("anonymous", sourceParagraph.getUser());
 
-    Note destNote = notebook.createNote("note2", new AuthenticationInfo("user"));
+    Note destNote = notebook.createNote("note2", new AuthenticationInfoImpl("user"));
     destNote.setName("ClonedNote");
     assertEquals("ClonedNote",destNote.getName());
 
     List<Paragraph> paragraphs = sourceNote.getParagraphs();
     for (Paragraph p : paragraphs) {
-    	  destNote.addCloneParagraph(p, AuthenticationInfo.ANONYMOUS);
+    	  destNote.addCloneParagraph(p, AuthenticationInfoImpl.ANONYMOUS);
       assertEquals("anonymous", p.getUser());
     }
   }

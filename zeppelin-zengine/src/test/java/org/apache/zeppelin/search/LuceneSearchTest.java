@@ -24,7 +24,6 @@ import static org.mockito.Mockito.when;
 
 import java.io.File;
 import java.io.IOException;
-import java.nio.file.Files;
 import java.util.List;
 import java.util.Map;
 
@@ -39,7 +38,7 @@ import org.apache.zeppelin.notebook.NoteManager;
 import org.apache.zeppelin.notebook.Notebook;
 import org.apache.zeppelin.notebook.Paragraph;
 import org.apache.zeppelin.notebook.repo.NotebookRepo;
-import org.apache.zeppelin.user.AuthenticationInfo;
+import org.apache.zeppelin.user.AuthenticationInfoImpl;
 import org.apache.zeppelin.user.Credentials;
 import org.junit.After;
 import org.junit.Before;
@@ -223,7 +222,7 @@ public class LuceneSearchTest {
     // when
     Paragraph p1 = note1.getLastParagraph();
     p1.setText("no no no");
-    notebook.saveNote(note1, AuthenticationInfo.ANONYMOUS);
+    notebook.saveNote(note1, AuthenticationInfoImpl.ANONYMOUS);
     p1.getNote().fireParagraphUpdateEvent(p1);
     drainSearchEvents();
 
@@ -250,7 +249,7 @@ public class LuceneSearchTest {
 
     // when
     note1.setName("NotebookN");
-    notebook.updateNote(note1, AuthenticationInfo.ANONYMOUS);
+    notebook.updateNote(note1, AuthenticationInfoImpl.ANONYMOUS);
     drainSearchEvents();
     Thread.sleep(1000);
     // then
@@ -292,19 +291,19 @@ public class LuceneSearchTest {
   }
 
   private Paragraph addParagraphWithText(Note note, String text) {
-    Paragraph p = note.addNewParagraph(AuthenticationInfo.ANONYMOUS);
+    Paragraph p = note.addNewParagraph(AuthenticationInfoImpl.ANONYMOUS);
     p.setText(text);
     return p;
   }
 
   private Paragraph addParagraphWithTextAndTitle(Note note, String text, String title) {
-    Paragraph p = note.addNewParagraph(AuthenticationInfo.ANONYMOUS);
+    Paragraph p = note.addNewParagraph(AuthenticationInfoImpl.ANONYMOUS);
     p.setText(text);
     p.setTitle(title);
     return p;
   }
 
   private Note newNote(String name) throws IOException {
-    return notebook.createNote(name, AuthenticationInfo.ANONYMOUS);
+    return notebook.createNote(name, AuthenticationInfoImpl.ANONYMOUS);
   }
 }

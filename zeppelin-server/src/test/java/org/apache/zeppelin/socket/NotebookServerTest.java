@@ -66,6 +66,7 @@ import org.apache.zeppelin.interpreter.xref.Status;
 import org.apache.zeppelin.service.NotebookService;
 import org.apache.zeppelin.service.ServiceContext;
 import org.apache.zeppelin.user.AuthenticationInfo;
+import org.apache.zeppelin.user.AuthenticationInfoImpl;
 import org.apache.zeppelin.utils.TestUtils;
 import org.junit.*;
 
@@ -99,7 +100,7 @@ public class NotebookServerTest extends AbstractTestRestApi {
   @Before
   public void setUp() {
     mockRequest = mock(HttpServletRequest.class);
-    anonymous = AuthenticationInfo.ANONYMOUS;
+    anonymous = AuthenticationInfoImpl.ANONYMOUS;
   }
 
   @Test
@@ -194,7 +195,7 @@ public class NotebookServerTest extends AbstractTestRestApi {
     }
 
     // start interpreter process
-    Paragraph p1 = note1.addNewParagraph(AuthenticationInfo.ANONYMOUS);
+    Paragraph p1 = note1.addNewParagraph(AuthenticationInfoImpl.ANONYMOUS);
     p1.setText("%md start remote interpreter process");
     p1.setAuthenticationInfo(anonymous);
     note1.run(p1.getId());
@@ -260,7 +261,7 @@ public class NotebookServerTest extends AbstractTestRestApi {
     }
 
     // start interpreter process
-    Paragraph p1 = note1.addNewParagraph(AuthenticationInfo.ANONYMOUS);
+    Paragraph p1 = note1.addNewParagraph(AuthenticationInfoImpl.ANONYMOUS);
     p1.setText("%angular <h2>Bind here : {{COMMAND_TYPE}}</h2>");
     p1.setAuthenticationInfo(anonymous);
     note1.run(p1.getId());
@@ -357,7 +358,7 @@ public class NotebookServerTest extends AbstractTestRestApi {
     }
 
     // start interpreter process
-    Paragraph p1 = note1.addNewParagraph(AuthenticationInfo.ANONYMOUS);
+    Paragraph p1 = note1.addNewParagraph(AuthenticationInfoImpl.ANONYMOUS);
     p1.setText("%angular <h2>Bind here : {{COMMAND_TYPE}}</h2>");
     p1.setAuthenticationInfo(anonymous);
     note1.run(p1.getId());
@@ -405,7 +406,7 @@ public class NotebookServerTest extends AbstractTestRestApi {
         "\"name\": \"Test Zeppelin notebook import\",\"config\": " +
         "{}}}}";
     Message messageReceived = notebookServer.deserializeMessage(msg);
-    ServiceContext context = new ServiceContext(AuthenticationInfo.ANONYMOUS, new HashSet<>());
+    ServiceContext context = new ServiceContext(AuthenticationInfoImpl.ANONYMOUS, new HashSet<>());
     Note note = notebookServer.importNote(null, context, messageReceived);;
 
     assertNotEquals(null, notebook.getNote(note.getId()));
@@ -569,7 +570,7 @@ public class NotebookServerTest extends AbstractTestRestApi {
         "{}}}}";
     Message messageReceived = notebookServer.deserializeMessage(msg);
     Note note = null;
-    ServiceContext context = new ServiceContext(AuthenticationInfo.ANONYMOUS, new HashSet<>());
+    ServiceContext context = new ServiceContext(AuthenticationInfoImpl.ANONYMOUS, new HashSet<>());
     try {
       note = notebookServer.importNote(null, context, messageReceived);
     } catch (NullPointerException | IOException e) {
@@ -655,19 +656,19 @@ public class NotebookServerTest extends AbstractTestRestApi {
   public void testNoteRevision() throws IOException {
     Note note = notebook.createNote("note1", anonymous);
     assertEquals(0, note.getParagraphCount());
-    NotebookRepoWithVersionControl.Revision firstRevision = notebook.checkpointNote(note.getId(), note.getPath(), "first commit", AuthenticationInfo.ANONYMOUS);
-    List<NotebookRepoWithVersionControl.Revision> revisionList = notebook.listRevisionHistory(note.getId(), note.getPath(), AuthenticationInfo.ANONYMOUS);
+    NotebookRepoWithVersionControl.Revision firstRevision = notebook.checkpointNote(note.getId(), note.getPath(), "first commit", AuthenticationInfoImpl.ANONYMOUS);
+    List<NotebookRepoWithVersionControl.Revision> revisionList = notebook.listRevisionHistory(note.getId(), note.getPath(), AuthenticationInfoImpl.ANONYMOUS);
     assertEquals(1, revisionList.size());
     assertEquals(firstRevision.id, revisionList.get(0).id);
     assertEquals("first commit", revisionList.get(0).message);
 
     // add one new paragraph and commit it
-    note.addNewParagraph(AuthenticationInfo.ANONYMOUS);
-    notebook.saveNote(note, AuthenticationInfo.ANONYMOUS);
+    note.addNewParagraph(AuthenticationInfoImpl.ANONYMOUS);
+    notebook.saveNote(note, AuthenticationInfoImpl.ANONYMOUS);
     assertEquals(1, note.getParagraphCount());
-    NotebookRepoWithVersionControl.Revision secondRevision = notebook.checkpointNote(note.getId(), note.getPath(), "second commit", AuthenticationInfo.ANONYMOUS);
+    NotebookRepoWithVersionControl.Revision secondRevision = notebook.checkpointNote(note.getId(), note.getPath(), "second commit", AuthenticationInfoImpl.ANONYMOUS);
 
-    revisionList = notebook.listRevisionHistory(note.getId(), note.getPath(), AuthenticationInfo.ANONYMOUS);
+    revisionList = notebook.listRevisionHistory(note.getId(), note.getPath(), AuthenticationInfoImpl.ANONYMOUS);
     assertEquals(2, revisionList.size());
     assertEquals(secondRevision.id, revisionList.get(0).id);
     assertEquals("second commit", revisionList.get(0).message);
@@ -675,7 +676,7 @@ public class NotebookServerTest extends AbstractTestRestApi {
     assertEquals("first commit", revisionList.get(1).message);
 
     // checkout the first commit
-    note = notebook.getNoteByRevision(note.getId(), note.getPath(), firstRevision.id, AuthenticationInfo.ANONYMOUS);
+    note = notebook.getNoteByRevision(note.getId(), note.getPath(), firstRevision.id, AuthenticationInfoImpl.ANONYMOUS);
     assertEquals(0, note.getParagraphCount());
   }
 

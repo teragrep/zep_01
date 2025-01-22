@@ -47,7 +47,7 @@ import org.apache.zeppelin.interpreter.thrift.RunParagraphsEvent;
 import org.apache.zeppelin.interpreter.thrift.WebUrlInfo;
 import org.apache.zeppelin.notebook.Note;
 import org.apache.zeppelin.resource.*;
-import org.apache.zeppelin.user.AuthenticationInfo;
+import org.apache.zeppelin.user.AuthenticationInfoImpl;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -265,7 +265,7 @@ public class RemoteInterpreterEventServer implements RemoteInterpreterEventServi
         Note note = interpreterSettingManager.getNotebook().getNote(angularObject.getNoteId());
         if (note != null) {
           note.addOrUpdateAngularObject(intpGroupId, angularObject);
-          interpreterSettingManager.getNotebook().saveNote(note, AuthenticationInfo.ANONYMOUS);
+          interpreterSettingManager.getNotebook().saveNote(note, AuthenticationInfoImpl.ANONYMOUS);
         }
       } catch (IOException e) {
         LOGGER.error("Fail to get note: {}", angularObject.getNoteId());
@@ -296,7 +296,7 @@ public class RemoteInterpreterEventServer implements RemoteInterpreterEventServi
         Note note = interpreterSettingManager.getNotebook().getNote(angularObject.getNoteId());
         if (note != null) {
           note.addOrUpdateAngularObject(intpGroupId, angularObject);
-          interpreterSettingManager.getNotebook().saveNote(note, AuthenticationInfo.ANONYMOUS);
+          interpreterSettingManager.getNotebook().saveNote(note, AuthenticationInfoImpl.ANONYMOUS);
         }
       } catch (IOException e) {
         LOGGER.error("Fail to get note: {}", angularObject.getNoteId());
@@ -522,7 +522,7 @@ public class RemoteInterpreterEventServer implements RemoteInterpreterEventServi
     try {
       Note note = interpreterSettingManager.getNotebook().getNote(noteId);
       note.getParagraph(paragraphId).updateConfig(config);
-      interpreterSettingManager.getNotebook().saveNote(note, AuthenticationInfo.ANONYMOUS);
+      interpreterSettingManager.getNotebook().saveNote(note, AuthenticationInfoImpl.ANONYMOUS);
     } catch (Exception e) {
       LOGGER.error("Fail to updateParagraphConfig", e);
     }

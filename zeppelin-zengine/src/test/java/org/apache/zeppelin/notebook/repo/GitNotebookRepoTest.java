@@ -35,12 +35,11 @@ import org.apache.zeppelin.notebook.Note;
 import org.apache.zeppelin.notebook.NoteInfo;
 import org.apache.zeppelin.notebook.Paragraph;
 import org.apache.zeppelin.notebook.repo.NotebookRepoWithVersionControl.Revision;
-import org.apache.zeppelin.user.AuthenticationInfo;
+import org.apache.zeppelin.user.AuthenticationInfoImpl;
 import org.eclipse.jgit.api.Git;
 import org.eclipse.jgit.api.errors.GitAPIException;
 import org.eclipse.jgit.diff.DiffEntry;
 import org.eclipse.jgit.revwalk.RevCommit;
-import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.slf4j.Logger;
@@ -135,7 +134,7 @@ public class GitNotebookRepoTest {
     //modify, save and checkpoint first note
     Note note = notebookRepo.get(TEST_NOTE_ID, TEST_NOTE_PATH, null);
     note.setInterpreterFactory(mock(InterpreterFactory.class));
-    Paragraph p = note.addNewParagraph(AuthenticationInfo.ANONYMOUS);
+    Paragraph p = note.addNewParagraph(AuthenticationInfoImpl.ANONYMOUS);
     Map<String, Object> config = p.getConfig();
     config.put("enabled", true);
     p.setConfig(config);
@@ -151,7 +150,7 @@ public class GitNotebookRepoTest {
     //modify, save and checkpoint second note
     note = notebookRepo.get(TEST_NOTE_ID2, TEST_NOTE_PATH2, null);
     note.setInterpreterFactory(mock(InterpreterFactory.class));
-    p = note.addNewParagraph(AuthenticationInfo.ANONYMOUS);
+    p = note.addNewParagraph(AuthenticationInfoImpl.ANONYMOUS);
     config = p.getConfig();
     config.put("enabled", false);
     p.setConfig(config);
@@ -178,7 +177,7 @@ public class GitNotebookRepoTest {
     // add changes to note
     Note note = notebookRepo.get(TEST_NOTE_ID, TEST_NOTE_PATH, null);
     note.setInterpreterFactory(mock(InterpreterFactory.class));
-    Paragraph p = note.addNewParagraph(AuthenticationInfo.ANONYMOUS);
+    Paragraph p = note.addNewParagraph(AuthenticationInfoImpl.ANONYMOUS);
     Map<String, Object> config = p.getConfig();
     config.put("enabled", true);
     p.setConfig(config);
@@ -201,7 +200,7 @@ public class GitNotebookRepoTest {
     // add changes to note2
     Note note2 = notebookRepo.get(TEST_NOTE_ID2, TEST_NOTE_PATH2, null);
     note2.setInterpreterFactory(mock(InterpreterFactory.class));
-    Paragraph p2 = note2.addNewParagraph(AuthenticationInfo.ANONYMOUS);
+    Paragraph p2 = note2.addNewParagraph(AuthenticationInfoImpl.ANONYMOUS);
     Map<String, Object> config2 = p2.getConfig();
     config2.put("enabled", true);
     p2.setConfig(config);
@@ -245,7 +244,7 @@ public class GitNotebookRepoTest {
     // add paragraph and save
     Note note = notebookRepo.get(TEST_NOTE_ID, TEST_NOTE_PATH, null);
     note.setInterpreterFactory(mock(InterpreterFactory.class));
-    Paragraph p1 = note.addNewParagraph(AuthenticationInfo.ANONYMOUS);
+    Paragraph p1 = note.addNewParagraph(AuthenticationInfoImpl.ANONYMOUS);
     Map<String, Object> config = p1.getConfig();
     config.put("enabled", true);
     p1.setConfig(config);
@@ -268,7 +267,7 @@ public class GitNotebookRepoTest {
     assertThat(note.getParagraphs().size()).isEqualTo(paragraphCount_2);
 
     // add one more paragraph and save
-    Paragraph p2 = note.addNewParagraph(AuthenticationInfo.ANONYMOUS);
+    Paragraph p2 = note.addNewParagraph(AuthenticationInfoImpl.ANONYMOUS);
     config.put("enabled", false);
     p2.setConfig(config);
     p2.setText("get revision when modified note test text");
@@ -306,7 +305,7 @@ public class GitNotebookRepoTest {
     assertThat(note.getParagraphs().size()).isEqualTo(paragraphCount_1);
 
     // add one more paragraph and save
-    Paragraph p1 = note.addNewParagraph(AuthenticationInfo.ANONYMOUS);
+    Paragraph p1 = note.addNewParagraph(AuthenticationInfoImpl.ANONYMOUS);
     Map<String, Object> config = p1.getConfig();
     config.put("enabled", true);
     p1.setConfig(config);
@@ -350,7 +349,7 @@ public class GitNotebookRepoTest {
     assertThat(notebookRepo.revisionHistory(TEST_NOTE_ID, TEST_NOTE_PATH, null).size()).isEqualTo(1);
 
     // add one more paragraph and save
-    Paragraph p1 = note.addNewParagraph(AuthenticationInfo.ANONYMOUS);
+    Paragraph p1 = note.addNewParagraph(AuthenticationInfoImpl.ANONYMOUS);
     Map<String, Object> config = p1.getConfig();
     config.put("enabled", true);
     p1.setConfig(config);

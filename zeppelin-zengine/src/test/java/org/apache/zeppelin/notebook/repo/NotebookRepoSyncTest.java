@@ -45,6 +45,7 @@ import org.apache.zeppelin.notebook.Paragraph;
 import org.apache.zeppelin.search.SearchService;
 import org.apache.zeppelin.storage.ConfigStorage;
 import org.apache.zeppelin.user.AuthenticationInfo;
+import org.apache.zeppelin.user.AuthenticationInfoImpl;
 import org.apache.zeppelin.user.Credentials;
 import org.junit.After;
 import org.junit.Before;
@@ -105,7 +106,7 @@ public class NotebookRepoSyncTest {
     authorizationService = new AuthorizationService(noteManager, conf);
     credentials = new Credentials(conf);
     notebook = new Notebook(conf, authorizationService, notebookRepoSync, noteManager, factory, interpreterSettingManager, search, credentials, null);
-    anonymous = new AuthenticationInfo("anonymous");
+    anonymous = new AuthenticationInfoImpl("anonymous");
   }
 
   @After
@@ -166,7 +167,7 @@ public class NotebookRepoSyncTest {
     /* create note */
     Note note = notebook.createNote("/test", "test", anonymous);
     note.setInterpreterFactory(mock(InterpreterFactory.class));
-    Paragraph p1 = note.addNewParagraph(AuthenticationInfo.ANONYMOUS);
+    Paragraph p1 = note.addNewParagraph(AuthenticationInfoImpl.ANONYMOUS);
     Map config = p1.getConfig();
     config.put("enabled", true);
     p1.setConfig(config);
@@ -313,7 +314,7 @@ public class NotebookRepoSyncTest {
     assertThat(vCount).isEqualTo(1);
 
     note.setInterpreterFactory(mock(InterpreterFactory.class));
-    Paragraph p = note.addNewParagraph(AuthenticationInfo.ANONYMOUS);
+    Paragraph p = note.addNewParagraph(AuthenticationInfoImpl.ANONYMOUS);
     Map<String, Object> config = p.getConfig();
     config.put("enabled", true);
     p.setConfig(config);
@@ -328,7 +329,7 @@ public class NotebookRepoSyncTest {
   @Test
   public void testSyncWithAcl() throws IOException {
     /* scenario 1 - note exists with acl on main storage */
-    AuthenticationInfo user1 = new AuthenticationInfo("user1");
+    AuthenticationInfo user1 = new AuthenticationInfoImpl("user1");
     Note note = notebook.createNote("/test", "test", user1);
     assertEquals(0, note.getParagraphs().size());
 
@@ -347,7 +348,7 @@ public class NotebookRepoSyncTest {
 
     /* update note and save on secondary storage */
     note.setInterpreterFactory(mock(InterpreterFactory.class));
-    Paragraph p1 = note.addNewParagraph(AuthenticationInfo.ANONYMOUS);
+    Paragraph p1 = note.addNewParagraph(AuthenticationInfoImpl.ANONYMOUS);
     p1.setText("hello world");
     assertEquals(1, note.getParagraphs().size());
     notebookRepoSync.save(1, note, null);

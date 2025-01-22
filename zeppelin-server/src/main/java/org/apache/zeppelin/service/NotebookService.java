@@ -62,6 +62,7 @@ import org.apache.zeppelin.rest.exception.NoteNotFoundException;
 import org.apache.zeppelin.rest.exception.ParagraphNotFoundException;
 import org.apache.zeppelin.interpreter.xref.Status;
 import org.apache.zeppelin.user.AuthenticationInfo;
+import org.apache.zeppelin.user.AuthenticationInfoImpl;
 import org.bitbucket.cowwoc.diffmatchpatch.DiffMatchPatch;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -1182,7 +1183,7 @@ public class NotebookService {
     p.setText(text);
     p.setTitle(title);
     AuthenticationInfo subject =
-        new AuthenticationInfo(fromMessage.principal, fromMessage.roles, fromMessage.ticket);
+        new AuthenticationInfoImpl(fromMessage.principal, fromMessage.roles, fromMessage.ticket);
     p.setAuthenticationInfo(subject);
     p.settings.setParams(params);
     p.setConfig(config);

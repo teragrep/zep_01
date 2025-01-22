@@ -28,6 +28,7 @@ import org.apache.zeppelin.scheduler.FIFOScheduler;
 import org.apache.zeppelin.scheduler.ParallelScheduler;
 import org.apache.zeppelin.interpreter.xref.Scheduler;
 import org.apache.zeppelin.user.AuthenticationInfo;
+import org.apache.zeppelin.user.AuthenticationInfoImpl;
 import org.apache.zeppelin.user.UserCredentials;
 import org.apache.zeppelin.user.UsernamePassword;
 import org.junit.jupiter.api.BeforeEach;
@@ -113,7 +114,7 @@ public class JDBCInterpreterTest extends BasicJDBCTestCaseAdapter {
     insertStatement.setString(1, null);
     insertStatement.execute();
     context = InterpreterContextImpl.builder()
-        .setAuthenticationInfo(new AuthenticationInfo("testUser"))
+        .setAuthenticationInfo(new AuthenticationInfoImpl("testUser"))
         .setParagraphId("paragraphId")
         .setInterpreterOut(new InterpreterOutputImpl())
         .build();
@@ -163,7 +164,7 @@ public class JDBCInterpreterTest extends BasicJDBCTestCaseAdapter {
     Map<String, String> localProperties = new HashMap<>();
     localProperties.put("db", "fake");
     InterpreterContextImpl context = InterpreterContextImpl.builder()
-        .setAuthenticationInfo(new AuthenticationInfo("testUser"))
+        .setAuthenticationInfo(new AuthenticationInfoImpl("testUser"))
         .setLocalProperties(localProperties)
         .setParagraphId("paragraphId")
         .setInterpreterOut(new InterpreterOutputImpl())
@@ -540,7 +541,7 @@ public class JDBCInterpreterTest extends BasicJDBCTestCaseAdapter {
       UsernamePassword up = new UsernamePassword(dbUser, dbPassword);
       userCredentials.putUsernamePassword(entityName, up);
     }
-    AuthenticationInfo authInfo = new AuthenticationInfo();
+    AuthenticationInfo authInfo = new AuthenticationInfoImpl();
     authInfo.setUserCredentials(userCredentials);
     authInfo.setUser(user);
     return authInfo;
@@ -767,7 +768,7 @@ public class JDBCInterpreterTest extends BasicJDBCTestCaseAdapter {
 
   private InterpreterContextImpl getInterpreterContext() {
     return InterpreterContextImpl.builder()
-            .setAuthenticationInfo(new AuthenticationInfo("testUser"))
+            .setAuthenticationInfo(new AuthenticationInfoImpl("testUser"))
             .setParagraphId("paragraphId")
             .setInterpreterOut(new InterpreterOutputImpl())
             .build();

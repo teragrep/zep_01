@@ -21,6 +21,7 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import org.apache.zeppelin.conf.ZeppelinConfiguration;
 import org.apache.zeppelin.user.AuthenticationInfo;
+import org.apache.zeppelin.user.AuthenticationInfoImpl;
 
 import java.util.HashMap;
 import java.util.HashSet;
@@ -42,7 +43,7 @@ public class NoteAuth {
   private Set<String> owners = new HashSet<>();
 
   public NoteAuth(String noteId) {
-    this(noteId, AuthenticationInfo.ANONYMOUS);
+    this(noteId, AuthenticationInfoImpl.ANONYMOUS);
   }
 
   public NoteAuth(String noteId, AuthenticationInfo subject) {
@@ -60,7 +61,7 @@ public class NoteAuth {
 
   // used when creating new note
   public void initPermissions(AuthenticationInfo subject) {
-    if (!AuthenticationInfo.isAnonymous(subject)) {
+    if (!AuthenticationInfoImpl.isAnonymous(subject)) {
       if (ZeppelinConfiguration.create().isNotebookPublic()) {
         // add current user to owners - can be public
         this.owners.add(checkCaseAndConvert(subject.getUser()));

@@ -68,6 +68,7 @@ import org.apache.zeppelin.service.NotebookService;
 import org.apache.zeppelin.service.ServiceContext;
 import org.apache.zeppelin.socket.NotebookServer;
 import org.apache.zeppelin.user.AuthenticationInfo;
+import org.apache.zeppelin.user.AuthenticationInfoImpl;
 import org.quartz.CronExpression;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -299,7 +300,7 @@ public class NotebookRestApi extends AbstractRestApi {
     LOGGER.debug("After set permissions {} {} {} {}", authorizationService.getOwners(noteId),
             authorizationService.getReaders(noteId), authorizationService.getRunners(noteId),
             authorizationService.getWriters(noteId));
-    AuthenticationInfo subject = new AuthenticationInfo(authenticationService.getPrincipal());
+    AuthenticationInfo subject = new AuthenticationInfoImpl(authenticationService.getPrincipal());
     authorizationService.saveNoteAuth(noteId, subject);
     notebookServer.broadcastNote(note);
     notebookServer.broadcastNoteList(subject, userAndRoles);
@@ -394,7 +395,7 @@ public class NotebookRestApi extends AbstractRestApi {
             request.getAddingEmptyParagraph(),
             getServiceContext(),
             new RestServiceCallback<>());
-    AuthenticationInfo subject = new AuthenticationInfo(authenticationService.getPrincipal());
+    AuthenticationInfo subject = new AuthenticationInfoImpl(authenticationService.getPrincipal());
     if (request.getParagraphs() != null) {
       for (NewParagraphRequest paragraphRequest : request.getParagraphs()) {
         Paragraph p = note.addNewParagraph(subject);
@@ -450,7 +451,7 @@ public class NotebookRestApi extends AbstractRestApi {
     if (request != null) {
       newNoteName = request.getName();
     }
-    AuthenticationInfo subject = new AuthenticationInfo(authenticationService.getPrincipal());
+    AuthenticationInfo subject = new AuthenticationInfoImpl(authenticationService.getPrincipal());
     Note newNote = notebookService.cloneNote(noteId, newNoteName, getServiceContext(),
             new RestServiceCallback<Note>() {
               @Override
@@ -514,7 +515,7 @@ public class NotebookRestApi extends AbstractRestApi {
     checkIfUserCanWrite(noteId, "Insufficient privileges you cannot add paragraph to this note");
 
     NewParagraphRequest request = NewParagraphRequest.fromJson(message);
-    AuthenticationInfo subject = new AuthenticationInfo(user);
+    AuthenticationInfo subject = new AuthenticationInfoImpl(user);
     Paragraph p;
     Double indexDouble = request.getIndex();
     if (indexDouble == null) {
@@ -576,7 +577,7 @@ public class NotebookRestApi extends AbstractRestApi {
       p.setTitle(updatedParagraph.getTitle());
     }
 
-    AuthenticationInfo subject = new AuthenticationInfo(user);
+    AuthenticationInfo subject = new AuthenticationInfoImpl(user);
     notebook.saveNote(note, subject);
     notebookServer.broadcastParagraph(note, p, MSG_ID_NOT_DEFINED);
     return new JsonResponse<>(Status.OK, "").build();
@@ -609,7 +610,7 @@ public class NotebookRestApi extends AbstractRestApi {
 
     Map<String, Object> newConfig = GSON.fromJson(message, HashMap.class);
     configureParagraph(p, newConfig, user);
-    AuthenticationInfo subject = new AuthenticationInfo(user);
+    AuthenticationInfo subject = new AuthenticationInfoImpl(user);
     notebook.saveNote(note, subject);
     return new JsonResponse<>(Status.OK, "", p).build();
   }
@@ -729,7 +730,7 @@ public class NotebookRestApi extends AbstractRestApi {
 
     LOGGER.info("Run note jobs, noteId: {}, blocking: {}, isolated: {}, params: {}", noteId, blocking, isolated, params);
     Note note = notebook.getNote(noteId);
-    AuthenticationInfo subject = new AuthenticationInfo(authenticationService.getPrincipal());
+    AuthenticationInfo subject = new AuthenticationInfoImpl(authenticationService.getPrincipal());
     subject.setRoles(authenticationService.getAssociatedRoles());
     checkIfNoteIsNotNull(note, noteId);
     checkIfUserCanRun(noteId, "Insufficient privileges you cannot run job for this note");
@@ -1095,7 +1096,7 @@ public class NotebookRestApi extends AbstractRestApi {
       Map<String, Object> paramsForUpdating = request.getParams();
       if (paramsForUpdating != null) {
         paragraph.settings.getParams().putAll(paramsForUpdating);
-        AuthenticationInfo subject = new AuthenticationInfo(authenticationService.getPrincipal());
+        AuthenticationInfo subject = new AuthenticationInfoImpl(authenticationService.getPrincipal());
         notebook.saveNote(note, subject);
       }
     }

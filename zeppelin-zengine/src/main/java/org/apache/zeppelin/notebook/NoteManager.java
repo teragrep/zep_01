@@ -23,6 +23,7 @@ import org.apache.zeppelin.conf.ZeppelinConfiguration;
 import org.apache.zeppelin.notebook.exception.NotePathAlreadyExistsException;
 import org.apache.zeppelin.notebook.repo.NotebookRepo;
 import org.apache.zeppelin.user.AuthenticationInfo;
+import org.apache.zeppelin.user.AuthenticationInfoImpl;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -72,7 +73,7 @@ public class NoteManager {
 
   // build the tree structure of notes
   private void init() throws IOException {
-    this.notesInfo = notebookRepo.list(AuthenticationInfo.ANONYMOUS).values().stream()
+    this.notesInfo = notebookRepo.list(AuthenticationInfoImpl.ANONYMOUS).values().stream()
         .collect(Collectors.toMap(NoteInfo::getId, NoteInfo::getPath));
     this.notesInfo.entrySet().stream()
         .forEach(entry ->
@@ -204,7 +205,7 @@ public class NoteManager {
    * @throws IOException
    */
   public void saveNote(Note note) throws IOException {
-    saveNote(note, AuthenticationInfo.ANONYMOUS);
+    saveNote(note, AuthenticationInfoImpl.ANONYMOUS);
   }
 
   /**
@@ -588,7 +589,7 @@ public class NoteManager {
      */
     public synchronized Note getNote(boolean reload) throws IOException {
       if (!note.isLoaded() || reload) {
-        note = notebookRepo.get(note.getId(), note.getPath(), AuthenticationInfo.ANONYMOUS);
+        note = notebookRepo.get(note.getId(), note.getPath(), AuthenticationInfoImpl.ANONYMOUS);
         if (parent.toString().equals("/")) {
           note.setPath("/" + note.getName());
         } else {
