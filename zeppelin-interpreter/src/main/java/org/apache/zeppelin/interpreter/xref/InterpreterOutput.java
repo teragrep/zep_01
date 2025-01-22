@@ -1,6 +1,9 @@
-package org.apache.zeppelin.interpreter;
+package org.apache.zeppelin.interpreter.xref;
 
-import org.apache.zeppelin.interpreter.xref.Type;
+import org.apache.zeppelin.interpreter.InterpreterOutputListener;
+import org.apache.zeppelin.interpreter.InterpreterResultMessage;
+import org.apache.zeppelin.interpreter.InterpreterResultMessageOutput;
+import org.apache.zeppelin.interpreter.InterpreterResultMessageOutputListener;
 
 import java.io.Closeable;
 import java.io.File;
