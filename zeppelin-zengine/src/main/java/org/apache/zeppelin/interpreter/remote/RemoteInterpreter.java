@@ -21,6 +21,7 @@ import com.google.common.annotations.VisibleForTesting;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 import org.apache.thrift.TException;
+import org.apache.zeppelin.display.GUIImpl;
 import org.apache.zeppelin.interpreter.xref.display.AngularObject;
 import org.apache.zeppelin.interpreter.xref.display.AngularObjectRegistry;
 import org.apache.zeppelin.display.GUI;
@@ -214,8 +215,8 @@ public class RemoteInterpreter extends AbstractInterpreter {
           GUI currentGUI = context.getGui();
           GUI currentNoteGUI = context.getNoteGui();
           if (form == FormType.NATIVE) {
-            GUI remoteGui = GUI.fromJson(remoteResult.getGui());
-            GUI remoteNoteGui = GUI.fromJson(remoteResult.getNoteGui());
+            GUI remoteGui = GUIImpl.fromJson(remoteResult.getGui());
+            GUI remoteNoteGui = GUIImpl.fromJson(remoteResult.getNoteGui());
             currentGUI.clear();
             currentGUI.setParams(remoteGui.getParams());
             currentGUI.setForms(remoteGui.getForms());
@@ -224,7 +225,7 @@ public class RemoteInterpreter extends AbstractInterpreter {
           } else if (form == FormType.SIMPLE) {
             final Map<String, Input> currentForms = currentGUI.getForms();
             final Map<String, Object> currentParams = currentGUI.getParams();
-            final GUI remoteGUI = GUI.fromJson(remoteResult.getGui());
+            final GUI remoteGUI = GUIImpl.fromJson(remoteResult.getGui());
             final Map<String, Input> remoteForms = remoteGUI.getForms();
             final Map<String, Object> remoteParams = remoteGUI.getParams();
             currentForms.putAll(remoteForms);

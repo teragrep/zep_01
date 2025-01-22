@@ -20,6 +20,7 @@ package org.apache.zeppelin.interpreter.remote;
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.apache.thrift.transport.TTransportException;
 import org.apache.zeppelin.conf.ZeppelinConfiguration;
+import org.apache.zeppelin.display.GUIImpl;
 import org.apache.zeppelin.interpreter.xref.display.AngularObjectRegistry;
 import org.apache.zeppelin.display.AngularObjectRegistryImpl;
 import org.apache.zeppelin.display.GUI;
@@ -384,7 +385,7 @@ public class RemoteInterpreterTest extends AbstractInterpreterTest {
 
   @Test
   public void testConvertDynamicForms() throws InterpreterException {
-    GUI gui = new GUI();
+    GUI gui = new GUIImpl();
     OptionInput.ParamOption[] paramOptions = {
         new OptionInput.ParamOption("value1", "param1"),
         new OptionInput.ParamOption("value2", "param2")

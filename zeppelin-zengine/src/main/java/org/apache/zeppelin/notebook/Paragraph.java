@@ -31,6 +31,7 @@ import java.util.Set;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.apache.zeppelin.common.JsonSerializable;
+import org.apache.zeppelin.display.GUIImpl;
 import org.apache.zeppelin.interpreter.xref.display.AngularObject;
 import org.apache.zeppelin.interpreter.xref.display.AngularObjectRegistry;
 import org.apache.zeppelin.display.GUI;
@@ -68,7 +69,7 @@ public class Paragraph extends JobWithProgressPoller<InterpreterResult> implemen
   // paragraph configs like isOpen, colWidth, etc
   private Map<String, Object> config = new HashMap<>();
   // form and parameter settings
-  public GUI settings = new GUI();
+  public GUI settings = new GUIImpl();
   private InterpreterResult results;
   // Application states in this paragraph
 
@@ -686,7 +687,7 @@ public class Paragraph extends JobWithProgressPoller<InterpreterResult> implemen
   }
 
   private GUI getNoteGui() {
-    GUI gui = new GUI();
+    GUI gui = new GUIImpl();
     gui.setParams(this.note.getNoteParams());
     gui.setForms(this.note.getNoteForms());
     return gui;

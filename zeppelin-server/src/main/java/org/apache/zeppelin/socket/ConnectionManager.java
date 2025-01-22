@@ -23,6 +23,7 @@ import com.google.gson.GsonBuilder;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.zeppelin.conf.ZeppelinConfiguration;
 import org.apache.zeppelin.display.GUI;
+import org.apache.zeppelin.display.GUIImpl;
 import org.apache.zeppelin.display.Input;
 import org.apache.zeppelin.notebook.Note;
 import org.apache.zeppelin.notebook.NoteInfo;
@@ -425,7 +426,7 @@ public class ConnectionManager {
 
 
   private void broadcastNoteForms(Note note) {
-    GUI formsSettings = new GUI();
+    GUI formsSettings = new GUIImpl();
     formsSettings.setForms(note.getNoteForms());
     formsSettings.setParams(note.getNoteParams());
     broadcast(note.getId(), new Message(Message.OP.SAVE_NOTE_FORMS)

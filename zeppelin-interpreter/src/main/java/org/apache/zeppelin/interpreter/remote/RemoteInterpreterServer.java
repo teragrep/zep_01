@@ -27,6 +27,7 @@ import org.apache.thrift.transport.TServerSocket;
 import org.apache.thrift.transport.TTransportException;
 import org.apache.zeppelin.conf.ZeppelinConfiguration;
 import org.apache.zeppelin.display.AngularObjectRegistryImpl;
+import org.apache.zeppelin.display.GUIImpl;
 import org.apache.zeppelin.interpreter.xref.display.AngularObject;
 import org.apache.zeppelin.interpreter.xref.display.AngularObjectRegistry;
 import org.apache.zeppelin.display.GUI;
@@ -898,10 +899,10 @@ public class RemoteInterpreterServer extends Thread
         .setParagraphText(ric.getParagraphText())
         .setLocalProperties(ric.getLocalProperties())
         .setAuthenticationInfo(AuthenticationInfo.fromJson(ric.getAuthenticationInfo()))
-        .setGUI(GUI.fromJson(ric.getGui()))
+        .setGUI(GUIImpl.fromJson(ric.getGui()))
         .setConfig(gson.fromJson(ric.getConfig(),
                    new TypeToken<Map<String, Object>>() {}.getType()))
-        .setNoteGUI(GUI.fromJson(ric.getNoteGui()))
+        .setNoteGUI(GUIImpl.fromJson(ric.getNoteGui()))
         .setAngularObjectRegistry(interpreterGroup.getAngularObjectRegistry())
         .setResourcePool(interpreterGroup.getResourcePool())
         .setInterpreterOut(output)

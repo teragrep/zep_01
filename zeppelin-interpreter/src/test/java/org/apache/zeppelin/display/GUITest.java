@@ -48,12 +48,12 @@ public class GUITest {
 
   @Test
   public void testSelect() {
-    GUI gui = new GUI();
+    GUI gui = new GUIImpl();
     Object selected = gui.select("list_1", options, null);
     // use the first one as the default value
     assertEquals("1", selected);
 
-    gui = new GUI();
+    gui = new GUIImpl();
     selected = gui.select("list_1", options,  "2");
     assertEquals("2", selected);
     // "2" is selected by above statement, so even this default value is "1", the selected value is
@@ -64,7 +64,7 @@ public class GUITest {
 
   @Test
   public void testGson() {
-    GUI gui = new GUI();
+    GUI gui = new GUIImpl();
     gui.textbox("textbox_1", "default_text_1");
     gui.select("select_1", options, "1");
     List<Object> list = new ArrayList();
@@ -73,7 +73,7 @@ public class GUITest {
 
     String json = gui.toJson();
     System.out.println(json);
-    GUI gui2 = GUI.fromJson(json);
+    GUIImpl gui2 = GUIImpl.fromJson(json);
     assertEquals(gui2.toJson(), json);
     assertEquals(gui2.forms, gui2.forms);
     assertEquals(gui2.params, gui2.params);
@@ -83,7 +83,7 @@ public class GUITest {
   @Test
   public void testOldGson_1() throws IOException {
 
-    GUI gui = new GUI();
+    GUIImpl gui = new GUIImpl();
     gui.forms.put("textbox_1", new OldInput.OldTextBox("textbox_1", "default_text_1"));
     gui.forms.put("select_1", new OldInput.OldSelect("select_1", "1", options));
     gui.forms.put("checkbox_1",
@@ -93,7 +93,7 @@ public class GUITest {
     String json = gui.toJson();
 
     // convert to new input forms
-    GUI gui2 = GUI.fromJson(json);
+    GUIImpl gui2 = GUIImpl.fromJson(json);
     assertEquals(3, gui2.forms.size());
     assertTrue(gui2.forms.get("textbox_1") instanceof TextBox);
     assertEquals("default_text_1", gui2.forms.get("textbox_1").getDefaultValue());
@@ -108,7 +108,7 @@ public class GUITest {
   @Test
   public void testOldGson_2() throws IOException {
 
-    GUI gui = new GUI();
+    GUIImpl gui = new GUIImpl();
     gui.forms.put("textbox_1", new OldInput("textbox_1", "default_text_1"));
     gui.forms.put("select_1", new OldInput("select_1", "1", options));
     gui.forms.put("checkbox_1",
@@ -118,7 +118,7 @@ public class GUITest {
     String json = gui.toJson();
 
     // convert to new input forms
-    GUI gui2 = GUI.fromJson(json);
+    GUIImpl gui2 = GUIImpl.fromJson(json);
     assertEquals(3, gui2.forms.size());
     assertTrue(gui2.forms.get("textbox_1") instanceof TextBox);
     assertEquals("default_text_1", gui2.forms.get("textbox_1").getDefaultValue());
@@ -143,7 +143,7 @@ public class GUITest {
         "          }\n" +
         "        }\n" +
         "      }";
-    GUI gui = GUI.fromJson(oldJson);
+    GUIImpl gui = GUIImpl.fromJson(oldJson);
     assertEquals(1, gui.forms.size());
     assertTrue(gui.forms.get("maxAge") instanceof TextBox);
     assertEquals("30", gui.forms.get("maxAge").getDefaultValue());
@@ -171,7 +171,7 @@ public class GUITest {
         "          }\n" +
         "        }\n" +
         "      }";
-    gui = GUI.fromJson(oldJson);
+    gui = GUIImpl.fromJson(oldJson);
     assertEquals(1, gui.forms.size());
     assertTrue(gui.forms.get("marital") instanceof Select);
     assertEquals("single", gui.forms.get("marital").getDefaultValue());

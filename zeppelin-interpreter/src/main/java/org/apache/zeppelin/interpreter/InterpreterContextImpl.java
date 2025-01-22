@@ -17,6 +17,7 @@
 
 package org.apache.zeppelin.interpreter;
 
+import org.apache.zeppelin.display.GUIImpl;
 import org.apache.zeppelin.interpreter.xref.display.AngularObjectRegistry;
 import org.apache.zeppelin.display.GUI;
 import org.apache.zeppelin.interpreter.xref.remote.RemoteInterpreterEventClient;
@@ -43,8 +44,8 @@ public class InterpreterContextImpl implements InterpreterContext {
   private String paragraphText;
   private AuthenticationInfo authenticationInfo;
   private Map<String, Object> config = new HashMap<>();
-  private GUI gui = new GUI();
-  private GUI noteGui = new GUI();
+  private GUI gui = new GUIImpl();
+  private GUI noteGui = new GUIImpl();
   private AngularObjectRegistry angularObjectRegistry;
   private ResourcePool resourcePool;
   private String interpreterClassName;

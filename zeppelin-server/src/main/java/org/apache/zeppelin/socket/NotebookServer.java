@@ -41,6 +41,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.apache.thrift.TException;
 import org.apache.zeppelin.conf.ZeppelinConfiguration;
+import org.apache.zeppelin.display.GUIImpl;
 import org.apache.zeppelin.interpreter.xref.display.AngularObject;
 import org.apache.zeppelin.interpreter.xref.display.AngularObjectRegistry;
 import org.apache.zeppelin.interpreter.xref.display.AngularObjectRegistryListener;
@@ -2075,7 +2076,7 @@ public class NotebookServer extends WebSocketServlet
   }
 
   private void broadcastNoteForms(Note note) {
-    GUI formsSettings = new GUI();
+    GUI formsSettings = new GUIImpl();
     formsSettings.setForms(note.getNoteForms());
     formsSettings.setParams(note.getNoteParams());
     getConnectionManager().broadcast(note.getId(),
