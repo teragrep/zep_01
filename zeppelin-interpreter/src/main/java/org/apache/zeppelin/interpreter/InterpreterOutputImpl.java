@@ -102,9 +102,9 @@ public class InterpreterOutputImpl extends OutputStream implements InterpreterOu
           createInterpreterResultMessageOutputListener(index);
 
       if (changeListener == null) {
-        out = new InterpreterResultMessageOutput(type, listener);
+        out = new InterpreterResultMessageOutputImpl(type, listener);
       } else {
-        out = new InterpreterResultMessageOutput(type, listener, changeListener);
+        out = new InterpreterResultMessageOutputImpl(type, listener, changeListener);
       }
       out.setEnableTableAppend(enableTableAppend);
       out.setResourceSearchPaths(resourceSearchPaths);
