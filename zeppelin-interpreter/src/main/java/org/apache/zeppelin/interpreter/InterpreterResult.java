@@ -63,7 +63,7 @@ public class InterpreterResult implements Serializable, JsonSerializable {
    * @param msg
    */
   public void add(String msg) {
-    InterpreterOutput out = new InterpreterOutput();
+    InterpreterOutput out = new InterpreterOutputImpl();
     try {
       out.write(msg);
       out.flush();

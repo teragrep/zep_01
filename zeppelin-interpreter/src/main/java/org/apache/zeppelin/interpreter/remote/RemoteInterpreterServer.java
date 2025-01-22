@@ -299,7 +299,7 @@ public class RemoteInterpreterServer extends Thread
 
         String localRepoPath = properties.get("zeppelin.interpreter.localRepo");
         if (properties.containsKey("zeppelin.interpreter.output.limit")) {
-          InterpreterOutput.LIMIT = Integer.parseInt(
+          InterpreterOutputImpl.LIMIT = Integer.parseInt(
                   properties.get("zeppelin.interpreter.output.limit"));
         }
 
@@ -911,7 +911,7 @@ public class RemoteInterpreterServer extends Thread
 
   protected InterpreterOutput createInterpreterOutput(final String noteId, final String
       paragraphId) {
-    return new InterpreterOutput(new InterpreterOutputListener() {
+    return new InterpreterOutputImpl(new InterpreterOutputListener() {
       @Override
       public void onUpdateAll(InterpreterOutput out) {
         try {

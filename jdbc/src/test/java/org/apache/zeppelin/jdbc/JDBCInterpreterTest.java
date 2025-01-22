@@ -114,7 +114,7 @@ public class JDBCInterpreterTest extends BasicJDBCTestCaseAdapter {
     context = InterpreterContextImpl.builder()
         .setAuthenticationInfo(new AuthenticationInfo("testUser"))
         .setParagraphId("paragraphId")
-        .setInterpreterOut(new InterpreterOutput())
+        .setInterpreterOut(new InterpreterOutputImpl())
         .build();
   }
 
@@ -165,7 +165,7 @@ public class JDBCInterpreterTest extends BasicJDBCTestCaseAdapter {
         .setAuthenticationInfo(new AuthenticationInfo("testUser"))
         .setLocalProperties(localProperties)
         .setParagraphId("paragraphId")
-        .setInterpreterOut(new InterpreterOutput())
+        .setInterpreterOut(new InterpreterOutputImpl())
         .build();
     InterpreterResult interpreterResult = t.interpret(sqlQuery, context);
 
@@ -561,7 +561,7 @@ public class JDBCInterpreterTest extends BasicJDBCTestCaseAdapter {
     // user1 runs default
     InterpreterContextImpl context = InterpreterContextImpl.builder()
             .setAuthenticationInfo(user1Credential)
-            .setInterpreterOut(new InterpreterOutput())
+            .setInterpreterOut(new InterpreterOutputImpl())
             .setReplName("jdbc")
             .build();
     jdbc.interpret("", context);
@@ -573,7 +573,7 @@ public class JDBCInterpreterTest extends BasicJDBCTestCaseAdapter {
     // user2 run default
     context = InterpreterContextImpl.builder()
         .setAuthenticationInfo(user2Credential)
-        .setInterpreterOut(new InterpreterOutput())
+        .setInterpreterOut(new InterpreterOutputImpl())
         .setReplName("jdbc")
         .build();
     jdbc.interpret("", context);
@@ -599,7 +599,7 @@ public class JDBCInterpreterTest extends BasicJDBCTestCaseAdapter {
     // user1 runs default
     InterpreterContextImpl context = InterpreterContextImpl.builder()
             .setAuthenticationInfo(user1Credential)
-            .setInterpreterOut(new InterpreterOutput())
+            .setInterpreterOut(new InterpreterOutputImpl())
             .setReplName("hive")
             .build();
     jdbc.interpret("", context);
@@ -611,7 +611,7 @@ public class JDBCInterpreterTest extends BasicJDBCTestCaseAdapter {
     // user2 run default
     context = InterpreterContextImpl.builder()
             .setAuthenticationInfo(user2Credential)
-            .setInterpreterOut(new InterpreterOutput())
+            .setInterpreterOut(new InterpreterOutputImpl())
             .setReplName("hive")
             .build();
     jdbc.interpret("", context);
@@ -768,7 +768,7 @@ public class JDBCInterpreterTest extends BasicJDBCTestCaseAdapter {
     return InterpreterContextImpl.builder()
             .setAuthenticationInfo(new AuthenticationInfo("testUser"))
             .setParagraphId("paragraphId")
-            .setInterpreterOut(new InterpreterOutput())
+            .setInterpreterOut(new InterpreterOutputImpl())
             .build();
   }
 }

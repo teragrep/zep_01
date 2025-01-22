@@ -81,7 +81,7 @@ public class SparkSqlInterpreterTest {
             .setParagraphTitle("title")
             .setAngularObjectRegistry(new AngularObjectRegistry(intpGroup.getId(), null))
             .setResourcePool(new LocalResourcePool("id"))
-            .setInterpreterOut(new InterpreterOutput())
+            .setInterpreterOut(new InterpreterOutputImpl())
             .setIntpEventClient(mock(RemoteInterpreterEventClient.class))
             .build();
   }
@@ -193,7 +193,7 @@ public class SparkSqlInterpreterTest {
             .setParagraphTitle("title")
             .setAngularObjectRegistry(new AngularObjectRegistry(intpGroup.getId(), null))
             .setResourcePool(new LocalResourcePool("id"))
-            .setInterpreterOut(new InterpreterOutput())
+            .setInterpreterOut(new InterpreterOutputImpl())
             .setIntpEventClient(mock(RemoteInterpreterEventClient.class))
             .build();
     context.getLocalProperties().put("template", "Total count: <h1>{0}</h1>, Total age: <h1>{1}</h1>");

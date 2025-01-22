@@ -34,7 +34,7 @@ public class InterpreterOutputTest implements InterpreterOutputListener {
 
   @Before
   public void setUp() {
-    out = new InterpreterOutput(this);
+    out = new InterpreterOutputImpl(this);
     numAppendEvent = 0;
     numUpdateEvent = 0;
   }
@@ -177,8 +177,8 @@ public class InterpreterOutputTest implements InterpreterOutputListener {
   @Test
   public void testTruncate() throws IOException {
     // output is truncated after the new line
-    InterpreterOutput.LIMIT = 3;
-    out = new InterpreterOutput(this);
+    InterpreterOutputImpl.LIMIT = 3;
+    out = new InterpreterOutputImpl(this);
 
     // truncate text
     out.write("%text hello\nworld\n");
@@ -187,20 +187,20 @@ public class InterpreterOutputTest implements InterpreterOutputListener {
     assertTrue(new String(out.getOutputAt(1).toByteArray()).contains("truncated"));
 
     // truncate table
-    out = new InterpreterOutput(this);
+    out = new InterpreterOutputImpl(this);
     out.write("%table key\tvalue\nhello\t100\nworld\t200\n");
     assertEquals("key\tvalue", new String(out.getOutputAt(0).toByteArray()));
     out.getOutputAt(1).flush();
     assertTrue(new String(out.getOutputAt(1).toByteArray()).contains("truncated"));
 
     // does not truncate html
-    out = new InterpreterOutput(this);
+    out = new InterpreterOutputImpl(this);
     out.write("%html hello\nworld\n");
     out.flush();
     assertEquals("hello\nworld\n", new String(out.getOutputAt(0).toByteArray()));
 
     // restore default
-    InterpreterOutput.LIMIT = Constants.ZEPPELIN_INTERPRETER_OUTPUT_LIMIT;
+    InterpreterOutputImpl.LIMIT = Constants.ZEPPELIN_INTERPRETER_OUTPUT_LIMIT;
   }
 
 

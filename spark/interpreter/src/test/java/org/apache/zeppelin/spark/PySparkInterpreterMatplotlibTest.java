@@ -106,7 +106,7 @@ public class PySparkInterpreterMatplotlibTest {
     intpGroup.put("note", new LinkedList<>());
     context = InterpreterContextImpl.builder()
         .setNoteId("note")
-        .setInterpreterOut(new InterpreterOutput())
+        .setInterpreterOut(new InterpreterOutputImpl())
         .setIntpEventClient(mock(RemoteInterpreterEventClient.class))
         .setAngularObjectRegistry(new AngularObjectRegistry(intpGroup.getId(), null))
         .build();

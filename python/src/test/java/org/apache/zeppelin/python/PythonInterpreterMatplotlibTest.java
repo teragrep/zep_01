@@ -61,7 +61,7 @@ class PythonInterpreterMatplotlibTest implements InterpreterOutputListener {
     interpreters.add(python);
     intpGroup.put("note", interpreters);
 
-    out = new InterpreterOutput(this);
+    out = new InterpreterOutputImpl(this);
 
     context = InterpreterContextImpl.builder()
         .setInterpreterOut(out)
