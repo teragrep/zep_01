@@ -24,6 +24,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import org.apache.zeppelin.interpreter.InterpreterResult;
+import org.apache.zeppelin.interpreter.InterpreterResultImpl;
 import org.apache.zeppelin.interpreter.xref.InterpreterResultMessage;
 import org.apache.zeppelin.interpreter.InterpreterResultMessageImpl;
 import org.apache.zeppelin.interpreter.xref.user.UserCredentials;
@@ -81,7 +82,7 @@ class CredentialInjector {
     if (ret == null) {
       return null;
     }
-    return new InterpreterResult(ret.code(), replacePasswords(ret.message()));
+    return new InterpreterResultImpl(ret.code(), replacePasswords(ret.message()));
   }
 
   private List<InterpreterResultMessage> replacePasswords(List<InterpreterResultMessage> original) {

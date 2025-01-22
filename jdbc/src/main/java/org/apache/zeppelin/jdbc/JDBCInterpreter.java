@@ -756,7 +756,7 @@ public class JDBCInterpreter extends KerberosInterpreter {
    * @return
    * @throws InterpreterException
    */
-  private InterpreterResult executeSql(String sql,
+  private InterpreterResultImpl executeSql(String sql,
       org.apache.zeppelin.interpreter.xref.InterpreterContext context) throws InterpreterException {
     Connection connection = null;
     Statement statement;
@@ -768,7 +768,7 @@ public class JDBCInterpreter extends KerberosInterpreter {
       connection = getConnection(context);
     } catch (IllegalArgumentException e) {
       LOGGER.error("Cannot run " + sql, e);
-      return new InterpreterResult(Code.ERROR, "Connection URL contains improper configuration");
+      return new InterpreterResultImpl(Code.ERROR, "Connection URL contains improper configuration");
     } catch (Exception e) {
       LOGGER.error("Fail to getConnection", e);
       try {
@@ -777,13 +777,13 @@ public class JDBCInterpreter extends KerberosInterpreter {
         LOGGER.error("Cannot close DBPool for user: " + user , e1);
       }
       if (e instanceof SQLException) {
-        return new InterpreterResult(Code.ERROR, e.getMessage());
+        return new InterpreterResultImpl(Code.ERROR, e.getMessage());
       } else {
-        return new InterpreterResult(Code.ERROR, ExceptionUtils.getStackTrace(e));
+        return new InterpreterResultImpl(Code.ERROR, ExceptionUtils.getStackTrace(e));
       }
     }
     if (connection == null) {
-      return new InterpreterResult(Code.ERROR, "User's connection not found.");
+      return new InterpreterResultImpl(Code.ERROR, "User's connection not found.");
     }
 
     try {
@@ -806,7 +806,7 @@ public class JDBCInterpreter extends KerberosInterpreter {
         statement.setMaxRows(context.getIntLocalProperty("limit", maxRows));
 
         if (statement == null) {
-          return new InterpreterResult(Code.ERROR, "Prefix not found.");
+          return new InterpreterResultImpl(Code.ERROR, "Prefix not found.");
         }
 
         try {
@@ -883,9 +883,9 @@ public class JDBCInterpreter extends KerberosInterpreter {
     } catch (Throwable e) {
       LOGGER.error("Cannot run " + sql, e);
       if (e instanceof SQLException) {
-        return new InterpreterResult(Code.ERROR,  e.getMessage());
+        return new InterpreterResultImpl(Code.ERROR,  e.getMessage());
       } else {
-        return new InterpreterResult(Code.ERROR, ExceptionUtils.getStackTrace(e));
+        return new InterpreterResultImpl(Code.ERROR, ExceptionUtils.getStackTrace(e));
       }
     } finally {
       //In case user ran an insert/update/upsert statement
@@ -900,7 +900,7 @@ public class JDBCInterpreter extends KerberosInterpreter {
       getJDBCConfiguration(user).removeStatement(paragraphId);
     }
 
-    return new InterpreterResult(Code.SUCCESS);
+    return new InterpreterResultImpl(Code.SUCCESS);
   }
 
   private List getFirstRow(ResultSet rs) throws SQLException {
@@ -953,7 +953,7 @@ public class JDBCInterpreter extends KerberosInterpreter {
   }
 
   @Override
-  public InterpreterResult internalInterpret(String cmd, org.apache.zeppelin.interpreter.xref.InterpreterContext context)
+  public InterpreterResultImpl internalInterpret(String cmd, org.apache.zeppelin.interpreter.xref.InterpreterContext context)
           throws InterpreterException {
     String dbprefix = getDBPrefix(context);
     if (!StringUtils.equals(dbprefix, DEFAULT_KEY)) {
@@ -993,11 +993,11 @@ public class JDBCInterpreter extends KerberosInterpreter {
       }
       refreshExecutorServices.remove(context.getParagraphId());
       if (paragraphCancelMap.getOrDefault(context.getParagraphId(), false)) {
-        return new InterpreterResult(Code.ERROR);
+        return new InterpreterResultImpl(Code.ERROR);
       } else if (interpreterResultRef.get().code() == Code.ERROR) {
         return interpreterResultRef.get();
       } else {
-        return new InterpreterResult(Code.SUCCESS);
+        return new InterpreterResultImpl(Code.SUCCESS);
       }
     }
   }

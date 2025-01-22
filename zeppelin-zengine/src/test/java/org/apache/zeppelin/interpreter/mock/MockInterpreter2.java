@@ -55,21 +55,21 @@ public class MockInterpreter2 extends AbstractInterpreter {
 
 
 	@Override
-	public InterpreterResult interpret(String st, InterpreterContext context) {
-		InterpreterResult result;
+	public InterpreterResultImpl interpret(String st, InterpreterContext context) {
+		InterpreterResultImpl result;
 		st = st.trim();
 		if ("getId".equals(st)) {
 			// get unique id of this interpreter instance
-			result = new InterpreterResult(Code.SUCCESS, "" + this.hashCode());
+			result = new InterpreterResultImpl(Code.SUCCESS, "" + this.hashCode());
 		} else if (st.startsWith("sleep")) {
 			try {
 				Thread.sleep(Integer.parseInt(st.split(" ")[1]));
 			} catch (InterruptedException e) {
 				// nothing to do
 			}
-			result = new InterpreterResult(Code.SUCCESS, "repl2: " + st);
+			result = new InterpreterResultImpl(Code.SUCCESS, "repl2: " + st);
 		} else {
-			result = new InterpreterResult(Code.SUCCESS, "repl2: " + st);
+			result = new InterpreterResultImpl(Code.SUCCESS, "repl2: " + st);
 		}
 
 		if (context.getResourcePool() != null) {

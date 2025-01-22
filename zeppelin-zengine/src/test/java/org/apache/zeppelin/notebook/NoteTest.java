@@ -156,7 +156,7 @@ public class NoteTest {
 
     Note note = new Note("test", "", interpreterFactory, interpreterSettingManager, paragraphJobListener, credentials, noteEventListener);
     Paragraph p1 = note.addNewParagraph(AuthenticationInfoImpl.ANONYMOUS);
-    InterpreterResult result = new InterpreterResult(Code.SUCCESS, Type.TEXT, "result");
+    InterpreterResult result = new InterpreterResultImpl(Code.SUCCESS, Type.TEXT, "result");
     p1.setResult(result);
 
     Paragraph p2 = note.addNewParagraph(AuthenticationInfoImpl.ANONYMOUS);
@@ -192,7 +192,7 @@ public class NoteTest {
     String pText = "%spark sc.version";
     Paragraph p = note.addNewParagraph(AuthenticationInfoImpl.ANONYMOUS);
     p.setText(pText);
-    p.setResult(new InterpreterResult(Code.SUCCESS, "1.6.2"));
+    p.setResult(new InterpreterResultImpl(Code.SUCCESS, "1.6.2"));
     p.settings.getForms().put("textbox_1", new TextBox("name", "default_name"));
     p.settings.getParams().put("textbox_1", "my_name");
     note.getAngularObjects().put("ao_1", Arrays.asList(new AngularObjectImpl("name_1", "value_1", note.getId(), p.getId(), null)));

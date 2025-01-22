@@ -74,10 +74,10 @@ public class SparkSqlInterpreter extends AbstractEnhancedInterpreter {
   }
 
   @Override
-  public InterpreterResult internalInterpret(String st, org.apache.zeppelin.interpreter.xref.InterpreterContext context)
+  public InterpreterResultImpl internalInterpret(String st, org.apache.zeppelin.interpreter.xref.InterpreterContext context)
       throws InterpreterException {
     if (sparkInterpreter.isUnsupportedSparkVersion()) {
-      return new InterpreterResult(Code.ERROR, "Spark "
+      return new InterpreterResultImpl(Code.ERROR, "Spark "
           + sparkInterpreter.getSparkVersion().toString() + " is not supported");
     }
     Utils.printDeprecateMessage(sparkInterpreter.getSparkVersion(), context, properties);
@@ -108,7 +108,7 @@ public class SparkSqlInterpreter extends AbstractEnhancedInterpreter {
           // just return the error message from spark if it is AnalysisException
           context.out().write(e.getCause().getMessage());
           context.out().flush();
-          return new InterpreterResult(Code.ERROR);
+          return new InterpreterResultImpl(Code.ERROR);
         } else {
           LOGGER.error("Error happens in sql: {}", curSql, e);
           context.out().write("\nError happens in sql: " + curSql + "\n");
@@ -129,18 +129,18 @@ public class SparkSqlInterpreter extends AbstractEnhancedInterpreter {
             context.out().write(msgBuilder.toString());
           }
           context.out().flush();
-          return new InterpreterResult(Code.ERROR);
+          return new InterpreterResultImpl(Code.ERROR);
         }
       } catch (IOException ex) {
         LOGGER.error("Fail to write output", ex);
-        return new InterpreterResult(Code.ERROR);
+        return new InterpreterResultImpl(Code.ERROR);
       }
     } finally {
       sc.clearJobGroup();
       Thread.currentThread().setContextClassLoader(originalClassLoader);
     }
 
-    return new InterpreterResult(Code.SUCCESS);
+    return new InterpreterResultImpl(Code.SUCCESS);
   }
 
   @Override

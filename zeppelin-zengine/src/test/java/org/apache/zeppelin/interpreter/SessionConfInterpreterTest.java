@@ -54,7 +54,7 @@ public class SessionConfInterpreterTest {
     interpreters.add(remoteInterpreter);
     when(mockInterpreterGroup.get("session_1")).thenReturn(interpreters);
 
-    InterpreterResult result =
+    InterpreterResultImpl result =
         confInterpreter.interpret("property_1\tupdated_value_1\nproperty_3\tvalue_3",
             mock(InterpreterContextImpl.class));
     assertEquals(Code.SUCCESS, result.code);

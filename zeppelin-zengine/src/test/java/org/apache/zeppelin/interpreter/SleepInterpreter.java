@@ -46,12 +46,12 @@ public class SleepInterpreter extends AbstractInterpreter {
   }
 
   @Override
-  public InterpreterResult interpret(String st, InterpreterContext context) {
+  public InterpreterResultImpl interpret(String st, InterpreterContext context) {
     try {
       Thread.sleep(Long.parseLong(st));
-      return new InterpreterResult(Code.SUCCESS);
+      return new InterpreterResultImpl(Code.SUCCESS);
     } catch (Exception e) {
-      return new InterpreterResult(Code.ERROR, e.getMessage());
+      return new InterpreterResultImpl(Code.ERROR, e.getMessage());
     }
   }
 

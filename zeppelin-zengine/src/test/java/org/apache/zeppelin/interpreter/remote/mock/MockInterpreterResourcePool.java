@@ -19,9 +19,9 @@ package org.apache.zeppelin.interpreter.remote.mock;
 
 import com.google.gson.Gson;
 import org.apache.zeppelin.interpreter.AbstractInterpreter;
+import org.apache.zeppelin.interpreter.InterpreterResultImpl;
 import org.apache.zeppelin.interpreter.xref.InterpreterContext;
 import org.apache.zeppelin.interpreter.xref.FormType;
-import org.apache.zeppelin.interpreter.InterpreterResult;
 import org.apache.zeppelin.interpreter.xref.Code;
 import org.apache.zeppelin.interpreter.thrift.InterpreterCompletion;
 import org.apache.zeppelin.interpreter.xref.Resource;
@@ -55,7 +55,7 @@ public class MockInterpreterResourcePool extends AbstractInterpreter {
   }
 
   @Override
-  public InterpreterResult interpret(String st, InterpreterContext context) {
+  public InterpreterResultImpl interpret(String st, InterpreterContext context) {
     String[] stmt = st.split(" ");
     String cmd = stmt[0];
     String noteId = null;
@@ -111,7 +111,7 @@ public class MockInterpreterResourcePool extends AbstractInterpreter {
     }
 
     Gson gson = new Gson();
-    return new InterpreterResult(Code.SUCCESS, gson.toJson(ret));
+    return new InterpreterResultImpl(Code.SUCCESS, gson.toJson(ret));
   }
 
   @Override

@@ -40,7 +40,7 @@ public class ConfInterpreterTest extends AbstractInterpreterTest {
         .setParagraphId("paragraphId")
         .build();
 
-    InterpreterResult result = confInterpreter.interpret("property_1\tnew_value\nnew_property\tdummy_value", context);
+    InterpreterResultImpl result = confInterpreter.interpret("property_1\tnew_value\nnew_property\tdummy_value", context);
     assertEquals(Code.SUCCESS, result.code);
 
     assertTrue(interpreterFactory.getInterpreter("test", executionContext) instanceof RemoteInterpreter);
@@ -69,7 +69,7 @@ public class ConfInterpreterTest extends AbstractInterpreterTest {
         .setNoteId("noteId")
         .setParagraphId("paragraphId")
         .build();
-    InterpreterResult result = confInterpreter.interpret("", context);
+    InterpreterResultImpl result = confInterpreter.interpret("", context);
     assertEquals(Code.SUCCESS, result.code);
 
     assertTrue(interpreterFactory.getInterpreter("test", executionContext) instanceof RemoteInterpreter);
@@ -91,7 +91,7 @@ public class ConfInterpreterTest extends AbstractInterpreterTest {
         .build();
 
     RemoteInterpreter remoteInterpreter = (RemoteInterpreter) interpreterFactory.getInterpreter("test", executionContext);
-    InterpreterResult result = remoteInterpreter.interpret("hello world", context);
+    InterpreterResultImpl result = remoteInterpreter.interpret("hello world", context);
     assertEquals(Code.SUCCESS, result.code);
 
     result = confInterpreter.interpret("property_1\tnew_value\nnew_property\tdummy_value", context);

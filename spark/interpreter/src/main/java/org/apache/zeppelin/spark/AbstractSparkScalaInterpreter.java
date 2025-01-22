@@ -161,7 +161,7 @@ public abstract class AbstractSparkScalaInterpreter {
     getSparkContext().cancelJobGroup(Utils.buildJobGroupId(context));
   }
 
-  public abstract InterpreterResult interpret(String st,
+  public abstract InterpreterResultImpl interpret(String st,
           org.apache.zeppelin.interpreter.xref.InterpreterContext context) throws InterpreterException;
 
   public abstract List<InterpreterCompletion> completion(String buf,

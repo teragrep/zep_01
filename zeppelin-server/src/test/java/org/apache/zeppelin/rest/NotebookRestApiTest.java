@@ -542,7 +542,7 @@ public class NotebookRestApiTest extends AbstractTestRestApi {
     LOG.debug("Running testClearAllParagraphOutput");
     Note note = TestUtils.getInstance(Notebook.class).createNote("note1", anonymous);
     Paragraph p1 = note.addNewParagraph(AuthenticationInfoImpl.ANONYMOUS);
-    InterpreterResult result = new InterpreterResult(
+    InterpreterResult result = new InterpreterResultImpl(
             Code.SUCCESS,
             Type.TEXT, "result");
     p1.setResult(result);

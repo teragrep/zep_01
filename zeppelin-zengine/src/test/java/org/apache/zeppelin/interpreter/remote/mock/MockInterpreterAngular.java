@@ -17,12 +17,12 @@
 
 package org.apache.zeppelin.interpreter.remote.mock;
 
+import org.apache.zeppelin.interpreter.InterpreterResultImpl;
 import org.apache.zeppelin.interpreter.xref.display.AngularObjectRegistry;
 import org.apache.zeppelin.interpreter.xref.display.AngularObjectWatcher;
 import org.apache.zeppelin.interpreter.AbstractInterpreter;
 import org.apache.zeppelin.interpreter.xref.InterpreterContext;
 import org.apache.zeppelin.interpreter.xref.FormType;
-import org.apache.zeppelin.interpreter.InterpreterResult;
 import org.apache.zeppelin.interpreter.xref.Code;
 import org.apache.zeppelin.interpreter.thrift.InterpreterCompletion;
 import org.slf4j.Logger;
@@ -54,7 +54,7 @@ public class MockInterpreterAngular extends AbstractInterpreter {
   }
 
   @Override
-  public InterpreterResult interpret(String st, InterpreterContext context) {
+  public InterpreterResultImpl interpret(String st, InterpreterContext context) {
     String[] stmt = st.split(" ");
     String cmd = stmt[0];
     String name = null;
@@ -94,7 +94,7 @@ public class MockInterpreterAngular extends AbstractInterpreter {
 
     String msg = registry.getAll(context.getNoteId(), null).size() + " " + Integer.toString(numWatch
             .get());
-    return new InterpreterResult(Code.SUCCESS, msg);
+    return new InterpreterResultImpl(Code.SUCCESS, msg);
   }
 
   @Override

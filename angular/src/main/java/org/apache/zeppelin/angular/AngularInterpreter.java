@@ -22,9 +22,9 @@ import java.util.List;
 import java.util.Properties;
 
 import org.apache.zeppelin.interpreter.AbstractInterpreter;
+import org.apache.zeppelin.interpreter.InterpreterResultImpl;
 import org.apache.zeppelin.interpreter.xref.InterpreterContext;
 import org.apache.zeppelin.interpreter.xref.FormType;
-import org.apache.zeppelin.interpreter.InterpreterResult;
 import org.apache.zeppelin.interpreter.xref.Code;
 import org.apache.zeppelin.interpreter.xref.Type;
 import org.apache.zeppelin.interpreter.thrift.InterpreterCompletion;
@@ -49,8 +49,8 @@ public class AngularInterpreter extends AbstractInterpreter {
   }
 
   @Override
-  public InterpreterResult interpret(String st, InterpreterContext context) {
-    return new InterpreterResult(Code.SUCCESS, Type.ANGULAR, st);
+  public InterpreterResultImpl interpret(String st, InterpreterContext context) {
+    return new InterpreterResultImpl(Code.SUCCESS, Type.ANGULAR, st);
   }
 
   @Override

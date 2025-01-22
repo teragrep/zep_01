@@ -42,8 +42,8 @@ public class DoubleEchoInterpreter extends AbstractInterpreter {
   }
 
   @Override
-  public InterpreterResult interpret(String st, InterpreterContext context) {
-    return new InterpreterResult(Code.SUCCESS, st + "," + st);
+  public InterpreterResultImpl interpret(String st, InterpreterContext context) {
+    return new InterpreterResultImpl(Code.SUCCESS, st + "," + st);
   }
 
   @Override

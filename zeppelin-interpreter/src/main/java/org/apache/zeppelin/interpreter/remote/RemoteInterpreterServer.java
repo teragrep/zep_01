@@ -459,7 +459,7 @@ public class RemoteInterpreterServer extends Thread
                 context.getParagraphId(), context.getNoteId());
         interpretJob = runningJobs.get(context.getParagraphId());
         if (interpretJob == null) {
-          InterpreterResult result = new InterpreterResult(Code.ERROR, "Job is finished, unable to recover it");
+          InterpreterResult result = new InterpreterResultImpl(Code.ERROR, "Job is finished, unable to recover it");
           return convert(result,
                   context.getConfig(),
                   context.getGui(),
@@ -498,7 +498,7 @@ public class RemoteInterpreterServer extends Thread
       InterpreterResult result = interpretJob.getReturn();
       // in case of job abort in PENDING status, result can be null
       if (result == null) {
-        result = new InterpreterResult(Code.KEEP_PREVIOUS_RESULT);
+        result = new InterpreterResultImpl(Code.KEEP_PREVIOUS_RESULT);
       }
       return convert(result,
               context.getConfig(),
@@ -791,9 +791,9 @@ public class RemoteInterpreterServer extends Thread
                     context.getLocalProperties().get("saveAs"), stringResult);
           }
         }
-        return new InterpreterResult(result.code(), resultMessages);
+        return new InterpreterResultImpl(result.code(), resultMessages);
       } catch (Throwable e) {
-        return new InterpreterResult(Code.ERROR, ExceptionUtils.getStackTrace(e));
+        return new InterpreterResultImpl(Code.ERROR, ExceptionUtils.getStackTrace(e));
       } finally {
         Thread.currentThread().setContextClassLoader(currentThreadContextClassloader);
         InterpreterContextStore.remove();

@@ -63,7 +63,7 @@ public class ConfInterpreter extends AbstractInterpreter {
   }
 
   @Override
-  public InterpreterResult interpret(String st, InterpreterContext context)
+  public InterpreterResultImpl interpret(String st, InterpreterContext context)
       throws InterpreterException {
 
     try {
@@ -74,10 +74,10 @@ public class ConfInterpreter extends AbstractInterpreter {
       finalProperties.putAll(newProperties);
       LOGGER.debug("Properties for InterpreterGroup: {} is {}", interpreterGroupId, finalProperties);
       interpreterSetting.setInterpreterGroupProperties(interpreterGroupId, finalProperties);
-      return new InterpreterResult(Code.SUCCESS);
+      return new InterpreterResultImpl(Code.SUCCESS);
     } catch (IOException e) {
       LOGGER.error("Fail to update interpreter setting", e);
-      return new InterpreterResult(Code.ERROR, ExceptionUtils.getStackTrace(e));
+      return new InterpreterResultImpl(Code.ERROR, ExceptionUtils.getStackTrace(e));
     }
   }
 

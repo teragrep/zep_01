@@ -57,17 +57,17 @@ public class JavaInterpreter extends AbstractInterpreter {
   }
 
   @Override
-  public InterpreterResult interpret(String code, org.apache.zeppelin.interpreter.xref.InterpreterContext context) {
+  public InterpreterResultImpl interpret(String code, org.apache.zeppelin.interpreter.xref.InterpreterContext context) {
 
     // choosing new name to class containing Main method
     String generatedClassName = "C" + UUID.randomUUID().toString().replace("-", "");
 
     try {
       String res = StaticRepl.execute(generatedClassName, code);
-      return new InterpreterResult(Code.SUCCESS, res);
+      return new InterpreterResultImpl(Code.SUCCESS, res);
     } catch (Exception e) {
       LOGGER.error("Exception in Interpreter while interpret", e);
-      return new InterpreterResult(Code.ERROR, e.getMessage());
+      return new InterpreterResultImpl(Code.ERROR, e.getMessage());
 
     }
 

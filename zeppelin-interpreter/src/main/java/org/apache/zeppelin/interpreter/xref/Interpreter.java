@@ -1,6 +1,7 @@
 package org.apache.zeppelin.interpreter.xref;
 
 import org.apache.zeppelin.interpreter.InterpreterResult;
+import org.apache.zeppelin.interpreter.InterpreterResultImpl;
 import org.apache.zeppelin.interpreter.xref.annotation.Experimental;
 import org.apache.zeppelin.interpreter.xref.annotation.ZeppelinApi;
 import org.apache.zeppelin.interpreter.thrift.InterpreterCompletion;
@@ -32,7 +33,7 @@ public interface Interpreter {
      * @param st statements to run
      */
     @ZeppelinApi
-    InterpreterResult interpret(
+    InterpreterResultImpl interpret(
             String st, InterpreterContext context
     ) throws InterpreterException;
 

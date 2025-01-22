@@ -23,6 +23,7 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 import org.apache.zeppelin.interpreter.InterpreterResult;
+import org.apache.zeppelin.interpreter.InterpreterResultImpl;
 import org.apache.zeppelin.interpreter.xref.Code;
 import org.apache.zeppelin.interpreter.xref.user.UserCredentials;
 import org.apache.zeppelin.user.UserCredentialsImpl;
@@ -51,7 +52,7 @@ public class CredentialInjectorTest {
     String actual = testee.replaceCredentials(TEMPLATE);
     assertEquals(CORRECT_REPLACED, actual);
 
-    InterpreterResult ret = new InterpreterResult(Code.SUCCESS, ANSWER);
+    InterpreterResult ret = new InterpreterResultImpl(Code.SUCCESS, ANSWER);
     InterpreterResult hiddenResult = testee.hidePasswords(ret);
     assertEquals(1, hiddenResult.message().size());
     assertEquals(HIDDEN, hiddenResult.message().get(0).getData());
@@ -72,7 +73,7 @@ public class CredentialInjectorTest {
     String actual = testee.replaceCredentials(TEMPLATE);
     assertEquals(TEMPLATE, actual);
 
-    InterpreterResult ret = new InterpreterResult(Code.SUCCESS, ANSWER);
+    InterpreterResult ret = new InterpreterResultImpl(Code.SUCCESS, ANSWER);
     InterpreterResult hiddenResult = testee.hidePasswords(ret);
     assertEquals(1, hiddenResult.message().size());
     assertEquals(ANSWER, hiddenResult.message().get(0).getData());

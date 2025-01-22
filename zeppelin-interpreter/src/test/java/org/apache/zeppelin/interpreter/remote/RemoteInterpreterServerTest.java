@@ -210,25 +210,25 @@ public class RemoteInterpreterServerTest {
     }
 
     @Override
-    public InterpreterResult interpret(String st, InterpreterContext context) {
+    public InterpreterResultImpl interpret(String st, InterpreterContext context) {
       if (st.equals("SINGLE_OUTPUT_SUCCESS")) {
-        return new InterpreterResult(Code.SUCCESS, "SINGLE_OUTPUT_SUCCESS");
+        return new InterpreterResultImpl(Code.SUCCESS, "SINGLE_OUTPUT_SUCCESS");
       } else if (st.equals("SINGLE_OUTPUT_ERROR")) {
-        return new InterpreterResult(Code.ERROR, "SINGLE_OUTPUT_ERROR");
+        return new InterpreterResultImpl(Code.ERROR, "SINGLE_OUTPUT_ERROR");
       } else if (st.equals("COMBO_OUTPUT_SUCCESS")) {
         try {
           context.out().write("INTERPRETER_OUT");
         } catch (IOException e) {
           fail("Failure happened: " + e.getMessage());
         }
-        return new InterpreterResult(Code.SUCCESS, "SINGLE_OUTPUT_SUCCESS");
+        return new InterpreterResultImpl(Code.SUCCESS, "SINGLE_OUTPUT_SUCCESS");
       } else if (st.equals("SLEEP")) {
         try {
           Thread.sleep(3 * 1000);
         } catch (InterruptedException e) {
           fail("Failure happened: " + e.getMessage());
         }
-        return new InterpreterResult(Code.SUCCESS, "SLEEP_SUCCESS");
+        return new InterpreterResultImpl(Code.SUCCESS, "SLEEP_SUCCESS");
       }
       return null;
     }
@@ -268,7 +268,7 @@ public class RemoteInterpreterServerTest {
     }
 
     @Override
-    public InterpreterResult interpret(String st, InterpreterContext context) {
+    public InterpreterResultImpl interpret(String st, InterpreterContext context) {
       return null;
     }
 

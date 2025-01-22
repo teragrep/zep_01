@@ -42,8 +42,8 @@ public class GetAngularObjectSizeInterpreter extends AbstractInterpreter {
   }
 
   @Override
-  public InterpreterResult interpret(String st, InterpreterContext context) {
-    return new InterpreterResult(
+  public InterpreterResultImpl interpret(String st, InterpreterContext context) {
+    return new InterpreterResultImpl(
             Code.SUCCESS,
         "" + context.getAngularObjectRegistry().getRegistry().size());
   }

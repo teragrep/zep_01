@@ -21,8 +21,8 @@ import java.util.Collection;
 import java.util.Map;
 import java.util.Set;
 
+import org.apache.zeppelin.interpreter.InterpreterResultImpl;
 import org.apache.zeppelin.interpreter.xref.Code;
-import org.apache.zeppelin.interpreter.InterpreterResult;
 import org.apache.zeppelin.interpreter.xref.Type;
 import org.apache.zeppelin.tabledata.Node;
 import org.apache.zeppelin.tabledata.Relationship;
@@ -33,7 +33,7 @@ import com.google.gson.Gson;
  * The intepreter result template for Networks
  *
  */
-public class GraphResult extends InterpreterResult {
+public class GraphResult extends InterpreterResultImpl {
 
   /**
    * The Graph structure parsed from the front-end

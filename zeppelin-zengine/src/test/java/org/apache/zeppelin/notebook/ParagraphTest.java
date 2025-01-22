@@ -239,7 +239,7 @@ public class ParagraphTest extends AbstractInterpreterTest {
   public void returnDefaultParagraphWithNewUser() {
     Paragraph p = new Paragraph("para_1", null, null);
     String defaultValue = "Default Value";
-    p.setResult(new InterpreterResult(Code.SUCCESS, defaultValue));
+    p.setResult(new InterpreterResultImpl(Code.SUCCESS, defaultValue));
     Paragraph newUserParagraph = p.getUserParagraph("new_user");
     assertNotNull(newUserParagraph);
     assertEquals(defaultValue, newUserParagraph.getReturn().message().get(0).getData());
@@ -279,7 +279,7 @@ public class ParagraphTest extends AbstractInterpreterTest {
     ParagraphJobListener mockJobListener = mock(ParagraphJobListener.class);
     doReturn(mockJobListener).when(spyParagraph).getListener();
 
-    InterpreterResult mockInterpreterResult = mock(InterpreterResult.class);
+    InterpreterResult mockInterpreterResult = mock(InterpreterResultImpl.class);
     when(mockInterpreter.interpret(anyString(), Mockito.<InterpreterContextImpl>any())).thenReturn(mockInterpreterResult);
     when(mockInterpreterResult.code()).thenReturn(Code.SUCCESS);
 
@@ -293,7 +293,7 @@ public class ParagraphTest extends AbstractInterpreterTest {
     spyParagraph.jobRun();
     Paragraph p1 = spyParagraph.getUserParagraph(user1.getUser());
 
-    mockInterpreterResult = mock(InterpreterResult.class);
+    mockInterpreterResult = mock(InterpreterResultImpl.class);
     when(mockInterpreter.interpret(anyString(), Mockito.<InterpreterContextImpl>any())).thenReturn(mockInterpreterResult);
     when(mockInterpreterResult.code()).thenReturn(Code.SUCCESS);
 
@@ -370,7 +370,7 @@ public class ParagraphTest extends AbstractInterpreterTest {
     ParagraphJobListener mockJobListener = mock(ParagraphJobListener.class);
     doReturn(mockJobListener).when(spyParagraph).getListener();
 
-    InterpreterResult mockInterpreterResult = mock(InterpreterResult.class);
+    InterpreterResult mockInterpreterResult = mock(InterpreterResultImpl.class);
     when(mockInterpreter.interpret(anyString(), Mockito.<InterpreterContextImpl>any())).thenReturn(mockInterpreterResult);
     when(mockInterpreterResult.code()).thenReturn(Code.SUCCESS);
 

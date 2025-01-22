@@ -39,6 +39,7 @@ import javax.inject.Inject;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.zeppelin.conf.ZeppelinConfiguration;
+import org.apache.zeppelin.interpreter.InterpreterResultImpl;
 import org.apache.zeppelin.interpreter.xref.display.AngularObject;
 import org.apache.zeppelin.interpreter.xref.display.AngularObjectRegistry;
 import org.apache.zeppelin.interpreter.xref.Code;
@@ -394,7 +395,7 @@ public class NotebookService {
       return true;
     } catch (Exception ex) {
       LOGGER.error("Exception from run", ex);
-      p.setReturn(new InterpreterResult(Code.ERROR, ex.getMessage()), ex);
+      p.setReturn(new InterpreterResultImpl(Code.ERROR, ex.getMessage()), ex);
       p.setStatus(Status.ERROR);
       // don't call callback.onFailure, we just need to display the error message
       // in paragraph result section instead of pop up the error window.

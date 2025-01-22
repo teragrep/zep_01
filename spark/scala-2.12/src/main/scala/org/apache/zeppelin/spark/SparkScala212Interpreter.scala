@@ -23,7 +23,7 @@ import org.apache.zeppelin.interpreter
 import org.apache.zeppelin.interpreter.thrift.InterpreterCompletion
 import org.apache.zeppelin.interpreter.util.InterpreterOutputStream
 import org.apache.zeppelin.interpreter.xref.{Code, InterpreterContext, InterpreterException}
-import org.apache.zeppelin.interpreter.{InterpreterContextImpl, InterpreterContextStore, InterpreterGroupImpl, InterpreterResult, xref}
+import org.apache.zeppelin.interpreter.{InterpreterContextImpl, InterpreterContextStore, InterpreterGroupImpl, InterpreterResultImpl, xref}
 import org.slf4j.{Logger, LoggerFactory}
 
 import java.io.{BufferedReader, File}
@@ -55,7 +55,7 @@ class SparkScala212Interpreter(conf: SparkConf,
   private val sparkMaster: String = conf.get(SparkStringConstants.MASTER_PROP_NAME,
     SparkStringConstants.DEFAULT_MASTER_VALUE)
 
-  override def interpret(code: String, context: InterpreterContext): InterpreterResult = {
+  override def interpret(code: String, context: InterpreterContext): InterpreterResultImpl = {
 
     val originalOut = System.out
     val printREPLOutput = context.getStringLocalProperty("printREPLOutput", "true").toBoolean
@@ -106,8 +106,8 @@ class SparkScala212Interpreter(conf: SparkConf,
     }
 
     lastStatus match {
-      case xref.Code.INCOMPLETE => new InterpreterResult(lastStatus, "Incomplete expression")
-      case _ => new InterpreterResult(lastStatus)
+      case xref.Code.INCOMPLETE => new InterpreterResultImpl(lastStatus, "Incomplete expression")
+      case _ => new InterpreterResultImpl(lastStatus)
     }
   }
 
@@ -152,7 +152,7 @@ class SparkScala212Interpreter(conf: SparkConf,
     sparkILoop.classLoader
   }
 
-  def interpret(code: String): InterpreterResult =
+  def interpret(code: String): InterpreterResultImpl =
     interpret(code, InterpreterContextStore.get())
 
   override def close(): Unit = {

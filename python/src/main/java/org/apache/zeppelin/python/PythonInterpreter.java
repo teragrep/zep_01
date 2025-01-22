@@ -335,7 +335,7 @@ public class PythonInterpreter extends AbstractInterpreter {
   }
 
   @Override
-  public InterpreterResult interpret(String st, InterpreterContext context)
+  public InterpreterResultImpl interpret(String st, InterpreterContext context)
       throws InterpreterException {
 
     outputStream.setInterpreterOutput(context.out());
@@ -349,7 +349,7 @@ public class PythonInterpreter extends AbstractInterpreter {
     callPython(new PythonInterpretRequest(st, false));
 
     if (statementError) {
-      return new InterpreterResult(Code.ERROR, statementOutput);
+      return new InterpreterResultImpl(Code.ERROR, statementOutput);
     } else {
       try {
         context.out().flush();
@@ -357,9 +357,9 @@ public class PythonInterpreter extends AbstractInterpreter {
         throw new InterpreterException(e);
       }
       if (pythonProcessLauncher.isRunning()) {
-        return new InterpreterResult(Code.SUCCESS);
+        return new InterpreterResultImpl(Code.SUCCESS);
       } else {
-        return new InterpreterResult(Code.ERROR,
+        return new InterpreterResultImpl(Code.ERROR,
                 "Python process is abnormally exited, please check your code and log.");
       }
     }

@@ -111,17 +111,17 @@ public class HbaseInterpreter extends AbstractInterpreter {
   }
 
   @Override
-  public InterpreterResult interpret(String cmd, org.apache.zeppelin.interpreter.xref.InterpreterContext interpreterContext) {
+  public InterpreterResultImpl interpret(String cmd, org.apache.zeppelin.interpreter.xref.InterpreterContext interpreterContext) {
     try {
       logger.info(cmd);
       this.writer.getBuffer().setLength(0);
       this.scriptingContainer.runScriptlet(cmd);
       this.writer.flush();
       logger.debug(writer.toString());
-      return new InterpreterResult(Code.SUCCESS, writer.getBuffer().toString());
+      return new InterpreterResultImpl(Code.SUCCESS, writer.getBuffer().toString());
     } catch (Throwable t) {
       logger.error("Can not run '" + cmd + "'", t);
-      return new InterpreterResult(Code.ERROR, t.getMessage());
+      return new InterpreterResultImpl(Code.ERROR, t.getMessage());
     }
   }
 

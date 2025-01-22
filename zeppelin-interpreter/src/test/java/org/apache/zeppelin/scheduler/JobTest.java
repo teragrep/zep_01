@@ -18,6 +18,7 @@
 package org.apache.zeppelin.scheduler;
 
 import org.apache.zeppelin.interpreter.InterpreterContextImpl;
+import org.apache.zeppelin.interpreter.InterpreterResultImpl;
 import org.apache.zeppelin.interpreter.xref.Interpreter;
 import org.apache.zeppelin.interpreter.xref.InterpreterException;
 import org.apache.zeppelin.interpreter.InterpreterResult;
@@ -62,7 +63,7 @@ public class JobTest {
   public void testNormalCase() throws Throwable {
 
     InterpreterResult successInterpreterResult =
-        new InterpreterResult(Code.SUCCESS, "success result");
+        new InterpreterResultImpl(Code.SUCCESS, "success result");
     doReturn(successInterpreterResult).when(spyInterpretJob).jobRun();
 
     spyInterpretJob.run();

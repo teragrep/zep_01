@@ -20,11 +20,11 @@ package org.apache.zeppelin.spark;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.spark.SparkConf;
 import org.apache.spark.api.java.JavaSparkContext;
+import org.apache.zeppelin.interpreter.InterpreterResultImpl;
 import org.apache.zeppelin.interpreter.xref.InterpreterContext;
 import org.apache.zeppelin.interpreter.InterpreterContextStore;
 import org.apache.zeppelin.interpreter.xref.ZeppelinContext;
 import org.apache.zeppelin.interpreter.xref.InterpreterException;
-import org.apache.zeppelin.interpreter.InterpreterResult;
 import org.apache.zeppelin.python.PythonInterpreter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -112,7 +112,7 @@ public class PySparkInterpreter extends PythonInterpreter {
   }
 
   @Override
-  public InterpreterResult interpret(String st, InterpreterContext context)
+  public InterpreterResultImpl interpret(String st, InterpreterContext context)
       throws InterpreterException {
     curIntpContext = context;
     // redirect java stdout/stdout to interpreter output. Because pyspark may call java code.

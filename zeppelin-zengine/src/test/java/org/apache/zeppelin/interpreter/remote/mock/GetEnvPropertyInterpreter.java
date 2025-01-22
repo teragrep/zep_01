@@ -43,14 +43,14 @@ public class GetEnvPropertyInterpreter extends AbstractInterpreter {
   }
 
   @Override
-  public InterpreterResult interpret(String st, InterpreterContext context) {
+  public InterpreterResultImpl interpret(String st, InterpreterContext context) {
     String[] cmd = st.split(" ");
     if (cmd[0].equals("getEnv")) {
-      return new InterpreterResult(Code.SUCCESS, System.getenv(cmd[1]) == null ? "null" : System.getenv(cmd[1]));
+      return new InterpreterResultImpl(Code.SUCCESS, System.getenv(cmd[1]) == null ? "null" : System.getenv(cmd[1]));
     } else if (cmd[0].equals("getProperty")){
-      return new InterpreterResult(Code.SUCCESS, System.getProperty(cmd[1]) == null ? "null" : System.getProperty(cmd[1]));
+      return new InterpreterResultImpl(Code.SUCCESS, System.getProperty(cmd[1]) == null ? "null" : System.getProperty(cmd[1]));
     } else {
-      return new InterpreterResult(Code.ERROR, cmd[0]);
+      return new InterpreterResultImpl(Code.ERROR, cmd[0]);
     }
   }
 

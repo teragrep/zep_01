@@ -44,11 +44,11 @@ public class EchoInterpreter extends AbstractInterpreter {
   }
 
   @Override
-  public InterpreterResult interpret(String st, InterpreterContext context) {
+  public InterpreterResultImpl interpret(String st, InterpreterContext context) {
     if (Boolean.parseBoolean(getProperty("zeppelin.interpreter.echo.fail", "false"))) {
-      return new InterpreterResult(Code.ERROR);
+      return new InterpreterResultImpl(Code.ERROR);
     } else {
-      return new InterpreterResult(Code.SUCCESS, st);
+      return new InterpreterResultImpl(Code.SUCCESS, st);
     }
   }
 

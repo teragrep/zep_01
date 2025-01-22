@@ -184,7 +184,7 @@ public class RemoteInterpreter extends AbstractInterpreter {
   }
 
   @Override
-  public InterpreterResult interpret(final String st, final InterpreterContext context)
+  public InterpreterResultImpl interpret(final String st, final InterpreterContext context)
       throws InterpreterException {
     if (LOGGER.isDebugEnabled()) {
       LOGGER.debug("st:\n{}", st);
@@ -198,7 +198,7 @@ public class RemoteInterpreter extends AbstractInterpreter {
       throw new InterpreterException(e);
     }
     if (!interpreterProcess.isRunning()) {
-      return new InterpreterResult(
+      return new InterpreterResultImpl(
               Code.ERROR,
               "Interpreter process is not running\n" + interpreterProcess.getErrorMessage());
     }
@@ -367,7 +367,7 @@ public class RemoteInterpreter extends AbstractInterpreter {
   }
 
   private InterpreterResult convert(RemoteInterpreterResult result) {
-    InterpreterResult r = new InterpreterResult(
+    InterpreterResult r = new InterpreterResultImpl(
         Code.valueOf(result.getCode()));
 
     for (RemoteInterpreterResultMessage m : result.getMsg()) {

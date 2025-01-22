@@ -34,7 +34,7 @@ public abstract class AbstractEnhancedInterpreter extends AbstractInterpreter im
   }
 
   @Override
-  public InterpreterResult interpret(String st,
+  public InterpreterResultImpl interpret(String st,
           InterpreterContext context) throws InterpreterException {
     InterpreterContextStore.set(context);
     ZeppelinContext z = getZeppelinContext();
@@ -76,7 +76,7 @@ public abstract class AbstractEnhancedInterpreter extends AbstractInterpreter im
     return false;
   }
 
-  protected abstract InterpreterResult internalInterpret(
+  protected abstract InterpreterResultImpl internalInterpret(
           String st,
           InterpreterContext context) throws InterpreterException;
 

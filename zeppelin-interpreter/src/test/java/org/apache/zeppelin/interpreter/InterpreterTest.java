@@ -103,7 +103,7 @@ public class InterpreterTest {
     }
 
     @Override
-    public InterpreterResult interpret(String st, InterpreterContext context) {
+    public InterpreterResultImpl interpret(String st, InterpreterContext context) {
       return null;
     }
 

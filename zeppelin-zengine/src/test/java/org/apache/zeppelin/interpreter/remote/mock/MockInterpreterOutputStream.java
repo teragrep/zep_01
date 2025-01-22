@@ -49,7 +49,7 @@ public class MockInterpreterOutputStream extends AbstractInterpreter {
   }
 
   @Override
-  public InterpreterResult interpret(String st, InterpreterContext context)
+  public InterpreterResultImpl interpret(String st, InterpreterContext context)
       throws InterpreterException {
     String[] ret = st.split(":");
     try {
@@ -59,7 +59,7 @@ public class MockInterpreterOutputStream extends AbstractInterpreter {
     } catch (IOException e) {
       throw new InterpreterException(e);
     }
-    return new InterpreterResult(Code.valueOf(ret[0]), (ret.length > 2) ?
+    return new InterpreterResultImpl(Code.valueOf(ret[0]), (ret.length > 2) ?
             ret[2] : "");
   }
 

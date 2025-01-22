@@ -47,7 +47,7 @@ public class MockInterpreterA extends AbstractInterpreter {
   }
 
   @Override
-  public InterpreterResult interpret(String st, InterpreterContext context)
+  public InterpreterResultImpl interpret(String st, InterpreterContext context)
       throws InterpreterException {
     if (getProperties().containsKey("progress")) {
       context.setProgress(Integer.parseInt(getProperty("progress")));
@@ -58,7 +58,7 @@ public class MockInterpreterA extends AbstractInterpreter {
     } catch (NumberFormatException | InterruptedException e) {
       throw new InterpreterException(e);
     }
-    return new InterpreterResult(Code.SUCCESS, st);
+    return new InterpreterResultImpl(Code.SUCCESS, st);
   }
 
   @Override

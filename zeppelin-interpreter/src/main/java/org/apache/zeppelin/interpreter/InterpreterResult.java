@@ -1,120 +1,25 @@
-/*
- * Licensed to the Apache Software Foundation (ASF) under one or more
- * contributor license agreements.  See the NOTICE file distributed with
- * this work for additional information regarding copyright ownership.
- * The ASF licenses this file to You under the Apache License, Version 2.0
- * (the "License"); you may not use this file except in compliance with
- * the License.  You may obtain a copy of the License at
- *
- *    http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
-
 package org.apache.zeppelin.interpreter;
 
-import com.google.gson.Gson;
 import org.apache.zeppelin.common.JsonSerializable;
 import org.apache.zeppelin.interpreter.xref.Code;
-import org.apache.zeppelin.interpreter.xref.InterpreterOutput;
 import org.apache.zeppelin.interpreter.xref.InterpreterResultMessage;
 import org.apache.zeppelin.interpreter.xref.Type;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
-import java.io.IOException;
 import java.io.Serializable;
-import java.util.LinkedList;
 import java.util.List;
 
-/**
- * Interpreter result template.
- */
-public class InterpreterResult implements Serializable, JsonSerializable {
-  transient Logger logger = LoggerFactory.getLogger(InterpreterResult.class);
-  private static final Gson gson = new Gson();
+public interface InterpreterResult extends Serializable, JsonSerializable {
 
-  Code code;
-  List<InterpreterResultMessage> msg = new LinkedList<>();
+    void add(String msg);
 
-  public InterpreterResult(Code code) {
-    this.code = code;
-  }
+    void add(Type type, String data);
 
-  public InterpreterResult(Code code, List<InterpreterResultMessage> msgs) {
-    this.code = code;
-    msg.addAll(msgs);
-  }
+    void add(InterpreterResultMessage interpreterResultMessage);
 
-  public InterpreterResult(Code code, String msg) {
-    this.code = code;
-    add(msg);
-  }
+    Code code();
 
-  public InterpreterResult(Code code, Type type, String msg) {
-    this.code = code;
-    add(type, msg);
-  }
+    List<InterpreterResultMessage> message();
 
-  /**
-   * Automatically detect %[display_system] directives
-   * @param msg
-   */
-  public void add(String msg) {
-    InterpreterOutput out = new InterpreterOutputImpl();
-    try {
-      out.write(msg);
-      out.flush();
-      this.msg.addAll(out.toInterpreterResultMessage());
-      out.close();
-    } catch (IOException e) {
-      logger.error(e.getMessage(), e);
-    }
+    String toString();
 
-  }
-
-  public void add(Type type, String data) {
-    msg.add(new InterpreterResultMessageImpl(type, data));
-  }
-
-  public void add(InterpreterResultMessage interpreterResultMessage) {
-    msg.add(interpreterResultMessage);
-  }
-
-  public Code code() {
-    return code;
-  }
-
-  public List<InterpreterResultMessage> message() {
-    return msg;
-  }
-
-  public String toJson() {
-    return gson.toJson(this);
-  }
-
-  public static InterpreterResult fromJson(String json) {
-    return gson.fromJson(json, InterpreterResult.class);
-  }
-
-  public String toString() {
-    StringBuilder sb = new StringBuilder();
-    Type prevType = null;
-    for (InterpreterResultMessage m : msg) {
-      if (prevType != null) {
-        sb.append("\n");
-        if (prevType == Type.TABLE) {
-          sb.append("\n");
-        }
-      }
-      sb.append(m.toString());
-      prevType = m.getType();
-    }
-
-    return sb.toString();
-  }
 }

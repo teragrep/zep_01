@@ -366,7 +366,7 @@ public class Paragraph extends JobWithProgressPoller<InterpreterResult> implemen
       }
     } catch (InterpreterNotFoundException e) {
       InterpreterResult intpResult =
-          new InterpreterResult(
+          new InterpreterResultImpl(
                   Code.ERROR,
                   String.format("Interpreter %s not found", this.intpText));
       setReturn(intpResult, e);
@@ -374,7 +374,7 @@ public class Paragraph extends JobWithProgressPoller<InterpreterResult> implemen
       return false;
     } catch (Throwable e) {
       InterpreterResult intpResult =
-              new InterpreterResult(
+              new InterpreterResultImpl(
                       Code.ERROR,
                       "Unexpected exception: " + ExceptionUtils.getStackTrace(e));
       setReturn(intpResult, e);
@@ -417,7 +417,7 @@ public class Paragraph extends JobWithProgressPoller<InterpreterResult> implemen
         if (subject != null && !interpreterSetting.isUserAuthorized(subject.getUsersAndRoles())) {
           String msg = String.format("%s has no permission for %s", subject.getUser(), intpText);
           LOGGER.error(msg);
-          return new InterpreterResult(Code.ERROR, msg);
+          return new InterpreterResultImpl(Code.ERROR, msg);
         }
       }
 
@@ -496,7 +496,7 @@ public class Paragraph extends JobWithProgressPoller<InterpreterResult> implemen
         InterpreterContextStore.remove();
       }
     } catch (Exception e) {
-      return new InterpreterResult(Code.ERROR, ExceptionUtils.getStackTrace(e));
+      return new InterpreterResultImpl(Code.ERROR, ExceptionUtils.getStackTrace(e));
     } finally {
       localProperties.remove("isRecover");
     }
@@ -666,7 +666,7 @@ public class Paragraph extends JobWithProgressPoller<InterpreterResult> implemen
    */
   public void checkpointOutput() {
     LOGGER.info("Checkpoint Paragraph output for paragraph: " + getId());
-    this.results = new InterpreterResult(Code.SUCCESS);
+    this.results = new InterpreterResultImpl(Code.SUCCESS);
     for (InterpreterResultMessage buffer : outputBuffer) {
       results.add(buffer);
     }
@@ -802,14 +802,14 @@ public class Paragraph extends JobWithProgressPoller<InterpreterResult> implemen
 
     } catch (InterpreterNotFoundException e) {
       InterpreterResult intpResult =
-              new InterpreterResult(
+              new InterpreterResultImpl(
                       Code.ERROR,
                       String.format("Interpreter %s not found", this.intpText));
       setReturn(intpResult, e);
       setStatus(Status.ERROR);
     } catch (Throwable e) {
       InterpreterResult intpResult =
-              new InterpreterResult(
+              new InterpreterResultImpl(
                       Code.ERROR,
                       "Unexpected exception: " + ExceptionUtils.getStackTrace(e));
       setReturn(intpResult, e);

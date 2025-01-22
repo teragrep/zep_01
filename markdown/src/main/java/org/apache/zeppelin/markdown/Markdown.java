@@ -56,7 +56,7 @@ public class Markdown extends AbstractInterpreter {
   }
 
   @Override
-  public InterpreterResult interpret(String markdownText, org.apache.zeppelin.interpreter.xref.InterpreterContext interpreterContext) {
+  public InterpreterResultImpl interpret(String markdownText, org.apache.zeppelin.interpreter.xref.InterpreterContext interpreterContext) {
     String html;
 
     try {
@@ -64,10 +64,10 @@ public class Markdown extends AbstractInterpreter {
       html = parser.render(markdownText);
     } catch (RuntimeException e) {
       LOGGER.error("Exception in MarkdownInterpreter while interpret ", e);
-      return new InterpreterResult(Code.ERROR, InterpreterUtils.getMostRelevantMessage(e));
+      return new InterpreterResultImpl(Code.ERROR, InterpreterUtils.getMostRelevantMessage(e));
     }
 
-    return new InterpreterResult(Code.SUCCESS, "%html " + html);
+    return new InterpreterResultImpl(Code.SUCCESS, "%html " + html);
   }
 
   public String sanitizeInput(String input) {

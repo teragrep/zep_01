@@ -99,9 +99,9 @@ public class NotebookServiceTest {
     when(mockInterpreterFactory.getInterpreter(any(), any()))
         .thenReturn(mockInterpreter);
     when(mockInterpreter.interpret(eq("invalid_code"), any()))
-        .thenReturn(new InterpreterResult(Code.ERROR, "failed"));
+        .thenReturn(new InterpreterResultImpl(Code.ERROR, "failed"));
     when(mockInterpreter.interpret(eq("1+1"), any()))
-        .thenReturn(new InterpreterResult(Code.SUCCESS, "succeed"));
+        .thenReturn(new InterpreterResultImpl(Code.SUCCESS, "succeed"));
     doCallRealMethod().when(mockInterpreter).getScheduler();
     when(mockInterpreter.getFormType()).thenReturn(FormType.NATIVE);
     ManagedInterpreterGroup mockInterpreterGroup = mock(ManagedInterpreterGroup.class);

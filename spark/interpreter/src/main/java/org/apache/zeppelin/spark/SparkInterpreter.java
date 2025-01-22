@@ -196,7 +196,7 @@ public class SparkInterpreter extends AbstractEnhancedInterpreter {
   }
 
   @Override
-  public InterpreterResult internalInterpret(String st,
+  public InterpreterResultImpl internalInterpret(String st,
           org.apache.zeppelin.interpreter.xref.InterpreterContext context) throws InterpreterException {
     context.out().clear();
     sc.setJobGroup(Utils.buildJobGroupId(context), Utils.buildJobDesc(context), false);
