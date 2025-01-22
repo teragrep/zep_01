@@ -15,7 +15,9 @@
  * limitations under the License.
  */
 
-package org.apache.zeppelin.display;
+package org.apache.zeppelin.interpreter.xref.display;
+
+import org.apache.zeppelin.display.AngularObject;
 
 /**
  *

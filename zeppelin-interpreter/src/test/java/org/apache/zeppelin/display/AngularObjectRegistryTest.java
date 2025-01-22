@@ -18,6 +18,7 @@
 package org.apache.zeppelin.display;
 
 import org.apache.thrift.TException;
+import org.apache.zeppelin.interpreter.xref.display.AngularObjectRegistryListener;
 import org.junit.Test;
 
 import java.util.concurrent.atomic.AtomicInteger;
