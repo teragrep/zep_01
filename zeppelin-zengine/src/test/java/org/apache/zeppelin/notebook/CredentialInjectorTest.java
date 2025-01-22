@@ -26,7 +26,7 @@ import org.apache.zeppelin.interpreter.InterpreterResult;
 import org.apache.zeppelin.interpreter.xref.Code;
 import org.apache.zeppelin.interpreter.xref.user.UserCredentials;
 import org.apache.zeppelin.user.UserCredentialsImpl;
-import org.apache.zeppelin.user.UsernamePassword;
+import org.apache.zeppelin.interpreter.xref.user.UsernamePassword;
 import org.apache.zeppelin.user.UsernamePasswordImpl;
 import org.junit.Test;
 

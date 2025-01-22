@@ -17,6 +17,8 @@
 
 package org.apache.zeppelin.user;
 
+import org.apache.zeppelin.interpreter.xref.user.UsernamePassword;
+
 /**
  * Username and Password POJO
  */

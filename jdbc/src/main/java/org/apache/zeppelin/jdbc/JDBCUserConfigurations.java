@@ -15,7 +15,7 @@
 package org.apache.zeppelin.jdbc;
 
 import org.apache.commons.dbcp2.PoolingDriver;
-import org.apache.zeppelin.user.UsernamePassword;
+import org.apache.zeppelin.interpreter.xref.user.UsernamePassword;
 
 import java.sql.SQLException;
 import java.sql.Statement;

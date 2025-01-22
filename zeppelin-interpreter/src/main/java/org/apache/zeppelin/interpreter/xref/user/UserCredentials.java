@@ -1,7 +1,5 @@
 package org.apache.zeppelin.interpreter.xref.user;
 
-import org.apache.zeppelin.user.UsernamePassword;
-
 public interface UserCredentials {
 
     UsernamePassword getUsernamePassword(String entity);

@@ -1,4 +1,4 @@
-package org.apache.zeppelin.user;
+package org.apache.zeppelin.interpreter.xref.user;
 
 public interface UsernamePassword {
 

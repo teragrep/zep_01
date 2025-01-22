@@ -71,7 +71,7 @@ import org.apache.zeppelin.jdbc.security.JDBCSecurityImpl;
 import org.apache.zeppelin.interpreter.xref.Scheduler;
 import org.apache.zeppelin.scheduler.SchedulerFactory;
 import org.apache.zeppelin.interpreter.xref.user.UserCredentials;
-import org.apache.zeppelin.user.UsernamePassword;
+import org.apache.zeppelin.interpreter.xref.user.UsernamePassword;
 
 /**
  * JDBC interpreter for Zeppelin. This interpreter can also be used for accessing HAWQ,

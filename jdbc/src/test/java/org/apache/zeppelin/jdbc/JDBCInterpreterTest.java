@@ -31,7 +31,7 @@ import org.apache.zeppelin.interpreter.xref.user.AuthenticationInfo;
 import org.apache.zeppelin.user.AuthenticationInfoImpl;
 import org.apache.zeppelin.interpreter.xref.user.UserCredentials;
 import org.apache.zeppelin.user.UserCredentialsImpl;
-import org.apache.zeppelin.user.UsernamePassword;
+import org.apache.zeppelin.interpreter.xref.user.UsernamePassword;
 import org.apache.zeppelin.user.UsernamePasswordImpl;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Disabled;

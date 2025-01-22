@@ -27,7 +27,7 @@ import org.apache.zeppelin.interpreter.InterpreterResult;
 import org.apache.zeppelin.interpreter.xref.InterpreterResultMessage;
 import org.apache.zeppelin.interpreter.InterpreterResultMessageImpl;
 import org.apache.zeppelin.interpreter.xref.user.UserCredentials;
-import org.apache.zeppelin.user.UsernamePassword;
+import org.apache.zeppelin.interpreter.xref.user.UsernamePassword;
 
 /**
  * Class for replacing {user.&gt;credentialkey&lt;} and
