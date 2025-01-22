@@ -104,7 +104,7 @@ public class GUIImpl implements GUI {
   }
 
   @Override
-  public Object select(String id, ParamOptionImpl[] options, Object defaultValue) {
+  public Object select(String id, ParamOption[] options, Object defaultValue) {
     if (defaultValue == null && options != null && options.length > 0) {
       defaultValue = options[0].getValue();
     }
@@ -119,7 +119,7 @@ public class GUIImpl implements GUI {
 
   @Override
   public List<Object> checkbox(
-          String id, ParamOptionImpl[] options, Collection<Object> defaultChecked
+          String id, ParamOption[] options, Collection<Object> defaultChecked
   ) {
     Collection<Object> checked = (Collection<Object>) params.get(id);
     if (checked == null) {

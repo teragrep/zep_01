@@ -17,6 +17,8 @@
 
 package org.apache.zeppelin.display.ui;
 
+import org.apache.zeppelin.interpreter.xref.display.ui.ParamOption;
+
 /**
  * Html Dropdown list
  */
@@ -26,7 +28,7 @@ public class Select extends OptionInputImpl<Object> {
 
   }
 
-  public Select(String name, Object defaultValue, ParamOptionImpl[] options) {
+  public Select(String name, Object defaultValue, ParamOption[] options) {
     this.name = name;
     this.displayName = name;
     this.defaultValue = defaultValue;
