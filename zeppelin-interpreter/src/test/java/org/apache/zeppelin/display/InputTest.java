@@ -38,17 +38,17 @@ public class InputTest {
     String script = "${input_form=}";
     Map<String, Input> forms = InputUtil.extractSimpleQueryForm(script, false);
     assertEquals(1, forms.size());
-    InputImpl form = forms.get("input_form");
-    assertEquals("input_form", form.name);
-    assertEquals("input_form", form.displayName);
-    assertEquals("", form.defaultValue);
+    Input form = forms.get("input_form");
+    assertEquals("input_form", form.getName());
+    assertEquals("input_form", form.getDisplayName());
+    assertEquals("", form.getDefaultValue());
     assertTrue(form instanceof TextBox);
 
     // textbox form with display name & default value
     script = "${input_form(Input Form)=xxx}";
     forms = InputUtil.extractSimpleQueryForm(script, false);
     form = forms.get("input_form");
-    assertEquals("xxx", form.defaultValue);
+    assertEquals("xxx", form.getDefaultValue());
     assertTrue(form instanceof TextBox);
     assertEquals("Input Form", form.getDisplayName());
 
@@ -62,8 +62,8 @@ public class InputTest {
     // selection form
     script = "${select_form(Selection Form)=op1,op1|op2(Option 2)|op3}";
     form = InputUtil.extractSimpleQueryForm(script, false).get("select_form");
-    assertEquals("select_form", form.name);
-    assertEquals("op1", form.defaultValue);
+    assertEquals("select_form", form.getName());
+    assertEquals("op1", form.getDefaultValue());
     assertEquals("Selection Form", form.getDisplayName());
     assertTrue(form instanceof Select);
     assertArrayEquals(new ParamOption[]{
@@ -75,11 +75,11 @@ public class InputTest {
     // checkbox form
     script = "${checkbox:checkbox_form=op1,op1|op2|op3}";
     form = InputUtil.extractSimpleQueryForm(script, false).get("checkbox_form");
-    assertEquals("checkbox_form", form.name);
-    assertEquals("checkbox_form", form.displayName);
+    assertEquals("checkbox_form", form.getName());
+    assertEquals("checkbox_form", form.getDisplayName());
     assertTrue(form instanceof CheckBox);
 
-    assertArrayEquals(new Object[]{"op1"}, (Object[]) form.defaultValue);
+    assertArrayEquals(new Object[]{"op1"}, (Object[]) form.getDefaultValue());
     assertArrayEquals(new ParamOption[]{
         new ParamOptionImpl("op1", null),
         new ParamOptionImpl("op2", null),
@@ -89,10 +89,10 @@ public class InputTest {
     // checkbox form with multiple default checks
     script = "${checkbox:checkbox_form(Checkbox Form)=op1|op3,op1(Option 1)|op2|op3}";
     form = InputUtil.extractSimpleQueryForm(script, false).get("checkbox_form");
-    assertEquals("checkbox_form", form.name);
-    assertEquals("Checkbox Form", form.displayName);
+    assertEquals("checkbox_form", form.getName());
+    assertEquals("Checkbox Form", form.getDisplayName());
     assertTrue(form instanceof CheckBox);
-    assertArrayEquals(new Object[]{"op1", "op3"}, (Object[]) form.defaultValue);
+    assertArrayEquals(new Object[]{"op1", "op3"}, (Object[]) form.getDefaultValue());
     assertArrayEquals(new ParamOption[]{
         new ParamOptionImpl("op1", "Option 1"),
         new ParamOptionImpl("op2", null),
@@ -102,10 +102,10 @@ public class InputTest {
     // checkbox form with no default check
     script = "${checkbox:checkbox_form(Checkbox Form)=,op1(Option 1)|op2(Option 2)|op3(Option 3)}";
     form = InputUtil.extractSimpleQueryForm(script, false).get("checkbox_form");
-    assertEquals("checkbox_form", form.name);
-    assertEquals("Checkbox Form", form.displayName);
+    assertEquals("checkbox_form", form.getName());
+    assertEquals("Checkbox Form", form.getDisplayName());
     assertTrue(form instanceof CheckBox);
-    assertArrayEquals(new Object[]{}, (Object[]) form.defaultValue);
+    assertArrayEquals(new Object[]{}, (Object[]) form.getDefaultValue());
     assertArrayEquals(new ParamOption[]{
         new ParamOptionImpl("op1", "Option 1"),
         new ParamOptionImpl("op2", "Option 2"),
