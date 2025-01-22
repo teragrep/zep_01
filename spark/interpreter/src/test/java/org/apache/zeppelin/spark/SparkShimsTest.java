@@ -31,7 +31,7 @@ import org.apache.hadoop.util.VersionInfo;
 import org.apache.zeppelin.interpreter.remote.RemoteInterpreterEventClientImpl;
 import org.apache.zeppelin.interpreter.xref.InterpreterContext;
 import org.apache.zeppelin.interpreter.InterpreterContextImpl;
-import org.apache.zeppelin.interpreter.remote.RemoteInterpreterEventClient;
+import org.apache.zeppelin.interpreter.xref.remote.RemoteInterpreterEventClient;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;

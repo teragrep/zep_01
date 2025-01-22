@@ -24,7 +24,7 @@ import org.apache.zeppelin.display.ui.Password;
 import org.apache.zeppelin.display.ui.Select;
 import org.apache.zeppelin.display.ui.TextBox;
 import org.apache.zeppelin.interpreter.*;
-import org.apache.zeppelin.interpreter.remote.RemoteInterpreterEventClient;
+import org.apache.zeppelin.interpreter.xref.remote.RemoteInterpreterEventClient;
 import org.apache.zeppelin.interpreter.remote.RemoteInterpreterEventClientImpl;
 import org.apache.zeppelin.interpreter.thrift.InterpreterCompletion;
 import org.apache.zeppelin.interpreter.xref.Code;

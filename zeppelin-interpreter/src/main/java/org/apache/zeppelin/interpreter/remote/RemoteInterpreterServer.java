@@ -39,6 +39,7 @@ import org.apache.zeppelin.interpreter.thrift.RemoteInterpreterContext;
 import org.apache.zeppelin.interpreter.thrift.RemoteInterpreterResult;
 import org.apache.zeppelin.interpreter.thrift.RemoteInterpreterResultMessage;
 import org.apache.zeppelin.interpreter.thrift.RemoteInterpreterService;
+import org.apache.zeppelin.interpreter.xref.remote.RemoteInterpreterEventClient;
 import org.apache.zeppelin.resource.DistributedResourcePool;
 import org.apache.zeppelin.resource.ResourceImpl;
 import org.apache.zeppelin.resource.ResourcePool;

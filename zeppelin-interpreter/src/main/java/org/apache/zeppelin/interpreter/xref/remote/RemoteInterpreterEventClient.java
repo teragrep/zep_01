@@ -1,6 +1,7 @@
-package org.apache.zeppelin.interpreter.remote;
+package org.apache.zeppelin.interpreter.xref.remote;
 
 import org.apache.zeppelin.display.AngularObjectRegistryListener;
+import org.apache.zeppelin.interpreter.remote.PooledRemoteClient;
 import org.apache.zeppelin.interpreter.thrift.LibraryMetadata;
 import org.apache.zeppelin.interpreter.thrift.ParagraphInfo;
 import org.apache.zeppelin.interpreter.thrift.RegisterInfo;

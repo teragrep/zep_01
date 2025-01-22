@@ -20,7 +20,7 @@ package org.apache.zeppelin.spark;
 
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.apache.zeppelin.interpreter.*;
-import org.apache.zeppelin.interpreter.remote.RemoteInterpreterEventClient;
+import org.apache.zeppelin.interpreter.xref.remote.RemoteInterpreterEventClient;
 import org.apache.zeppelin.interpreter.remote.RemoteInterpreterEventClientImpl;
 import org.apache.zeppelin.interpreter.xref.Interpreter;
 import org.apache.zeppelin.interpreter.xref.InterpreterException;
