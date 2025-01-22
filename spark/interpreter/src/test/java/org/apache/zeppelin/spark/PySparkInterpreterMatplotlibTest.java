@@ -104,7 +104,7 @@ public class PySparkInterpreterMatplotlibTest {
 
   @BeforeAll
   public static void setUp() throws Exception {
-    intpGroup = new InterpreterGroup();
+    intpGroup = new InterpreterGroupImpl();
     intpGroup.put("note", new LinkedList<>());
     context = InterpreterContextImpl.builder()
         .setNoteId("note")

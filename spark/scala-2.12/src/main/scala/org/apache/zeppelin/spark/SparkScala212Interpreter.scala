@@ -23,7 +23,7 @@ import org.apache.zeppelin.interpreter
 import org.apache.zeppelin.interpreter.thrift.InterpreterCompletion
 import org.apache.zeppelin.interpreter.util.InterpreterOutputStream
 import org.apache.zeppelin.interpreter.xref.{Code, InterpreterContext, InterpreterException}
-import org.apache.zeppelin.interpreter.{InterpreterContextImpl, InterpreterContextStore, InterpreterGroup, InterpreterResult, xref}
+import org.apache.zeppelin.interpreter.{InterpreterContextImpl, InterpreterContextStore, InterpreterGroupImpl, InterpreterResult, xref}
 import org.slf4j.{Logger, LoggerFactory}
 
 import java.io.{BufferedReader, File}
@@ -43,7 +43,7 @@ import scala.tools.nsc.interpreter._
 class SparkScala212Interpreter(conf: SparkConf,
                                depFiles: java.util.List[String],
                                properties: Properties,
-                               interpreterGroup: InterpreterGroup,
+                               interpreterGroup: InterpreterGroupImpl,
                                sparkInterpreterClassLoader: URLClassLoader,
                                outputDir: File) extends AbstractSparkScalaInterpreter(conf, properties, depFiles) {
 

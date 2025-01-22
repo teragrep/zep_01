@@ -58,7 +58,7 @@ class PySparkInterpreterTest extends PythonInterpreterTest {
     properties.setProperty("zeppelin.spark.deprecatedMsg.show", "false");
 
     // create interpreter group
-    intpGroup = new InterpreterGroup();
+    intpGroup = new InterpreterGroupImpl();
     intpGroup.put("note", new LinkedList<>());
 
     InterpreterContextImpl context = InterpreterContextImpl.builder()
@@ -93,7 +93,7 @@ class PySparkInterpreterTest extends PythonInterpreterTest {
   public void testFailtoLaunchPythonProcess() throws InterpreterException {
     tearDown();
 
-    intpGroup = new InterpreterGroup();
+    intpGroup = new InterpreterGroupImpl();
 
     Properties properties = new Properties();
     properties.setProperty(SparkStringConstants.APP_NAME_PROP_NAME, "Zeppelin Test");

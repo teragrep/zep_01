@@ -47,6 +47,7 @@ import javax.servlet.http.HttpServletRequest;
 
 import org.apache.thrift.TException;
 import org.apache.zeppelin.conf.ZeppelinConfiguration;
+import org.apache.zeppelin.interpreter.InterpreterGroupImpl;
 import org.apache.zeppelin.interpreter.xref.display.AngularObject;
 import org.apache.zeppelin.display.AngularObjectBuilder;
 import org.apache.zeppelin.display.AngularObjectImpl;
@@ -436,7 +437,7 @@ public class NotebookServerTest extends AbstractTestRestApi {
     when(note.getParagraph("paragraphId")).thenReturn(paragraph);
 
     final RemoteAngularObjectRegistry mdRegistry = mock(RemoteAngularObjectRegistry.class);
-    final InterpreterGroup mdGroup = new InterpreterGroup("mdGroup");
+    final InterpreterGroup mdGroup = new InterpreterGroupImpl("mdGroup");
     mdGroup.setAngularObjectRegistry(mdRegistry);
 
     when(paragraph.getBindedInterpreter().getInterpreterGroup()).thenReturn(mdGroup);
@@ -486,7 +487,7 @@ public class NotebookServerTest extends AbstractTestRestApi {
     when(note.getParagraph("paragraphId")).thenReturn(paragraph);
 
     final RemoteAngularObjectRegistry mdRegistry = mock(RemoteAngularObjectRegistry.class);
-    final InterpreterGroup mdGroup = new InterpreterGroup("mdGroup");
+    final InterpreterGroup mdGroup = new InterpreterGroupImpl("mdGroup");
     mdGroup.setAngularObjectRegistry(mdRegistry);
 
     when(paragraph.getBindedInterpreter().getInterpreterGroup()).thenReturn(mdGroup);

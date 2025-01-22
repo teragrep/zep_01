@@ -291,7 +291,7 @@ public class RemoteInterpreterServer extends Thread
       className, Map<String, String> properties, String userName) throws InterpreterRPCException, TException {
     try {
       if (interpreterGroup == null) {
-        interpreterGroup = new InterpreterGroup(interpreterGroupId);
+        interpreterGroup = new InterpreterGroupImpl(interpreterGroupId);
         angularObjectRegistry = new AngularObjectRegistryImpl(interpreterGroup.getId(), intpEventClient);
         hookRegistry = new InterpreterHookRegistry();
         resourcePool = new DistributedResourcePool(interpreterGroup.getId(), intpEventClient);

@@ -53,7 +53,7 @@ public class PythonInterpreterTest extends BasePythonInterpreterTest {
   @BeforeEach
   public void setUp() throws InterpreterException {
 
-    intpGroup = new InterpreterGroup();
+    intpGroup = new InterpreterGroupImpl();
 
     Properties properties = new Properties();
     properties.setProperty("zeppelin.python.maxResult", "3");
@@ -154,7 +154,7 @@ public class PythonInterpreterTest extends BasePythonInterpreterTest {
   public void testFailtoLaunchPythonProcess() throws InterpreterException {
     tearDown();
 
-    intpGroup = new InterpreterGroup();
+    intpGroup = new InterpreterGroupImpl();
 
     Properties properties = new Properties();
     properties.setProperty("zeppelin.python", "invalid_python");

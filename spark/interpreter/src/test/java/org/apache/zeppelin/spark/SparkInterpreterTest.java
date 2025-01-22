@@ -93,7 +93,7 @@ class SparkInterpreterTest {
     InterpreterContextStore.set(context);
 
     interpreter = new SparkInterpreter(properties);
-    interpreter.setInterpreterGroup(mock(InterpreterGroup.class));
+    interpreter.setInterpreterGroup(mock(InterpreterGroupImpl.class));
     interpreter.open();
 
     InterpreterResult result = interpreter.interpret("val a=\"hello world\"", getInterpreterContext());
@@ -415,7 +415,7 @@ class SparkInterpreterTest {
 
     InterpreterContextStore.set(getInterpreterContext());
     interpreter = new SparkInterpreter(properties);
-    interpreter.setInterpreterGroup(mock(InterpreterGroup.class));
+    interpreter.setInterpreterGroup(mock(InterpreterGroupImpl.class));
     interpreter.open();
 
     InterpreterResult result = interpreter.interpret("val a=\"hello world\"", getInterpreterContext());
@@ -443,7 +443,7 @@ class SparkInterpreterTest {
 
     InterpreterContextStore.set(getInterpreterContext());
     interpreter = new SparkInterpreter(properties);
-    interpreter.setInterpreterGroup(mock(InterpreterGroup.class));
+    interpreter.setInterpreterGroup(mock(InterpreterGroupImpl.class));
     interpreter.open();
 
     InterpreterResult result = interpreter.interpret("val a=\"hello world\"", getInterpreterContext());
@@ -488,7 +488,7 @@ class SparkInterpreterTest {
     properties.setProperty("zeppelin.spark.deprecatedMsg.show", "false");
 
     interpreter = new SparkInterpreter(properties);
-    interpreter.setInterpreterGroup(mock(InterpreterGroup.class));
+    interpreter.setInterpreterGroup(mock(InterpreterGroupImpl.class));
     InterpreterContextStore.set(getInterpreterContext());
     interpreter.open();
 
@@ -518,7 +518,7 @@ class SparkInterpreterTest {
     properties.setProperty("zeppelin.spark.deprecatedMsg.show", "false");
 
     interpreter = new SparkInterpreter(properties);
-    interpreter.setInterpreterGroup(mock(InterpreterGroup.class));
+    interpreter.setInterpreterGroup(mock(InterpreterGroupImpl.class));
     InterpreterContextStore.set(getInterpreterContext());
     interpreter.open();
 
@@ -544,7 +544,7 @@ class SparkInterpreterTest {
     properties.setProperty("zeppelin.spark.deprecatedMsg.show", "false");
 
     interpreter = new SparkInterpreter(properties);
-    interpreter.setInterpreterGroup(mock(InterpreterGroup.class));
+    interpreter.setInterpreterGroup(mock(InterpreterGroupImpl.class));
     InterpreterContextStore.set(getInterpreterContext());
     interpreter.open();
 
@@ -570,7 +570,7 @@ class SparkInterpreterTest {
     SparkInterpreter interpreter1 = new SparkInterpreter(properties);
     SparkInterpreter interpreter2 = new SparkInterpreter(properties);
 
-    InterpreterGroup interpreterGroup = new InterpreterGroup();
+    InterpreterGroup interpreterGroup = new InterpreterGroupImpl();
     interpreter1.setInterpreterGroup(interpreterGroup);
     interpreter2.setInterpreterGroup(interpreterGroup);
 

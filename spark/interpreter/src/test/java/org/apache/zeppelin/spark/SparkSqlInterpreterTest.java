@@ -57,7 +57,7 @@ public class SparkSqlInterpreterTest {
     p.setProperty("zeppelin.spark.useHiveContext", "true");
     p.setProperty("zeppelin.spark.deprecatedMsg.show", "false");
 
-    intpGroup = new InterpreterGroup();
+    intpGroup = new InterpreterGroupImpl();
     sparkInterpreter = new SparkInterpreter(p);
     sparkInterpreter.setInterpreterGroup(intpGroup);
 

@@ -38,7 +38,7 @@ import java.util.stream.Collectors;
 /**
  * ManagedInterpreterGroup runs under zeppelin server
  */
-public class ManagedInterpreterGroup extends InterpreterGroup {
+public class ManagedInterpreterGroup extends InterpreterGroupImpl {
 
   private static final Logger LOGGER = LoggerFactory.getLogger(ManagedInterpreterGroup.class);
 

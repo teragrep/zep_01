@@ -181,7 +181,7 @@ public class SparkInterpreter extends AbstractEnhancedInterpreter {
       }
     }
     return (AbstractSparkScalaInterpreter)
-            innerInterpreterClazz.getConstructor(SparkConf.class, List.class, Properties.class, InterpreterGroup.class, URLClassLoader.class, File.class)
+            innerInterpreterClazz.getConstructor(SparkConf.class, List.class, Properties.class, InterpreterGroupImpl.class, URLClassLoader.class, File.class)
                     .newInstance(conf, getDependencyFiles(), getProperties(), getInterpreterGroup(), innerInterpreterClazz.getClassLoader(), scalaShellOutputDir);
   }
 
