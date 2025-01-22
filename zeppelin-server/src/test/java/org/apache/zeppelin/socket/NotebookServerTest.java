@@ -49,6 +49,7 @@ import org.apache.thrift.TException;
 import org.apache.zeppelin.conf.ZeppelinConfiguration;
 import org.apache.zeppelin.display.AngularObject;
 import org.apache.zeppelin.display.AngularObjectBuilder;
+import org.apache.zeppelin.display.AngularObjectImpl;
 import org.apache.zeppelin.interpreter.InterpreterGroup;
 import org.apache.zeppelin.interpreter.InterpreterSetting;
 import org.apache.zeppelin.interpreter.remote.RemoteAngularObjectRegistry;
@@ -372,7 +373,7 @@ public class NotebookServerTest extends AbstractTestRestApi {
     Thread.sleep(1000);
 
     // set note AngularObject
-    AngularObject ao = new AngularObject("COMMAND_TYPE", "COMMAND_TYPE_VALUE", note1.getId(), p1.getId(), null);
+    AngularObject ao = new AngularObjectImpl("COMMAND_TYPE", "COMMAND_TYPE_VALUE", note1.getId(), p1.getId(), null);
     note1.addOrUpdateAngularObject("angular-shared_process", ao);
 
     // create sockets and open it

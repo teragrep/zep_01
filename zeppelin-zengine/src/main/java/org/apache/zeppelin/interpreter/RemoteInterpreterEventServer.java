@@ -26,6 +26,7 @@ import org.apache.thrift.transport.TServerSocket;
 import org.apache.thrift.transport.TTransportException;
 import org.apache.zeppelin.conf.ZeppelinConfiguration;
 import org.apache.zeppelin.display.AngularObject;
+import org.apache.zeppelin.display.AngularObjectImpl;
 import org.apache.zeppelin.interpreter.remote.AppendOutputRunner;
 import org.apache.zeppelin.interpreter.remote.InvokeResourceMethodEventMessage;
 import org.apache.zeppelin.interpreter.remote.RemoteAngularObject;
@@ -252,7 +253,7 @@ public class RemoteInterpreterEventServer implements RemoteInterpreterEventServi
   @Override
   public void addAngularObject(String intpGroupId, String json) throws InterpreterRPCException, TException {
     LOGGER.debug("Add AngularObject, interpreterGroupId: {}, json: {}", intpGroupId, json);
-    AngularObject<?> angularObject = AngularObject.fromJson(json);
+    AngularObject<?> angularObject = AngularObjectImpl.fromJson(json);
     InterpreterGroup interpreterGroup =
         interpreterSettingManager.getInterpreterGroupById(intpGroupId);
     if (interpreterGroup == null) {
@@ -277,7 +278,7 @@ public class RemoteInterpreterEventServer implements RemoteInterpreterEventServi
 
   @Override
   public void updateAngularObject(String intpGroupId, String json) throws InterpreterRPCException, TException {
-    AngularObject<?> angularObject = AngularObject.fromJson(json);
+    AngularObject<?> angularObject = AngularObjectImpl.fromJson(json);
     InterpreterGroup interpreterGroup =
         interpreterSettingManager.getInterpreterGroupById(intpGroupId);
     if (interpreterGroup == null) {

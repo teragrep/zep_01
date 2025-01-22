@@ -90,7 +90,7 @@ public class AngularObjectRegistry {
     synchronized (registry) {
       String key = getRegistryKey(noteId, paragraphId);
       if (!registry.containsKey(key)) {
-        registry.put(key, new HashMap<String, AngularObject>());
+        registry.put(key, new HashMap<String, AngularObjectImpl>());
       }
       
       return registry.get(key);
@@ -128,7 +128,7 @@ public class AngularObjectRegistry {
 
   protected AngularObject createNewAngularObject(String name, Object o, String noteId,
                                                  String paragraphId) {
-    return new AngularObject(name, o, noteId, paragraphId, angularObjectListener);
+    return new AngularObjectImpl(name, o, noteId, paragraphId, angularObjectListener);
   }
 
   protected AngularObjectListener getAngularObjectListener() {
