@@ -1,7 +1,4 @@
-package org.apache.zeppelin.display;
-
-import org.apache.zeppelin.interpreter.xref.display.AngularObject;
-import org.apache.zeppelin.interpreter.xref.display.AngularObjectRegistryListener;
+package org.apache.zeppelin.interpreter.xref.display;
 
 import java.util.List;
 import java.util.Map;

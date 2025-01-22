@@ -21,7 +21,7 @@ import org.apache.zeppelin.interpreter.xref.*;
 import org.apache.zeppelin.interpreter.xref.annotation.Experimental;
 import org.apache.zeppelin.interpreter.xref.annotation.ZeppelinApi;
 import org.apache.zeppelin.interpreter.xref.display.AngularObject;
-import org.apache.zeppelin.display.AngularObjectRegistry;
+import org.apache.zeppelin.interpreter.xref.display.AngularObjectRegistry;
 import org.apache.zeppelin.interpreter.xref.display.AngularObjectWatcher;
 import org.apache.zeppelin.display.GUI;
 import org.apache.zeppelin.display.ui.OptionInput.ParamOption;

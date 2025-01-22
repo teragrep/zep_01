@@ -37,7 +37,7 @@ import com.google.common.annotations.VisibleForTesting;
 import org.apache.zeppelin.conf.ZeppelinConfiguration;
 import org.apache.zeppelin.conf.ZeppelinConfiguration.ConfVars;
 import org.apache.zeppelin.interpreter.xref.display.AngularObject;
-import org.apache.zeppelin.display.AngularObjectRegistry;
+import org.apache.zeppelin.interpreter.xref.display.AngularObjectRegistry;
 import org.apache.zeppelin.interpreter.xref.Interpreter;
 import org.apache.zeppelin.interpreter.InterpreterFactory;
 import org.apache.zeppelin.interpreter.InterpreterGroup;

@@ -17,7 +17,7 @@
 
 package org.apache.zeppelin.interpreter;
 
-import org.apache.zeppelin.display.AngularObjectRegistry;
+import org.apache.zeppelin.interpreter.xref.display.AngularObjectRegistry;
 import org.apache.zeppelin.interpreter.xref.Interpreter;
 import org.apache.zeppelin.interpreter.xref.InterpreterException;
 import org.apache.zeppelin.resource.ResourcePool;

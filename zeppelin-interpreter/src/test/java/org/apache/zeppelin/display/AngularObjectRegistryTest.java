@@ -19,6 +19,7 @@ package org.apache.zeppelin.display;
 
 import org.apache.thrift.TException;
 import org.apache.zeppelin.interpreter.xref.display.AngularObject;
+import org.apache.zeppelin.interpreter.xref.display.AngularObjectRegistry;
 import org.apache.zeppelin.interpreter.xref.display.AngularObjectRegistryListener;
 import org.junit.Test;
 
