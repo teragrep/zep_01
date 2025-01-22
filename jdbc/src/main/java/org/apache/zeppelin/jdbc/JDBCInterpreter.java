@@ -954,7 +954,7 @@ public class JDBCInterpreter extends KerberosInterpreter {
   }
 
   @Override
-  public InterpreterResultImpl internalInterpret(String cmd, org.apache.zeppelin.interpreter.xref.InterpreterContext context)
+  public InterpreterResult internalInterpret(String cmd, org.apache.zeppelin.interpreter.xref.InterpreterContext context)
           throws InterpreterException {
     String dbprefix = getDBPrefix(context);
     if (!StringUtils.equals(dbprefix, DEFAULT_KEY)) {

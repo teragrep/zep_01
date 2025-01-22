@@ -20,6 +20,7 @@ package org.apache.zeppelin.interpreter;
 import org.apache.zeppelin.interpreter.remote.RemoteInterpreter;
 import org.apache.zeppelin.interpreter.xref.Code;
 import org.apache.zeppelin.interpreter.xref.InterpreterException;
+import org.apache.zeppelin.interpreter.xref.InterpreterResult;
 import org.junit.Test;
 
 import static org.junit.Assert.assertEquals;
@@ -91,11 +92,11 @@ public class ConfInterpreterTest extends AbstractInterpreterTest {
         .build();
 
     RemoteInterpreter remoteInterpreter = (RemoteInterpreter) interpreterFactory.getInterpreter("test", executionContext);
-    InterpreterResultImpl result = remoteInterpreter.interpret("hello world", context);
-    assertEquals(Code.SUCCESS, result.code);
+    InterpreterResult result = remoteInterpreter.interpret("hello world", context);
+    assertEquals(Code.SUCCESS, result.code());
 
     result = confInterpreter.interpret("property_1\tnew_value\nnew_property\tdummy_value", context);
-    assertEquals(Code.ERROR, result.code);
+    assertEquals(Code.ERROR, result.code());
   }
 
 }

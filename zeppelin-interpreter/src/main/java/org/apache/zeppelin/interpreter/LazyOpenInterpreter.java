@@ -103,7 +103,7 @@ public class LazyOpenInterpreter
   }
 
   @Override
-  public InterpreterResultImpl interpret(String st, InterpreterContext context)
+  public InterpreterResult interpret(String st, InterpreterContext context)
       throws InterpreterException {
     open();
     ClassLoader classLoader = Thread.currentThread().getContextClassLoader();

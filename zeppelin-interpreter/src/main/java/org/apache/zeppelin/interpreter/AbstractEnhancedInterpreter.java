@@ -19,11 +19,7 @@ package org.apache.zeppelin.interpreter;
 
 import org.apache.commons.text.StringSubstitutor;
 import org.apache.zeppelin.interpreter.thrift.InterpreterCompletion;
-import org.apache.zeppelin.interpreter.xref.EnhancedInterpreter;
-import org.apache.zeppelin.interpreter.xref.InterpreterContext;
-import org.apache.zeppelin.interpreter.xref.InterpreterException;
-import org.apache.zeppelin.interpreter.xref.ZeppelinContext;
-import org.apache.zeppelin.interpreter.xref.ResourcePool;
+import org.apache.zeppelin.interpreter.xref.*;
 import org.apache.zeppelin.resource.ResourcePoolMap;
 
 import java.util.*;
@@ -34,7 +30,7 @@ public abstract class AbstractEnhancedInterpreter extends AbstractInterpreter im
   }
 
   @Override
-  public InterpreterResultImpl interpret(String st,
+  public InterpreterResult interpret(String st,
           InterpreterContext context) throws InterpreterException {
     InterpreterContextStore.set(context);
     ZeppelinContext z = getZeppelinContext();
@@ -76,7 +72,7 @@ public abstract class AbstractEnhancedInterpreter extends AbstractInterpreter im
     return false;
   }
 
-  protected abstract InterpreterResultImpl internalInterpret(
+  protected abstract InterpreterResult internalInterpret(
           String st,
           InterpreterContext context) throws InterpreterException;
 
