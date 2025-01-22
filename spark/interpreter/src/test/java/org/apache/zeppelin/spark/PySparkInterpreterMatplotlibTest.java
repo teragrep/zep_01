@@ -23,6 +23,7 @@ import org.apache.zeppelin.interpreter.remote.RemoteInterpreterEventClient;
 import org.apache.zeppelin.interpreter.xref.Code;
 import org.apache.zeppelin.interpreter.xref.InterpreterContext;
 import org.apache.zeppelin.interpreter.xref.InterpreterException;
+import org.apache.zeppelin.interpreter.xref.InterpreterResultMessage;
 import org.apache.zeppelin.interpreter.xref.Type;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Disabled;

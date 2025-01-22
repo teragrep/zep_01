@@ -22,6 +22,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.zeppelin.interpreter.thrift.InterpreterCompletion;
 import org.apache.zeppelin.interpreter.xref.Code;
 import org.apache.zeppelin.interpreter.xref.InterpreterException;
+import org.apache.zeppelin.interpreter.xref.InterpreterResultMessage;
 import org.apache.zeppelin.interpreter.xref.Type;
 import org.apache.zeppelin.scheduler.FIFOScheduler;
 import org.apache.zeppelin.scheduler.ParallelScheduler;
@@ -171,7 +172,7 @@ public class JDBCInterpreterTest extends BasicJDBCTestCaseAdapter {
 
     // The result should be the same as that run with default config
     assertEquals(Code.SUCCESS, interpreterResult.code());
-    List<InterpreterResultMessage> resultMessages = context.out.toInterpreterResultMessage();
+    List<org.apache.zeppelin.interpreter.xref.InterpreterResultMessage> resultMessages = context.out.toInterpreterResultMessage();
     assertEquals("ID\tNAME\na\ta_name\nb\tb_name\nc\tnull\n",
             resultMessages.get(0).getData());
   }
@@ -204,7 +205,7 @@ public class JDBCInterpreterTest extends BasicJDBCTestCaseAdapter {
     InterpreterResult interpreterResult = t.interpret(sqlQuery, context);
 
     assertEquals(Code.SUCCESS, interpreterResult.code());
-    List<InterpreterResultMessage> resultMessages = context.out.toInterpreterResultMessage();
+    List<org.apache.zeppelin.interpreter.xref.InterpreterResultMessage> resultMessages = context.out.toInterpreterResultMessage();
     assertEquals(Type.TABLE, resultMessages.get(0).getType());
     assertEquals("ID\tNAME\na\ta_name\nb\tb_name\n", resultMessages.get(0).getData());
 
@@ -288,7 +289,7 @@ public class JDBCInterpreterTest extends BasicJDBCTestCaseAdapter {
     String sqlQuery = "select NAME as SOME_OTHER_NAME from test_table limit 1";
 
     InterpreterResult interpreterResult = t.interpret(sqlQuery, context);
-    List<InterpreterResultMessage> resultMessages = context.out.toInterpreterResultMessage();
+    List<org.apache.zeppelin.interpreter.xref.InterpreterResultMessage> resultMessages = context.out.toInterpreterResultMessage();
     assertEquals(
             Code.SUCCESS, interpreterResult.code(),
             interpreterResult.toString());
@@ -349,7 +350,7 @@ public class JDBCInterpreterTest extends BasicJDBCTestCaseAdapter {
     InterpreterResult interpreterResult = t.interpret(sqlQuery, context);
 
     assertEquals(Code.SUCCESS, interpreterResult.code());
-    List<InterpreterResultMessage> resultMessages = context.out.toInterpreterResultMessage();
+    List<org.apache.zeppelin.interpreter.xref.InterpreterResultMessage> resultMessages = context.out.toInterpreterResultMessage();
     assertEquals(Type.TABLE, resultMessages.get(0).getType());
     assertEquals(Type.TABLE, resultMessages.get(1).getType());
     assertEquals(Type.TABLE, resultMessages.get(2).getType());
@@ -378,7 +379,7 @@ public class JDBCInterpreterTest extends BasicJDBCTestCaseAdapter {
     InterpreterResult interpreterResult = t.interpret(sqlQuery, context);
     assertEquals(Code.SUCCESS, interpreterResult.code());
 
-    List<InterpreterResultMessage> resultMessages = context.out.toInterpreterResultMessage();
+    List<org.apache.zeppelin.interpreter.xref.InterpreterResultMessage> resultMessages = context.out.toInterpreterResultMessage();
     assertEquals(2, resultMessages.size());
 
     assertEquals(Type.TABLE, resultMessages.get(0).getType());
@@ -406,7 +407,7 @@ public class JDBCInterpreterTest extends BasicJDBCTestCaseAdapter {
     InterpreterResult interpreterResult = t.interpret(sqlQuery, context);
     assertEquals(Code.SUCCESS, interpreterResult.code());
 
-    List<InterpreterResultMessage> resultMessages = context.out.toInterpreterResultMessage();
+    List<org.apache.zeppelin.interpreter.xref.InterpreterResultMessage> resultMessages = context.out.toInterpreterResultMessage();
     assertEquals(2, resultMessages.size());
 
     assertEquals(Type.TABLE, resultMessages.get(0).getType());
@@ -433,7 +434,7 @@ public class JDBCInterpreterTest extends BasicJDBCTestCaseAdapter {
 
     InterpreterResult interpreterResult = t.interpret(sqlQuery, context);
 
-    List<InterpreterResultMessage> resultMessages = context.out.toInterpreterResultMessage();
+    List<org.apache.zeppelin.interpreter.xref.InterpreterResultMessage> resultMessages = context.out.toInterpreterResultMessage();
     assertEquals(Code.SUCCESS, interpreterResult.code());
     assertEquals(Type.TABLE, resultMessages.get(0).getType());
     assertEquals("ID\tNAME\nc\tnull\n", resultMessages.get(0).getData());
@@ -458,7 +459,7 @@ public class JDBCInterpreterTest extends BasicJDBCTestCaseAdapter {
 
     assertEquals(Code.SUCCESS, interpreterResult.code());
 
-    List<InterpreterResultMessage> resultMessages = context.out.toInterpreterResultMessage();
+    List<org.apache.zeppelin.interpreter.xref.InterpreterResultMessage> resultMessages = context.out.toInterpreterResultMessage();
     assertEquals(Type.TABLE, resultMessages.get(0).getType());
     assertEquals("ID\tNAME\na\ta_name\n", resultMessages.get(0).getData());
     assertEquals(Type.HTML, resultMessages.get(1).getType());
@@ -641,7 +642,7 @@ public class JDBCInterpreterTest extends BasicJDBCTestCaseAdapter {
     InterpreterResult interpreterResult = jdbcInterpreter.interpret(sqlQuery, context);
 
     assertEquals(Code.SUCCESS, interpreterResult.code());
-    List<InterpreterResultMessage> resultMessages = context.out.toInterpreterResultMessage();
+    List<org.apache.zeppelin.interpreter.xref.InterpreterResultMessage> resultMessages = context.out.toInterpreterResultMessage();
     assertEquals(3, resultMessages.size());
     assertEquals(Type.TEXT, resultMessages.get(0).getType());
     assertEquals("Query executed successfully. Affected rows : 0\n\n",
@@ -691,7 +692,7 @@ public class JDBCInterpreterTest extends BasicJDBCTestCaseAdapter {
     InterpreterResult interpreterResult = jdbcInterpreter.interpret(sqlQuery, context);
 
     assertEquals(Code.SUCCESS, interpreterResult.code());
-    List<InterpreterResultMessage> resultMessages = context.out.toInterpreterResultMessage();
+    List<org.apache.zeppelin.interpreter.xref.InterpreterResultMessage> resultMessages = context.out.toInterpreterResultMessage();
     assertEquals(Type.TABLE, resultMessages.get(0).getType());
     assertEquals("@V\nstatement\n", resultMessages.get(0).getData());
   }

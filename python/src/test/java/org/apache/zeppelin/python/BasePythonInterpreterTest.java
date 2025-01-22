@@ -28,6 +28,7 @@ import org.apache.zeppelin.interpreter.thrift.InterpreterCompletion;
 import org.apache.zeppelin.interpreter.xref.Code;
 import org.apache.zeppelin.interpreter.xref.Interpreter;
 import org.apache.zeppelin.interpreter.xref.InterpreterException;
+import org.apache.zeppelin.interpreter.xref.InterpreterResultMessage;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Disabled;
@@ -61,7 +62,7 @@ public abstract class BasePythonInterpreterTest extends ConcurrentTestCase {
         interpreter.interpret("import sys\nprint(sys.version[0])", context);
     assertEquals(Code.SUCCESS, result.code());
     Thread.sleep(100);
-    List<InterpreterResultMessage> interpreterResultMessages =
+    List<org.apache.zeppelin.interpreter.xref.InterpreterResultMessage> interpreterResultMessages =
         context.out.toInterpreterResultMessage();
     assertEquals(1, interpreterResultMessages.size());
 

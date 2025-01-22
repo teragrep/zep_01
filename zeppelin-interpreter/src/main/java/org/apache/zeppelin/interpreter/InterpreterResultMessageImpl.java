@@ -16,6 +16,7 @@
  */
 package org.apache.zeppelin.interpreter;
 
+import org.apache.zeppelin.interpreter.xref.InterpreterResultMessage;
 import org.apache.zeppelin.interpreter.xref.Type;
 
 /**

@@ -16,7 +16,7 @@
  */
 package org.apache.zeppelin.tabledata;
 
-import org.apache.zeppelin.interpreter.InterpreterResultMessage;
+import org.apache.zeppelin.interpreter.xref.InterpreterResultMessage;
 
 import java.io.Serializable;
 import java.util.Iterator;

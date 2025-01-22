@@ -18,6 +18,7 @@ import com.mockrunner.jdbc.BasicJDBCTestCaseAdapter;
 import org.apache.zeppelin.interpreter.*;
 import org.apache.zeppelin.interpreter.xref.Code;
 import org.apache.zeppelin.interpreter.xref.InterpreterException;
+import org.apache.zeppelin.interpreter.xref.InterpreterResultMessage;
 import org.apache.zeppelin.interpreter.xref.Type;
 import org.apache.zeppelin.resource.LocalResourcePool;
 import org.apache.zeppelin.resource.ResourcePool;
@@ -98,7 +99,7 @@ class JDBCInterpreterInterpolationTest extends BasicJDBCTestCaseAdapter {
     InterpreterResult interpreterResult = t.interpret(sqlQuery, interpreterContextImpl);
     assertEquals(Code.SUCCESS, interpreterResult.code());
 
-    List<InterpreterResultMessage> resultMessages =
+    List<org.apache.zeppelin.interpreter.xref.InterpreterResultMessage> resultMessages =
             interpreterContextImpl.out.toInterpreterResultMessage();
     assertEquals(1, resultMessages.size());
     assertEquals(Type.TABLE, resultMessages.get(0).getType());
@@ -143,7 +144,7 @@ class JDBCInterpreterInterpolationTest extends BasicJDBCTestCaseAdapter {
     InterpreterResult interpreterResult = t.interpret(sqlQuery, interpreterContextImpl);
     assertEquals(Code.SUCCESS, interpreterResult.code());
 
-    List<InterpreterResultMessage> resultMessages =
+    List<org.apache.zeppelin.interpreter.xref.InterpreterResultMessage> resultMessages =
             interpreterContextImpl.out.toInterpreterResultMessage();
     assertEquals(1, resultMessages.size());
     assertEquals(Type.TABLE, resultMessages.get(0).getType());
