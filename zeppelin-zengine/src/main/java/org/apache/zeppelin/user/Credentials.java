@@ -92,7 +92,7 @@ public class Credentials {
   public UserCredentials getUserCredentials(String username) throws IOException {
     UserCredentials uc = credentialsMap.get(username);
     if (uc == null) {
-      uc = new UserCredentials();
+      uc = new UserCredentialsImpl();
     }
     return uc;
   }

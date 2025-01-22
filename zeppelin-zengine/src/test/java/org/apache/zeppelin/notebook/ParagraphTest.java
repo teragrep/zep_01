@@ -349,7 +349,7 @@ public class ParagraphTest extends AbstractInterpreterTest {
     Credentials creds = mock(Credentials.class);
     when(mockNote.getCredentials()).thenReturn(creds);
     Paragraph spyParagraph = spy(new Paragraph("para_1", mockNote, null));
-    UserCredentials uc = mock(UserCredentials.class);
+    UserCredentials uc = mock(UserCredentialsImpl.class);
     when(creds.getUserCredentials(anyString())).thenReturn(uc);
     UsernamePassword up = new UsernamePassword("user", "pwd");
     when(uc.getUsernamePassword("ent")).thenReturn(up );

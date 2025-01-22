@@ -30,6 +30,7 @@ import org.apache.zeppelin.interpreter.xref.Scheduler;
 import org.apache.zeppelin.interpreter.xref.user.AuthenticationInfo;
 import org.apache.zeppelin.user.AuthenticationInfoImpl;
 import org.apache.zeppelin.user.UserCredentials;
+import org.apache.zeppelin.user.UserCredentialsImpl;
 import org.apache.zeppelin.user.UsernamePassword;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Disabled;
@@ -536,7 +537,7 @@ public class JDBCInterpreterTest extends BasicJDBCTestCaseAdapter {
 
   private AuthenticationInfo getUserAuth(String user, String entityName, String dbUser,
       String dbPassword) {
-    UserCredentials userCredentials = new UserCredentials();
+    UserCredentials userCredentials = new UserCredentialsImpl();
     if (entityName != null && dbUser != null && dbPassword != null) {
       UsernamePassword up = new UsernamePassword(dbUser, dbPassword);
       userCredentials.putUsernamePassword(entityName, up);

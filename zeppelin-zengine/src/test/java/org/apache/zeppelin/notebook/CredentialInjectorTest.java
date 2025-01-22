@@ -25,6 +25,7 @@ import static org.mockito.Mockito.when;
 import org.apache.zeppelin.interpreter.InterpreterResult;
 import org.apache.zeppelin.interpreter.xref.Code;
 import org.apache.zeppelin.user.UserCredentials;
+import org.apache.zeppelin.user.UserCredentialsImpl;
 import org.apache.zeppelin.user.UsernamePassword;
 import org.junit.Test;
 
@@ -42,7 +43,7 @@ public class CredentialInjectorTest {
 
   @Test
   public void replaceCredentials() {
-    UserCredentials userCredentials = mock(UserCredentials.class);
+    UserCredentials userCredentials = mock(UserCredentialsImpl.class);
     UsernamePassword usernamePassword = new UsernamePassword("username", "pwd");
     when(userCredentials.getUsernamePassword("mysql")).thenReturn(usernamePassword);
     CredentialInjector testee = new CredentialInjector(userCredentials);
@@ -57,7 +58,7 @@ public class CredentialInjectorTest {
 
   @Test
   public void replaceCredentialNoTexts() {
-    UserCredentials userCredentials = mock(UserCredentials.class);
+    UserCredentials userCredentials = mock(UserCredentialsImpl.class);
     CredentialInjector testee = new CredentialInjector(userCredentials);
     String actual = testee.replaceCredentials(null);
     assertNull(actual);
@@ -65,7 +66,7 @@ public class CredentialInjectorTest {
 
   @Test
   public void replaceCredentialsNotExisting() {
-    UserCredentials userCredentials = mock(UserCredentials.class);
+    UserCredentials userCredentials = mock(UserCredentialsImpl.class);
     CredentialInjector testee = new CredentialInjector(userCredentials);
     String actual = testee.replaceCredentials(TEMPLATE);
     assertEquals(TEMPLATE, actual);
@@ -78,7 +79,7 @@ public class CredentialInjectorTest {
   
   @Test
   public void hidePasswordsNoResult() {
-    UserCredentials userCredentials = mock(UserCredentials.class);
+    UserCredentials userCredentials = mock(UserCredentialsImpl.class);
     CredentialInjector testee = new CredentialInjector(userCredentials);
     assertNull(testee.hidePasswords(null));
   }
