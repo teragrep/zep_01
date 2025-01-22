@@ -36,6 +36,7 @@ import org.apache.zeppelin.interpreter.thrift.RegisterInfo;
 import org.apache.zeppelin.interpreter.thrift.RemoteInterpreterEventService;
 import org.apache.zeppelin.interpreter.thrift.RunParagraphsEvent;
 import org.apache.zeppelin.interpreter.thrift.WebUrlInfo;
+import org.apache.zeppelin.interpreter.xref.remote.RemoteFunction;
 import org.apache.zeppelin.interpreter.xref.remote.RemoteInterpreterEventClient;
 import org.apache.zeppelin.resource.*;
 import org.slf4j.Logger;

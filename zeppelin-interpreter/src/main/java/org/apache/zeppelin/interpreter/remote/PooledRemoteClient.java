@@ -21,6 +21,7 @@ import org.apache.commons.pool2.impl.GenericObjectPool;
 import org.apache.commons.pool2.impl.GenericObjectPoolConfig;
 import org.apache.thrift.TServiceClient;
 import org.apache.zeppelin.interpreter.thrift.InterpreterRPCException;
+import org.apache.zeppelin.interpreter.xref.remote.RemoteFunction;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

@@ -1,4 +1,4 @@
-package org.apache.zeppelin.interpreter.remote;
+package org.apache.zeppelin.interpreter.xref.remote;
 
 import org.apache.thrift.TException;
 import org.apache.zeppelin.interpreter.thrift.InterpreterRPCException;
