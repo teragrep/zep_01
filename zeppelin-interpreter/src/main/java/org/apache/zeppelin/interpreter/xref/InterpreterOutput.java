@@ -1,62 +1,59 @@
 package org.apache.zeppelin.interpreter.xref;
 
-import java.io.Closeable;
-import java.io.File;
-import java.io.Flushable;
-import java.io.IOException;
+import java.io.*;
 import java.net.URL;
 import java.util.List;
 
-public interface InterpreterOutput extends Closeable, Flushable {
+public abstract class InterpreterOutput extends OutputStream implements Closeable, Flushable {
 
-    void setEnableTableAppend(boolean enableTableAppend);
+    abstract public void setEnableTableAppend(boolean enableTableAppend);
 
-    void setType(Type type) throws IOException;
+    abstract public void setType(Type type) throws IOException;
 
-    void addInterpreterOutListener(InterpreterOutputListener outputListener);
+    abstract public void addInterpreterOutListener(InterpreterOutputListener outputListener);
 
-    InterpreterResultMessageOutputListener createInterpreterResultMessageOutputListener(
+    abstract public InterpreterResultMessageOutputListener createInterpreterResultMessageOutputListener(
             int index
     );
 
-    InterpreterResultMessageOutput getCurrentOutput();
+    abstract public InterpreterResultMessageOutput getCurrentOutput();
 
-    InterpreterResultMessageOutput getOutputAt(int index);
+    abstract public InterpreterResultMessageOutput getOutputAt(int index);
 
-    int size();
+    abstract public int size();
 
-    void clear();
+    abstract public void clear();
 
-    void clear(boolean sendUpdateToFrontend);
+    abstract public void clear(boolean sendUpdateToFrontend);
 
-    void write(int b) throws IOException;
+    abstract public void write(int b) throws IOException;
 
-    void write(byte[] b) throws IOException;
+    abstract public void write(byte[] b) throws IOException;
 
-    void write(byte[] b, int off, int len) throws IOException;
+    abstract public void write(byte[] b, int off, int len) throws IOException;
 
-    void write(File file) throws IOException;
+    abstract public void write(File file) throws IOException;
 
-    void write(String string) throws IOException;
+    abstract public void write(String string) throws IOException;
 
-    void write(URL url) throws IOException;
+    abstract public void write(URL url) throws IOException;
 
-    void addResourceSearchPath(String path);
+    abstract public void addResourceSearchPath(String path);
 
-    void writeResource(String resourceName) throws IOException;
+    abstract public void writeResource(String resourceName) throws IOException;
 
-    List<InterpreterResultMessage> toInterpreterResultMessage() throws IOException;
+    abstract public List<InterpreterResultMessage> toInterpreterResultMessage() throws IOException;
 
-    void flush() throws IOException;
+    abstract public void flush() throws IOException;
 
-    byte[] toByteArray() throws IOException;
-
-    @Override
-    String toString();
+    abstract public byte[] toByteArray() throws IOException;
 
     @Override
-    void close() throws IOException;
+    abstract public String toString();
 
-    long getLastWriteTimestamp();
+    @Override
+    abstract public void close() throws IOException;
+
+    abstract public long getLastWriteTimestamp();
 
 }

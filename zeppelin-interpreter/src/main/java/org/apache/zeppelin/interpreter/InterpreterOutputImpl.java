@@ -25,7 +25,6 @@ import org.slf4j.LoggerFactory;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
-import java.io.OutputStream;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -36,7 +35,7 @@ import java.util.List;
  * InterpreterOutput is OutputStream that supposed to print content on notebook
  * in addition to InterpreterResult which used to return from Interpreter.interpret().
  */
-public class InterpreterOutputImpl extends OutputStream implements InterpreterOutput {
+public class InterpreterOutputImpl extends InterpreterOutput {
   private static final Logger LOGGER = LoggerFactory.getLogger(InterpreterOutputImpl.class);
 
   // change static var to set interpreter output limit
