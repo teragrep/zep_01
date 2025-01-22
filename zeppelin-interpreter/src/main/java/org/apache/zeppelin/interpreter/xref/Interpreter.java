@@ -1,6 +1,5 @@
 package org.apache.zeppelin.interpreter.xref;
 
-import org.apache.zeppelin.interpreter.InterpreterResultImpl;
 import org.apache.zeppelin.interpreter.xref.annotation.Experimental;
 import org.apache.zeppelin.interpreter.xref.annotation.ZeppelinApi;
 import org.apache.zeppelin.interpreter.thrift.InterpreterCompletion;
