@@ -18,7 +18,7 @@
 package org.apache.zeppelin.interpreter.remote.mock;
 
 import org.apache.zeppelin.display.AngularObjectRegistry;
-import org.apache.zeppelin.display.AngularObjectWatcher;
+import org.apache.zeppelin.interpreter.xref.display.AngularObjectWatcher;
 import org.apache.zeppelin.interpreter.AbstractInterpreter;
 import org.apache.zeppelin.interpreter.xref.InterpreterContext;
 import org.apache.zeppelin.interpreter.xref.FormType;

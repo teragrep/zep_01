@@ -1,6 +1,6 @@
 package org.apache.zeppelin.interpreter.xref;
 
-import org.apache.zeppelin.display.AngularObjectWatcher;
+import org.apache.zeppelin.interpreter.xref.display.AngularObjectWatcher;
 import org.apache.zeppelin.display.GUI;
 import org.apache.zeppelin.display.ui.OptionInput;
 import org.apache.zeppelin.interpreter.xref.annotation.Experimental;

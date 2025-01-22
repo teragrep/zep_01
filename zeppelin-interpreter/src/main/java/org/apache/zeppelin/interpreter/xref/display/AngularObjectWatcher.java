@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.zeppelin.display;
+package org.apache.zeppelin.interpreter.xref.display;
 
 import org.apache.zeppelin.interpreter.xref.InterpreterContext;
 
@@ -29,7 +29,7 @@ public abstract class AngularObjectWatcher {
     this.context = context;
   }
 
-  void watch(Object oldObject, Object newObject) {
+  public void watch(Object oldObject, Object newObject) {
     watch(oldObject, newObject, context);
   }
 
