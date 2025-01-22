@@ -36,6 +36,7 @@ import org.apache.zeppelin.interpreter.util.SqlSplitter;
 import org.apache.zeppelin.interpreter.xref.FormType;
 import org.apache.zeppelin.interpreter.xref.InterpreterContext;
 import org.apache.zeppelin.interpreter.xref.InterpreterException;
+import org.apache.zeppelin.interpreter.xref.InterpreterResult;
 import org.apache.zeppelin.interpreter.xref.ZeppelinContext;
 import org.apache.zeppelin.jdbc.hive.HiveUtils;
 import org.apache.zeppelin.tabledata.TableDataUtils;
@@ -727,9 +728,9 @@ public class JDBCInterpreter extends KerberosInterpreter {
     return updatedCount < 0 && columnCount <= 0 ? true : false;
   }
 
-  public InterpreterResult executePrecode(InterpreterContextImpl interpreterContextImpl)
+  public org.apache.zeppelin.interpreter.xref.InterpreterResult executePrecode(InterpreterContextImpl interpreterContextImpl)
           throws InterpreterException {
-    InterpreterResult interpreterResult = null;
+    org.apache.zeppelin.interpreter.xref.InterpreterResult interpreterResult = null;
     for (String propertyKey : basePropertiesMap.keySet()) {
       String precode = getProperty(String.format("%s.precode", propertyKey));
       if (StringUtils.isNotBlank(precode)) {
@@ -969,7 +970,7 @@ public class JDBCInterpreter extends KerberosInterpreter {
       ScheduledExecutorService refreshExecutor = Executors.newSingleThreadScheduledExecutor();
       refreshExecutorServices.put(context.getParagraphId(), refreshExecutor);
       isFirstRefreshMap.put(context.getParagraphId(), true);
-      final AtomicReference<InterpreterResult> interpreterResultRef = new AtomicReference();
+      final AtomicReference<org.apache.zeppelin.interpreter.xref.InterpreterResult> interpreterResultRef = new AtomicReference();
       refreshExecutor.scheduleAtFixedRate(() -> {
         context.out().clear(false);
         try {

@@ -18,6 +18,7 @@ import com.mockrunner.jdbc.BasicJDBCTestCaseAdapter;
 import org.apache.zeppelin.interpreter.*;
 import org.apache.zeppelin.interpreter.xref.Code;
 import org.apache.zeppelin.interpreter.xref.InterpreterException;
+import org.apache.zeppelin.interpreter.xref.InterpreterResult;
 import org.apache.zeppelin.interpreter.xref.InterpreterResultMessage;
 import org.apache.zeppelin.interpreter.xref.Type;
 import org.apache.zeppelin.resource.LocalResourcePool;
@@ -96,7 +97,7 @@ class JDBCInterpreterInterpolationTest extends BasicJDBCTestCaseAdapter {
     //
     JDBCInterpreter t = new JDBCInterpreter(properties);
     t.open();
-    InterpreterResult interpreterResult = t.interpret(sqlQuery, interpreterContextImpl);
+    org.apache.zeppelin.interpreter.xref.InterpreterResult interpreterResult = t.interpret(sqlQuery, interpreterContextImpl);
     assertEquals(Code.SUCCESS, interpreterResult.code());
 
     List<org.apache.zeppelin.interpreter.xref.InterpreterResultMessage> resultMessages =
@@ -141,7 +142,7 @@ class JDBCInterpreterInterpolationTest extends BasicJDBCTestCaseAdapter {
     // Empty result expected because "kbd" is not defined ...
     //
     String sqlQuery = "select * from test_table where id = '{kbd}'";
-    InterpreterResult interpreterResult = t.interpret(sqlQuery, interpreterContextImpl);
+    org.apache.zeppelin.interpreter.xref.InterpreterResult interpreterResult = t.interpret(sqlQuery, interpreterContextImpl);
     assertEquals(Code.SUCCESS, interpreterResult.code());
 
     List<org.apache.zeppelin.interpreter.xref.InterpreterResultMessage> resultMessages =

@@ -27,6 +27,7 @@ import org.apache.zeppelin.common.JsonSerializable;
 import org.apache.zeppelin.conf.ZeppelinConfiguration;
 import org.apache.zeppelin.display.InputUtil;
 import org.apache.zeppelin.interpreter.*;
+import org.apache.zeppelin.interpreter.xref.InterpreterResult;
 import org.apache.zeppelin.interpreter.xref.display.AngularObject;
 import org.apache.zeppelin.display.AngularObjectImpl;
 import org.apache.zeppelin.interpreter.xref.display.AngularObjectRegistry;

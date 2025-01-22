@@ -1,9 +1,6 @@
-package org.apache.zeppelin.interpreter;
+package org.apache.zeppelin.interpreter.xref;
 
 import org.apache.zeppelin.common.JsonSerializable;
-import org.apache.zeppelin.interpreter.xref.Code;
-import org.apache.zeppelin.interpreter.xref.InterpreterResultMessage;
-import org.apache.zeppelin.interpreter.xref.Type;
 
 import java.io.Serializable;
 import java.util.List;

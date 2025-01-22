@@ -19,7 +19,7 @@ package org.apache.zeppelin.scheduler;
 
 import org.apache.zeppelin.interpreter.InterpreterResultImpl;
 import org.apache.zeppelin.interpreter.xref.Code;
-import org.apache.zeppelin.interpreter.InterpreterResult;
+import org.apache.zeppelin.interpreter.xref.InterpreterResult;
 import org.apache.zeppelin.interpreter.xref.Job;
 import org.apache.zeppelin.interpreter.xref.Scheduler;
 import org.apache.zeppelin.interpreter.xref.Status;

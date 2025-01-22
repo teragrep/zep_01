@@ -23,6 +23,7 @@ import org.apache.zeppelin.interpreter.remote.RemoteInterpreterEventClientImpl;
 import org.apache.zeppelin.interpreter.xref.Code;
 import org.apache.zeppelin.interpreter.xref.InterpreterException;
 import org.apache.zeppelin.interpreter.xref.InterpreterGroup;
+import org.apache.zeppelin.interpreter.xref.InterpreterResult;
 import org.apache.zeppelin.interpreter.xref.Type;
 import org.apache.zeppelin.resource.LocalResourcePool;
 import org.junit.jupiter.api.AfterAll;
@@ -95,14 +96,14 @@ public class SparkSqlInterpreterTest {
 
   @Test
   void test() throws InterpreterException, IOException {
-    InterpreterResult result = sparkInterpreter.interpret("case class Test(name:String, age:Int)", context);
+    org.apache.zeppelin.interpreter.xref.InterpreterResult result = sparkInterpreter.interpret("case class Test(name:String, age:Int)", context);
     assertEquals(Code.SUCCESS, result.code());
     result = sparkInterpreter.interpret("val test = sc.parallelize(Seq(Test(\"moon\\t1\", 33), Test(\"jobs\", 51), Test(\"gates\", 51), Test(\"park\\n1\", 34)))", context);
     assertEquals(Code.SUCCESS, result.code());
     result = sparkInterpreter.interpret("test.toDF.registerTempTable(\"test\")", context);
     assertEquals(Code.SUCCESS, result.code());
 
-    InterpreterResult ret = sqlInterpreter.interpret("select name, age from test where age < 40", context);
+    org.apache.zeppelin.interpreter.xref.InterpreterResult ret = sqlInterpreter.interpret("select name, age from test where age < 40", context);
     assertEquals(Code.SUCCESS, ret.code());
     assertEquals(Type.TABLE, context.out.toInterpreterResultMessage().get(0).getType());
     assertEquals("name\tage\nmoon 1\t33\npark 1\t34\n", context.out.toInterpreterResultMessage().get(0).getData());
@@ -123,7 +124,7 @@ public class SparkSqlInterpreterTest {
         context);
     sparkInterpreter.interpret("gr.toDF.registerTempTable(\"gr\")", context);
 
-    InterpreterResult ret = sqlInterpreter.interpret("select * from gr", context);
+    org.apache.zeppelin.interpreter.xref.InterpreterResult ret = sqlInterpreter.interpret("select * from gr", context);
     assertEquals(Code.SUCCESS, ret.code());
 
   }
@@ -151,7 +152,7 @@ public class SparkSqlInterpreterTest {
         context);
     sparkInterpreter.interpret("people.toDF.registerTempTable(\"people\")", context);
 
-    InterpreterResult ret = sqlInterpreter.interpret(
+    org.apache.zeppelin.interpreter.xref.InterpreterResult ret = sqlInterpreter.interpret(
         "select name, age from people where name = 'gates'", context);
     assertEquals(Code.SUCCESS, ret.code());
     assertEquals(Type.TABLE, ret.message().get(0).getType());
@@ -166,7 +167,7 @@ public class SparkSqlInterpreterTest {
         context);
     sparkInterpreter.interpret("gr.toDF.registerTempTable(\"gr\")", context);
 
-    InterpreterResult ret = sqlInterpreter.interpret("select * from gr", context);
+    org.apache.zeppelin.interpreter.xref.InterpreterResult ret = sqlInterpreter.interpret("select * from gr", context);
     assertEquals(Code.SUCCESS, ret.code());
     // the number of rows is 10+1, 1 is the head of table
     assertEquals(11, context.out.toInterpreterResultMessage().get(0).getData().split("\n").length);
@@ -199,7 +200,7 @@ public class SparkSqlInterpreterTest {
             .build();
     context.getLocalProperties().put("template", "Total count: <h1>{0}</h1>, Total age: <h1>{1}</h1>");
 
-    InterpreterResult ret = sqlInterpreter.interpret("select count(1), sum(age) from gr", context);
+    org.apache.zeppelin.interpreter.xref.InterpreterResult ret = sqlInterpreter.interpret("select count(1), sum(age) from gr", context);
     context.getLocalProperties().remove("template");
     assertEquals(Code.SUCCESS, ret.code());
     assertEquals(Type.HTML, context.out.toInterpreterResultMessage().get(0).getType());
@@ -215,7 +216,7 @@ public class SparkSqlInterpreterTest {
     sparkInterpreter.interpret("gr.toDF.registerTempTable(\"gr\")", context);
 
     // Two correct sql
-    InterpreterResult ret = sqlInterpreter.interpret(
+    org.apache.zeppelin.interpreter.xref.InterpreterResult ret = sqlInterpreter.interpret(
             "select * --comment_1\nfrom gr;select count(1) from gr", context);
     assertEquals(Code.SUCCESS, ret.code());
     assertEquals(2, context.out.toInterpreterResultMessage().size(), context.out.toString());
@@ -257,7 +258,7 @@ public class SparkSqlInterpreterTest {
       @Override
       public void run() {
         try {
-          InterpreterResult result = sqlInterpreter.interpret("select sleep(10)", context);
+          org.apache.zeppelin.interpreter.xref.InterpreterResult result = sqlInterpreter.interpret("select sleep(10)", context);
           assertEquals(Code.SUCCESS, result.code());
         } catch (InterpreterException e) {
           Assertions.fail("Failure happened: " + e.getMessage());
@@ -269,7 +270,7 @@ public class SparkSqlInterpreterTest {
       @Override
       public void run() {
         try {
-          InterpreterResult result = sqlInterpreter.interpret("select sleep(10)", context);
+          org.apache.zeppelin.interpreter.xref.InterpreterResult result = sqlInterpreter.interpret("select sleep(10)", context);
           assertEquals(Code.SUCCESS, result.code());
         } catch (InterpreterException e) {
           Assertions.fail("Failure happened: " + e.getMessage());

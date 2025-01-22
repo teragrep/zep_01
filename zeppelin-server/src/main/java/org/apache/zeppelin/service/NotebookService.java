@@ -43,7 +43,7 @@ import org.apache.zeppelin.interpreter.InterpreterResultImpl;
 import org.apache.zeppelin.interpreter.xref.display.AngularObject;
 import org.apache.zeppelin.interpreter.xref.display.AngularObjectRegistry;
 import org.apache.zeppelin.interpreter.xref.Code;
-import org.apache.zeppelin.interpreter.InterpreterResult;
+import org.apache.zeppelin.interpreter.xref.InterpreterResult;
 import org.apache.zeppelin.interpreter.InterpreterSetting;
 import org.apache.zeppelin.interpreter.thrift.InterpreterCompletion;
 import org.apache.zeppelin.notebook.Note;

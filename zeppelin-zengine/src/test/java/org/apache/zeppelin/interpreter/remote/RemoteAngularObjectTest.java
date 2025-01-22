@@ -23,7 +23,7 @@ import org.apache.zeppelin.interpreter.xref.display.AngularObjectRegistryListene
 import org.apache.zeppelin.interpreter.AbstractInterpreterTest;
 import org.apache.zeppelin.interpreter.InterpreterContextImpl;
 import org.apache.zeppelin.interpreter.xref.InterpreterException;
-import org.apache.zeppelin.interpreter.InterpreterResult;
+import org.apache.zeppelin.interpreter.xref.InterpreterResult;
 import org.apache.zeppelin.interpreter.InterpreterSetting;
 import org.apache.zeppelin.notebook.Note;
 import org.apache.zeppelin.notebook.NoteInfo;

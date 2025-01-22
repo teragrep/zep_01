@@ -18,6 +18,7 @@
 package org.apache.zeppelin.spark;
 
 import org.apache.zeppelin.interpreter.xref.InterpreterGroup;
+import org.apache.zeppelin.interpreter.xref.InterpreterResult;
 import org.apache.zeppelin.interpreter.xref.display.AngularObjectRegistry;
 import org.apache.zeppelin.display.AngularObjectRegistryImpl;
 import org.apache.zeppelin.interpreter.*;
@@ -75,7 +76,7 @@ public class PySparkInterpreterMatplotlibTest {
     @Override
     public InterpreterResultImpl interpret(String st, InterpreterContext context) throws InterpreterException {
       context.out().clear();
-      InterpreterResult result = super.interpret(st, context);
+      org.apache.zeppelin.interpreter.xref.InterpreterResult result = super.interpret(st, context);
       List<InterpreterResultMessage> resultMessages = null;
       try {
         context.out().flush();
@@ -135,7 +136,7 @@ public class PySparkInterpreterMatplotlibTest {
   @Test
   void dependenciesAreInstalled() throws InterpreterException {
     // matplotlib
-    InterpreterResult ret = pyspark.interpret("import matplotlib", context);
+    org.apache.zeppelin.interpreter.xref.InterpreterResult ret = pyspark.interpret("import matplotlib", context);
     assertEquals(Code.SUCCESS, ret.code(), ret.message().toString());
 
     // inline backend
@@ -146,7 +147,7 @@ public class PySparkInterpreterMatplotlibTest {
   @Test
   void showPlot() throws InterpreterException {
     // Simple plot test
-    InterpreterResult ret;
+    org.apache.zeppelin.interpreter.xref.InterpreterResult ret;
     ret = pyspark.interpret("import matplotlib.pyplot as plt", context);
     ret = pyspark.interpret("plt.close()", context);
     ret = pyspark.interpret("z.configure_mpl(interactive=False)", context);
@@ -162,9 +163,9 @@ public class PySparkInterpreterMatplotlibTest {
   @Test
   // Test for when configuration is set to auto-close figures after show().
   void testClose() throws InterpreterException {
-    InterpreterResult ret;
-    InterpreterResult ret1;
-    InterpreterResult ret2;
+    org.apache.zeppelin.interpreter.xref.InterpreterResult ret;
+    org.apache.zeppelin.interpreter.xref.InterpreterResult ret1;
+    org.apache.zeppelin.interpreter.xref.InterpreterResult ret2;
     ret = pyspark.interpret("import matplotlib.pyplot as plt", context);
     ret = pyspark.interpret("plt.close()", context);
     ret = pyspark.interpret("z.configure_mpl(interactive=False, close=True, angular=False)", context);
@@ -189,9 +190,9 @@ public class PySparkInterpreterMatplotlibTest {
   @Test
   // Test for when configuration is set to not auto-close figures after show().
   void testNoClose() throws InterpreterException {
-    InterpreterResult ret;
-    InterpreterResult ret1;
-    InterpreterResult ret2;
+    org.apache.zeppelin.interpreter.xref.InterpreterResult ret;
+    org.apache.zeppelin.interpreter.xref.InterpreterResult ret1;
+    org.apache.zeppelin.interpreter.xref.InterpreterResult ret2;
     ret = pyspark.interpret("import matplotlib.pyplot as plt", context);
     ret = pyspark.interpret("plt.close()", context);
     ret = pyspark.interpret("z.configure_mpl(interactive=False, close=False, angular=False)", context);

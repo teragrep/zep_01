@@ -23,7 +23,7 @@ import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import org.apache.zeppelin.interpreter.InterpreterResult;
+import org.apache.zeppelin.interpreter.xref.InterpreterResult;
 import org.apache.zeppelin.interpreter.InterpreterResultImpl;
 import org.apache.zeppelin.interpreter.xref.InterpreterResultMessage;
 import org.apache.zeppelin.interpreter.InterpreterResultMessageImpl;

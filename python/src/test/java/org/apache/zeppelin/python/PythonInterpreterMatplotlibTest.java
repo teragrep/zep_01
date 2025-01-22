@@ -25,6 +25,7 @@ import org.apache.zeppelin.interpreter.xref.InterpreterException;
 import org.apache.zeppelin.interpreter.xref.InterpreterGroup;
 import org.apache.zeppelin.interpreter.xref.InterpreterOutput;
 import org.apache.zeppelin.interpreter.xref.InterpreterOutputListener;
+import org.apache.zeppelin.interpreter.xref.InterpreterResult;
 import org.apache.zeppelin.interpreter.xref.InterpreterResultMessageOutput;
 import org.apache.zeppelin.interpreter.xref.Type;
 import org.junit.jupiter.api.AfterEach;
@@ -84,7 +85,7 @@ class PythonInterpreterMatplotlibTest implements InterpreterOutputListener {
   @Test
   void dependenciesAreInstalled() throws InterpreterException {
     // matplotlib
-    InterpreterResult ret = python.interpret("import matplotlib", context);
+    org.apache.zeppelin.interpreter.xref.InterpreterResult ret = python.interpret("import matplotlib", context);
     assertEquals(Code.SUCCESS, ret.code(), ret.message().toString());
 
     // inline backend
@@ -95,7 +96,7 @@ class PythonInterpreterMatplotlibTest implements InterpreterOutputListener {
   @Test
   void showPlot() throws IOException, InterpreterException {
     // Simple plot test
-    InterpreterResult ret;
+    org.apache.zeppelin.interpreter.xref.InterpreterResult ret;
     ret = python.interpret("import matplotlib.pyplot as plt", context);
     ret = python.interpret("z.configure_mpl(interactive=False)", context);
     ret = python.interpret("plt.plot([1, 2, 3])", context);
@@ -117,9 +118,9 @@ class PythonInterpreterMatplotlibTest implements InterpreterOutputListener {
   @Test
   // Test for when configuration is set to auto-close figures after show().
   void testClose() throws IOException, InterpreterException {
-    InterpreterResult ret;
-    InterpreterResult ret1;
-    InterpreterResult ret2;
+    org.apache.zeppelin.interpreter.xref.InterpreterResult ret;
+    org.apache.zeppelin.interpreter.xref.InterpreterResult ret1;
+    org.apache.zeppelin.interpreter.xref.InterpreterResult ret2;
     ret = python.interpret("import matplotlib.pyplot as plt", context);
     ret = python.interpret("z.configure_mpl(interactive=False)", context);
     ret = python.interpret("plt.plot([1, 2, 3])", context);
@@ -153,8 +154,8 @@ class PythonInterpreterMatplotlibTest implements InterpreterOutputListener {
   @Test
   // Test for when configuration is set to not auto-close figures after show().
   void testNoClose() throws IOException, InterpreterException {
-    InterpreterResult ret;
-    InterpreterResult ret1;
+    org.apache.zeppelin.interpreter.xref.InterpreterResult ret;
+    org.apache.zeppelin.interpreter.xref.InterpreterResult ret1;
     InterpreterResult ret2;
     ret = python.interpret("import matplotlib.pyplot as plt", context);
     ret = python.interpret("z.configure_mpl(interactive=False, close=False)", context);
