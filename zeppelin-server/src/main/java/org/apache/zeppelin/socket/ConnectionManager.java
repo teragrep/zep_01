@@ -22,9 +22,9 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.zeppelin.conf.ZeppelinConfiguration;
+import org.apache.zeppelin.display.InputUtil;
 import org.apache.zeppelin.interpreter.xref.display.GUI;
 import org.apache.zeppelin.display.GUIImpl;
-import org.apache.zeppelin.display.Input;
 import org.apache.zeppelin.notebook.Note;
 import org.apache.zeppelin.notebook.NoteInfo;
 import org.apache.zeppelin.notebook.NotebookImportDeserializer;
@@ -62,7 +62,7 @@ public class ConnectionManager {
       .setDateFormat("yyyy-MM-dd'T'HH:mm:ssZ")
       .registerTypeAdapter(Date.class, new NotebookImportDeserializer())
       .setPrettyPrinting()
-      .registerTypeAdapterFactory(Input.TypeAdapterFactory).create();
+      .registerTypeAdapterFactory(InputUtil.TypeAdapterFactory).create();
 
   final Queue<NotebookSocket> connectedSockets = new ConcurrentLinkedQueue<>();
   // noteId -> connection

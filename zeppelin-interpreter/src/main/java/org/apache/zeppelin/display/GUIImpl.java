@@ -40,7 +40,7 @@ import java.util.Map;
 public class GUIImpl implements GUI {
 
   private static Gson gson = new GsonBuilder()
-      .registerTypeAdapterFactory(Input.TypeAdapterFactory)
+      .registerTypeAdapterFactory(InputUtil.TypeAdapterFactory)
       .create();
 
   Map<String, Object> params = new HashMap<>(); // form parameters from client

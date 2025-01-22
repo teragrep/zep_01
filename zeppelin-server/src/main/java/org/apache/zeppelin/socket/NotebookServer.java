@@ -42,11 +42,11 @@ import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.apache.thrift.TException;
 import org.apache.zeppelin.conf.ZeppelinConfiguration;
 import org.apache.zeppelin.display.GUIImpl;
+import org.apache.zeppelin.display.InputUtil;
 import org.apache.zeppelin.interpreter.xref.display.AngularObject;
 import org.apache.zeppelin.interpreter.xref.display.AngularObjectRegistry;
 import org.apache.zeppelin.interpreter.xref.display.AngularObjectRegistryListener;
 import org.apache.zeppelin.interpreter.xref.display.GUI;
-import org.apache.zeppelin.display.Input;
 import org.apache.zeppelin.interpreter.InterpreterGroup;
 import org.apache.zeppelin.interpreter.InterpreterSetting;
 import org.apache.zeppelin.interpreter.remote.RemoteAngularObjectRegistry;
@@ -125,7 +125,7 @@ public class NotebookServer extends WebSocketServlet
       .setDateFormat("yyyy-MM-dd'T'HH:mm:ssZ")
       .registerTypeAdapter(Date.class, new NotebookImportDeserializer())
       .setPrettyPrinting()
-      .registerTypeAdapterFactory(Input.TypeAdapterFactory).create();
+      .registerTypeAdapterFactory(InputUtil.TypeAdapterFactory).create();
   private static final AtomicReference<NotebookServer> self = new AtomicReference<>();
 
   private final ExecutorService executorService = Executors.newFixedThreadPool(10);

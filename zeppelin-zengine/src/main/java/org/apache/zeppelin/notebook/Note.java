@@ -25,6 +25,7 @@ import com.google.gson.GsonBuilder;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.zeppelin.common.JsonSerializable;
 import org.apache.zeppelin.conf.ZeppelinConfiguration;
+import org.apache.zeppelin.display.InputUtil;
 import org.apache.zeppelin.interpreter.xref.display.AngularObject;
 import org.apache.zeppelin.display.AngularObjectImpl;
 import org.apache.zeppelin.interpreter.xref.display.AngularObjectRegistry;
@@ -116,7 +117,7 @@ public class Note implements JsonSerializable {
           .setPrettyPrinting()
           .setDateFormat("yyyy-MM-dd HH:mm:ss.SSS")
           .registerTypeAdapter(Date.class, new NotebookImportDeserializer())
-          .registerTypeAdapterFactory(Input.TypeAdapterFactory)
+          .registerTypeAdapterFactory(InputUtil.TypeAdapterFactory)
           .setExclusionStrategies(NOTE_GSON_EXCLUSION_STRATEGY)
           .create();
   private static final DateTimeFormatter DATE_TIME_FORMATTER =

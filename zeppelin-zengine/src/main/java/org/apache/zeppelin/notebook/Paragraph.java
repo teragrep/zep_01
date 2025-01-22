@@ -32,6 +32,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.apache.zeppelin.common.JsonSerializable;
 import org.apache.zeppelin.display.GUIImpl;
+import org.apache.zeppelin.display.InputUtil;
 import org.apache.zeppelin.interpreter.xref.display.AngularObject;
 import org.apache.zeppelin.interpreter.xref.display.AngularObjectRegistry;
 import org.apache.zeppelin.interpreter.xref.display.GUI;
@@ -428,8 +429,8 @@ public class Paragraph extends JobWithProgressPoller<InterpreterResult> implemen
       String form = localProperties.getOrDefault("form", interpreter.getFormType().name());
       if (form.equalsIgnoreCase("simple")) {
         // inputs will be built from script body
-        LinkedHashMap<String, Input> inputs = Input.extractSimpleQueryForm(script, false);
-        LinkedHashMap<String, Input> noteInputs = Input.extractSimpleQueryForm(script, true);
+        LinkedHashMap<String, Input> inputs = InputUtil.extractSimpleQueryForm(script, false);
+        LinkedHashMap<String, Input> noteInputs = InputUtil.extractSimpleQueryForm(script, true);
         final AngularObjectRegistry angularRegistry =
                 interpreter.getInterpreterGroup().getAngularObjectRegistry();
         String scriptBody = extractVariablesFromAngularRegistry(script, inputs, angularRegistry);
@@ -447,8 +448,8 @@ public class Paragraph extends JobWithProgressPoller<InterpreterResult> implemen
             note.setNoteForms(noteInputs);
           }
         }
-        script = Input.getSimpleQuery(note.getNoteParams(), scriptBody, true);
-        script = Input.getSimpleQuery(settings.getParams(), script, false);
+        script = InputUtil.getSimpleQuery(note.getNoteParams(), scriptBody, true);
+        script = InputUtil.getSimpleQuery(settings.getParams(), script, false);
       } else {
         settings.clear();
       }
