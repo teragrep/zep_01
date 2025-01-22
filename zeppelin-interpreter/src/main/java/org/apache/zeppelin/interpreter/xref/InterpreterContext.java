@@ -3,7 +3,6 @@ package org.apache.zeppelin.interpreter.xref;
 import org.apache.zeppelin.interpreter.xref.display.AngularObjectRegistry;
 import org.apache.zeppelin.interpreter.xref.display.GUI;
 import org.apache.zeppelin.interpreter.xref.remote.RemoteInterpreterEventClient;
-import org.apache.zeppelin.resource.ResourcePool;
 import org.apache.zeppelin.user.AuthenticationInfo;
 
 import java.util.Map;

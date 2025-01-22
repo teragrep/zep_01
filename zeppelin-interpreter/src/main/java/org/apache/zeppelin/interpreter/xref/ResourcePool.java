@@ -14,9 +14,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.apache.zeppelin.resource;
+package org.apache.zeppelin.interpreter.xref;
 
-import org.apache.zeppelin.interpreter.xref.Resource;
+import org.apache.zeppelin.resource.ResourceSetImpl;
 
 /**
  * Interface for ResourcePool

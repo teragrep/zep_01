@@ -44,7 +44,7 @@ import org.apache.zeppelin.interpreter.thrift.RemoteInterpreterService;
 import org.apache.zeppelin.interpreter.xref.remote.RemoteInterpreterEventClient;
 import org.apache.zeppelin.resource.DistributedResourcePool;
 import org.apache.zeppelin.resource.ResourceImpl;
-import org.apache.zeppelin.resource.ResourcePool;
+import org.apache.zeppelin.interpreter.xref.ResourcePool;
 import org.apache.zeppelin.scheduler.*;
 import org.apache.zeppelin.user.AuthenticationInfo;
 import org.slf4j.Logger;

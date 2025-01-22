@@ -25,7 +25,7 @@ import org.apache.zeppelin.interpreter.InterpreterResult;
 import org.apache.zeppelin.interpreter.xref.Code;
 import org.apache.zeppelin.interpreter.thrift.InterpreterCompletion;
 import org.apache.zeppelin.interpreter.xref.Resource;
-import org.apache.zeppelin.resource.ResourcePool;
+import org.apache.zeppelin.interpreter.xref.ResourcePool;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

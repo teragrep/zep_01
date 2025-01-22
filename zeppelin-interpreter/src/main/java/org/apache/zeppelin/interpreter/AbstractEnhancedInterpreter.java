@@ -23,7 +23,7 @@ import org.apache.zeppelin.interpreter.xref.EnhancedInterpreter;
 import org.apache.zeppelin.interpreter.xref.InterpreterContext;
 import org.apache.zeppelin.interpreter.xref.InterpreterException;
 import org.apache.zeppelin.interpreter.xref.ZeppelinContext;
-import org.apache.zeppelin.resource.ResourcePool;
+import org.apache.zeppelin.interpreter.xref.ResourcePool;
 import org.apache.zeppelin.resource.ResourcePoolMap;
 
 import java.util.*;
