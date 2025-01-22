@@ -21,7 +21,7 @@ import org.apache.thrift.protocol.TBinaryProtocol;
 import org.apache.thrift.protocol.TProtocol;
 import org.apache.thrift.transport.TSocket;
 import org.apache.thrift.transport.TTransportException;
-import org.apache.zeppelin.display.AngularObject;
+import org.apache.zeppelin.interpreter.xref.display.AngularObject;
 import org.apache.zeppelin.interpreter.xref.InterpreterResultMessage;
 import org.apache.zeppelin.interpreter.xref.Resource;
 import org.apache.zeppelin.interpreter.xref.ResourceId;

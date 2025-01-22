@@ -25,7 +25,7 @@ import com.google.gson.GsonBuilder;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.zeppelin.common.JsonSerializable;
 import org.apache.zeppelin.conf.ZeppelinConfiguration;
-import org.apache.zeppelin.display.AngularObject;
+import org.apache.zeppelin.interpreter.xref.display.AngularObject;
 import org.apache.zeppelin.display.AngularObjectImpl;
 import org.apache.zeppelin.display.AngularObjectRegistry;
 import org.apache.zeppelin.display.Input;

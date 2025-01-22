@@ -41,7 +41,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.apache.thrift.TException;
 import org.apache.zeppelin.conf.ZeppelinConfiguration;
-import org.apache.zeppelin.display.AngularObject;
+import org.apache.zeppelin.interpreter.xref.display.AngularObject;
 import org.apache.zeppelin.display.AngularObjectRegistry;
 import org.apache.zeppelin.interpreter.xref.display.AngularObjectRegistryListener;
 import org.apache.zeppelin.display.GUI;

@@ -16,6 +16,8 @@
  */
 package org.apache.zeppelin.display;
 
+import org.apache.zeppelin.interpreter.xref.display.AngularObject;
+
 public class AngularObjectBuilder {
   public static <T> AngularObject<T> build(String varName, T value, String noteId,
           String paragraphId) {

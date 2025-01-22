@@ -17,6 +17,8 @@
 
 package org.apache.zeppelin.display;
 
+import org.apache.zeppelin.interpreter.xref.display.AngularObject;
+
 /**
  *
  */

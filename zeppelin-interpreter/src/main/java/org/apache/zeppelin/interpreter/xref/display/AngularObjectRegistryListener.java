@@ -17,8 +17,6 @@
 
 package org.apache.zeppelin.interpreter.xref.display;
 
-import org.apache.zeppelin.display.AngularObject;
-
 /**
  *
  * Listener class for angular object operations, such as add, update, remove.

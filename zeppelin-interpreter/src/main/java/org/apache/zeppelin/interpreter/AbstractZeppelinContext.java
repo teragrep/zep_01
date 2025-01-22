@@ -20,7 +20,7 @@ package org.apache.zeppelin.interpreter;
 import org.apache.zeppelin.interpreter.xref.*;
 import org.apache.zeppelin.interpreter.xref.annotation.Experimental;
 import org.apache.zeppelin.interpreter.xref.annotation.ZeppelinApi;
-import org.apache.zeppelin.display.AngularObject;
+import org.apache.zeppelin.interpreter.xref.display.AngularObject;
 import org.apache.zeppelin.display.AngularObjectRegistry;
 import org.apache.zeppelin.display.AngularObjectWatcher;
 import org.apache.zeppelin.display.GUI;

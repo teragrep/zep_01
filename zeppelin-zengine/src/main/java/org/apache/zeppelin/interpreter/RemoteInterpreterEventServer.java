@@ -25,7 +25,7 @@ import org.apache.thrift.server.TThreadPoolServer;
 import org.apache.thrift.transport.TServerSocket;
 import org.apache.thrift.transport.TTransportException;
 import org.apache.zeppelin.conf.ZeppelinConfiguration;
-import org.apache.zeppelin.display.AngularObject;
+import org.apache.zeppelin.interpreter.xref.display.AngularObject;
 import org.apache.zeppelin.display.AngularObjectImpl;
 import org.apache.zeppelin.interpreter.remote.AppendOutputRunner;
 import org.apache.zeppelin.interpreter.remote.InvokeResourceMethodEventMessage;

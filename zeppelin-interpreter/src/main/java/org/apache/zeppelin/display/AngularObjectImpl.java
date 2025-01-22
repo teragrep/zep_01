@@ -18,6 +18,7 @@
 package org.apache.zeppelin.display;
 
 import com.google.gson.Gson;
+import org.apache.zeppelin.interpreter.xref.display.AngularObject;
 import org.apache.zeppelin.scheduler.ExecutorFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

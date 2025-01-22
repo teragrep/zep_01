@@ -47,7 +47,7 @@ import javax.servlet.http.HttpServletRequest;
 
 import org.apache.thrift.TException;
 import org.apache.zeppelin.conf.ZeppelinConfiguration;
-import org.apache.zeppelin.display.AngularObject;
+import org.apache.zeppelin.interpreter.xref.display.AngularObject;
 import org.apache.zeppelin.display.AngularObjectBuilder;
 import org.apache.zeppelin.display.AngularObjectImpl;
 import org.apache.zeppelin.interpreter.InterpreterGroup;
