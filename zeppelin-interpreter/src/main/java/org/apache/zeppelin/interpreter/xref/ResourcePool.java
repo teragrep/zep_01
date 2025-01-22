@@ -15,9 +15,6 @@
  * limitations under the License.
  */
 package org.apache.zeppelin.interpreter.xref;
-
-import org.apache.zeppelin.resource.ResourceSetImpl;
-
 /**
  * Interface for ResourcePool
  */
@@ -48,7 +45,7 @@ public interface ResourcePool {
    * Get all resources
    * @return
    */
-  ResourceSetImpl getAll();
+  ResourceSet getAll();
 
   /**
    * Put an object into resource pool
