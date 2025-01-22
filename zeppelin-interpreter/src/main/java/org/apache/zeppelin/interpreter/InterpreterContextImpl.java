@@ -19,7 +19,7 @@ package org.apache.zeppelin.interpreter;
 
 import org.apache.zeppelin.display.GUIImpl;
 import org.apache.zeppelin.interpreter.xref.display.AngularObjectRegistry;
-import org.apache.zeppelin.display.GUI;
+import org.apache.zeppelin.interpreter.xref.display.GUI;
 import org.apache.zeppelin.interpreter.xref.remote.RemoteInterpreterEventClient;
 import org.apache.zeppelin.interpreter.xref.InterpreterContext;
 import org.apache.zeppelin.interpreter.xref.InterpreterOutput;

@@ -21,6 +21,7 @@ import org.apache.zeppelin.display.ui.CheckBox;
 import org.apache.zeppelin.display.ui.OptionInput.ParamOption;
 import org.apache.zeppelin.display.ui.Select;
 import org.apache.zeppelin.display.ui.TextBox;
+import org.apache.zeppelin.interpreter.xref.display.GUI;
 import org.junit.Before;
 import org.junit.Test;
 

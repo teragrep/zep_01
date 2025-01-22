@@ -1,5 +1,6 @@
-package org.apache.zeppelin.display;
+package org.apache.zeppelin.interpreter.xref.display;
 
+import org.apache.zeppelin.display.Input;
 import org.apache.zeppelin.display.ui.OptionInput;
 
 import java.io.Serializable;

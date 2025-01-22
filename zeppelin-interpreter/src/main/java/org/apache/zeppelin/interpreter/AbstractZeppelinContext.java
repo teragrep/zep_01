@@ -23,7 +23,7 @@ import org.apache.zeppelin.interpreter.xref.annotation.ZeppelinApi;
 import org.apache.zeppelin.interpreter.xref.display.AngularObject;
 import org.apache.zeppelin.interpreter.xref.display.AngularObjectRegistry;
 import org.apache.zeppelin.interpreter.xref.display.AngularObjectWatcher;
-import org.apache.zeppelin.display.GUI;
+import org.apache.zeppelin.interpreter.xref.display.GUI;
 import org.apache.zeppelin.display.ui.OptionInput.ParamOption;
 import org.apache.zeppelin.resource.ResourcePool;
 import org.slf4j.Logger;
