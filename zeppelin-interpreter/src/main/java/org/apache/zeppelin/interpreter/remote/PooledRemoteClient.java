@@ -19,7 +19,6 @@ package org.apache.zeppelin.interpreter.remote;
 
 import org.apache.commons.pool2.impl.GenericObjectPool;
 import org.apache.commons.pool2.impl.GenericObjectPoolConfig;
-import org.apache.thrift.TException;
 import org.apache.thrift.TServiceClient;
 import org.apache.zeppelin.interpreter.thrift.InterpreterRPCException;
 import org.slf4j.Logger;
@@ -121,8 +120,4 @@ public class PooledRemoteClient<T extends TServiceClient> implements AutoCloseab
     return null;
   }
 
-
-  public interface RemoteFunction<R, T> {
-    R call(T client) throws InterpreterRPCException, TException;
-  }
 }

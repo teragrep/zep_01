@@ -96,7 +96,7 @@ public abstract class RemoteInterpreterProcess implements InterpreterClient, Aut
     });
   }
 
-  public <R> R callRemoteFunction(PooledRemoteClient.RemoteFunction<R, Client> func) {
+  public <R> R callRemoteFunction(RemoteFunction<R, Client> func) {
     return remoteClient.callRemoteFunction(func);
   }
 

@@ -1,7 +1,7 @@
 package org.apache.zeppelin.interpreter.xref.remote;
 
 import org.apache.zeppelin.display.AngularObjectRegistryListener;
-import org.apache.zeppelin.interpreter.remote.PooledRemoteClient;
+import org.apache.zeppelin.interpreter.remote.RemoteFunction;
 import org.apache.zeppelin.interpreter.thrift.LibraryMetadata;
 import org.apache.zeppelin.interpreter.thrift.ParagraphInfo;
 import org.apache.zeppelin.interpreter.thrift.RegisterInfo;
@@ -17,7 +17,7 @@ import java.util.Map;
 public interface RemoteInterpreterEventClient
         extends ResourcePoolConnector, AngularObjectRegistryListener, AutoCloseable {
 
-    <R> R callRemoteFunction(PooledRemoteClient.RemoteFunction<R, RemoteInterpreterEventService.Client> func);
+    <R> R callRemoteFunction(RemoteFunction<R, RemoteInterpreterEventService.Client> func);
 
     void setIntpGroupId(String intpGroupId);
 

@@ -72,7 +72,7 @@ public class RemoteInterpreterEventClientImpl implements RemoteInterpreterEventC
   }
 
   @Override
-  public <R> R callRemoteFunction(PooledRemoteClient.RemoteFunction<R, RemoteInterpreterEventService.Client> func) {
+  public <R> R callRemoteFunction(RemoteFunction<R, RemoteInterpreterEventService.Client> func) {
     return remoteClient.callRemoteFunction(func);
   }
 
