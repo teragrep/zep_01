@@ -185,7 +185,7 @@ public class RemoteInterpreterServer extends Thread
               this.zConf.getInt(ZeppelinConfiguration.ConfVars.ZEPPELIN_INTERPRETER_CONNECTION_POOL_SIZE);
       LOGGER.info("Creating RemoteInterpreterEventClient with connection pool size: {}",
               connectionPoolSize);
-      intpEventClient = new RemoteInterpreterEventClient(intpEventServerHost, intpEventServerPort,
+      intpEventClient = new RemoteInterpreterEventClientImpl(intpEventServerHost, intpEventServerPort,
               connectionPoolSize);
     }
   }
@@ -414,7 +414,7 @@ public class RemoteInterpreterServer extends Thread
       LOGGER.info("Reconnect to this interpreter process from {}:{}", host, port);
       this.intpEventServerHost = host;
       this.intpEventServerPort = port;
-      intpEventClient = new RemoteInterpreterEventClient(intpEventServerHost, intpEventServerPort,
+      intpEventClient = new RemoteInterpreterEventClientImpl(intpEventServerHost, intpEventServerPort,
               this.zConf.getInt(ZeppelinConfiguration.ConfVars.ZEPPELIN_INTERPRETER_CONNECTION_POOL_SIZE));
       intpEventClient.setIntpGroupId(interpreterGroupId);
 
@@ -524,7 +524,7 @@ public class RemoteInterpreterServer extends Thread
       if (!Thread.currentThread().isInterrupted()) {
         RegisterInfo registerInfo = new RegisterInfo(host, port, interpreterGroupId);
         try {
-          intpEventClient = new RemoteInterpreterEventClient(intpEventServerHost, intpEventServerPort, 10);
+          intpEventClient = new RemoteInterpreterEventClientImpl(intpEventServerHost, intpEventServerPort, 10);
           LOGGER.info("Registering interpreter process");
           intpEventClient.registerInterpreterProcess(registerInfo);
           LOGGER.info("Registered interpreter process");

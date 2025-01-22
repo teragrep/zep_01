@@ -57,7 +57,7 @@ public class RemoteInterpreterServerTest {
   public void testStartStopWithQueuedEvents() throws Exception {
     RemoteInterpreterServer server = new RemoteInterpreterServer("localhost",
         RemoteInterpreterUtils.findRandomAvailablePortOnAllLocalInterfaces(), ":", "groupId", true);
-    server.intpEventClient = mock(RemoteInterpreterEventClient.class);
+    server.intpEventClient = mock(RemoteInterpreterEventClientImpl.class);
     startRemoteInterpreterServer(server, 10 * 1000);
 
     stopRemoteInterpreterServer(server, 10 * 10000);
@@ -104,7 +104,7 @@ public class RemoteInterpreterServerTest {
     final RemoteInterpreterServer server = new RemoteInterpreterServer("localhost",
         RemoteInterpreterUtils.findRandomAvailablePortOnAllLocalInterfaces(), ":", "groupId", true);
     server.init(new HashMap<>());
-    server.intpEventClient = mock(RemoteInterpreterEventClient.class);
+    server.intpEventClient = mock(RemoteInterpreterEventClientImpl.class);
 
     Map<String, String> intpProperties = new HashMap<>();
     intpProperties.put("property_1", "value_1");

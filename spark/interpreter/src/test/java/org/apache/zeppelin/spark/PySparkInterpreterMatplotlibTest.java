@@ -19,7 +19,7 @@ package org.apache.zeppelin.spark;
 
 import org.apache.zeppelin.display.AngularObjectRegistry;
 import org.apache.zeppelin.interpreter.*;
-import org.apache.zeppelin.interpreter.remote.RemoteInterpreterEventClient;
+import org.apache.zeppelin.interpreter.remote.RemoteInterpreterEventClientImpl;
 import org.apache.zeppelin.interpreter.xref.Code;
 import org.apache.zeppelin.interpreter.xref.InterpreterContext;
 import org.apache.zeppelin.interpreter.xref.InterpreterException;
@@ -108,7 +108,7 @@ public class PySparkInterpreterMatplotlibTest {
     context = InterpreterContextImpl.builder()
         .setNoteId("note")
         .setInterpreterOut(new InterpreterOutputImpl())
-        .setIntpEventClient(mock(RemoteInterpreterEventClient.class))
+        .setIntpEventClient(mock(RemoteInterpreterEventClientImpl.class))
         .setAngularObjectRegistry(new AngularObjectRegistry(intpGroup.getId(), null))
         .build();
     InterpreterContextStore.set(context);

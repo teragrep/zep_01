@@ -25,6 +25,7 @@ import org.apache.zeppelin.display.ui.Select;
 import org.apache.zeppelin.display.ui.TextBox;
 import org.apache.zeppelin.interpreter.*;
 import org.apache.zeppelin.interpreter.remote.RemoteInterpreterEventClient;
+import org.apache.zeppelin.interpreter.remote.RemoteInterpreterEventClientImpl;
 import org.apache.zeppelin.interpreter.thrift.InterpreterCompletion;
 import org.apache.zeppelin.interpreter.xref.Code;
 import org.apache.zeppelin.interpreter.xref.InterpreterException;
@@ -69,7 +70,7 @@ class SparkInterpreterTest {
 
   @BeforeEach
   public void setUp() {
-    mockRemoteEventClient = mock(RemoteInterpreterEventClient.class);
+    mockRemoteEventClient = mock(RemoteInterpreterEventClientImpl.class);
   }
 
   @Test

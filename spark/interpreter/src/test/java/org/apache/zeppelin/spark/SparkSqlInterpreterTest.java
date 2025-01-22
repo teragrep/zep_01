@@ -19,7 +19,7 @@ package org.apache.zeppelin.spark;
 
 import org.apache.zeppelin.display.AngularObjectRegistry;
 import org.apache.zeppelin.interpreter.*;
-import org.apache.zeppelin.interpreter.remote.RemoteInterpreterEventClient;
+import org.apache.zeppelin.interpreter.remote.RemoteInterpreterEventClientImpl;
 import org.apache.zeppelin.interpreter.xref.Code;
 import org.apache.zeppelin.interpreter.xref.InterpreterException;
 import org.apache.zeppelin.interpreter.xref.Type;
@@ -82,7 +82,7 @@ public class SparkSqlInterpreterTest {
             .setAngularObjectRegistry(new AngularObjectRegistry(intpGroup.getId(), null))
             .setResourcePool(new LocalResourcePool("id"))
             .setInterpreterOut(new InterpreterOutputImpl())
-            .setIntpEventClient(mock(RemoteInterpreterEventClient.class))
+            .setIntpEventClient(mock(RemoteInterpreterEventClientImpl.class))
             .build();
   }
 
@@ -194,7 +194,7 @@ public class SparkSqlInterpreterTest {
             .setAngularObjectRegistry(new AngularObjectRegistry(intpGroup.getId(), null))
             .setResourcePool(new LocalResourcePool("id"))
             .setInterpreterOut(new InterpreterOutputImpl())
-            .setIntpEventClient(mock(RemoteInterpreterEventClient.class))
+            .setIntpEventClient(mock(RemoteInterpreterEventClientImpl.class))
             .build();
     context.getLocalProperties().put("template", "Total count: <h1>{0}</h1>, Total age: <h1>{1}</h1>");
 

@@ -23,7 +23,7 @@ import org.apache.zeppelin.display.ui.Password;
 import org.apache.zeppelin.display.ui.Select;
 import org.apache.zeppelin.display.ui.TextBox;
 import org.apache.zeppelin.interpreter.*;
-import org.apache.zeppelin.interpreter.remote.RemoteInterpreterEventClient;
+import org.apache.zeppelin.interpreter.remote.RemoteInterpreterEventClientImpl;
 import org.apache.zeppelin.interpreter.thrift.InterpreterCompletion;
 import org.apache.zeppelin.interpreter.xref.Code;
 import org.apache.zeppelin.interpreter.xref.Interpreter;
@@ -349,7 +349,7 @@ public abstract class BasePythonInterpreterTest extends ConcurrentTestCase {
         .setNoteId("noteId")
         .setParagraphId("paragraphId")
         .setInterpreterOut(new InterpreterOutputImpl())
-        .setIntpEventClient(mock(RemoteInterpreterEventClient.class))
+        .setIntpEventClient(mock(RemoteInterpreterEventClientImpl.class))
         .build();
   }
 }

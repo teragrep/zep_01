@@ -55,7 +55,7 @@ public class RemoteInterpreterDownloader {
       int port = Integer.parseInt(args[1]);
       String interpreter = args[2];
       String localRepoPath = args[3];
-      RemoteInterpreterEventClient intpEventClient = new RemoteInterpreterEventClient(
+      RemoteInterpreterEventClient intpEventClient = new RemoteInterpreterEventClientImpl(
           zeppelinServerHost, port, 3);
 
       RemoteInterpreterDownloader downloader = new RemoteInterpreterDownloader(interpreter,

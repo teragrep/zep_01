@@ -28,6 +28,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Properties;
 import org.apache.hadoop.util.VersionInfo;
+import org.apache.zeppelin.interpreter.remote.RemoteInterpreterEventClientImpl;
 import org.apache.zeppelin.interpreter.xref.InterpreterContext;
 import org.apache.zeppelin.interpreter.InterpreterContextImpl;
 import org.apache.zeppelin.interpreter.remote.RemoteInterpreterEventClient;
@@ -94,7 +95,7 @@ class SparkShimsTest {
     @BeforeEach
     public void setUp() {
       mockContext = mock(InterpreterContextImpl.class);
-      mockIntpEventClient = mock(RemoteInterpreterEventClient.class);
+      mockIntpEventClient = mock(RemoteInterpreterEventClientImpl.class);
       when(mockContext.getIntpEventClient()).thenReturn(mockIntpEventClient);
 
       try {

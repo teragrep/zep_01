@@ -21,6 +21,7 @@ package org.apache.zeppelin.spark;
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.apache.zeppelin.interpreter.*;
 import org.apache.zeppelin.interpreter.remote.RemoteInterpreterEventClient;
+import org.apache.zeppelin.interpreter.remote.RemoteInterpreterEventClientImpl;
 import org.apache.zeppelin.interpreter.xref.Interpreter;
 import org.apache.zeppelin.interpreter.xref.InterpreterException;
 import org.apache.zeppelin.python.PythonInterpreterTest;
@@ -40,7 +41,7 @@ import static org.mockito.Mockito.mock;
 @Disabled(value="Won't build because it depends on Spark212 being available, setup fails")
 class PySparkInterpreterTest extends PythonInterpreterTest {
 
-  private RemoteInterpreterEventClient mockRemoteEventClient = mock(RemoteInterpreterEventClient.class);
+  private RemoteInterpreterEventClient mockRemoteEventClient = mock(RemoteInterpreterEventClientImpl.class);
 
   @Override
   @BeforeEach
