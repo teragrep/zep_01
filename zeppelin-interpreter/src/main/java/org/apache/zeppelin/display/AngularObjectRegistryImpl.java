@@ -95,7 +95,7 @@ public class AngularObjectRegistryImpl implements AngularObjectRegistry {
     synchronized (registry) {
       String key = getRegistryKey(noteId, paragraphId);
       if (!registry.containsKey(key)) {
-        registry.put(key, new HashMap<String, AngularObjectImpl>());
+        registry.put(key, new HashMap<>());
       }
       
       return registry.get(key);
