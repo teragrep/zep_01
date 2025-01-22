@@ -26,6 +26,7 @@ import org.apache.thrift.server.TThreadPoolServer;
 import org.apache.thrift.transport.TServerSocket;
 import org.apache.thrift.transport.TTransportException;
 import org.apache.zeppelin.conf.ZeppelinConfiguration;
+import org.apache.zeppelin.display.AngularObjectRegistryImpl;
 import org.apache.zeppelin.interpreter.xref.display.AngularObject;
 import org.apache.zeppelin.display.AngularObjectRegistry;
 import org.apache.zeppelin.display.GUI;
@@ -290,7 +291,7 @@ public class RemoteInterpreterServer extends Thread
     try {
       if (interpreterGroup == null) {
         interpreterGroup = new InterpreterGroup(interpreterGroupId);
-        angularObjectRegistry = new AngularObjectRegistry(interpreterGroup.getId(), intpEventClient);
+        angularObjectRegistry = new AngularObjectRegistryImpl(interpreterGroup.getId(), intpEventClient);
         hookRegistry = new InterpreterHookRegistry();
         resourcePool = new DistributedResourcePool(interpreterGroup.getId(), intpEventClient);
         interpreterGroup.setInterpreterHookRegistry(hookRegistry);
@@ -419,7 +420,7 @@ public class RemoteInterpreterServer extends Thread
               this.zConf.getInt(ZeppelinConfiguration.ConfVars.ZEPPELIN_INTERPRETER_CONNECTION_POOL_SIZE));
       intpEventClient.setIntpGroupId(interpreterGroupId);
 
-      this.angularObjectRegistry = new AngularObjectRegistry(interpreterGroup.getId(), intpEventClient);
+      this.angularObjectRegistry = new AngularObjectRegistryImpl(interpreterGroup.getId(), intpEventClient);
       this.resourcePool = new DistributedResourcePool(interpreterGroup.getId(), intpEventClient);
 
       // reset all the available InterpreterContext's components that use intpEventClient.

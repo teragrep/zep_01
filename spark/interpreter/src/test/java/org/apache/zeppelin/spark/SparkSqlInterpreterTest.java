@@ -17,7 +17,7 @@
 
 package org.apache.zeppelin.spark;
 
-import org.apache.zeppelin.display.AngularObjectRegistry;
+import org.apache.zeppelin.display.AngularObjectRegistryImpl;
 import org.apache.zeppelin.interpreter.*;
 import org.apache.zeppelin.interpreter.remote.RemoteInterpreterEventClientImpl;
 import org.apache.zeppelin.interpreter.xref.Code;
@@ -79,7 +79,7 @@ public class SparkSqlInterpreterTest {
             .setNoteId("noteId")
             .setParagraphId("paragraphId")
             .setParagraphTitle("title")
-            .setAngularObjectRegistry(new AngularObjectRegistry(intpGroup.getId(), null))
+            .setAngularObjectRegistry(new AngularObjectRegistryImpl(intpGroup.getId(), null))
             .setResourcePool(new LocalResourcePool("id"))
             .setInterpreterOut(new InterpreterOutputImpl())
             .setIntpEventClient(mock(RemoteInterpreterEventClientImpl.class))
@@ -191,7 +191,7 @@ public class SparkSqlInterpreterTest {
             .setNoteId("noteId")
             .setParagraphId("paragraphId")
             .setParagraphTitle("title")
-            .setAngularObjectRegistry(new AngularObjectRegistry(intpGroup.getId(), null))
+            .setAngularObjectRegistry(new AngularObjectRegistryImpl(intpGroup.getId(), null))
             .setResourcePool(new LocalResourcePool("id"))
             .setInterpreterOut(new InterpreterOutputImpl())
             .setIntpEventClient(mock(RemoteInterpreterEventClientImpl.class))

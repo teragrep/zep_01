@@ -35,7 +35,7 @@ public class AngularObjectRegistryTest {
     final AtomicInteger onUpdate = new AtomicInteger(0);
     final AtomicInteger onRemove = new AtomicInteger(0);
 
-    AngularObjectRegistry registry = new AngularObjectRegistry("intpId",
+    AngularObjectRegistry registry = new AngularObjectRegistryImpl("intpId",
         new AngularObjectRegistryListener() {
 
           @Override
@@ -80,7 +80,7 @@ public class AngularObjectRegistryTest {
 
   @Test
   public void testGetDependOnScope() throws TException {
-    AngularObjectRegistry registry = new AngularObjectRegistry("intpId", null);
+    AngularObjectRegistry registry = new AngularObjectRegistryImpl("intpId", null);
     AngularObject ao1 = registry.add("name1", "o1", "noteId1", "paragraphId1");
     AngularObject ao2 = registry.add("name2", "o2", "noteId1", "paragraphId1");
     AngularObject ao3 = registry.add("name2", "o3", "noteId1", "paragraphId2");
@@ -99,7 +99,7 @@ public class AngularObjectRegistryTest {
 
   @Test
   public void testGetAllDependOnScope() throws TException {
-    AngularObjectRegistry registry = new AngularObjectRegistry("intpId", null);
+    AngularObjectRegistry registry = new AngularObjectRegistryImpl("intpId", null);
     AngularObject ao1 = registry.add("name1", "o", "noteId1", "paragraphId1");
     AngularObject ao2 = registry.add("name2", "o", "noteId1", "paragraphId1");
     AngularObject ao3 = registry.add("name2", "o", "noteId1", "paragraphId2");

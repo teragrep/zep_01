@@ -37,6 +37,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.lang3.tuple.Triple;
+import org.apache.zeppelin.display.AngularObjectRegistryImpl;
 import org.apache.zeppelin.interpreter.xref.display.AngularObject;
 import org.apache.zeppelin.display.AngularObjectBuilder;
 import org.apache.zeppelin.display.AngularObjectRegistry;
@@ -200,7 +201,7 @@ public class ParagraphTest extends AbstractInterpreterTest {
     //Given
     final String noteId = "noteId";
 
-    final AngularObjectRegistry registry = mock(AngularObjectRegistry.class);
+    final AngularObjectRegistry registry = mock(AngularObjectRegistryImpl.class);
     final Note note = mock(Note.class);
     final Map<String, Input> inputs = new HashMap<>();
     inputs.put("name", null);
@@ -257,7 +258,7 @@ public class ParagraphTest extends AbstractInterpreterTest {
     ManagedInterpreterGroup mockInterpreterGroup = mock(ManagedInterpreterGroup.class);
     when(mockInterpreter.getInterpreterGroup()).thenReturn(mockInterpreterGroup);
     when(mockInterpreterGroup.getId()).thenReturn("mock_id_1");
-    when(mockInterpreterGroup.getAngularObjectRegistry()).thenReturn(mock(AngularObjectRegistry.class));
+    when(mockInterpreterGroup.getAngularObjectRegistry()).thenReturn(mock(AngularObjectRegistryImpl.class));
     when(mockInterpreterGroup.getResourcePool()).thenReturn(mock(ResourcePool.class));
 
     List<InterpreterSetting> spyInterpreterSettingList = spy(new ArrayList<>());
@@ -362,7 +363,7 @@ public class ParagraphTest extends AbstractInterpreterTest {
     ManagedInterpreterGroup mockInterpreterGroup = mock(ManagedInterpreterGroup.class);
     when(mockInterpreter.getInterpreterGroup()).thenReturn(mockInterpreterGroup);
     when(mockInterpreterGroup.getId()).thenReturn("mock_id_1");
-    when(mockInterpreterGroup.getAngularObjectRegistry()).thenReturn(mock(AngularObjectRegistry.class));
+    when(mockInterpreterGroup.getAngularObjectRegistry()).thenReturn(mock(AngularObjectRegistryImpl.class));
     when(mockInterpreterGroup.getResourcePool()).thenReturn(mock(ResourcePool.class));
     when(mockInterpreter.getFormType()).thenReturn(FormType.NONE);
 

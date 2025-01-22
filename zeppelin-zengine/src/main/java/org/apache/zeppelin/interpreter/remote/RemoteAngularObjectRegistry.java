@@ -18,8 +18,8 @@
 package org.apache.zeppelin.interpreter.remote;
 
 import com.google.gson.Gson;
+import org.apache.zeppelin.display.AngularObjectRegistryImpl;
 import org.apache.zeppelin.interpreter.xref.display.AngularObject;
-import org.apache.zeppelin.display.AngularObjectRegistry;
 import org.apache.zeppelin.interpreter.xref.display.AngularObjectRegistryListener;
 import org.apache.zeppelin.interpreter.ManagedInterpreterGroup;
 import java.util.List;
@@ -27,7 +27,7 @@ import java.util.List;
 /**
  * Proxy for AngularObjectRegistry that exists in remote interpreter process
  */
-public class RemoteAngularObjectRegistry extends AngularObjectRegistry {
+public class RemoteAngularObjectRegistry extends AngularObjectRegistryImpl {
   private static final Gson GSON = new Gson();
 
   private ManagedInterpreterGroup interpreterGroup;

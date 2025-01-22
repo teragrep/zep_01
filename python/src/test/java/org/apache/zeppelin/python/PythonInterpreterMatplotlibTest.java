@@ -17,7 +17,7 @@
 
 package org.apache.zeppelin.python;
 
-import org.apache.zeppelin.display.AngularObjectRegistry;
+import org.apache.zeppelin.display.AngularObjectRegistryImpl;
 import org.apache.zeppelin.interpreter.*;
 import org.apache.zeppelin.interpreter.xref.Code;
 import org.apache.zeppelin.interpreter.xref.Interpreter;
@@ -68,7 +68,7 @@ class PythonInterpreterMatplotlibTest implements InterpreterOutputListener {
 
     context = InterpreterContextImpl.builder()
         .setInterpreterOut(out)
-        .setAngularObjectRegistry(new AngularObjectRegistry(intpGroup.getId(), null))
+        .setAngularObjectRegistry(new AngularObjectRegistryImpl(intpGroup.getId(), null))
         .build();
     InterpreterContextStore.set(context);
 

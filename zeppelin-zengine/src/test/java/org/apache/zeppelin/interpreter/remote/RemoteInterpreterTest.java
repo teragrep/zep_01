@@ -21,6 +21,7 @@ import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.apache.thrift.transport.TTransportException;
 import org.apache.zeppelin.conf.ZeppelinConfiguration;
 import org.apache.zeppelin.display.AngularObjectRegistry;
+import org.apache.zeppelin.display.AngularObjectRegistryImpl;
 import org.apache.zeppelin.display.GUI;
 import org.apache.zeppelin.display.Input;
 import org.apache.zeppelin.display.ui.OptionInput;
@@ -342,7 +343,7 @@ public class RemoteInterpreterTest extends AbstractInterpreterTest {
   @Test
   public void should_push_local_angular_repo_to_remote() throws Exception {
 
-    final AngularObjectRegistry registry = new AngularObjectRegistry("spark", null);
+    final AngularObjectRegistry registry = new AngularObjectRegistryImpl("spark", null);
     registry.add("name_1", "value_1", "note_1", "paragraphId_1");
     registry.add("name_2", "value_2", "node_2", "paragraphId_2");
     Interpreter interpreter = interpreterSetting.getInterpreter("user1", "note1", "angular_obj");

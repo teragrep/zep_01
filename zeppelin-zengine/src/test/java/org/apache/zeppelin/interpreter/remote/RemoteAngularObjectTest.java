@@ -17,8 +17,8 @@
 
 package org.apache.zeppelin.interpreter.remote;
 
+import org.apache.zeppelin.display.AngularObjectRegistryImpl;
 import org.apache.zeppelin.interpreter.xref.display.AngularObject;
-import org.apache.zeppelin.display.AngularObjectRegistry;
 import org.apache.zeppelin.interpreter.xref.display.AngularObjectRegistryListener;
 import org.apache.zeppelin.interpreter.AbstractInterpreterTest;
 import org.apache.zeppelin.interpreter.InterpreterContextImpl;
@@ -67,7 +67,7 @@ public class RemoteAngularObjectTest extends AbstractInterpreterTest
     context = InterpreterContextImpl.builder()
         .setNoteId("note")
         .setParagraphId("id")
-        .setAngularObjectRegistry(new AngularObjectRegistry(intp.getInterpreterGroup().getId(), null))
+        .setAngularObjectRegistry(new AngularObjectRegistryImpl(intp.getInterpreterGroup().getId(), null))
         .setResourcePool(new LocalResourcePool("pool1"))
         .build();
 

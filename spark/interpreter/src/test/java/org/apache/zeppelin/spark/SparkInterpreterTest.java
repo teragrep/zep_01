@@ -18,7 +18,7 @@
 package org.apache.zeppelin.spark;
 
 import org.apache.commons.lang3.StringUtils;
-import org.apache.zeppelin.display.AngularObjectRegistry;
+import org.apache.zeppelin.display.AngularObjectRegistryImpl;
 import org.apache.zeppelin.display.ui.CheckBox;
 import org.apache.zeppelin.display.ui.Password;
 import org.apache.zeppelin.display.ui.Select;
@@ -88,7 +88,7 @@ class SparkInterpreterTest {
     InterpreterContextImpl context = InterpreterContextImpl.builder()
         .setInterpreterOut(new InterpreterOutputImpl())
         .setIntpEventClient(mockRemoteEventClient)
-        .setAngularObjectRegistry(new AngularObjectRegistry("spark", null))
+        .setAngularObjectRegistry(new AngularObjectRegistryImpl("spark", null))
         .build();
     InterpreterContextStore.set(context);
 
@@ -613,7 +613,7 @@ class SparkInterpreterTest {
     InterpreterContextImpl context = InterpreterContextImpl.builder()
         .setInterpreterOut(new InterpreterOutputImpl())
         .setIntpEventClient(mockRemoteEventClient)
-        .setAngularObjectRegistry(new AngularObjectRegistry("spark", null))
+        .setAngularObjectRegistry(new AngularObjectRegistryImpl("spark", null))
         .build();
     context.out =
         new InterpreterOutputImpl(
