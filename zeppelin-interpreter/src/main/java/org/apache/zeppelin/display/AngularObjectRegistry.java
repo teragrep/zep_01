@@ -18,6 +18,7 @@
 package org.apache.zeppelin.display;
 
 import org.apache.zeppelin.interpreter.xref.display.AngularObject;
+import org.apache.zeppelin.interpreter.xref.display.AngularObjectListener;
 import org.apache.zeppelin.interpreter.xref.display.AngularObjectRegistryListener;
 
 import java.util.HashMap;

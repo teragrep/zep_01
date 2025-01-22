@@ -1,7 +1,6 @@
 package org.apache.zeppelin.interpreter.xref.display;
 
 import org.apache.zeppelin.common.JsonSerializable;
-import org.apache.zeppelin.display.AngularObjectListener;
 import org.apache.zeppelin.display.AngularObjectWatcher;
 
 public interface AngularObject<T> extends JsonSerializable {

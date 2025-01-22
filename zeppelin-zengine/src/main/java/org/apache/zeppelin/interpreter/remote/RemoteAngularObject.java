@@ -18,7 +18,7 @@
 package org.apache.zeppelin.interpreter.remote;
 
 import org.apache.zeppelin.display.AngularObjectImpl;
-import org.apache.zeppelin.display.AngularObjectListener;
+import org.apache.zeppelin.interpreter.xref.display.AngularObjectListener;
 import org.apache.zeppelin.interpreter.ManagedInterpreterGroup;
 
 /**
