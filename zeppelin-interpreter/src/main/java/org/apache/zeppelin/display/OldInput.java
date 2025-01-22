@@ -17,7 +17,7 @@
 
 package org.apache.zeppelin.display;
 
-import org.apache.zeppelin.display.ui.OptionInput.ParamOption;
+import org.apache.zeppelin.display.ui.ParamOption;
 
 /**
  * Old Input type.

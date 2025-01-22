@@ -18,7 +18,7 @@
 package org.apache.zeppelin.display;
 
 import org.apache.zeppelin.display.ui.CheckBox;
-import org.apache.zeppelin.display.ui.OptionInput.ParamOption;
+import org.apache.zeppelin.display.ui.ParamOption;
 import org.apache.zeppelin.display.ui.Password;
 import org.apache.zeppelin.display.ui.Select;
 import org.apache.zeppelin.display.ui.TextBox;

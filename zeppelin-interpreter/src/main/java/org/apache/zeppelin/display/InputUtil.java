@@ -46,11 +46,11 @@ public final class InputUtil {
       return new TextBox(name, defaultValue);
     }
 
-    public static Select select(String name, Object defaultValue, OptionInput.ParamOption[] options) {
+    public static Select select(String name, Object defaultValue, ParamOption[] options) {
       return new Select(name, defaultValue, options);
     }
 
-    public static CheckBox checkbox(String name, Object[] defaultChecked, OptionInput.ParamOption[] options) {
+    public static CheckBox checkbox(String name, Object[] defaultChecked, ParamOption[] options) {
       return new CheckBox(name, defaultChecked, options);
     }
 
@@ -107,7 +107,7 @@ public final class InputUtil {
       String type = null;
       String arg = null;
       Object defaultValue = null;
-      OptionInput.ParamOption[] paramOptions = null;
+      ParamOption[] paramOptions = null;
 
       // get var name type
       String varNamePart;
@@ -142,15 +142,15 @@ public final class InputUtil {
           String optionPart = valuePart.substring(optionP + 1);
           String[] options = splitPipe(optionPart);
 
-          paramOptions = new OptionInput.ParamOption[options.length];
+          paramOptions = new ParamOption[options.length];
 
           for (int i = 0; i < options.length; i++) {
 
             String[] optNameArray = getNameAndDisplayName(options[i]);
             if (optNameArray != null) {
-              paramOptions[i] = new OptionInput.ParamOption(optNameArray[0], optNameArray[1]);
+              paramOptions[i] = new ParamOption(optNameArray[0], optNameArray[1]);
             } else {
-              paramOptions[i] = new OptionInput.ParamOption(options[i], null);
+              paramOptions[i] = new ParamOption(options[i], null);
             }
           }
 
@@ -241,7 +241,7 @@ public final class InputUtil {
           for (Object o : checked) {
             // filter out obsolete checked values
             if (optionInput.getOptions() != null) {
-              for (OptionInput.ParamOption option : optionInput.getOptions()) {
+              for (ParamOption option : optionInput.getOptions()) {
                 if (option.getValue().equals(o)) {
                   validChecked.add(o);
                   break;
