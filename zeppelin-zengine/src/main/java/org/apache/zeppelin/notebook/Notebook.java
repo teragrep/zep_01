@@ -53,7 +53,7 @@ import org.apache.zeppelin.notebook.repo.NotebookRepoWithVersionControl;
 import org.apache.zeppelin.notebook.repo.NotebookRepoWithVersionControl.Revision;
 import org.apache.zeppelin.interpreter.xref.Status;
 import org.apache.zeppelin.search.SearchService;
-import org.apache.zeppelin.user.AuthenticationInfo;
+import org.apache.zeppelin.interpreter.xref.user.AuthenticationInfo;
 import org.apache.zeppelin.user.Credentials;
 import org.quartz.SchedulerException;
 import org.slf4j.Logger;

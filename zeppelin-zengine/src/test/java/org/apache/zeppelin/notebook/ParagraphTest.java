@@ -46,6 +46,7 @@ import org.apache.zeppelin.interpreter.*;
 import org.apache.zeppelin.interpreter.xref.*;
 import org.apache.zeppelin.interpreter.InterpreterSetting.Status;
 import org.apache.zeppelin.interpreter.xref.ResourcePool;
+import org.apache.zeppelin.interpreter.xref.user.AuthenticationInfo;
 import org.apache.zeppelin.user.*;
 import org.junit.Ignore;
 import org.junit.Rule;

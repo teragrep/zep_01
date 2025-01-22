@@ -32,7 +32,7 @@ import org.apache.zeppelin.notebook.Paragraph;
 import org.apache.zeppelin.notebook.AuthorizationService;
 import org.apache.zeppelin.common.Message;
 import org.apache.zeppelin.notebook.socket.WatcherMessage;
-import org.apache.zeppelin.user.AuthenticationInfo;
+import org.apache.zeppelin.interpreter.xref.user.AuthenticationInfo;
 import org.apache.zeppelin.util.WatcherSecurityKey;
 import org.eclipse.jetty.websocket.api.WebSocketException;
 import org.slf4j.Logger;

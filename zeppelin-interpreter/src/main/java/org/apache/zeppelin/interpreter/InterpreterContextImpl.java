@@ -24,7 +24,7 @@ import org.apache.zeppelin.interpreter.xref.remote.RemoteInterpreterEventClient;
 import org.apache.zeppelin.interpreter.xref.InterpreterContext;
 import org.apache.zeppelin.interpreter.xref.InterpreterOutput;
 import org.apache.zeppelin.interpreter.xref.ResourcePool;
-import org.apache.zeppelin.user.AuthenticationInfo;
+import org.apache.zeppelin.interpreter.xref.user.AuthenticationInfo;
 
 import java.util.HashMap;
 import java.util.Map;

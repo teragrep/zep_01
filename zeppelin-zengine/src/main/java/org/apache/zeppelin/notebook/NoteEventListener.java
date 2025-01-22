@@ -17,7 +17,7 @@
 package org.apache.zeppelin.notebook;
 
 import org.apache.zeppelin.interpreter.xref.Status;
-import org.apache.zeppelin.user.AuthenticationInfo;
+import org.apache.zeppelin.interpreter.xref.user.AuthenticationInfo;
 
 import java.io.IOException;
 

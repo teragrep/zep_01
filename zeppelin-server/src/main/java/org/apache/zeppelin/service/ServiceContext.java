@@ -18,7 +18,7 @@
 
 package org.apache.zeppelin.service;
 
-import org.apache.zeppelin.user.AuthenticationInfo;
+import org.apache.zeppelin.interpreter.xref.user.AuthenticationInfo;
 
 import java.util.Set;
 

@@ -60,7 +60,7 @@ import org.apache.zeppelin.interpreter.xref.ResourcePool;
 import org.apache.zeppelin.interpreter.xref.ResourceSet;
 import org.apache.zeppelin.resource.ResourceSetImpl;
 import org.apache.zeppelin.interpreter.xref.Status;
-import org.apache.zeppelin.user.AuthenticationInfo;
+import org.apache.zeppelin.interpreter.xref.user.AuthenticationInfo;
 import org.apache.zeppelin.util.ReflectionUtils;
 import org.apache.zeppelin.storage.ConfigStorage;
 import org.eclipse.jetty.util.annotation.ManagedAttribute;
