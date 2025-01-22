@@ -17,7 +17,7 @@
 
 package org.apache.zeppelin.display;
 
-import org.apache.zeppelin.display.ui.ParamOption;
+import org.apache.zeppelin.interpreter.xref.display.ui.ParamOption;
 import org.apache.zeppelin.display.ui.ParamOptionImpl;
 
 /**

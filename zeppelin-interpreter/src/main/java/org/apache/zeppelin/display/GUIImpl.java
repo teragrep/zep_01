@@ -22,6 +22,7 @@ import com.google.gson.GsonBuilder;
 import org.apache.zeppelin.display.ui.*;
 import org.apache.zeppelin.interpreter.xref.display.GUI;
 import org.apache.zeppelin.interpreter.xref.display.Input;
+import org.apache.zeppelin.interpreter.xref.display.ui.ParamOption;
 
 import java.util.Collection;
 import java.util.HashMap;

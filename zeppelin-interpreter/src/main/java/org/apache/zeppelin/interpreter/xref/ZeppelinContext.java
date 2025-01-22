@@ -1,6 +1,6 @@
 package org.apache.zeppelin.interpreter.xref;
 
-import org.apache.zeppelin.display.ui.ParamOption;
+import org.apache.zeppelin.interpreter.xref.display.ui.ParamOption;
 import org.apache.zeppelin.display.ui.ParamOptionImpl;
 import org.apache.zeppelin.interpreter.xref.display.AngularObjectWatcher;
 import org.apache.zeppelin.interpreter.xref.display.GUI;

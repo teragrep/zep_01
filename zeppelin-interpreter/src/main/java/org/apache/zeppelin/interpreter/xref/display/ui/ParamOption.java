@@ -1,4 +1,4 @@
-package org.apache.zeppelin.display.ui;
+package org.apache.zeppelin.interpreter.xref.display.ui;
 
 public interface ParamOption {
 
