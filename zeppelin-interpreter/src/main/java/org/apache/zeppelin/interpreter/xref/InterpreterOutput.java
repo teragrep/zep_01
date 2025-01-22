@@ -1,6 +1,5 @@
 package org.apache.zeppelin.interpreter.xref;
 
-import org.apache.zeppelin.interpreter.InterpreterResultMessageOutput;
 import org.apache.zeppelin.interpreter.InterpreterResultMessageOutputListener;
 
 import java.io.Closeable;

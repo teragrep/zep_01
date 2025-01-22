@@ -18,10 +18,7 @@ package org.apache.zeppelin.interpreter;
 
 
 import org.apache.commons.lang3.StringUtils;
-import org.apache.zeppelin.interpreter.xref.InterpreterOutput;
-import org.apache.zeppelin.interpreter.xref.InterpreterOutputListener;
-import org.apache.zeppelin.interpreter.xref.InterpreterResultMessage;
-import org.apache.zeppelin.interpreter.xref.Type;
+import org.apache.zeppelin.interpreter.xref.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

@@ -24,6 +24,7 @@ import org.apache.zeppelin.interpreter.xref.Interpreter;
 import org.apache.zeppelin.interpreter.xref.InterpreterException;
 import org.apache.zeppelin.interpreter.xref.InterpreterOutput;
 import org.apache.zeppelin.interpreter.xref.InterpreterOutputListener;
+import org.apache.zeppelin.interpreter.xref.InterpreterResultMessageOutput;
 import org.apache.zeppelin.interpreter.xref.Type;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -184,7 +185,7 @@ class PythonInterpreterMatplotlibTest implements InterpreterOutputListener {
   }
 
   @Override
-  public void onAppend(int index, InterpreterResultMessageOutput out, byte[] line) {
+  public void onAppend(int index, org.apache.zeppelin.interpreter.xref.InterpreterResultMessageOutput out, byte[] line) {
 
   }
 

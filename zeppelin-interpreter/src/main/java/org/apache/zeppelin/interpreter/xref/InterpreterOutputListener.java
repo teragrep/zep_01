@@ -16,8 +16,6 @@
  */
 package org.apache.zeppelin.interpreter.xref;
 
-import org.apache.zeppelin.interpreter.InterpreterResultMessageOutput;
-
 /**
  * Listen InterpreterOutput buffer flush
  */
