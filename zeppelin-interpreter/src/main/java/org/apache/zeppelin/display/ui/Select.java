@@ -20,7 +20,7 @@ package org.apache.zeppelin.display.ui;
 /**
  * Html Dropdown list
  */
-public class Select extends OptionInput<Object> {
+public class Select extends OptionInputImpl<Object> {
 
   public Select() {
 

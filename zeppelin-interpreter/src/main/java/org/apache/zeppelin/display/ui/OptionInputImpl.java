@@ -18,25 +18,20 @@
 
 package org.apache.zeppelin.display.ui;
 
-import java.util.Collection;
+import org.apache.zeppelin.display.InputImpl;
+import org.apache.zeppelin.interpreter.xref.display.ui.ParamOption;
 
 /**
- * Html Checkbox
+ * Base class for Input with options
+ *
+ * @param <T>
  */
-public class CheckBox extends OptionInputImpl<Object[]> {
+public abstract class OptionInputImpl<T> extends InputImpl<T> implements OptionInput<T> {
 
-  public CheckBox() {
+  protected ParamOption[] options;
+
+  @Override
+  public ParamOption[] getOptions() {
+    return options;
   }
-
-  public CheckBox(String name, Object[] defaultValue, ParamOptionImpl[] options) {
-    this.name = name;
-    this.displayName = name;
-    this.defaultValue = defaultValue;
-    this.options = options;
-  }
-
-  public CheckBox(String name, Collection<Object> defaultValue, ParamOptionImpl[] options) {
-    this(name, defaultValue.toArray(), options);
-  }
-
 }
