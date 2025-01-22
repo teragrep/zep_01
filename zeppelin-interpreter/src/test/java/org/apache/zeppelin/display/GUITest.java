@@ -17,10 +17,7 @@
 
 package org.apache.zeppelin.display;
 
-import org.apache.zeppelin.display.ui.CheckBox;
-import org.apache.zeppelin.display.ui.ParamOption;
-import org.apache.zeppelin.display.ui.Select;
-import org.apache.zeppelin.display.ui.TextBox;
+import org.apache.zeppelin.display.ui.*;
 import org.apache.zeppelin.interpreter.xref.display.GUI;
 import org.junit.Before;
 import org.junit.Test;
@@ -34,9 +31,9 @@ import static org.junit.Assert.assertTrue;
 
 public class GUITest {
 
-  private ParamOption[] options = new ParamOption[]{
-      new ParamOption("1", "value_1"),
-      new ParamOption("2", "value_2")
+  private ParamOptionImpl[] options = new ParamOptionImpl[]{
+      new ParamOptionImpl("1", "value_1"),
+      new ParamOptionImpl("2", "value_2")
   };
 
   private List<Object> checkedItems;

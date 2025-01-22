@@ -19,7 +19,7 @@ package org.apache.zeppelin.spark
 
 import java.util
 import org.apache.spark.SparkContext
-import org.apache.zeppelin.display.ui.ParamOption
+import org.apache.zeppelin.display.ui.ParamOptionImpl
 import org.apache.zeppelin.interpreter.xref.InterpreterContext
 import org.apache.zeppelin.interpreter.xref.annotation.ZeppelinApi
 import org.apache.zeppelin.interpreter.xref.display.AngularObjectWatcher
@@ -86,7 +86,7 @@ class SparkZeppelinContext(val sc: SparkContext,
   @Deprecated
   @ZeppelinApi
   def select(name: String, defaultValue: Any, options: Seq[(Any, String)]): Any =
-    select(name, options.map(e => new ParamOption(e._1, e._2)).toArray, defaultValue)
+    select(name, options.map(e => new ParamOptionImpl(e._1, e._2)).toArray, defaultValue)
 
   /**
    * create paragraph level of dynamic form of Select with default selected item.
@@ -98,7 +98,7 @@ class SparkZeppelinContext(val sc: SparkContext,
    */
   @ZeppelinApi
   def select(name: String, options: Seq[(Any, String)], defaultValue: Any): Any =
-    select(name, options.map(e => new ParamOption(e._1, e._2)).toArray, defaultValue)
+    select(name, options.map(e => new ParamOptionImpl(e._1, e._2)).toArray, defaultValue)
 
 
   /**
@@ -110,7 +110,7 @@ class SparkZeppelinContext(val sc: SparkContext,
    */
   @ZeppelinApi
   def noteSelect(name: String, options: Seq[(Any, String)]): Any =
-    noteSelect(name, null, options.map(e => new ParamOption(e._1, e._2)).toArray)
+    noteSelect(name, null, options.map(e => new ParamOptionImpl(e._1, e._2)).toArray)
 
   /**
    * create note level of dynamic form of Select with default selected item.
@@ -122,7 +122,7 @@ class SparkZeppelinContext(val sc: SparkContext,
    */
   @ZeppelinApi
   def noteSelect(name: String, options: Seq[(Any, String)], defaultValue: Any): Any =
-    noteSelect(name, options.map(e => new ParamOption(e._1, e._2)).toArray, defaultValue)
+    noteSelect(name, options.map(e => new ParamOptionImpl(e._1, e._2)).toArray, defaultValue)
 
   /**
    * create note level of dynamic form of Select with default selected item.
@@ -135,7 +135,7 @@ class SparkZeppelinContext(val sc: SparkContext,
   @Deprecated
   @ZeppelinApi
   def noteSelect(name: String,  defaultValue: Any, options: Seq[(Any, String)]): Any =
-    noteSelect(name, options.map(e => new ParamOption(e._1, e._2)).toArray, defaultValue)
+    noteSelect(name, options.map(e => new ParamOptionImpl(e._1, e._2)).toArray, defaultValue)
 
   /**
    * create paragraph level of dynamic form of checkbox with no item checked.
@@ -146,7 +146,7 @@ class SparkZeppelinContext(val sc: SparkContext,
    */
   @ZeppelinApi
   def checkbox(name: String, options: Seq[(Any, String)]): Seq[Any] = {
-    val javaResult = checkbox(name, options.map(e => new ParamOption(e._1, e._2)).toArray)
+    val javaResult = checkbox(name, options.map(e => new ParamOptionImpl(e._1, e._2)).toArray)
     javaResult.asScala
   }
 
@@ -161,7 +161,7 @@ class SparkZeppelinContext(val sc: SparkContext,
   @ZeppelinApi
   def checkbox(name: String, options: Seq[(Any, String)], defaultChecked: Seq[Any]): Seq[Any] = {
     val defaultCheckedList = defaultChecked.asJava
-    val optionsArray = options.map(e => new ParamOption(e._1, e._2)).toArray
+    val optionsArray = options.map(e => new ParamOptionImpl(e._1, e._2)).toArray
     val javaResult = checkbox(name, optionsArray, defaultCheckedList)
     javaResult.asScala
   }
@@ -175,7 +175,7 @@ class SparkZeppelinContext(val sc: SparkContext,
    */
   @ZeppelinApi
   def noteCheckbox(name: String, options: Seq[(Any, String)]): Seq[Any] = {
-    val javaResult = noteCheckbox(name, options.map(e => new ParamOption(e._1, e._2)).toArray)
+    val javaResult = noteCheckbox(name, options.map(e => new ParamOptionImpl(e._1, e._2)).toArray)
     javaResult.asScala
   }
 
@@ -190,7 +190,7 @@ class SparkZeppelinContext(val sc: SparkContext,
   @ZeppelinApi
   def noteCheckbox(name: String, options: Seq[(Any, String)], defaultChecked: Seq[Any]): Seq[Any] = {
     val javaResult = noteCheckbox(name,
-      options.map(e => new ParamOption(e._1, e._2)).toArray, defaultChecked.asJava)
+      options.map(e => new ParamOptionImpl(e._1, e._2)).toArray, defaultChecked.asJava)
     javaResult.asScala
   }
 

@@ -46,11 +46,11 @@ public final class InputUtil {
       return new TextBox(name, defaultValue);
     }
 
-    public static Select select(String name, Object defaultValue, ParamOption[] options) {
+    public static Select select(String name, Object defaultValue, ParamOptionImpl[] options) {
       return new Select(name, defaultValue, options);
     }
 
-    public static CheckBox checkbox(String name, Object[] defaultChecked, ParamOption[] options) {
+    public static CheckBox checkbox(String name, Object[] defaultChecked, ParamOptionImpl[] options) {
       return new CheckBox(name, defaultChecked, options);
     }
 
@@ -107,7 +107,7 @@ public final class InputUtil {
       String type = null;
       String arg = null;
       Object defaultValue = null;
-      ParamOption[] paramOptions = null;
+      ParamOptionImpl[] paramOptions = null;
 
       // get var name type
       String varNamePart;
@@ -142,15 +142,15 @@ public final class InputUtil {
           String optionPart = valuePart.substring(optionP + 1);
           String[] options = splitPipe(optionPart);
 
-          paramOptions = new ParamOption[options.length];
+          paramOptions = new ParamOptionImpl[options.length];
 
           for (int i = 0; i < options.length; i++) {
 
             String[] optNameArray = getNameAndDisplayName(options[i]);
             if (optNameArray != null) {
-              paramOptions[i] = new ParamOption(optNameArray[0], optNameArray[1]);
+              paramOptions[i] = new ParamOptionImpl(optNameArray[0], optNameArray[1]);
             } else {
-              paramOptions[i] = new ParamOption(options[i], null);
+              paramOptions[i] = new ParamOptionImpl(options[i], null);
             }
           }
 

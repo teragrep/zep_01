@@ -1,6 +1,7 @@
 package org.apache.zeppelin.interpreter.xref;
 
 import org.apache.zeppelin.display.ui.ParamOption;
+import org.apache.zeppelin.display.ui.ParamOptionImpl;
 import org.apache.zeppelin.interpreter.xref.display.AngularObjectWatcher;
 import org.apache.zeppelin.interpreter.xref.display.GUI;
 import org.apache.zeppelin.interpreter.xref.annotation.Experimental;
@@ -58,52 +59,52 @@ public interface ZeppelinContext {
     Object notePassword(String name);
 
     @ZeppelinApi
-    List<Object> checkbox(String name, ParamOption[] options);
+    List<Object> checkbox(String name, ParamOptionImpl[] options);
 
     @ZeppelinApi
     List<Object> checkbox(
-            String name, ParamOption[] options, List defaultChecked
+            String name, ParamOptionImpl[] options, List defaultChecked
     );
 
     @Deprecated
     @ZeppelinApi
     List<Object> checkbox(
-            String name, List<Object> defaultChecked, ParamOption[] options
+            String name, List<Object> defaultChecked, ParamOptionImpl[] options
     );
 
     @ZeppelinApi
-    List<Object> noteCheckbox(String name, ParamOption[] options);
+    List<Object> noteCheckbox(String name, ParamOptionImpl[] options);
 
     @Deprecated
     @ZeppelinApi
     List<Object> noteCheckbox(
-            String name, List<Object> defaultChecked, ParamOption[] options
+            String name, List<Object> defaultChecked, ParamOptionImpl[] options
     );
 
     @ZeppelinApi
     List<Object> noteCheckbox(
-            String name, ParamOption[] options, List defaultChecked
+            String name, ParamOptionImpl[] options, List defaultChecked
     );
 
     @ZeppelinApi
-    Object select(String name, ParamOption[] paramOptions);
+    Object select(String name, ParamOptionImpl[] paramOptions);
 
     @Deprecated
     @ZeppelinApi
-    Object select(String name, Object defaultValue, ParamOption[] paramOptions);
+    Object select(String name, Object defaultValue, ParamOptionImpl[] paramOptions);
 
     @ZeppelinApi
-    Object select(String name, ParamOption[] paramOptions, Object defaultValue);
+    Object select(String name, ParamOptionImpl[] paramOptions, Object defaultValue);
 
     @ZeppelinApi
     Object noteSelect(String name, ParamOption[] paramOptions);
 
     @Deprecated
     @ZeppelinApi
-    Object noteSelect(String name, Object defaultValue, ParamOption[] paramOptions);
+    Object noteSelect(String name, Object defaultValue, ParamOptionImpl[] paramOptions);
 
     @ZeppelinApi
-    Object noteSelect(String name, ParamOption[] paramOptions, Object defaultValue);
+    Object noteSelect(String name, ParamOptionImpl[] paramOptions, Object defaultValue);
 
     void setGui(GUI o);
 

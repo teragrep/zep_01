@@ -17,11 +17,7 @@
 
 package org.apache.zeppelin.display;
 
-import org.apache.zeppelin.display.ui.CheckBox;
-import org.apache.zeppelin.display.ui.ParamOption;
-import org.apache.zeppelin.display.ui.Password;
-import org.apache.zeppelin.display.ui.Select;
-import org.apache.zeppelin.display.ui.TextBox;
+import org.apache.zeppelin.display.ui.*;
 import org.apache.zeppelin.interpreter.xref.display.Input;
 import org.junit.Test;
 
@@ -70,9 +66,9 @@ public class InputTest {
     assertEquals("Selection Form", form.getDisplayName());
     assertTrue(form instanceof Select);
     assertArrayEquals(new ParamOption[]{
-        new ParamOption("op1", null),
-        new ParamOption("op2", "Option 2"),
-        new ParamOption("op3", null)},
+        new ParamOptionImpl("op1", null),
+        new ParamOptionImpl("op2", "Option 2"),
+        new ParamOptionImpl("op3", null)},
         ((Select) form).getOptions());
 
     // checkbox form
@@ -84,9 +80,9 @@ public class InputTest {
 
     assertArrayEquals(new Object[]{"op1"}, (Object[]) form.defaultValue);
     assertArrayEquals(new ParamOption[]{
-        new ParamOption("op1", null),
-        new ParamOption("op2", null),
-        new ParamOption("op3", null)},
+        new ParamOptionImpl("op1", null),
+        new ParamOptionImpl("op2", null),
+        new ParamOptionImpl("op3", null)},
         ((CheckBox) form).getOptions());
 
     // checkbox form with multiple default checks
@@ -97,9 +93,9 @@ public class InputTest {
     assertTrue(form instanceof CheckBox);
     assertArrayEquals(new Object[]{"op1", "op3"}, (Object[]) form.defaultValue);
     assertArrayEquals(new ParamOption[]{
-        new ParamOption("op1", "Option 1"),
-        new ParamOption("op2", null),
-        new ParamOption("op3", null)},
+        new ParamOptionImpl("op1", "Option 1"),
+        new ParamOptionImpl("op2", null),
+        new ParamOptionImpl("op3", null)},
         ((CheckBox) form).getOptions());
 
     // checkbox form with no default check
@@ -110,9 +106,9 @@ public class InputTest {
     assertTrue(form instanceof CheckBox);
     assertArrayEquals(new Object[]{}, (Object[]) form.defaultValue);
     assertArrayEquals(new ParamOption[]{
-        new ParamOption("op1", "Option 1"),
-        new ParamOption("op2", "Option 2"),
-        new ParamOption("op3", "Option 3")},
+        new ParamOptionImpl("op1", "Option 1"),
+        new ParamOptionImpl("op2", "Option 2"),
+        new ParamOptionImpl("op3", "Option 3")},
         ((CheckBox) form).getOptions());
   }
 

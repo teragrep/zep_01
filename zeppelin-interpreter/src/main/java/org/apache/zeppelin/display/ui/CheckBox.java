@@ -28,14 +28,14 @@ public class CheckBox extends OptionInput<Object[]> {
   public CheckBox() {
   }
 
-  public CheckBox(String name, Object[] defaultValue, ParamOption[] options) {
+  public CheckBox(String name, Object[] defaultValue, ParamOptionImpl[] options) {
     this.name = name;
     this.displayName = name;
     this.defaultValue = defaultValue;
     this.options = options;
   }
 
-  public CheckBox(String name, Collection<Object> defaultValue, ParamOption[] options) {
+  public CheckBox(String name, Collection<Object> defaultValue, ParamOptionImpl[] options) {
     this(name, defaultValue.toArray(), options);
   }
 

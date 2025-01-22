@@ -18,6 +18,7 @@
 package org.apache.zeppelin.display;
 
 import org.apache.zeppelin.display.ui.ParamOption;
+import org.apache.zeppelin.display.ui.ParamOptionImpl;
 
 /**
  * Old Input type.
@@ -28,7 +29,7 @@ import org.apache.zeppelin.display.ui.ParamOption;
  */
 public class OldInput extends InputImpl<Object> {
 
-  ParamOption[] options;
+  ParamOptionImpl[] options;
 
   public OldInput() {}
 
@@ -38,7 +39,7 @@ public class OldInput extends InputImpl<Object> {
     this.defaultValue = defaultValue;
   }
 
-  public OldInput(String name, Object defaultValue, ParamOption[] options) {
+  public OldInput(String name, Object defaultValue, ParamOptionImpl[] options) {
     this.name = name;
     this.displayName = name;
     this.defaultValue = defaultValue;
@@ -54,7 +55,7 @@ public class OldInput extends InputImpl<Object> {
     return options;
   }
 
-  public void setOptions(ParamOption[] options) {
+  public void setOptions(ParamOptionImpl[] options) {
     this.options = options;
   }
 
@@ -71,7 +72,7 @@ public class OldInput extends InputImpl<Object> {
    *
    */
   public static class OldSelect extends OldInput {
-    public OldSelect(String name, Object defaultValue, ParamOption[] options) {
+    public OldSelect(String name, Object defaultValue, ParamOptionImpl[] options) {
       super(name, defaultValue, options);
     }
   }
@@ -80,7 +81,7 @@ public class OldInput extends InputImpl<Object> {
    *
    */
   public static class OldCheckBox extends OldInput {
-    public OldCheckBox(String name, Object defaultValue, ParamOption[] options) {
+    public OldCheckBox(String name, Object defaultValue, ParamOptionImpl[] options) {
       super(name, defaultValue, options);
     }
   }

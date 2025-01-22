@@ -1,6 +1,6 @@
 package org.apache.zeppelin.interpreter.xref.display;
 
-import org.apache.zeppelin.display.ui.ParamOption;
+import org.apache.zeppelin.display.ui.ParamOptionImpl;
 
 import java.io.Serializable;
 import java.util.Collection;
@@ -29,10 +29,10 @@ public interface GUI extends Serializable {
 
     Object password(String id);
 
-    Object select(String id, ParamOption[] options, Object defaultValue);
+    Object select(String id, ParamOptionImpl[] options, Object defaultValue);
 
     List<Object> checkbox(
-            String id, ParamOption[] options, Collection<Object> defaultChecked
+            String id, ParamOptionImpl[] options, Collection<Object> defaultChecked
     );
 
     void clear();

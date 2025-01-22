@@ -19,11 +19,7 @@ package org.apache.zeppelin.display;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
-import org.apache.zeppelin.display.ui.CheckBox;
-import org.apache.zeppelin.display.ui.ParamOption;
-import org.apache.zeppelin.display.ui.Password;
-import org.apache.zeppelin.display.ui.Select;
-import org.apache.zeppelin.display.ui.TextBox;
+import org.apache.zeppelin.display.ui.*;
 import org.apache.zeppelin.interpreter.xref.display.GUI;
 import org.apache.zeppelin.interpreter.xref.display.Input;
 
@@ -107,7 +103,7 @@ public class GUIImpl implements GUI {
   }
 
   @Override
-  public Object select(String id, ParamOption[] options, Object defaultValue) {
+  public Object select(String id, ParamOptionImpl[] options, Object defaultValue) {
     if (defaultValue == null && options != null && options.length > 0) {
       defaultValue = options[0].getValue();
     }
@@ -122,7 +118,7 @@ public class GUIImpl implements GUI {
 
   @Override
   public List<Object> checkbox(
-          String id, ParamOption[] options, Collection<Object> defaultChecked
+          String id, ParamOptionImpl[] options, Collection<Object> defaultChecked
   ) {
     Collection<Object> checked = (Collection<Object>) params.get(id);
     if (checked == null) {

@@ -26,7 +26,7 @@ public class Select extends OptionInput<Object> {
 
   }
 
-  public Select(String name, Object defaultValue, ParamOption[] options) {
+  public Select(String name, Object defaultValue, ParamOptionImpl[] options) {
     this.name = name;
     this.displayName = name;
     this.defaultValue = defaultValue;

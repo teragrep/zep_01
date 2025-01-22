@@ -17,6 +17,7 @@
 
 package org.apache.zeppelin.interpreter;
 
+import org.apache.zeppelin.display.ui.ParamOptionImpl;
 import org.apache.zeppelin.interpreter.xref.*;
 import org.apache.zeppelin.interpreter.xref.annotation.Experimental;
 import org.apache.zeppelin.interpreter.xref.annotation.ZeppelinApi;
@@ -183,7 +184,7 @@ public abstract class AbstractZeppelinContext implements ZeppelinContext {
    */
   @ZeppelinApi
   @Override
-  public List<Object> checkbox(String name, ParamOption[] options) {
+  public List<Object> checkbox(String name, ParamOptionImpl[] options) {
     return checkbox(name, options, null, false);
   }
 
@@ -198,7 +199,7 @@ public abstract class AbstractZeppelinContext implements ZeppelinContext {
   @ZeppelinApi
   @Override
   public List<Object> checkbox(
-          String name, ParamOption[] options, List defaultChecked
+          String name, ParamOptionImpl[] options, List defaultChecked
   ) {
     return checkbox(name, options, defaultChecked, false);
   }
@@ -216,7 +217,7 @@ public abstract class AbstractZeppelinContext implements ZeppelinContext {
   @ZeppelinApi
   @Override
   public List<Object> checkbox(
-          String name, List<Object> defaultChecked, ParamOption[] options
+          String name, List<Object> defaultChecked, ParamOptionImpl[] options
   ) {
     return checkbox(name, options, defaultChecked, false);
   }
@@ -230,7 +231,7 @@ public abstract class AbstractZeppelinContext implements ZeppelinContext {
    */
   @ZeppelinApi
   @Override
-  public List<Object> noteCheckbox(String name, ParamOption[] options) {
+  public List<Object> noteCheckbox(String name, ParamOptionImpl[] options) {
     return checkbox(name, options, null, true);
   }
 
@@ -247,7 +248,7 @@ public abstract class AbstractZeppelinContext implements ZeppelinContext {
   @ZeppelinApi
   @Override
   public List<Object> noteCheckbox(
-          String name, List<Object> defaultChecked, ParamOption[] options
+          String name, List<Object> defaultChecked, ParamOptionImpl[] options
   ) {
     return checkbox(name, options, defaultChecked, true);
   }
@@ -263,13 +264,13 @@ public abstract class AbstractZeppelinContext implements ZeppelinContext {
   @ZeppelinApi
   @Override
   public List<Object> noteCheckbox(
-          String name, ParamOption[] options, List defaultChecked
+          String name, ParamOptionImpl[] options, List defaultChecked
   ) {
     return checkbox(name, options, defaultChecked, true);
   }
 
   private List<Object> checkbox(String name,
-                                ParamOption[] options,
+                                ParamOptionImpl[] options,
                                 List<Object> defaultChecked,
                                 boolean noteForm) {
     if (defaultChecked == null ) {
@@ -294,7 +295,7 @@ public abstract class AbstractZeppelinContext implements ZeppelinContext {
    */
   @ZeppelinApi
   @Override
-  public Object select(String name, ParamOption[] paramOptions) {
+  public Object select(String name, ParamOptionImpl[] paramOptions) {
     return select(name, paramOptions, null, false);
   }
 
@@ -310,7 +311,7 @@ public abstract class AbstractZeppelinContext implements ZeppelinContext {
   @Deprecated
   @ZeppelinApi
   @Override
-  public Object select(String name, Object defaultValue, ParamOption[] paramOptions) {
+  public Object select(String name, Object defaultValue, ParamOptionImpl[] paramOptions) {
     return select(name, paramOptions, defaultValue, false);
   }
 
@@ -324,7 +325,7 @@ public abstract class AbstractZeppelinContext implements ZeppelinContext {
    */
   @ZeppelinApi
   @Override
-  public Object select(String name, ParamOption[] paramOptions, Object defaultValue) {
+  public Object select(String name, ParamOptionImpl[] paramOptions, Object defaultValue) {
     return select(name, paramOptions, defaultValue, false);
   }
 
@@ -353,7 +354,7 @@ public abstract class AbstractZeppelinContext implements ZeppelinContext {
   @Deprecated
   @ZeppelinApi
   @Override
-  public Object noteSelect(String name, Object defaultValue, ParamOption[] paramOptions) {
+  public Object noteSelect(String name, Object defaultValue, ParamOptionImpl[] paramOptions) {
     return select(name, paramOptions, defaultValue, true);
   }
 
@@ -367,11 +368,11 @@ public abstract class AbstractZeppelinContext implements ZeppelinContext {
    */
   @ZeppelinApi
   @Override
-  public Object noteSelect(String name, ParamOption[] paramOptions, Object defaultValue) {
+  public Object noteSelect(String name, ParamOptionImpl[] paramOptions, Object defaultValue) {
     return select(name, paramOptions, defaultValue, true);
   }
 
-  private Object select(String name, ParamOption[] paramOptions, Object defaultValue,
+  private Object select(String name, ParamOptionImpl[] paramOptions, Object defaultValue,
                         boolean noteForm) {
     if (noteForm) {
       return noteGui.select(name, paramOptions, defaultValue);

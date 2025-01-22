@@ -27,9 +27,9 @@ import org.apache.zeppelin.display.InputImpl;
  */
 public abstract class OptionInput<T> extends InputImpl<T> {
 
-  protected ParamOption[] options;
+  protected ParamOptionImpl[] options;
 
-  public ParamOption[] getOptions() {
+  public ParamOptionImpl[] getOptions() {
     return options;
   }
 }
