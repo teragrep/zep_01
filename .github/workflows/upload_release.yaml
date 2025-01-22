@@ -31,7 +31,7 @@ jobs:
 
       - name: Build
         run: |
-          mvn -B -Drevision=${{ github.event.release.tag_name }} -Pintegration -Dsha1= -Dchangelist= clean verify package;
+          mvn -B -Drevision=${{ github.event.release.tag_name }} -Dsha1= -Dchangelist= clean verify package;
           mvn -B -Drevision=${{ github.event.release.tag_name }} -Dsha1= -Dchangelist= clean package -f rpm.pom.xml;
         env:
           GITHUB_TOKEN: ${{ github.token }}
