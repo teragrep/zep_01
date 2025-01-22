@@ -1,7 +1,6 @@
-package org.apache.zeppelin.interpreter;
+package org.apache.zeppelin.interpreter.xref;
 
-import org.apache.zeppelin.interpreter.xref.Interpreter;
-import org.apache.zeppelin.interpreter.xref.ResourcePool;
+import org.apache.zeppelin.interpreter.InterpreterHookRegistry;
 import org.apache.zeppelin.interpreter.xref.display.AngularObjectRegistry;
 
 import java.util.Collection;

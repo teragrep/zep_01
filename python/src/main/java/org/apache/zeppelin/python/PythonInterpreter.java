@@ -31,6 +31,7 @@ import org.apache.zeppelin.interpreter.thrift.InterpreterCompletion;
 import org.apache.zeppelin.interpreter.util.InterpreterOutputStream;
 import org.apache.zeppelin.interpreter.util.ProcessLauncher;
 import org.apache.zeppelin.interpreter.xref.InterpreterContext;
+import org.apache.zeppelin.interpreter.xref.InterpreterGroup;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import py4j.GatewayServer;
