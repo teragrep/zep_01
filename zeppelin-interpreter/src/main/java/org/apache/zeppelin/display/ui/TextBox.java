@@ -18,12 +18,12 @@
 
 package org.apache.zeppelin.display.ui;
 
-import org.apache.zeppelin.display.Input;
+import org.apache.zeppelin.display.InputImpl;
 
 /**
  * Html TextBox control
  */
-public class TextBox extends Input<String> {
+public class TextBox extends InputImpl<String> {
 
   public TextBox() {
 

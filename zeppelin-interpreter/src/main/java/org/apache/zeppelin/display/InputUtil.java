@@ -16,7 +16,7 @@ public final class InputUtil {
     // @TODO(zjffdu). Use gson's RuntimeTypeAdapterFactory and remove the old input form support
     // in future.
     public static final RuntimeTypeAdapterFactory TypeAdapterFactory =
-        RuntimeTypeAdapterFactory.of(Input.class, "type")
+        RuntimeTypeAdapterFactory.of(InputImpl.class, "type")
             .registerSubtype(TextBox.class, "TextBox")
             .registerSubtype(Select.class, "Select")
             .registerSubtype(CheckBox.class, "CheckBox")
@@ -80,7 +80,7 @@ public final class InputUtil {
       return ret;
     }
 
-    private static Input getInputForm(Matcher match) {
+    private static InputImpl getInputForm(Matcher match) {
       String hiddenPart = match.group(1);
       boolean hidden = false;
       if ("_".equals(hiddenPart)) {
@@ -160,7 +160,7 @@ public final class InputUtil {
 
       }
 
-      Input input = null;
+      InputImpl input = null;
       if (type == null) {
         if (paramOptions == null) {
           input = new TextBox(varName, (String) defaultValue);
@@ -199,7 +199,7 @@ public final class InputUtil {
         if (!noteForm && first > 0 && replaced.charAt(first - 1) == '$') {
           continue;
         }
-        Input form = getInputForm(match);
+        InputImpl form = getInputForm(match);
         forms.put(form.name, form);
       }
 
@@ -219,7 +219,7 @@ public final class InputUtil {
         if (!noteForm && first > 0 && replaced.charAt(first - 1) == '$') {
           continue;
         }
-        Input input = getInputForm(match);
+        InputImpl input = getInputForm(match);
         Object value;
         if (params.containsKey(input.name)) {
           value = params.get(input.name);

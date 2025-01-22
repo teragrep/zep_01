@@ -18,14 +18,14 @@
 
 package org.apache.zeppelin.display.ui;
 
-import org.apache.zeppelin.display.Input;
+import org.apache.zeppelin.display.InputImpl;
 
 /**
  * Base class for Input with options
  *
  * @param <T>
  */
-public abstract class OptionInput<T> extends Input<T> {
+public abstract class OptionInput<T> extends InputImpl<T> {
 
   /**
    * Parameters option.

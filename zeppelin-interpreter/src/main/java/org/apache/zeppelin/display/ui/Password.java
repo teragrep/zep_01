@@ -18,9 +18,9 @@
 
 package org.apache.zeppelin.display.ui;
 
-import org.apache.zeppelin.display.Input;
+import org.apache.zeppelin.display.InputImpl;
 
-public class Password extends Input<String> {
+public class Password extends InputImpl<String> {
 
   public Password() {
 

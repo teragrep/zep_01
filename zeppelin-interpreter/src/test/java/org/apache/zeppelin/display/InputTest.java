@@ -40,7 +40,7 @@ public class InputTest {
     String script = "${input_form=}";
     Map<String, Input> forms = InputUtil.extractSimpleQueryForm(script, false);
     assertEquals(1, forms.size());
-    Input form = forms.get("input_form");
+    InputImpl form = forms.get("input_form");
     assertEquals("input_form", form.name);
     assertEquals("input_form", form.displayName);
     assertEquals("", form.defaultValue);

@@ -26,7 +26,7 @@ import org.apache.zeppelin.display.ui.OptionInput.ParamOption;
  * The bug is in frontend. The type would not be set correctly when input form
  * is created in frontend (Input.getInputForm).
  */
-public class OldInput extends Input<Object> {
+public class OldInput extends InputImpl<Object> {
 
   ParamOption[] options;
 
