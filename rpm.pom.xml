@@ -103,7 +103,7 @@
                     <include>README.md</include>
                     <include>NOTICE</include>
                     <include>README.md</include>
-                    <include>zeppelin-server/target/zeppelin-server-0.10.1.jar</include>
+                    <include>zeppelin-server/target/zeppelin-server-${revision}${sha1}${changelist}.jar</include>
                   </includes>
                 </source>
               </sources>
@@ -222,7 +222,7 @@
               <recurseDirectories>true</recurseDirectories>
               <sources>
                 <source>
-                  <location>${project.basedir}/zeppelin-distribution/target/zeppelin-0.10.1/zeppelin-0.10.1/lib/</location>
+                  <location>${project.basedir}/zeppelin-distribution/target/zeppelin-${revision}${sha1}${changelist}/zeppelin-${revision}${sha1}${changelist}/lib/</location>
                 </source>
               </sources>
             </mapping>

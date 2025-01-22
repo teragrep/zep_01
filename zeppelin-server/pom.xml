@@ -23,7 +23,7 @@
   <parent>
     <artifactId>zeppelin</artifactId>
     <groupId>org.apache.zeppelin</groupId>
-    <version>0.10.1</version>
+    <version>${revision}${sha1}${changelist}</version>
   </parent>
 
   <artifactId>zeppelin-server</artifactId>
@@ -31,6 +31,9 @@
   <name>Zeppelin: Server</name>
 
   <properties>
+    <revision>0.0.1</revision>
+    <changelist>-SNAPSHOT</changelist>
+    <sha1/>
 
     <!--library versions-->
     <jersey.version>2.30</jersey.version>

@@ -22,7 +22,7 @@
     <parent>
         <groupId>org.apache.zeppelin</groupId>
         <artifactId>zeppelin-interpreter-parent</artifactId>
-        <version>0.10.1</version>
+        <version>${revision}${sha1}${changelist}</version>
         <relativePath>../../zeppelin-interpreter-parent/pom.xml</relativePath>
     </parent>
 
@@ -32,6 +32,9 @@
     <name>Zeppelin: Spark Scala Parent</name>
 
     <properties>
+        <revision>0.0.1</revision>
+        <changelist>-SNAPSHOT</changelist>
+        <sha1/>
         <spark.version>3.4.1</spark.version>
         <spark.scala.binary.version>2.12</spark.scala.binary.version>
         <spark.scala.version>2.12.18</spark.scala.version>

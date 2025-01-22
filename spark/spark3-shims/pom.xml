@@ -21,7 +21,7 @@
   <parent>
     <artifactId>spark-parent</artifactId>
     <groupId>org.apache.zeppelin</groupId>
-    <version>0.10.1</version>
+    <version>${revision}${sha1}${changelist}</version>
     <relativePath>../pom.xml</relativePath>
   </parent>
 
@@ -31,6 +31,9 @@
   <name>Zeppelin: Spark3 Shims</name>
 
   <properties>
+    <revision>0.0.1</revision>
+    <changelist>-SNAPSHOT</changelist>
+    <sha1/>
     <scala.binary.version>2.12</scala.binary.version>
     <spark.version>3.4.1</spark.version>
   </properties>

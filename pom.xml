@@ -24,7 +24,7 @@
   <groupId>org.apache.zeppelin</groupId>
   <artifactId>zeppelin</artifactId>
   <packaging>pom</packaging>
-  <version>0.10.1</version>
+  <version>${revision}${sha1}${changelist}</version>
   <name>Zeppelin</name>
   <description>Zeppelin project</description>
   <url>https://zeppelin.apache.org</url>
@@ -71,6 +71,9 @@
   </modules>
 
   <properties>
+    <revision>0.0.1</revision>
+    <changelist>-SNAPSHOT</changelist>
+    <sha1/>
     <!-- language versions -->
     <java.version>1.8</java.version>
     <maven.compiler.source>${java.version}</maven.compiler.source>

@@ -22,7 +22,7 @@
   <parent>
     <artifactId>spark-parent</artifactId>
     <groupId>org.apache.zeppelin</groupId>
-    <version>0.10.1</version>
+    <version>${revision}${sha1}${changelist}</version>
     <relativePath>../pom.xml</relativePath>
   </parent>
 
@@ -30,6 +30,11 @@
   <artifactId>spark-shims</artifactId>
   <packaging>jar</packaging>
   <name>Zeppelin: Spark Shims</name>
+  <properties>
+    <revision>0.0.1</revision>
+    <changelist>-SNAPSHOT</changelist>
+    <sha1/>
+  </properties>
 
   <dependencies>
     <!--
