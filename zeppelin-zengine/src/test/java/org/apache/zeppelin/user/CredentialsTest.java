@@ -30,7 +30,7 @@ public class CredentialsTest {
   public void testDefaultProperty() throws IOException {
     Credentials credentials = new Credentials();
     UserCredentials userCredentials = new UserCredentialsImpl();
-    UsernamePassword up1 = new UsernamePassword("user2", "password");
+    UsernamePassword up1 = new UsernamePasswordImpl("user2", "password");
     userCredentials.putUsernamePassword("hive(vertica)", up1);
     credentials.putUserCredentials("user1", userCredentials);
     UserCredentials uc2 = credentials.getUserCredentials("user1");
