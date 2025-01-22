@@ -14,9 +14,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.apache.zeppelin.interpreter;
+package org.apache.zeppelin.interpreter.xref;
 
-import org.apache.zeppelin.interpreter.xref.InterpreterOutput;
+import org.apache.zeppelin.interpreter.InterpreterResultMessageOutput;
 
 /**
  * Listen InterpreterOutput buffer flush

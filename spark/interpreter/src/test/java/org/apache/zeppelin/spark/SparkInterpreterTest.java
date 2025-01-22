@@ -29,6 +29,7 @@ import org.apache.zeppelin.interpreter.thrift.InterpreterCompletion;
 import org.apache.zeppelin.interpreter.xref.Code;
 import org.apache.zeppelin.interpreter.xref.InterpreterException;
 import org.apache.zeppelin.interpreter.xref.InterpreterOutput;
+import org.apache.zeppelin.interpreter.xref.InterpreterOutputListener;
 import org.apache.zeppelin.interpreter.xref.Type;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;
