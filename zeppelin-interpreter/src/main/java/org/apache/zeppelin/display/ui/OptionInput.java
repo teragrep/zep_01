@@ -19,6 +19,7 @@
 package org.apache.zeppelin.display.ui;
 
 import org.apache.zeppelin.display.InputImpl;
+import org.apache.zeppelin.interpreter.xref.display.ui.ParamOption;
 
 /**
  * Base class for Input with options
@@ -27,9 +28,9 @@ import org.apache.zeppelin.display.InputImpl;
  */
 public abstract class OptionInput<T> extends InputImpl<T> {
 
-  protected ParamOptionImpl[] options;
+  protected ParamOption[] options;
 
-  public ParamOptionImpl[] getOptions() {
+  public ParamOption[] getOptions() {
     return options;
   }
 }
