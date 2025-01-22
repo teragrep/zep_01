@@ -25,7 +25,7 @@
   <parent>
     <artifactId>zengine-plugins-parent</artifactId>
     <groupId>org.apache.zeppelin</groupId>
-    <version>0.10.1</version>
+    <version>${revision}${sha1}${changelist}</version>
     <relativePath>../../../zeppelin-plugins</relativePath>
   </parent>
 
@@ -35,6 +35,9 @@
   <description>Launcher implementation to run interpreter on yarn</description>
 
   <properties>
+    <revision>0.0.1</revision>
+    <changelist>-SNAPSHOT</changelist>
+    <sha1/>
     <plugin.name>Launcher/YarnInterpreterLauncher</plugin.name>
   </properties>
 

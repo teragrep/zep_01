@@ -24,7 +24,7 @@
     <parent>
         <artifactId>zeppelin</artifactId>
         <groupId>org.apache.zeppelin</groupId>
-        <version>0.10.1</version>
+        <version>${revision}${sha1}${changelist}</version>
     </parent>
 
     <artifactId>zengine-plugins-parent</artifactId>
@@ -32,6 +32,9 @@
     <name>Zeppelin: Plugins Parent</name>
     <description>Zeppelin Plugins Parent</description>
     <properties>
+        <revision>0.0.1</revision>
+        <changelist>-SNAPSHOT</changelist>
+        <sha1/>
         <!-- no need to include hadoop jar, because it's already included in zeppelin-zengine -->
         <hadoop.deps.scope>provided</hadoop.deps.scope>
     </properties>

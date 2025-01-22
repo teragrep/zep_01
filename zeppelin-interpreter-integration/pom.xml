@@ -23,12 +23,12 @@
   <parent>
     <artifactId>zeppelin</artifactId>
     <groupId>org.apache.zeppelin</groupId>
-    <version>0.10.1</version>
+    <version>${revision}${sha1}${changelist}</version>
     <relativePath>..</relativePath>
   </parent>
 
   <artifactId>zeppelin-interpreter-integration</artifactId>
-  <version>0.10.1</version>
+  <version>${revision}${sha1}${changelist}</version>
   <packaging>jar</packaging>
   <name>Zeppelin: Interpreter Integration Test</name>
 
@@ -38,6 +38,9 @@
   </prerequisites>
 
   <properties>
+    <revision>0.0.1</revision>
+    <changelist>-SNAPSHOT</changelist>
+    <sha1/>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
   </properties>
 

@@ -23,7 +23,7 @@
   <parent>
     <artifactId>zeppelin-interpreter-parent</artifactId>
     <groupId>org.apache.zeppelin</groupId>
-    <version>0.10.1</version>
+    <version>${revision}${sha1}${changelist}</version>
     <relativePath>../zeppelin-interpreter-parent/pom.xml</relativePath>
   </parent>
 
@@ -32,6 +32,9 @@
   <name>Zeppelin: JDBC interpreter</name>
 
   <properties>
+    <revision>0.0.1</revision>
+    <changelist>-SNAPSHOT</changelist>
+    <sha1/>
     <!--library versions-->
     <interpreter.name>jdbc</interpreter.name>
     <postgresql.version>42.7.2</postgresql.version>

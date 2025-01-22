@@ -24,7 +24,7 @@
     <parent>
         <artifactId>zengine-plugins-parent</artifactId>
         <groupId>org.apache.zeppelin</groupId>
-        <version>0.10.1</version>
+        <version>${revision}${sha1}${changelist}</version>
         <relativePath>../../../zeppelin-plugins</relativePath>
     </parent>
 
@@ -34,6 +34,9 @@
     <description>NotebookRepo implementation based on Hadoop FileSystem</description>
 
     <properties>
+        <revision>0.0.1</revision>
+        <changelist>-SNAPSHOT</changelist>
+        <sha1/>
         <adl.sdk.version>2.1.4</adl.sdk.version>
         <plugin.name>NotebookRepo/FileSystemNotebookRepo</plugin.name>
     </properties>

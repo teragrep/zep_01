@@ -24,7 +24,7 @@
   <parent>
     <artifactId>zeppelin</artifactId>
     <groupId>org.apache.zeppelin</groupId>
-    <version>0.10.1</version>
+    <version>${revision}${sha1}${changelist}</version>
   </parent>
 
   <artifactId>zeppelin-zengine</artifactId>
@@ -33,6 +33,9 @@
   <description>Zeppelin Zengine</description>
 
   <properties>
+    <revision>0.0.1</revision>
+    <changelist>-SNAPSHOT</changelist>
+    <sha1/>
     <!--library versions-->
     <lucene.version>8.7.0</lucene.version>
     <org.reflections.version>0.9.8</org.reflections.version>

@@ -24,7 +24,7 @@
   <parent>
     <artifactId>zeppelin</artifactId>
     <groupId>org.apache.zeppelin</groupId>
-    <version>0.10.1</version>
+    <version>${revision}${sha1}${changelist}</version>
   </parent>
 
   <artifactId>zeppelin-interpreter-shaded</artifactId>
@@ -33,6 +33,9 @@
   <description>Zeppelin Interpreter Shaded</description>
 
   <properties>
+    <revision>0.0.1</revision>
+    <changelist>-SNAPSHOT</changelist>
+    <sha1/>
     <!--plugin versions-->
     <shaded.dependency.prefix>org.apache.zeppelin.shaded</shaded.dependency.prefix>
   </properties>
@@ -41,7 +44,7 @@
     <dependency>
       <groupId>org.apache.zeppelin</groupId>
       <artifactId>zeppelin-interpreter</artifactId>
-      <version>0.10.1</version>
+      <version>${revision}${sha1}${changelist}</version>
       <optional>true</optional>
     </dependency>
   </dependencies>

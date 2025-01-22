@@ -23,7 +23,7 @@
     <parent>
         <artifactId>zeppelin-interpreter-parent</artifactId>
         <groupId>org.apache.zeppelin</groupId>
-        <version>0.10.1</version>
+        <version>${revision}${sha1}${changelist}</version>
         <relativePath>../zeppelin-interpreter-parent/pom.xml</relativePath>
     </parent>
 
@@ -33,6 +33,9 @@
     <description>Zeppelin Spark Support</description>
 
     <properties>
+        <revision>0.0.1</revision>
+        <changelist>-SNAPSHOT</changelist>
+        <sha1/>
         <datanucleus.rdbms.version>3.2.9</datanucleus.rdbms.version>
         <datanucleus.apijdo.version>3.2.6</datanucleus.apijdo.version>
         <datanucleus.core.version>3.2.10</datanucleus.core.version>

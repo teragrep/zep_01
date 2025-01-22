@@ -23,7 +23,7 @@
   <parent>
     <artifactId>spark-parent</artifactId>
     <groupId>org.apache.zeppelin</groupId>
-    <version>0.10.1</version>
+    <version>${revision}${sha1}${changelist}</version>
     <relativePath>../pom.xml</relativePath>
   </parent>
 
@@ -33,6 +33,9 @@
   <description>Zeppelin spark support</description>
 
   <properties>
+    <revision>0.0.1</revision>
+    <changelist>-SNAPSHOT</changelist>
+    <sha1/>
     <interpreter.name>spark</interpreter.name>
     <!--library versions-->
     <maven.plugin.api.version>3.0</maven.plugin.api.version>
