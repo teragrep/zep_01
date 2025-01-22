@@ -19,6 +19,7 @@
 package org.apache.zeppelin.display.ui;
 
 import org.apache.zeppelin.display.InputImpl;
+import org.apache.zeppelin.interpreter.xref.display.ui.OptionInput;
 import org.apache.zeppelin.interpreter.xref.display.ui.ParamOption;
 
 /**
