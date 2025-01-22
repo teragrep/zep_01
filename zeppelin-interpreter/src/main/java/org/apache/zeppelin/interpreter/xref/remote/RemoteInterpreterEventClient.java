@@ -7,7 +7,7 @@ import org.apache.zeppelin.interpreter.thrift.RegisterInfo;
 import org.apache.zeppelin.interpreter.thrift.RemoteInterpreterEventService;
 import org.apache.zeppelin.interpreter.xref.InterpreterResultMessage;
 import org.apache.zeppelin.interpreter.xref.Type;
-import org.apache.zeppelin.resource.ResourcePoolConnector;
+import org.apache.zeppelin.interpreter.xref.ResourcePoolConnector;
 
 import java.nio.ByteBuffer;
 import java.util.List;

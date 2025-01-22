@@ -14,11 +14,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.apache.zeppelin.resource;
-
-import org.apache.zeppelin.interpreter.xref.Resource;
-import org.apache.zeppelin.interpreter.xref.ResourceId;
-import org.apache.zeppelin.interpreter.xref.ResourceSet;
+package org.apache.zeppelin.interpreter.xref;
 
 /**
  * Connect resource pools running in remote process

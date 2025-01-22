@@ -21,6 +21,7 @@ import java.io.Serializable;
 import org.apache.zeppelin.common.JsonSerializable;
 import org.apache.zeppelin.interpreter.xref.Resource;
 import org.apache.zeppelin.interpreter.xref.ResourceId;
+import org.apache.zeppelin.interpreter.xref.ResourcePoolConnector;
 
 /**
  * Resource that can retrieve data from remote

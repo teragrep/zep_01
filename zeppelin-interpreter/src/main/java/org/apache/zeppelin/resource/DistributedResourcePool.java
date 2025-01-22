@@ -17,6 +17,7 @@
 package org.apache.zeppelin.resource;
 
 import org.apache.zeppelin.interpreter.xref.Resource;
+import org.apache.zeppelin.interpreter.xref.ResourcePoolConnector;
 import org.apache.zeppelin.interpreter.xref.ResourceSet;
 
 /**
