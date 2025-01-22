@@ -754,7 +754,7 @@ public class Paragraph extends JobWithProgressPoller<InterpreterResult> implemen
   }
 
   public void updateOutputBuffer(int index, Type type, String output) {
-    InterpreterResultMessage interpreterResultMessage = new InterpreterResultMessage(type, output);;
+    InterpreterResultMessage interpreterResultMessage = new InterpreterResultMessageImpl(type, output);;
     if (outputBuffer.size() == index) {
       outputBuffer.add(interpreterResultMessage);
     } else if (outputBuffer.size() > index) {

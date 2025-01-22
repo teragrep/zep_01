@@ -77,7 +77,7 @@ public class InterpreterResult implements Serializable, JsonSerializable {
   }
 
   public void add(Type type, String data) {
-    msg.add(new InterpreterResultMessage(type, data));
+    msg.add(new InterpreterResultMessageImpl(type, data));
   }
 
   public void add(InterpreterResultMessage interpreterResultMessage) {

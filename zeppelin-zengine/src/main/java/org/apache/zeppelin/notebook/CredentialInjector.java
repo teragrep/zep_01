@@ -25,6 +25,7 @@ import java.util.regex.Pattern;
 
 import org.apache.zeppelin.interpreter.InterpreterResult;
 import org.apache.zeppelin.interpreter.InterpreterResultMessage;
+import org.apache.zeppelin.interpreter.InterpreterResultMessageImpl;
 import org.apache.zeppelin.user.UserCredentials;
 import org.apache.zeppelin.user.UsernamePassword;
 
@@ -91,7 +92,7 @@ class CredentialInjector {
         case TEXT:
         case TABLE: {
           String replacedMessages = replacePasswords(msg.getData());
-          replaced.add(new InterpreterResultMessage(msg.getType(), replacedMessages));
+          replaced.add(new InterpreterResultMessageImpl(msg.getType(), replacedMessages));
           break;
         }
         default:

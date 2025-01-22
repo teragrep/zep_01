@@ -17,6 +17,7 @@
 package org.apache.zeppelin.tabledata;
 
 import org.apache.zeppelin.interpreter.InterpreterResultMessage;
+import org.apache.zeppelin.interpreter.InterpreterResultMessageImpl;
 import org.apache.zeppelin.interpreter.xref.Type;
 import org.junit.Test;
 
@@ -28,7 +29,7 @@ import static org.junit.Assert.assertEquals;
 public class InterpreterResultTableDataTest {
   @Test
   public void test() {
-    InterpreterResultMessage msg = new InterpreterResultMessage(
+    InterpreterResultMessage msg = new InterpreterResultMessageImpl(
         Type.TABLE,
         "key\tvalue\nsun\t100\nmoon\t200\n");
     InterpreterResultTableData table = new InterpreterResultTableData(msg);

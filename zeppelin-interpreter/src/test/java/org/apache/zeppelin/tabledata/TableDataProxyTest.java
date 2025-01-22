@@ -17,6 +17,7 @@
 package org.apache.zeppelin.tabledata;
 
 import org.apache.zeppelin.interpreter.InterpreterResultMessage;
+import org.apache.zeppelin.interpreter.InterpreterResultMessageImpl;
 import org.apache.zeppelin.interpreter.xref.Type;
 import org.apache.zeppelin.resource.LocalResourcePool;
 import org.junit.Before;
@@ -37,7 +38,7 @@ public class TableDataProxyTest {
 
   @Test
   public void testProxyTable() {
-    InterpreterResultMessage msg = new InterpreterResultMessage(
+    InterpreterResultMessage msg = new InterpreterResultMessageImpl(
         Type.TABLE,
         "key\tvalue\nsun\t100\nmoon\t200\n");
     InterpreterResultTableData table = new InterpreterResultTableData(msg);

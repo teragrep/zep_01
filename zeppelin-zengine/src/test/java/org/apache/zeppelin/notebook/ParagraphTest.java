@@ -287,7 +287,7 @@ public class ParagraphTest extends AbstractInterpreterTest {
 
     // Actual test
     List<InterpreterResultMessage> result1 = new ArrayList<>();
-    result1.add(new InterpreterResultMessage(Type.TEXT, "result1"));
+    result1.add(new InterpreterResultMessageImpl(Type.TEXT, "result1"));
     when(mockInterpreterResult.message()).thenReturn(result1);
 
     AuthenticationInfo user1 = new AuthenticationInfo("user1");
@@ -300,7 +300,7 @@ public class ParagraphTest extends AbstractInterpreterTest {
     when(mockInterpreterResult.code()).thenReturn(Code.SUCCESS);
 
     List<InterpreterResultMessage> result2 = new ArrayList<>();
-    result2.add(new InterpreterResultMessage(Type.TEXT, "result2"));
+    result2.add(new InterpreterResultMessageImpl(Type.TEXT, "result2"));
     when(mockInterpreterResult.message()).thenReturn(result2);
 
     AuthenticationInfo user2 = new AuthenticationInfo("user2");
