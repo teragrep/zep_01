@@ -103,7 +103,6 @@
                     <include>README.md</include>
                     <include>NOTICE</include>
                     <include>README.md</include>
-                    <include>zeppelin-server/target/zeppelin-server-${revision}${sha1}${changelist}.jar</include>
                   </includes>
                 </source>
               </sources>
