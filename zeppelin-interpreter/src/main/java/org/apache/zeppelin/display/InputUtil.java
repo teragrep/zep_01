@@ -2,6 +2,7 @@ package org.apache.zeppelin.display;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.zeppelin.display.ui.*;
+import org.apache.zeppelin.interpreter.xref.display.Input;
 
 import java.util.*;
 import java.util.regex.Matcher;

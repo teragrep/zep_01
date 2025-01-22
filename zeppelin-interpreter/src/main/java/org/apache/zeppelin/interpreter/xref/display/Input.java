@@ -1,4 +1,4 @@
-package org.apache.zeppelin.display;
+package org.apache.zeppelin.interpreter.xref.display;
 
 import java.io.Serializable;
 

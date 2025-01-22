@@ -41,7 +41,7 @@ import org.apache.zeppelin.display.AngularObjectRegistryImpl;
 import org.apache.zeppelin.interpreter.xref.display.AngularObject;
 import org.apache.zeppelin.display.AngularObjectBuilder;
 import org.apache.zeppelin.interpreter.xref.display.AngularObjectRegistry;
-import org.apache.zeppelin.display.Input;
+import org.apache.zeppelin.interpreter.xref.display.Input;
 import org.apache.zeppelin.interpreter.*;
 import org.apache.zeppelin.interpreter.xref.*;
 import org.apache.zeppelin.interpreter.InterpreterSetting.Status;

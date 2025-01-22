@@ -22,6 +22,7 @@ import org.apache.zeppelin.display.ui.OptionInput.ParamOption;
 import org.apache.zeppelin.display.ui.Password;
 import org.apache.zeppelin.display.ui.Select;
 import org.apache.zeppelin.display.ui.TextBox;
+import org.apache.zeppelin.interpreter.xref.display.Input;
 import org.junit.Test;
 
 import java.util.HashMap;

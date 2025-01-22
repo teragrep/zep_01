@@ -36,7 +36,7 @@ import org.apache.zeppelin.display.InputUtil;
 import org.apache.zeppelin.interpreter.xref.display.AngularObject;
 import org.apache.zeppelin.interpreter.xref.display.AngularObjectRegistry;
 import org.apache.zeppelin.interpreter.xref.display.GUI;
-import org.apache.zeppelin.display.Input;
+import org.apache.zeppelin.interpreter.xref.display.Input;
 import org.apache.zeppelin.interpreter.*;
 import org.apache.zeppelin.interpreter.xref.*;
 import org.apache.zeppelin.interpreter.remote.RemoteInterpreter;
