@@ -32,7 +32,7 @@ public interface Interpreter {
      * @param st statements to run
      */
     @ZeppelinApi
-    InterpreterResultImpl interpret(
+    InterpreterResult interpret(
             String st, InterpreterContext context
     ) throws InterpreterException;
 
