@@ -18,7 +18,7 @@
 
 package org.apache.zeppelin.service;
 
-import org.apache.zeppelin.interpreter.xref.user.AuthenticationInfo;
+import com.teragrep.zep_04.user.AuthenticationInfo;
 
 import java.util.Set;
 

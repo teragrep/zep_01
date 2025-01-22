@@ -18,9 +18,9 @@
 package org.apache.zeppelin.display;
 
 import com.google.gson.Gson;
-import org.apache.zeppelin.interpreter.xref.display.AngularObject;
-import org.apache.zeppelin.interpreter.xref.display.AngularObjectListener;
-import org.apache.zeppelin.interpreter.xref.display.AngularObjectWatcher;
+import com.teragrep.zep_04.display.AngularObject;
+import com.teragrep.zep_04.display.AngularObjectListener;
+import com.teragrep.zep_04.display.AngularObjectWatcher;
 import org.apache.zeppelin.scheduler.ExecutorFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

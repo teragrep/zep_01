@@ -18,13 +18,13 @@
 package org.apache.zeppelin.interpreter;
 
 import org.apache.zeppelin.display.GUIImpl;
-import org.apache.zeppelin.interpreter.xref.display.AngularObjectRegistry;
-import org.apache.zeppelin.interpreter.xref.display.GUI;
-import org.apache.zeppelin.interpreter.xref.remote.RemoteInterpreterEventClient;
-import org.apache.zeppelin.interpreter.xref.InterpreterContext;
-import org.apache.zeppelin.interpreter.xref.InterpreterOutput;
-import org.apache.zeppelin.interpreter.xref.ResourcePool;
-import org.apache.zeppelin.interpreter.xref.user.AuthenticationInfo;
+import com.teragrep.zep_04.display.AngularObjectRegistry;
+import com.teragrep.zep_04.display.GUI;
+import com.teragrep.zep_04.remote.RemoteInterpreterEventClient;
+import com.teragrep.zep_04.interpreter.InterpreterContext;
+import com.teragrep.zep_04.interpreter.InterpreterOutput;
+import com.teragrep.zep_04.resource.ResourcePool;
+import com.teragrep.zep_04.user.AuthenticationInfo;
 
 import java.util.HashMap;
 import java.util.Map;

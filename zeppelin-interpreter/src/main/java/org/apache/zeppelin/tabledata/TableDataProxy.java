@@ -16,7 +16,7 @@
  */
 package org.apache.zeppelin.tabledata;
 
-import org.apache.zeppelin.interpreter.xref.Resource;
+import com.teragrep.zep_04.resource.Resource;
 
 import java.util.Iterator;
 

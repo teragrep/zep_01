@@ -23,11 +23,11 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import org.apache.zeppelin.interpreter.*;
-import org.apache.zeppelin.interpreter.xref.Code;
+import com.teragrep.zep_04.interpreter.Code;
 import org.apache.zeppelin.interpreter.thrift.InterpreterCompletion;
-import org.apache.zeppelin.interpreter.xref.FormType;
-import org.apache.zeppelin.interpreter.xref.InterpreterContext;
-import org.apache.zeppelin.interpreter.xref.Scheduler;
+import com.teragrep.zep_04.interpreter.FormType;
+import com.teragrep.zep_04.interpreter.InterpreterContext;
+import com.teragrep.zep_04.scheduler.Scheduler;
 import org.apache.zeppelin.scheduler.SchedulerFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -56,7 +56,7 @@ public class Markdown extends AbstractInterpreter {
   }
 
   @Override
-  public InterpreterResultImpl interpret(String markdownText, org.apache.zeppelin.interpreter.xref.InterpreterContext interpreterContext) {
+  public InterpreterResultImpl interpret(String markdownText, InterpreterContext interpreterContext) {
     String html;
 
     try {
@@ -92,7 +92,7 @@ public class Markdown extends AbstractInterpreter {
   }
 
   @Override
-  public void cancel(org.apache.zeppelin.interpreter.xref.InterpreterContext context) {
+  public void cancel(InterpreterContext context) {
   }
 
   @Override
@@ -101,7 +101,7 @@ public class Markdown extends AbstractInterpreter {
   }
 
   @Override
-  public int getProgress(org.apache.zeppelin.interpreter.xref.InterpreterContext context) {
+  public int getProgress(InterpreterContext context) {
     return 0;
   }
 

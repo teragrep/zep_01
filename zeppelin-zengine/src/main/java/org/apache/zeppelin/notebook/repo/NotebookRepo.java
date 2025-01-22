@@ -17,11 +17,11 @@
 
 package org.apache.zeppelin.notebook.repo;
 
-import org.apache.zeppelin.interpreter.xref.annotation.ZeppelinApi;
+import com.teragrep.zep_04.annotation.ZeppelinApi;
 import org.apache.zeppelin.conf.ZeppelinConfiguration;
 import org.apache.zeppelin.notebook.Note;
 import org.apache.zeppelin.notebook.NoteInfo;
-import org.apache.zeppelin.interpreter.xref.user.AuthenticationInfo;
+import com.teragrep.zep_04.user.AuthenticationInfo;
 
 import java.io.IOException;
 import java.util.List;

@@ -22,12 +22,12 @@ import static org.junit.Assert.assertNull;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-import org.apache.zeppelin.interpreter.xref.InterpreterResult;
+import com.teragrep.zep_04.interpreter.InterpreterResult;
 import org.apache.zeppelin.interpreter.InterpreterResultImpl;
-import org.apache.zeppelin.interpreter.xref.Code;
-import org.apache.zeppelin.interpreter.xref.user.UserCredentials;
+import com.teragrep.zep_04.interpreter.Code;
+import com.teragrep.zep_04.user.UserCredentials;
 import org.apache.zeppelin.user.UserCredentialsImpl;
-import org.apache.zeppelin.interpreter.xref.user.UsernamePassword;
+import com.teragrep.zep_04.user.UsernamePassword;
 import org.apache.zeppelin.user.UsernamePasswordImpl;
 import org.junit.Test;
 

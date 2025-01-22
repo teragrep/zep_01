@@ -18,7 +18,7 @@
 package org.apache.zeppelin.interpreter;
 
 import com.google.gson.Gson;
-import org.apache.zeppelin.interpreter.xref.*;
+import com.teragrep.zep_04.interpreter.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

@@ -19,15 +19,15 @@ package org.apache.zeppelin.python;
 
 import org.apache.zeppelin.display.AngularObjectRegistryImpl;
 import org.apache.zeppelin.interpreter.*;
-import org.apache.zeppelin.interpreter.xref.Code;
-import org.apache.zeppelin.interpreter.xref.Interpreter;
-import org.apache.zeppelin.interpreter.xref.InterpreterException;
-import org.apache.zeppelin.interpreter.xref.InterpreterGroup;
-import org.apache.zeppelin.interpreter.xref.InterpreterOutput;
-import org.apache.zeppelin.interpreter.xref.InterpreterOutputListener;
-import org.apache.zeppelin.interpreter.xref.InterpreterResult;
-import org.apache.zeppelin.interpreter.xref.InterpreterResultMessageOutput;
-import org.apache.zeppelin.interpreter.xref.Type;
+import com.teragrep.zep_04.interpreter.Code;
+import com.teragrep.zep_04.interpreter.Interpreter;
+import com.teragrep.zep_04.interpreter.InterpreterException;
+import com.teragrep.zep_04.interpreter.InterpreterGroup;
+import com.teragrep.zep_04.interpreter.InterpreterOutput;
+import com.teragrep.zep_04.interpreter.InterpreterOutputListener;
+import com.teragrep.zep_04.interpreter.InterpreterResult;
+import com.teragrep.zep_04.interpreter.InterpreterResultMessageOutput;
+import com.teragrep.zep_04.interpreter.Type;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Disabled;
@@ -48,7 +48,7 @@ class PythonInterpreterMatplotlibTest implements InterpreterOutputListener {
   private PythonInterpreter python;
 
   private InterpreterContextImpl context;
-  org.apache.zeppelin.interpreter.xref.InterpreterOutput out;
+  InterpreterOutput out;
 
   @BeforeEach
   public void setUp() throws Exception {
@@ -85,7 +85,7 @@ class PythonInterpreterMatplotlibTest implements InterpreterOutputListener {
   @Test
   void dependenciesAreInstalled() throws InterpreterException {
     // matplotlib
-    org.apache.zeppelin.interpreter.xref.InterpreterResult ret = python.interpret("import matplotlib", context);
+    InterpreterResult ret = python.interpret("import matplotlib", context);
     assertEquals(Code.SUCCESS, ret.code(), ret.message().toString());
 
     // inline backend
@@ -96,7 +96,7 @@ class PythonInterpreterMatplotlibTest implements InterpreterOutputListener {
   @Test
   void showPlot() throws IOException, InterpreterException {
     // Simple plot test
-    org.apache.zeppelin.interpreter.xref.InterpreterResult ret;
+    InterpreterResult ret;
     ret = python.interpret("import matplotlib.pyplot as plt", context);
     ret = python.interpret("z.configure_mpl(interactive=False)", context);
     ret = python.interpret("plt.plot([1, 2, 3])", context);
@@ -118,9 +118,9 @@ class PythonInterpreterMatplotlibTest implements InterpreterOutputListener {
   @Test
   // Test for when configuration is set to auto-close figures after show().
   void testClose() throws IOException, InterpreterException {
-    org.apache.zeppelin.interpreter.xref.InterpreterResult ret;
-    org.apache.zeppelin.interpreter.xref.InterpreterResult ret1;
-    org.apache.zeppelin.interpreter.xref.InterpreterResult ret2;
+    InterpreterResult ret;
+    InterpreterResult ret1;
+    InterpreterResult ret2;
     ret = python.interpret("import matplotlib.pyplot as plt", context);
     ret = python.interpret("z.configure_mpl(interactive=False)", context);
     ret = python.interpret("plt.plot([1, 2, 3])", context);
@@ -154,8 +154,8 @@ class PythonInterpreterMatplotlibTest implements InterpreterOutputListener {
   @Test
   // Test for when configuration is set to not auto-close figures after show().
   void testNoClose() throws IOException, InterpreterException {
-    org.apache.zeppelin.interpreter.xref.InterpreterResult ret;
-    org.apache.zeppelin.interpreter.xref.InterpreterResult ret1;
+    InterpreterResult ret;
+    InterpreterResult ret1;
     InterpreterResult ret2;
     ret = python.interpret("import matplotlib.pyplot as plt", context);
     ret = python.interpret("z.configure_mpl(interactive=False, close=False)", context);
@@ -187,7 +187,7 @@ class PythonInterpreterMatplotlibTest implements InterpreterOutputListener {
   }
 
   @Override
-  public void onAppend(int index, org.apache.zeppelin.interpreter.xref.InterpreterResultMessageOutput out, byte[] line) {
+  public void onAppend(int index, InterpreterResultMessageOutput out, byte[] line) {
 
   }
 

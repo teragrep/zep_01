@@ -18,7 +18,7 @@
 package org.apache.zeppelin.interpreter;
 
 import org.apache.zeppelin.resource.LocalResourcePool;
-import org.apache.zeppelin.interpreter.xref.ResourcePool;
+import com.teragrep.zep_04.resource.ResourcePool;
 import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;

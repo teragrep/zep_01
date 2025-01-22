@@ -17,7 +17,7 @@
 
 package org.apache.zeppelin.scheduler;
 
-import org.apache.zeppelin.interpreter.xref.JobListener;
+import com.teragrep.zep_04.scheduler.JobListener;
 
 public abstract class JobWithProgressPoller<T> extends JobImpl<T> {
 

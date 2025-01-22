@@ -25,12 +25,12 @@ import org.apache.zeppelin.display.ui.TextBox;
 import org.apache.zeppelin.interpreter.*;
 import org.apache.zeppelin.interpreter.remote.RemoteInterpreterEventClientImpl;
 import org.apache.zeppelin.interpreter.thrift.InterpreterCompletion;
-import org.apache.zeppelin.interpreter.xref.Code;
-import org.apache.zeppelin.interpreter.xref.Interpreter;
-import org.apache.zeppelin.interpreter.xref.InterpreterException;
-import org.apache.zeppelin.interpreter.xref.InterpreterGroup;
-import org.apache.zeppelin.interpreter.xref.InterpreterResult;
-import org.apache.zeppelin.interpreter.xref.InterpreterResultMessage;
+import com.teragrep.zep_04.interpreter.Code;
+import com.teragrep.zep_04.interpreter.Interpreter;
+import com.teragrep.zep_04.interpreter.InterpreterException;
+import com.teragrep.zep_04.interpreter.InterpreterGroup;
+import com.teragrep.zep_04.interpreter.InterpreterResult;
+import com.teragrep.zep_04.interpreter.InterpreterResultMessage;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Disabled;
@@ -60,11 +60,11 @@ public abstract class BasePythonInterpreterTest extends ConcurrentTestCase {
   public void testPythonBasics() throws InterpreterException, InterruptedException, IOException {
 
     InterpreterContextImpl context = getInterpreterContext();
-    org.apache.zeppelin.interpreter.xref.InterpreterResult result =
+    InterpreterResult result =
         interpreter.interpret("import sys\nprint(sys.version[0])", context);
     assertEquals(Code.SUCCESS, result.code());
     Thread.sleep(100);
-    List<org.apache.zeppelin.interpreter.xref.InterpreterResultMessage> interpreterResultMessages =
+    List<InterpreterResultMessage> interpreterResultMessages =
         context.out.toInterpreterResultMessage();
     assertEquals(1, interpreterResultMessages.size());
 
@@ -208,7 +208,7 @@ public abstract class BasePythonInterpreterTest extends ConcurrentTestCase {
     // define `a` first
     InterpreterContextImpl context = getInterpreterContext();
     String st = "a='hello'";
-    org.apache.zeppelin.interpreter.xref.InterpreterResult result = interpreter.interpret(st, context);
+    InterpreterResult result = interpreter.interpret(st, context);
     Thread.sleep(100);
     assertEquals(Code.SUCCESS, result.code());
 
@@ -238,7 +238,7 @@ public abstract class BasePythonInterpreterTest extends ConcurrentTestCase {
   public void testZeppelinContext() throws InterpreterException, InterruptedException, IOException {
     // TextBox
     InterpreterContextImpl context = getInterpreterContext();
-    org.apache.zeppelin.interpreter.xref.InterpreterResult result =
+    InterpreterResult result =
         interpreter.interpret("z.input(name='text_1', defaultValue='value_1')", context);
     Thread.sleep(100);
     assertEquals(Code.SUCCESS, result.code());

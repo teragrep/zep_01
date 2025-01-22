@@ -17,7 +17,7 @@
 
 package org.apache.zeppelin.user;
 
-import org.apache.zeppelin.interpreter.xref.user.UsernamePassword;
+import com.teragrep.zep_04.user.UsernamePassword;
 
 /**
  * Username and Password POJO

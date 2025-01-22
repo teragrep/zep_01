@@ -20,8 +20,8 @@ package org.apache.zeppelin.service;
 
 
 import static org.apache.zeppelin.conf.ZeppelinConfiguration.ConfVars.ZEPPELIN_NOTEBOOK_HOMESCREEN;
-import static org.apache.zeppelin.interpreter.xref.Code.ERROR;
-import static org.apache.zeppelin.interpreter.xref.Status.ABORT;
+import static com.teragrep.zep_04.interpreter.Code.ERROR;
+import static com.teragrep.zep_04.scheduler.Status.ABORT;
 
 import java.io.IOException;
 import java.text.ParseException;
@@ -40,10 +40,10 @@ import javax.inject.Inject;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.zeppelin.conf.ZeppelinConfiguration;
 import org.apache.zeppelin.interpreter.InterpreterResultImpl;
-import org.apache.zeppelin.interpreter.xref.display.AngularObject;
-import org.apache.zeppelin.interpreter.xref.display.AngularObjectRegistry;
-import org.apache.zeppelin.interpreter.xref.Code;
-import org.apache.zeppelin.interpreter.xref.InterpreterResult;
+import com.teragrep.zep_04.display.AngularObject;
+import com.teragrep.zep_04.display.AngularObjectRegistry;
+import com.teragrep.zep_04.interpreter.Code;
+import com.teragrep.zep_04.interpreter.InterpreterResult;
 import org.apache.zeppelin.interpreter.InterpreterSetting;
 import org.apache.zeppelin.interpreter.thrift.InterpreterCompletion;
 import org.apache.zeppelin.notebook.Note;
@@ -61,8 +61,8 @@ import org.apache.zeppelin.rest.exception.BadRequestException;
 import org.apache.zeppelin.rest.exception.ForbiddenException;
 import org.apache.zeppelin.rest.exception.NoteNotFoundException;
 import org.apache.zeppelin.rest.exception.ParagraphNotFoundException;
-import org.apache.zeppelin.interpreter.xref.Status;
-import org.apache.zeppelin.interpreter.xref.user.AuthenticationInfo;
+import com.teragrep.zep_04.scheduler.Status;
+import com.teragrep.zep_04.user.AuthenticationInfo;
 import org.apache.zeppelin.user.AuthenticationInfoImpl;
 import org.bitbucket.cowwoc.diffmatchpatch.DiffMatchPatch;
 import org.slf4j.Logger;

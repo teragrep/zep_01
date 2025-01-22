@@ -16,13 +16,13 @@ package org.apache.zeppelin.jdbc;
 
 import com.mockrunner.jdbc.BasicJDBCTestCaseAdapter;
 import org.apache.zeppelin.interpreter.*;
-import org.apache.zeppelin.interpreter.xref.Code;
-import org.apache.zeppelin.interpreter.xref.InterpreterException;
-import org.apache.zeppelin.interpreter.xref.InterpreterResult;
-import org.apache.zeppelin.interpreter.xref.InterpreterResultMessage;
-import org.apache.zeppelin.interpreter.xref.Type;
+import com.teragrep.zep_04.interpreter.Code;
+import com.teragrep.zep_04.interpreter.InterpreterException;
+import com.teragrep.zep_04.interpreter.InterpreterResult;
+import com.teragrep.zep_04.interpreter.InterpreterResultMessage;
+import com.teragrep.zep_04.interpreter.Type;
 import org.apache.zeppelin.resource.LocalResourcePool;
-import org.apache.zeppelin.interpreter.xref.ResourcePool;
+import com.teragrep.zep_04.resource.ResourcePool;
 import org.apache.zeppelin.user.AuthenticationInfoImpl;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Disabled;
@@ -97,10 +97,10 @@ class JDBCInterpreterInterpolationTest extends BasicJDBCTestCaseAdapter {
     //
     JDBCInterpreter t = new JDBCInterpreter(properties);
     t.open();
-    org.apache.zeppelin.interpreter.xref.InterpreterResult interpreterResult = t.interpret(sqlQuery, interpreterContextImpl);
+    InterpreterResult interpreterResult = t.interpret(sqlQuery, interpreterContextImpl);
     assertEquals(Code.SUCCESS, interpreterResult.code());
 
-    List<org.apache.zeppelin.interpreter.xref.InterpreterResultMessage> resultMessages =
+    List<InterpreterResultMessage> resultMessages =
             interpreterContextImpl.out.toInterpreterResultMessage();
     assertEquals(1, resultMessages.size());
     assertEquals(Type.TABLE, resultMessages.get(0).getType());
@@ -142,10 +142,10 @@ class JDBCInterpreterInterpolationTest extends BasicJDBCTestCaseAdapter {
     // Empty result expected because "kbd" is not defined ...
     //
     String sqlQuery = "select * from test_table where id = '{kbd}'";
-    org.apache.zeppelin.interpreter.xref.InterpreterResult interpreterResult = t.interpret(sqlQuery, interpreterContextImpl);
+    InterpreterResult interpreterResult = t.interpret(sqlQuery, interpreterContextImpl);
     assertEquals(Code.SUCCESS, interpreterResult.code());
 
-    List<org.apache.zeppelin.interpreter.xref.InterpreterResultMessage> resultMessages =
+    List<InterpreterResultMessage> resultMessages =
             interpreterContextImpl.out.toInterpreterResultMessage();
     assertEquals(1, resultMessages.size());
     assertEquals(Type.TABLE, resultMessages.get(0).getType());

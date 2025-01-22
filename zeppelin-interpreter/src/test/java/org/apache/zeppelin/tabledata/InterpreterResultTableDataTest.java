@@ -16,9 +16,9 @@
  */
 package org.apache.zeppelin.tabledata;
 
-import org.apache.zeppelin.interpreter.xref.InterpreterResultMessage;
+import com.teragrep.zep_04.interpreter.InterpreterResultMessage;
 import org.apache.zeppelin.interpreter.InterpreterResultMessageImpl;
-import org.apache.zeppelin.interpreter.xref.Type;
+import com.teragrep.zep_04.interpreter.Type;
 import org.junit.Test;
 
 import java.util.Iterator;

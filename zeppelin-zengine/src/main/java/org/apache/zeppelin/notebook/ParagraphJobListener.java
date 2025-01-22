@@ -17,8 +17,8 @@
 
 package org.apache.zeppelin.notebook;
 
-import org.apache.zeppelin.interpreter.xref.InterpreterResult;
-import org.apache.zeppelin.interpreter.xref.JobListener;
+import com.teragrep.zep_04.interpreter.InterpreterResult;
+import com.teragrep.zep_04.scheduler.JobListener;
 
 
 /**

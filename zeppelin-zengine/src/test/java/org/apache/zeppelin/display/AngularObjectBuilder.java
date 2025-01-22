@@ -17,7 +17,7 @@
 
 package org.apache.zeppelin.display;
 
-import org.apache.zeppelin.interpreter.xref.display.AngularObject;
+import com.teragrep.zep_04.display.AngularObject;
 
 public class AngularObjectBuilder {
 

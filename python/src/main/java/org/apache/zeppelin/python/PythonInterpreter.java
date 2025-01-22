@@ -18,6 +18,9 @@
 package org.apache.zeppelin.python;
 
 import com.google.gson.Gson;
+import com.teragrep.zep_04.interpreter.*;
+import com.teragrep.zep_04.interpreter.InterpreterGroup;
+import com.teragrep.zep_04.interpreter.InterpreterResult;
 import org.apache.commons.exec.CommandLine;
 import org.apache.commons.exec.ExecuteException;
 import org.apache.commons.exec.environment.EnvironmentUtils;
@@ -25,14 +28,10 @@ import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.zeppelin.interpreter.*;
 import org.apache.zeppelin.interpreter.InterpreterHookRegistry.HookType;
-import org.apache.zeppelin.interpreter.xref.*;
 import org.apache.zeppelin.interpreter.remote.RemoteInterpreterUtils;
 import org.apache.zeppelin.interpreter.thrift.InterpreterCompletion;
 import org.apache.zeppelin.interpreter.util.InterpreterOutputStream;
 import org.apache.zeppelin.interpreter.util.ProcessLauncher;
-import org.apache.zeppelin.interpreter.xref.InterpreterContext;
-import org.apache.zeppelin.interpreter.xref.InterpreterGroup;
-import org.apache.zeppelin.interpreter.xref.InterpreterResult;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import py4j.GatewayServer;
@@ -360,7 +359,8 @@ public class PythonInterpreter extends AbstractInterpreter {
       if (pythonProcessLauncher.isRunning()) {
         return new InterpreterResultImpl(Code.SUCCESS);
       } else {
-        return new InterpreterResultImpl(Code.ERROR,
+        return new InterpreterResultImpl(
+                Code.ERROR,
                 "Python process is abnormally exited, please check your code and log.");
       }
     }

@@ -49,7 +49,7 @@ import java.util.Map;
 import org.apache.zeppelin.conf.ZeppelinConfiguration.ConfVars;
 import org.apache.zeppelin.notebook.Note;
 import org.apache.zeppelin.notebook.Paragraph;
-import org.apache.zeppelin.interpreter.xref.user.AuthenticationInfo;
+import com.teragrep.zep_04.user.AuthenticationInfo;
 
 /**
  * BASIC Zeppelin rest api tests.

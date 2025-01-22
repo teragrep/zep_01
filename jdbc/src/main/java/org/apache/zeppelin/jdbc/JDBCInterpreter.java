@@ -33,11 +33,11 @@ import org.apache.hadoop.security.alias.CredentialProvider;
 import org.apache.hadoop.security.alias.CredentialProviderFactory;
 import org.apache.zeppelin.interpreter.*;
 import org.apache.zeppelin.interpreter.util.SqlSplitter;
-import org.apache.zeppelin.interpreter.xref.FormType;
-import org.apache.zeppelin.interpreter.xref.InterpreterContext;
-import org.apache.zeppelin.interpreter.xref.InterpreterException;
-import org.apache.zeppelin.interpreter.xref.InterpreterResult;
-import org.apache.zeppelin.interpreter.xref.ZeppelinContext;
+import com.teragrep.zep_04.interpreter.FormType;
+import com.teragrep.zep_04.interpreter.InterpreterContext;
+import com.teragrep.zep_04.interpreter.InterpreterException;
+import com.teragrep.zep_04.interpreter.InterpreterResult;
+import com.teragrep.zep_04.interpreter.ZeppelinContext;
 import org.apache.zeppelin.jdbc.hive.HiveUtils;
 import org.apache.zeppelin.tabledata.TableDataUtils;
 import org.apache.zeppelin.util.PropertiesUtil;
@@ -66,13 +66,13 @@ import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicReference;
 
-import org.apache.zeppelin.interpreter.xref.Code;
+import com.teragrep.zep_04.interpreter.Code;
 import org.apache.zeppelin.interpreter.thrift.InterpreterCompletion;
 import org.apache.zeppelin.jdbc.security.JDBCSecurityImpl;
-import org.apache.zeppelin.interpreter.xref.Scheduler;
+import com.teragrep.zep_04.scheduler.Scheduler;
 import org.apache.zeppelin.scheduler.SchedulerFactory;
-import org.apache.zeppelin.interpreter.xref.user.UserCredentials;
-import org.apache.zeppelin.interpreter.xref.user.UsernamePassword;
+import com.teragrep.zep_04.user.UserCredentials;
+import com.teragrep.zep_04.user.UsernamePassword;
 
 /**
  * JDBC interpreter for Zeppelin. This interpreter can also be used for accessing HAWQ,
@@ -361,7 +361,7 @@ public class JDBCInterpreter extends KerberosInterpreter {
    * 1. If shiro is enabled, use the login user
    * 2. Otherwise try to get it from interpreter setting, e.g. default.user
    */
-  private String getUser(org.apache.zeppelin.interpreter.xref.InterpreterContext context) {
+  private String getUser(InterpreterContext context) {
     String user = context.getAuthenticationInfo().getUser();
 
     if ("anonymous".equalsIgnoreCase(user) && basePropertiesMap.containsKey(DEFAULT_KEY)) {
@@ -396,7 +396,7 @@ public class JDBCInterpreter extends KerberosInterpreter {
   }
 
   private UsernamePassword getUsernamePassword(
-          org.apache.zeppelin.interpreter.xref.InterpreterContext interpreterContextImpl,
+          InterpreterContext interpreterContextImpl,
                                                String entity) {
     UserCredentials uc = interpreterContextImpl.getAuthenticationInfo().getUserCredentials();
     if (uc != null) {
@@ -423,7 +423,7 @@ public class JDBCInterpreter extends KerberosInterpreter {
     }
   }
 
-  private void setUserProperty(org.apache.zeppelin.interpreter.xref.InterpreterContext context)
+  private void setUserProperty(InterpreterContext context)
       throws SQLException, IOException, InterpreterException {
 
     String user = getUser(context);
@@ -524,7 +524,7 @@ public class JDBCInterpreter extends KerberosInterpreter {
     return DriverManager.getConnection(jdbcDriver);
   }
 
-  public Connection getConnection(org.apache.zeppelin.interpreter.xref.InterpreterContext context)
+  public Connection getConnection(InterpreterContext context)
       throws ClassNotFoundException, SQLException, InterpreterException, IOException {
 
     if (basePropertiesMap.get(DEFAULT_KEY) == null) {
@@ -618,7 +618,7 @@ public class JDBCInterpreter extends KerberosInterpreter {
   }
 
   // only add tags for hive jdbc
-  private String appendTagsToURL(String url, org.apache.zeppelin.interpreter.xref.InterpreterContext context) {
+  private String appendTagsToURL(String url, InterpreterContext context) {
     if (!Boolean.parseBoolean(getProperty("zeppelin.jdbc.hive.engines.tag.enable", "true"))) {
       return url;
     }
@@ -728,9 +728,9 @@ public class JDBCInterpreter extends KerberosInterpreter {
     return updatedCount < 0 && columnCount <= 0 ? true : false;
   }
 
-  public org.apache.zeppelin.interpreter.xref.InterpreterResult executePrecode(InterpreterContextImpl interpreterContextImpl)
+  public InterpreterResult executePrecode(InterpreterContextImpl interpreterContextImpl)
           throws InterpreterException {
-    org.apache.zeppelin.interpreter.xref.InterpreterResult interpreterResult = null;
+    InterpreterResult interpreterResult = null;
     for (String propertyKey : basePropertiesMap.keySet()) {
       String precode = getProperty(String.format("%s.precode", propertyKey));
       if (StringUtils.isNotBlank(precode)) {
@@ -758,7 +758,7 @@ public class JDBCInterpreter extends KerberosInterpreter {
    * @throws InterpreterException
    */
   private InterpreterResultImpl executeSql(String sql,
-      org.apache.zeppelin.interpreter.xref.InterpreterContext context) throws InterpreterException {
+      InterpreterContext context) throws InterpreterException {
     Connection connection = null;
     Statement statement;
     ResultSet resultSet = null;
@@ -949,12 +949,12 @@ public class JDBCInterpreter extends KerberosInterpreter {
     return Boolean.parseBoolean(getProperty("zeppelin.jdbc.interpolation", "false"));
   }
 
-  private boolean isRefreshMode(org.apache.zeppelin.interpreter.xref.InterpreterContext context) {
+  private boolean isRefreshMode(InterpreterContext context) {
     return context.getLocalProperties().get("refreshInterval") != null;
   }
 
   @Override
-  public InterpreterResult internalInterpret(String cmd, org.apache.zeppelin.interpreter.xref.InterpreterContext context)
+  public InterpreterResult internalInterpret(String cmd, InterpreterContext context)
           throws InterpreterException {
     String dbprefix = getDBPrefix(context);
     if (!StringUtils.equals(dbprefix, DEFAULT_KEY)) {
@@ -970,7 +970,7 @@ public class JDBCInterpreter extends KerberosInterpreter {
       ScheduledExecutorService refreshExecutor = Executors.newSingleThreadScheduledExecutor();
       refreshExecutorServices.put(context.getParagraphId(), refreshExecutor);
       isFirstRefreshMap.put(context.getParagraphId(), true);
-      final AtomicReference<org.apache.zeppelin.interpreter.xref.InterpreterResult> interpreterResultRef = new AtomicReference();
+      final AtomicReference<InterpreterResult> interpreterResultRef = new AtomicReference();
       refreshExecutor.scheduleAtFixedRate(() -> {
         context.out().clear(false);
         try {
@@ -1004,7 +1004,7 @@ public class JDBCInterpreter extends KerberosInterpreter {
   }
 
   @Override
-  public void cancel(org.apache.zeppelin.interpreter.xref.InterpreterContext context) {
+  public void cancel(InterpreterContext context) {
 
     if (isRefreshMode(context)) {
       LOGGER.info("Shutdown refreshExecutorService for paragraph: {}", context.getParagraphId());
@@ -1046,7 +1046,7 @@ public class JDBCInterpreter extends KerberosInterpreter {
    * @param context
    * @return
    */
-  public String getDBPrefix(org.apache.zeppelin.interpreter.xref.InterpreterContext context) {
+  public String getDBPrefix(InterpreterContext context) {
     Map<String, String> localProperties = context.getLocalProperties();
     // It is recommended to use this kind of format: %jdbc(db=mysql)
     if (localProperties.containsKey("db")) {
@@ -1067,7 +1067,7 @@ public class JDBCInterpreter extends KerberosInterpreter {
   }
 
   @Override
-  public int getProgress(org.apache.zeppelin.interpreter.xref.InterpreterContext context) {
+  public int getProgress(InterpreterContext context) {
     return 0;
   }
 

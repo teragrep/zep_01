@@ -16,8 +16,8 @@
  */
 package org.apache.zeppelin.interpreter;
 
-import org.apache.zeppelin.interpreter.xref.InterpreterResultMessage;
-import org.apache.zeppelin.interpreter.xref.Type;
+import com.teragrep.zep_04.interpreter.InterpreterResultMessage;
+import com.teragrep.zep_04.interpreter.Type;
 
 /**
  * Interpreter result message

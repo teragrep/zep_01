@@ -21,8 +21,8 @@ import javax.inject.Inject;
 import javax.inject.Singleton;
 
 import org.apache.commons.lang3.exception.ExceptionUtils;
-import org.apache.zeppelin.interpreter.xref.annotation.ZeppelinApi;
-import org.apache.zeppelin.interpreter.xref.InterpreterException;
+import com.teragrep.zep_04.annotation.ZeppelinApi;
+import com.teragrep.zep_04.interpreter.InterpreterException;
 import org.apache.zeppelin.interpreter.InterpreterPropertyType;
 import org.apache.zeppelin.interpreter.InterpreterSetting;
 import org.apache.zeppelin.interpreter.InterpreterSettingManager;

@@ -17,8 +17,8 @@
 package org.apache.zeppelin.interpreter;
 
 
+import com.teragrep.zep_04.interpreter.*;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.zeppelin.interpreter.xref.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

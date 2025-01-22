@@ -18,10 +18,10 @@
 package org.apache.zeppelin.display;
 
 import org.apache.thrift.TException;
-import org.apache.zeppelin.interpreter.xref.InterpreterContext;
-import org.apache.zeppelin.interpreter.xref.display.AngularObject;
-import org.apache.zeppelin.interpreter.xref.display.AngularObjectListener;
-import org.apache.zeppelin.interpreter.xref.display.AngularObjectWatcher;
+import com.teragrep.zep_04.interpreter.InterpreterContext;
+import com.teragrep.zep_04.display.AngularObject;
+import com.teragrep.zep_04.display.AngularObjectListener;
+import com.teragrep.zep_04.display.AngularObjectWatcher;
 import org.junit.Ignore;
 import org.junit.Test;
 

@@ -27,7 +27,7 @@ import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.QueryParam;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.zeppelin.interpreter.xref.annotation.ZeppelinApi;
+import com.teragrep.zep_04.annotation.ZeppelinApi;
 import org.apache.zeppelin.rest.message.LoggerRequest;
 import org.apache.zeppelin.service.AdminService;
 import org.slf4j.Logger;

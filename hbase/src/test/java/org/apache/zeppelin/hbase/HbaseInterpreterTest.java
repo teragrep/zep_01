@@ -19,10 +19,10 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 import java.util.Properties;
 
-import org.apache.zeppelin.interpreter.xref.Code;
-import org.apache.zeppelin.interpreter.xref.InterpreterException;
-import org.apache.zeppelin.interpreter.xref.InterpreterResult;
-import org.apache.zeppelin.interpreter.xref.Type;
+import com.teragrep.zep_04.interpreter.Code;
+import com.teragrep.zep_04.interpreter.InterpreterException;
+import com.teragrep.zep_04.interpreter.InterpreterResult;
+import com.teragrep.zep_04.interpreter.Type;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;

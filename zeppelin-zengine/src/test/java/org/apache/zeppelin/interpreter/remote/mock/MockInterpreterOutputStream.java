@@ -18,7 +18,11 @@ package org.apache.zeppelin.interpreter.remote.mock;
 
 import org.apache.zeppelin.interpreter.*;
 import org.apache.zeppelin.interpreter.thrift.InterpreterCompletion;
-import org.apache.zeppelin.interpreter.xref.*;
+import com.teragrep.zep_04.interpreter.Code;
+import com.teragrep.zep_04.interpreter.FormType;
+import com.teragrep.zep_04.interpreter.InterpreterContext;
+import com.teragrep.zep_04.interpreter.InterpreterException;
+import com.teragrep.zep_04.scheduler.Scheduler;
 import org.apache.zeppelin.scheduler.SchedulerFactory;
 
 import java.io.IOException;

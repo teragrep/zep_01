@@ -20,7 +20,7 @@ package org.apache.zeppelin.interpreter;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.zeppelin.conf.ZeppelinConfiguration;
-import org.apache.zeppelin.interpreter.xref.display.AngularObjectRegistryListener;
+import com.teragrep.zep_04.display.AngularObjectRegistryListener;
 import org.apache.zeppelin.interpreter.remote.RemoteInterpreterProcessListener;
 import org.apache.zeppelin.notebook.Note;
 import org.apache.zeppelin.notebook.Notebook;

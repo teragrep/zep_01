@@ -20,12 +20,12 @@ package org.apache.zeppelin.interpreter;
 
 import org.apache.zeppelin.conf.ZeppelinConfiguration;
 import org.apache.zeppelin.interpreter.remote.RemoteInterpreterProcess;
-import org.apache.zeppelin.interpreter.xref.Interpreter;
-import org.apache.zeppelin.interpreter.xref.InterpreterException;
-import org.apache.zeppelin.interpreter.xref.Job;
-import org.apache.zeppelin.interpreter.xref.Scheduler;
+import com.teragrep.zep_04.interpreter.Interpreter;
+import com.teragrep.zep_04.interpreter.InterpreterException;
+import com.teragrep.zep_04.scheduler.Job;
+import com.teragrep.zep_04.scheduler.Scheduler;
 import org.apache.zeppelin.scheduler.SchedulerFactory;
-import org.apache.zeppelin.interpreter.xref.Status;
+import com.teragrep.zep_04.scheduler.Status;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

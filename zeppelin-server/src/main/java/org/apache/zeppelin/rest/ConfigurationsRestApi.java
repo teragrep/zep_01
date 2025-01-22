@@ -26,7 +26,7 @@ import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
-import org.apache.zeppelin.interpreter.xref.annotation.ZeppelinApi;
+import com.teragrep.zep_04.annotation.ZeppelinApi;
 import org.apache.zeppelin.server.JsonResponse;
 import org.apache.zeppelin.service.ConfigurationService;
 import org.apache.zeppelin.service.AuthenticationService;

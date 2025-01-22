@@ -17,7 +17,7 @@
 package org.apache.zeppelin.interpreter.remote;
 
 import org.apache.thrift.TException;
-import org.apache.zeppelin.interpreter.xref.Type;
+import com.teragrep.zep_04.interpreter.Type;
 import org.apache.zeppelin.interpreter.thrift.ParagraphInfo;
 
 import java.io.IOException;

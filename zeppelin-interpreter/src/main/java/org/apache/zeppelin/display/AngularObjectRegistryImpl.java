@@ -17,10 +17,10 @@
 
 package org.apache.zeppelin.display;
 
-import org.apache.zeppelin.interpreter.xref.display.AngularObject;
-import org.apache.zeppelin.interpreter.xref.display.AngularObjectListener;
-import org.apache.zeppelin.interpreter.xref.display.AngularObjectRegistry;
-import org.apache.zeppelin.interpreter.xref.display.AngularObjectRegistryListener;
+import com.teragrep.zep_04.display.AngularObject;
+import com.teragrep.zep_04.display.AngularObjectListener;
+import com.teragrep.zep_04.display.AngularObjectRegistry;
+import com.teragrep.zep_04.display.AngularObjectRegistryListener;
 
 import java.util.HashMap;
 import java.util.LinkedList;

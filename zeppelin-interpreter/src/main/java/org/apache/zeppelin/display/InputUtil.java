@@ -2,9 +2,9 @@ package org.apache.zeppelin.display;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.zeppelin.display.ui.*;
-import org.apache.zeppelin.interpreter.xref.display.Input;
-import org.apache.zeppelin.interpreter.xref.display.ui.OptionInput;
-import org.apache.zeppelin.interpreter.xref.display.ui.ParamOption;
+import com.teragrep.zep_04.display.Input;
+import com.teragrep.zep_04.display.ui.OptionInput;
+import com.teragrep.zep_04.display.ui.ParamOption;
 
 import java.util.*;
 import java.util.regex.Matcher;

@@ -20,12 +20,12 @@ package org.apache.zeppelin.interpreter.remote.mock;
 import com.google.gson.Gson;
 import org.apache.zeppelin.interpreter.AbstractInterpreter;
 import org.apache.zeppelin.interpreter.InterpreterResultImpl;
-import org.apache.zeppelin.interpreter.xref.InterpreterContext;
-import org.apache.zeppelin.interpreter.xref.FormType;
-import org.apache.zeppelin.interpreter.xref.Code;
+import com.teragrep.zep_04.interpreter.InterpreterContext;
+import com.teragrep.zep_04.interpreter.FormType;
+import com.teragrep.zep_04.interpreter.Code;
 import org.apache.zeppelin.interpreter.thrift.InterpreterCompletion;
-import org.apache.zeppelin.interpreter.xref.Resource;
-import org.apache.zeppelin.interpreter.xref.ResourcePool;
+import com.teragrep.zep_04.resource.Resource;
+import com.teragrep.zep_04.resource.ResourcePool;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

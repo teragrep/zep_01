@@ -19,8 +19,8 @@ package org.apache.zeppelin.interpreter.remote;
 
 import com.google.gson.Gson;
 import org.apache.zeppelin.display.AngularObjectRegistryImpl;
-import org.apache.zeppelin.interpreter.xref.display.AngularObject;
-import org.apache.zeppelin.interpreter.xref.display.AngularObjectRegistryListener;
+import com.teragrep.zep_04.display.AngularObject;
+import com.teragrep.zep_04.display.AngularObjectRegistryListener;
 import org.apache.zeppelin.interpreter.ManagedInterpreterGroup;
 import java.util.List;
 

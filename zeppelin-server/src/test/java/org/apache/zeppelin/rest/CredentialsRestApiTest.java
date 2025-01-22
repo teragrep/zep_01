@@ -30,7 +30,7 @@ import javax.ws.rs.core.Response.Status;
 import org.apache.zeppelin.service.AuthenticationService;
 import org.apache.zeppelin.service.NoAuthenticationService;
 import org.apache.zeppelin.user.Credentials;
-import org.apache.zeppelin.interpreter.xref.user.UserCredentials;
+import com.teragrep.zep_04.user.UserCredentials;
 import org.junit.Before;
 import org.junit.Test;
 

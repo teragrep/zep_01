@@ -24,7 +24,7 @@ import org.apache.zeppelin.notebook.NoteInfo;
 import org.apache.zeppelin.notebook.OldNoteInfo;
 import org.apache.zeppelin.notebook.Paragraph;
 import org.apache.zeppelin.plugin.PluginManager;
-import org.apache.zeppelin.interpreter.xref.user.AuthenticationInfo;
+import com.teragrep.zep_04.user.AuthenticationInfo;
 import org.apache.zeppelin.user.AuthenticationInfoImpl;
 import org.apache.zeppelin.util.Util;
 import org.slf4j.Logger;

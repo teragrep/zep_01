@@ -25,10 +25,10 @@ import org.apache.spark.sql.SQLContext;
 import org.apache.spark.sql.SparkSession;
 import org.apache.zeppelin.interpreter.*;
 import org.apache.zeppelin.interpreter.thrift.InterpreterCompletion;
-import org.apache.zeppelin.interpreter.xref.FormType;
-import org.apache.zeppelin.interpreter.xref.InterpreterContext;
-import org.apache.zeppelin.interpreter.xref.InterpreterException;
-import org.apache.zeppelin.interpreter.xref.ZeppelinContext;
+import com.teragrep.zep_04.interpreter.FormType;
+import com.teragrep.zep_04.interpreter.InterpreterContext;
+import com.teragrep.zep_04.interpreter.InterpreterException;
+import com.teragrep.zep_04.interpreter.ZeppelinContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -197,7 +197,7 @@ public class SparkInterpreter extends AbstractEnhancedInterpreter {
 
   @Override
   public InterpreterResultImpl internalInterpret(String st,
-          org.apache.zeppelin.interpreter.xref.InterpreterContext context) throws InterpreterException {
+          InterpreterContext context) throws InterpreterException {
     context.out().clear();
     sc.setJobGroup(Utils.buildJobGroupId(context), Utils.buildJobDesc(context), false);
     // set spark.scheduler.pool to null to clear the pool assosiated with this paragraph
@@ -208,14 +208,14 @@ public class SparkInterpreter extends AbstractEnhancedInterpreter {
   }
 
   @Override
-  public void cancel(org.apache.zeppelin.interpreter.xref.InterpreterContext context) throws InterpreterException {
+  public void cancel(InterpreterContext context) throws InterpreterException {
     innerInterpreter.cancel(context);
   }
 
   @Override
   public List<InterpreterCompletion> completion(String buf,
                                                 int cursor,
-          org.apache.zeppelin.interpreter.xref.InterpreterContext interpreterContext
+          InterpreterContext interpreterContext
   ) throws InterpreterException {
     return innerInterpreter.completion(buf, cursor, interpreterContext);
   }

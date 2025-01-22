@@ -18,7 +18,7 @@ package org.apache.zeppelin.interpreter.remote;
 
 import com.google.gson.Gson;
 import org.apache.zeppelin.common.JsonSerializable;
-import org.apache.zeppelin.interpreter.xref.ResourceId;
+import com.teragrep.zep_04.resource.ResourceId;
 
 /**
  * message payload to invoke method of resource in the resourcepool

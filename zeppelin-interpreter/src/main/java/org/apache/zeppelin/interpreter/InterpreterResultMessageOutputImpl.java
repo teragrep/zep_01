@@ -16,10 +16,10 @@
  */
 package org.apache.zeppelin.interpreter;
 
-import org.apache.zeppelin.interpreter.xref.InterpreterResultMessage;
-import org.apache.zeppelin.interpreter.xref.InterpreterResultMessageOutput;
-import org.apache.zeppelin.interpreter.xref.InterpreterResultMessageOutputListener;
-import org.apache.zeppelin.interpreter.xref.Type;
+import com.teragrep.zep_04.interpreter.InterpreterResultMessage;
+import com.teragrep.zep_04.interpreter.InterpreterResultMessageOutput;
+import com.teragrep.zep_04.interpreter.InterpreterResultMessageOutputListener;
+import com.teragrep.zep_04.interpreter.Type;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

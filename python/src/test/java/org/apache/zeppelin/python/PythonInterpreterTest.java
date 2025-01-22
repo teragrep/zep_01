@@ -20,9 +20,9 @@ package org.apache.zeppelin.python;
 import net.jodah.concurrentunit.Waiter;
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.apache.zeppelin.interpreter.*;
-import org.apache.zeppelin.interpreter.xref.Code;
-import org.apache.zeppelin.interpreter.xref.InterpreterException;
-import org.apache.zeppelin.interpreter.xref.InterpreterResult;
+import com.teragrep.zep_04.interpreter.Code;
+import com.teragrep.zep_04.interpreter.InterpreterException;
+import com.teragrep.zep_04.interpreter.InterpreterResult;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
@@ -95,7 +95,7 @@ public class PythonInterpreterTest extends BasePythonInterpreterTest {
     @Override
     public void run() {
       String code = "import time\nwhile True:\n  time.sleep(1)";
-      org.apache.zeppelin.interpreter.xref.InterpreterResult ret = null;
+      InterpreterResult ret = null;
       try {
         ret = interpreter.interpret(code, getInterpreterContext());
       } catch (InterpreterException e) {

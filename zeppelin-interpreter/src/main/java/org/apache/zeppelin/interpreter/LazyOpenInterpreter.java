@@ -21,9 +21,9 @@ import java.net.URL;
 import java.util.List;
 import java.util.Properties;
 
+import com.teragrep.zep_04.interpreter.*;
 import org.apache.zeppelin.interpreter.thrift.InterpreterCompletion;
-import org.apache.zeppelin.interpreter.xref.*;
-import org.apache.zeppelin.interpreter.xref.Scheduler;
+import com.teragrep.zep_04.scheduler.Scheduler;
 
 /**
  * Interpreter wrapper for lazy initialization

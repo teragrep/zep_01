@@ -18,7 +18,7 @@
 package org.apache.zeppelin.rest;
 
 import org.apache.commons.lang3.StringUtils;
-import org.apache.zeppelin.interpreter.xref.annotation.ZeppelinApi;
+import com.teragrep.zep_04.annotation.ZeppelinApi;
 import org.apache.zeppelin.interpreter.InterpreterSettingManager;
 import org.apache.zeppelin.notebook.Notebook;
 import org.apache.zeppelin.common.SessionInfo;

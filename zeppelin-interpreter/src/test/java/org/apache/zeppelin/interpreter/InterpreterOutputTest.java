@@ -16,10 +16,10 @@
  */
 package org.apache.zeppelin.interpreter;
 
-import org.apache.zeppelin.interpreter.xref.InterpreterOutput;
-import org.apache.zeppelin.interpreter.xref.InterpreterOutputListener;
-import org.apache.zeppelin.interpreter.xref.InterpreterResultMessageOutput;
-import org.apache.zeppelin.interpreter.xref.Type;
+import com.teragrep.zep_04.interpreter.InterpreterOutput;
+import com.teragrep.zep_04.interpreter.InterpreterOutputListener;
+import com.teragrep.zep_04.interpreter.InterpreterResultMessageOutput;
+import com.teragrep.zep_04.interpreter.Type;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;

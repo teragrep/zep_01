@@ -43,11 +43,11 @@ import org.apache.thrift.TException;
 import org.apache.zeppelin.conf.ZeppelinConfiguration;
 import org.apache.zeppelin.display.GUIImpl;
 import org.apache.zeppelin.display.InputUtil;
-import org.apache.zeppelin.interpreter.xref.display.AngularObject;
-import org.apache.zeppelin.interpreter.xref.display.AngularObjectRegistry;
-import org.apache.zeppelin.interpreter.xref.display.AngularObjectRegistryListener;
-import org.apache.zeppelin.interpreter.xref.display.GUI;
-import org.apache.zeppelin.interpreter.xref.InterpreterGroup;
+import com.teragrep.zep_04.display.AngularObject;
+import com.teragrep.zep_04.display.AngularObjectRegistry;
+import com.teragrep.zep_04.display.AngularObjectRegistryListener;
+import com.teragrep.zep_04.display.GUI;
+import com.teragrep.zep_04.interpreter.InterpreterGroup;
 import org.apache.zeppelin.interpreter.InterpreterSetting;
 import org.apache.zeppelin.interpreter.remote.RemoteAngularObjectRegistry;
 import org.apache.zeppelin.interpreter.remote.RemoteInterpreterProcessListener;
@@ -66,7 +66,7 @@ import org.apache.zeppelin.notebook.repo.NotebookRepoWithVersionControl.Revision
 import org.apache.zeppelin.common.Message;
 import org.apache.zeppelin.common.Message.OP;
 import org.apache.zeppelin.rest.exception.ForbiddenException;
-import org.apache.zeppelin.interpreter.xref.Status;
+import com.teragrep.zep_04.scheduler.Status;
 import org.apache.zeppelin.service.ConfigurationService;
 import org.apache.zeppelin.service.JobManagerService;
 import org.apache.zeppelin.service.NotebookService;
@@ -74,7 +74,7 @@ import org.apache.zeppelin.service.ServiceContext;
 import org.apache.zeppelin.service.SimpleServiceCallback;
 import org.apache.zeppelin.ticket.TicketContainer;
 import org.apache.zeppelin.types.InterpreterSettingsList;
-import org.apache.zeppelin.interpreter.xref.user.AuthenticationInfo;
+import com.teragrep.zep_04.user.AuthenticationInfo;
 import org.apache.zeppelin.user.AuthenticationInfoImpl;
 import org.apache.zeppelin.utils.CorsUtils;
 import org.apache.zeppelin.utils.TestUtils;
@@ -1609,7 +1609,7 @@ public class NotebookServer extends WebSocketServlet
    */
   @Override
   public void onOutputUpdated(String noteId, String paragraphId, int index,
-                              org.apache.zeppelin.interpreter.xref.Type type, String output) {
+                              com.teragrep.zep_04.interpreter.Type type, String output) {
     if (!sendParagraphStatusToFrontend) {
       return;
     }

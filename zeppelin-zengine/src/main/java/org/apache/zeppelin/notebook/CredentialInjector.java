@@ -23,12 +23,12 @@ import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import org.apache.zeppelin.interpreter.xref.InterpreterResult;
+import com.teragrep.zep_04.interpreter.InterpreterResult;
 import org.apache.zeppelin.interpreter.InterpreterResultImpl;
-import org.apache.zeppelin.interpreter.xref.InterpreterResultMessage;
+import com.teragrep.zep_04.interpreter.InterpreterResultMessage;
 import org.apache.zeppelin.interpreter.InterpreterResultMessageImpl;
-import org.apache.zeppelin.interpreter.xref.user.UserCredentials;
-import org.apache.zeppelin.interpreter.xref.user.UsernamePassword;
+import com.teragrep.zep_04.user.UserCredentials;
+import com.teragrep.zep_04.user.UsernamePassword;
 
 /**
  * Class for replacing {user.&gt;credentialkey&lt;} and

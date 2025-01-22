@@ -18,7 +18,7 @@
 package org.apache.zeppelin.display;
 
 import org.apache.zeppelin.display.ui.*;
-import org.apache.zeppelin.interpreter.xref.display.GUI;
+import com.teragrep.zep_04.display.GUI;
 import org.junit.Before;
 import org.junit.Test;
 

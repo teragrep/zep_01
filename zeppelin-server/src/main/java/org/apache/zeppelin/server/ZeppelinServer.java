@@ -61,7 +61,7 @@ import org.apache.shiro.web.servlet.ShiroFilter;
 import org.apache.zeppelin.common.Message;
 import org.apache.zeppelin.conf.ZeppelinConfiguration;
 import org.apache.zeppelin.conf.ZeppelinConfiguration.ConfVars;
-import org.apache.zeppelin.interpreter.xref.display.AngularObjectRegistryListener;
+import com.teragrep.zep_04.display.AngularObjectRegistryListener;
 import org.apache.zeppelin.healthcheck.HealthChecks;
 import org.apache.zeppelin.interpreter.InterpreterFactory;
 import org.apache.zeppelin.interpreter.InterpreterOutputImpl;

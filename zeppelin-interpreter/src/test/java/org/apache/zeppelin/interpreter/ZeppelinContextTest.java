@@ -17,7 +17,7 @@
 
 package org.apache.zeppelin.interpreter;
 
-import org.apache.zeppelin.interpreter.xref.InvalidHookException;
+import com.teragrep.zep_04.interpreter.InvalidHookException;
 import org.junit.Test;
 
 import java.util.HashMap;

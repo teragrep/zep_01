@@ -17,9 +17,10 @@
 
 package org.apache.zeppelin.interpreter;
 
+import com.teragrep.zep_04.interpreter.*;
 import org.apache.commons.text.StringSubstitutor;
 import org.apache.zeppelin.interpreter.thrift.InterpreterCompletion;
-import org.apache.zeppelin.interpreter.xref.*;
+import com.teragrep.zep_04.resource.ResourcePool;
 import org.apache.zeppelin.resource.ResourcePoolMap;
 
 import java.util.*;

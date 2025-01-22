@@ -18,12 +18,13 @@
 package org.apache.zeppelin.interpreter;
 
 
+import com.teragrep.zep_04.interpreter.*;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.reflect.FieldUtils;
-import org.apache.zeppelin.interpreter.xref.*;
-import org.apache.zeppelin.interpreter.xref.annotation.Experimental;
-import org.apache.zeppelin.interpreter.xref.annotation.ZeppelinApi;
+import com.teragrep.zep_04.annotation.Experimental;
+import com.teragrep.zep_04.annotation.ZeppelinApi;
 import org.apache.zeppelin.interpreter.thrift.InterpreterCompletion;
+import com.teragrep.zep_04.scheduler.Scheduler;
 import org.apache.zeppelin.scheduler.SchedulerFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

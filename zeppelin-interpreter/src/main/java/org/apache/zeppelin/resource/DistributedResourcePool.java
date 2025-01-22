@@ -16,9 +16,9 @@
  */
 package org.apache.zeppelin.resource;
 
-import org.apache.zeppelin.interpreter.xref.Resource;
-import org.apache.zeppelin.interpreter.xref.ResourcePoolConnector;
-import org.apache.zeppelin.interpreter.xref.ResourceSet;
+import com.teragrep.zep_04.resource.Resource;
+import com.teragrep.zep_04.resource.ResourcePoolConnector;
+import com.teragrep.zep_04.resource.ResourceSet;
 
 /**
  * distributed resource pool

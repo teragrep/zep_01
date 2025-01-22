@@ -17,12 +17,13 @@
 
 package org.apache.zeppelin.spark
 
+import com.teragrep.zep_04
+import com.teragrep.zep_04.interpreter.{Code, InterpreterContext, InterpreterException}
 import org.apache.spark.SparkConf
 import org.apache.spark.repl.SparkILoop
 import org.apache.zeppelin.interpreter
 import org.apache.zeppelin.interpreter.thrift.InterpreterCompletion
 import org.apache.zeppelin.interpreter.util.InterpreterOutputStream
-import org.apache.zeppelin.interpreter.xref.{Code, InterpreterContext, InterpreterException}
 import org.apache.zeppelin.interpreter.{InterpreterContextImpl, InterpreterContextStore, InterpreterGroupImpl, InterpreterResultImpl, xref}
 import org.slf4j.{Logger, LoggerFactory}
 
@@ -100,13 +101,13 @@ class SparkScala212Interpreter(conf: SparkConf,
       case scala.tools.nsc.interpreter.IR.Success =>
         Code.SUCCESS
       case scala.tools.nsc.interpreter.IR.Error =>
-        xref.Code.ERROR
+        Code.ERROR
       case scala.tools.nsc.interpreter.IR.Incomplete =>
-        xref.Code.INCOMPLETE
+        Code.INCOMPLETE
     }
 
     lastStatus match {
-      case xref.Code.INCOMPLETE => new InterpreterResultImpl(lastStatus, "Incomplete expression")
+      case zep_04.interpreter.Code.INCOMPLETE => new InterpreterResultImpl(lastStatus, "Incomplete expression")
       case _ => new InterpreterResultImpl(lastStatus)
     }
   }

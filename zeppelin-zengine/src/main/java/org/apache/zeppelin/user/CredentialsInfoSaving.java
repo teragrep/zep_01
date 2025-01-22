@@ -19,7 +19,7 @@ package org.apache.zeppelin.user;
 
 import com.google.gson.Gson;
 import org.apache.zeppelin.common.JsonSerializable;
-import org.apache.zeppelin.interpreter.xref.user.UserCredentials;
+import com.teragrep.zep_04.user.UserCredentials;
 
 import java.util.Map;
 

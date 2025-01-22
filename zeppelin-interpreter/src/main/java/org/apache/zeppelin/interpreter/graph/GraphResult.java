@@ -22,8 +22,8 @@ import java.util.Map;
 import java.util.Set;
 
 import org.apache.zeppelin.interpreter.InterpreterResultImpl;
-import org.apache.zeppelin.interpreter.xref.Code;
-import org.apache.zeppelin.interpreter.xref.Type;
+import com.teragrep.zep_04.interpreter.Code;
+import com.teragrep.zep_04.interpreter.Type;
 import org.apache.zeppelin.tabledata.Node;
 import org.apache.zeppelin.tabledata.Relationship;
 

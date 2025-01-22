@@ -24,7 +24,7 @@ import org.apache.zeppelin.notebook.AuthorizationService;
 import org.apache.zeppelin.notebook.Note;
 import org.apache.zeppelin.notebook.Notebook;
 import org.apache.zeppelin.notebook.Paragraph;
-import org.apache.zeppelin.interpreter.xref.Status;
+import com.teragrep.zep_04.scheduler.Status;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

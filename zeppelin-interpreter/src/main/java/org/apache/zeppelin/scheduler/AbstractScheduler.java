@@ -18,11 +18,11 @@
 package org.apache.zeppelin.scheduler;
 
 import org.apache.zeppelin.interpreter.InterpreterResultImpl;
-import org.apache.zeppelin.interpreter.xref.Code;
-import org.apache.zeppelin.interpreter.xref.InterpreterResult;
-import org.apache.zeppelin.interpreter.xref.Job;
-import org.apache.zeppelin.interpreter.xref.Scheduler;
-import org.apache.zeppelin.interpreter.xref.Status;
+import com.teragrep.zep_04.interpreter.Code;
+import com.teragrep.zep_04.interpreter.InterpreterResult;
+import com.teragrep.zep_04.scheduler.Job;
+import com.teragrep.zep_04.scheduler.Scheduler;
+import com.teragrep.zep_04.scheduler.Status;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

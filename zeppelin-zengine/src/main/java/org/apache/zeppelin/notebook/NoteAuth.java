@@ -20,7 +20,7 @@ package org.apache.zeppelin.notebook;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import org.apache.zeppelin.conf.ZeppelinConfiguration;
-import org.apache.zeppelin.interpreter.xref.user.AuthenticationInfo;
+import com.teragrep.zep_04.user.AuthenticationInfo;
 import org.apache.zeppelin.user.AuthenticationInfoImpl;
 
 import java.util.HashMap;

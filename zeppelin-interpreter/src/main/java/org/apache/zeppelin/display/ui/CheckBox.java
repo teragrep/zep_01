@@ -18,7 +18,7 @@
 
 package org.apache.zeppelin.display.ui;
 
-import org.apache.zeppelin.interpreter.xref.display.ui.ParamOption;
+import com.teragrep.zep_04.display.ui.ParamOption;
 
 import java.util.Collection;
 

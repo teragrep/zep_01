@@ -19,8 +19,8 @@
 package org.apache.zeppelin.display.ui;
 
 import org.apache.zeppelin.display.InputImpl;
-import org.apache.zeppelin.interpreter.xref.display.ui.OptionInput;
-import org.apache.zeppelin.interpreter.xref.display.ui.ParamOption;
+import com.teragrep.zep_04.display.ui.OptionInput;
+import com.teragrep.zep_04.display.ui.ParamOption;
 
 /**
  * Base class for Input with options

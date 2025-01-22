@@ -17,15 +17,19 @@
 
 package org.apache.zeppelin.interpreter;
 
-import org.apache.zeppelin.interpreter.xref.*;
-import org.apache.zeppelin.interpreter.xref.annotation.Experimental;
-import org.apache.zeppelin.interpreter.xref.annotation.ZeppelinApi;
-import org.apache.zeppelin.interpreter.xref.display.AngularObject;
-import org.apache.zeppelin.interpreter.xref.display.AngularObjectRegistry;
-import org.apache.zeppelin.interpreter.xref.display.AngularObjectWatcher;
-import org.apache.zeppelin.interpreter.xref.display.GUI;
-import org.apache.zeppelin.interpreter.xref.display.ui.ParamOption;
-import org.apache.zeppelin.interpreter.xref.ResourcePool;
+import com.teragrep.zep_04.annotation.Experimental;
+import com.teragrep.zep_04.annotation.ZeppelinApi;
+import com.teragrep.zep_04.display.AngularObject;
+import com.teragrep.zep_04.display.AngularObjectRegistry;
+import com.teragrep.zep_04.display.AngularObjectWatcher;
+import com.teragrep.zep_04.display.GUI;
+import com.teragrep.zep_04.display.ui.ParamOption;
+import com.teragrep.zep_04.interpreter.ZeppelinContext;
+import com.teragrep.zep_04.resource.Resource;
+import com.teragrep.zep_04.resource.ResourcePool;
+import com.teragrep.zep_04.interpreter.InterpreterContext;
+import com.teragrep.zep_04.interpreter.InvalidHookException;
+import com.teragrep.zep_04.resource.ResourceSet;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

@@ -17,8 +17,8 @@
 
 package org.apache.zeppelin.scheduler;
 
-import org.apache.zeppelin.interpreter.xref.Job;
-import org.apache.zeppelin.interpreter.xref.JobListener;
+import com.teragrep.zep_04.scheduler.Job;
+import com.teragrep.zep_04.scheduler.JobListener;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

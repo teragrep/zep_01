@@ -19,12 +19,12 @@ package org.apache.zeppelin.scheduler;
 
 import org.apache.zeppelin.interpreter.InterpreterContextImpl;
 import org.apache.zeppelin.interpreter.InterpreterResultImpl;
-import org.apache.zeppelin.interpreter.xref.Interpreter;
-import org.apache.zeppelin.interpreter.xref.InterpreterException;
-import org.apache.zeppelin.interpreter.xref.InterpreterResult;
-import org.apache.zeppelin.interpreter.xref.Code;
+import com.teragrep.zep_04.interpreter.Interpreter;
+import com.teragrep.zep_04.interpreter.InterpreterException;
+import com.teragrep.zep_04.interpreter.InterpreterResult;
+import com.teragrep.zep_04.interpreter.Code;
 import org.apache.zeppelin.interpreter.remote.RemoteInterpreterServer.InterpretJob;
-import org.apache.zeppelin.interpreter.xref.JobListener;
+import com.teragrep.zep_04.scheduler.JobListener;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;

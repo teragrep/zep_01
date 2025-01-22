@@ -18,7 +18,7 @@
 
 package org.apache.zeppelin.interpreter;
 
-import org.apache.zeppelin.interpreter.xref.InterpreterException;
+import com.teragrep.zep_04.interpreter.InterpreterException;
 
 /**
  * Exception for no interpreter is found

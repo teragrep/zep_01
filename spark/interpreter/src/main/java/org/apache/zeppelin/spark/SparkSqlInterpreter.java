@@ -22,13 +22,13 @@ import org.apache.spark.SparkContext;
 import org.apache.spark.sql.AnalysisException;
 import org.apache.spark.sql.SQLContext;
 import org.apache.zeppelin.interpreter.*;
-import org.apache.zeppelin.interpreter.xref.Code;
+import com.teragrep.zep_04.interpreter.Code;
 import org.apache.zeppelin.interpreter.util.SqlSplitter;
-import org.apache.zeppelin.interpreter.xref.FormType;
-import org.apache.zeppelin.interpreter.xref.InterpreterContext;
-import org.apache.zeppelin.interpreter.xref.InterpreterException;
-import org.apache.zeppelin.interpreter.xref.ZeppelinContext;
-import org.apache.zeppelin.interpreter.xref.Scheduler;
+import com.teragrep.zep_04.interpreter.FormType;
+import com.teragrep.zep_04.interpreter.InterpreterContext;
+import com.teragrep.zep_04.interpreter.InterpreterException;
+import com.teragrep.zep_04.interpreter.ZeppelinContext;
+import com.teragrep.zep_04.scheduler.Scheduler;
 import org.apache.zeppelin.scheduler.SchedulerFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -74,7 +74,7 @@ public class SparkSqlInterpreter extends AbstractEnhancedInterpreter {
   }
 
   @Override
-  public InterpreterResultImpl internalInterpret(String st, org.apache.zeppelin.interpreter.xref.InterpreterContext context)
+  public InterpreterResultImpl internalInterpret(String st, InterpreterContext context)
       throws InterpreterException {
     if (sparkInterpreter.isUnsupportedSparkVersion()) {
       return new InterpreterResultImpl(Code.ERROR, "Spark "
@@ -144,7 +144,7 @@ public class SparkSqlInterpreter extends AbstractEnhancedInterpreter {
   }
 
   @Override
-  public void cancel(org.apache.zeppelin.interpreter.xref.InterpreterContext context) throws InterpreterException {
+  public void cancel(InterpreterContext context) throws InterpreterException {
     SparkContext sc = sparkInterpreter.getSparkContext();
     sc.cancelJobGroup(Utils.buildJobGroupId(context));
   }

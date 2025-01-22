@@ -17,7 +17,7 @@
 
 package org.apache.zeppelin.markdown;
 
-import org.apache.zeppelin.interpreter.xref.InterpreterResult;
+import com.teragrep.zep_04.interpreter.InterpreterResult;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;

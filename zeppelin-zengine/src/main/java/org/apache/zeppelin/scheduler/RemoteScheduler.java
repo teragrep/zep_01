@@ -18,9 +18,9 @@
 package org.apache.zeppelin.scheduler;
 
 import org.apache.zeppelin.interpreter.remote.RemoteInterpreter;
-import org.apache.zeppelin.interpreter.xref.Job;
-import org.apache.zeppelin.interpreter.xref.JobListener;
-import org.apache.zeppelin.interpreter.xref.Status;
+import com.teragrep.zep_04.scheduler.Job;
+import com.teragrep.zep_04.scheduler.JobListener;
+import com.teragrep.zep_04.scheduler.Status;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

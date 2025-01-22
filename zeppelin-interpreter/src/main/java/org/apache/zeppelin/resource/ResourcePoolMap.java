@@ -1,7 +1,7 @@
 package org.apache.zeppelin.resource;
 
-import org.apache.zeppelin.interpreter.xref.Resource;
-import org.apache.zeppelin.interpreter.xref.ResourcePool;
+import com.teragrep.zep_04.resource.Resource;
+import com.teragrep.zep_04.resource.ResourcePool;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

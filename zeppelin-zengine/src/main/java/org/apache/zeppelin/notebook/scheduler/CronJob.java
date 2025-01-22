@@ -19,7 +19,7 @@ package org.apache.zeppelin.notebook.scheduler;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.zeppelin.notebook.Note;
-import org.apache.zeppelin.interpreter.xref.user.AuthenticationInfo;
+import com.teragrep.zep_04.user.AuthenticationInfo;
 import org.apache.zeppelin.user.AuthenticationInfoImpl;
 import org.quartz.JobDataMap;
 import org.quartz.JobExecutionContext;

@@ -17,7 +17,7 @@
 
 package org.apache.zeppelin.interpreter.util;
 
-import org.apache.zeppelin.interpreter.xref.InterpreterOutput;
+import com.teragrep.zep_04.interpreter.InterpreterOutput;
 import org.slf4j.Logger;
 
 import java.io.IOException;

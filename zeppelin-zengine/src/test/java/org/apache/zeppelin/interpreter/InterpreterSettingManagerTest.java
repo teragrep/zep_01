@@ -19,10 +19,10 @@
 package org.apache.zeppelin.interpreter;
 
 import org.apache.zeppelin.conf.ZeppelinConfiguration;
-import org.apache.zeppelin.interpreter.xref.InterpreterGroup;
-import org.apache.zeppelin.interpreter.xref.display.AngularObjectRegistryListener;
+import com.teragrep.zep_04.interpreter.InterpreterGroup;
+import com.teragrep.zep_04.display.AngularObjectRegistryListener;
 import org.apache.zeppelin.interpreter.remote.RemoteInterpreterProcessListener;
-import org.apache.zeppelin.interpreter.xref.InterpreterException;
+import com.teragrep.zep_04.interpreter.InterpreterException;
 import org.apache.zeppelin.notebook.Note;
 import org.apache.zeppelin.notebook.NoteInfo;
 import org.junit.Before;

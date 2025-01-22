@@ -17,7 +17,7 @@
 package org.apache.zeppelin.resource;
 
 import com.google.gson.Gson;
-import org.apache.zeppelin.interpreter.xref.ResourceId;
+import com.teragrep.zep_04.resource.ResourceId;
 
 import java.io.Serializable;
 

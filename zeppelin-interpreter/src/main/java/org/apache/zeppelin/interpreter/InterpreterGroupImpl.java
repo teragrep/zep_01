@@ -17,11 +17,11 @@
 
 package org.apache.zeppelin.interpreter;
 
-import org.apache.zeppelin.interpreter.xref.InterpreterGroup;
-import org.apache.zeppelin.interpreter.xref.display.AngularObjectRegistry;
-import org.apache.zeppelin.interpreter.xref.Interpreter;
-import org.apache.zeppelin.interpreter.xref.InterpreterException;
-import org.apache.zeppelin.interpreter.xref.ResourcePool;
+import com.teragrep.zep_04.interpreter.InterpreterGroup;
+import com.teragrep.zep_04.display.AngularObjectRegistry;
+import com.teragrep.zep_04.interpreter.Interpreter;
+import com.teragrep.zep_04.interpreter.InterpreterException;
+import com.teragrep.zep_04.resource.ResourcePool;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

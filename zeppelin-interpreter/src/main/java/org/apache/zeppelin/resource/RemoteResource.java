@@ -19,9 +19,9 @@ package org.apache.zeppelin.resource;
 import com.google.gson.Gson;
 import java.io.Serializable;
 import org.apache.zeppelin.common.JsonSerializable;
-import org.apache.zeppelin.interpreter.xref.Resource;
-import org.apache.zeppelin.interpreter.xref.ResourceId;
-import org.apache.zeppelin.interpreter.xref.ResourcePoolConnector;
+import com.teragrep.zep_04.resource.Resource;
+import com.teragrep.zep_04.resource.ResourceId;
+import com.teragrep.zep_04.resource.ResourcePoolConnector;
 
 /**
  * Resource that can retrieve data from remote

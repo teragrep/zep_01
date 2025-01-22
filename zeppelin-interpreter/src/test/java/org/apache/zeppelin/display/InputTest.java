@@ -18,8 +18,8 @@
 package org.apache.zeppelin.display;
 
 import org.apache.zeppelin.display.ui.*;
-import org.apache.zeppelin.interpreter.xref.display.Input;
-import org.apache.zeppelin.interpreter.xref.display.ui.ParamOption;
+import com.teragrep.zep_04.display.Input;
+import com.teragrep.zep_04.display.ui.ParamOption;
 import org.junit.Test;
 
 import java.util.HashMap;

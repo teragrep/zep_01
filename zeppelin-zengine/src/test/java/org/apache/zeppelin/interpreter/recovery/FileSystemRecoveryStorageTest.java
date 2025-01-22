@@ -20,9 +20,9 @@ package org.apache.zeppelin.interpreter.recovery;
 
 import org.apache.zeppelin.conf.ZeppelinConfiguration;
 import org.apache.zeppelin.interpreter.AbstractInterpreterTest;
-import org.apache.zeppelin.interpreter.xref.Interpreter;
+import com.teragrep.zep_04.interpreter.Interpreter;
 import org.apache.zeppelin.interpreter.InterpreterContextImpl;
-import org.apache.zeppelin.interpreter.xref.InterpreterException;
+import com.teragrep.zep_04.interpreter.InterpreterException;
 import org.apache.zeppelin.interpreter.InterpreterOption;
 import org.apache.zeppelin.interpreter.InterpreterSetting;
 import org.apache.zeppelin.interpreter.remote.RemoteInterpreter;

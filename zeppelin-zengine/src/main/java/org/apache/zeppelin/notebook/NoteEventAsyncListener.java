@@ -18,8 +18,8 @@
 package org.apache.zeppelin.notebook;
 
 import org.apache.zeppelin.scheduler.SchedulerThreadFactory;
-import org.apache.zeppelin.interpreter.xref.Status;
-import org.apache.zeppelin.interpreter.xref.user.AuthenticationInfo;
+import com.teragrep.zep_04.scheduler.Status;
+import com.teragrep.zep_04.user.AuthenticationInfo;
 import org.apache.zeppelin.util.ExecutorUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

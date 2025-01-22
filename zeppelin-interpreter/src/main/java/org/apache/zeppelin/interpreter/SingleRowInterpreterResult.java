@@ -17,7 +17,7 @@
 
 package org.apache.zeppelin.interpreter;
 
-import org.apache.zeppelin.interpreter.xref.InterpreterContext;
+import com.teragrep.zep_04.interpreter.InterpreterContext;
 import org.apache.zeppelin.tabledata.TableDataUtils;
 
 import java.util.List;

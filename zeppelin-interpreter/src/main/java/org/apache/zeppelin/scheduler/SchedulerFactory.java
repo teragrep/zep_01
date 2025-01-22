@@ -18,7 +18,7 @@
 package org.apache.zeppelin.scheduler;
 
 import org.apache.zeppelin.conf.ZeppelinConfiguration;
-import org.apache.zeppelin.interpreter.xref.Scheduler;
+import com.teragrep.zep_04.scheduler.Scheduler;
 import org.apache.zeppelin.util.ExecutorUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

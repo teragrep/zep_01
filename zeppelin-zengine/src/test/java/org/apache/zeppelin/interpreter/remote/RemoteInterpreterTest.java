@@ -17,16 +17,16 @@
 
 package org.apache.zeppelin.interpreter.remote;
 
+import com.teragrep.zep_04.interpreter.*;
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.apache.thrift.transport.TTransportException;
 import org.apache.zeppelin.conf.ZeppelinConfiguration;
 import org.apache.zeppelin.display.GUIImpl;
 import org.apache.zeppelin.display.ui.ParamOptionImpl;
-import org.apache.zeppelin.interpreter.xref.*;
-import org.apache.zeppelin.interpreter.xref.display.AngularObjectRegistry;
+import com.teragrep.zep_04.display.AngularObjectRegistry;
 import org.apache.zeppelin.display.AngularObjectRegistryImpl;
-import org.apache.zeppelin.interpreter.xref.display.GUI;
-import org.apache.zeppelin.interpreter.xref.display.Input;
+import com.teragrep.zep_04.display.GUI;
+import com.teragrep.zep_04.display.Input;
 import org.apache.zeppelin.interpreter.*;
 import org.apache.zeppelin.notebook.Note;
 import org.apache.zeppelin.notebook.NoteInfo;

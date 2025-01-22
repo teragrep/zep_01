@@ -15,10 +15,10 @@
 package org.apache.zeppelin.hbase;
 
 import org.apache.zeppelin.interpreter.*;
-import org.apache.zeppelin.interpreter.xref.Code;
-import org.apache.zeppelin.interpreter.xref.FormType;
-import org.apache.zeppelin.interpreter.xref.InterpreterContext;
-import org.apache.zeppelin.interpreter.xref.InterpreterException;
+import com.teragrep.zep_04.interpreter.Code;
+import com.teragrep.zep_04.interpreter.FormType;
+import com.teragrep.zep_04.interpreter.InterpreterContext;
+import com.teragrep.zep_04.interpreter.InterpreterException;
 import org.jruby.embed.LocalContextScope;
 import org.jruby.embed.ScriptingContainer;
 import org.slf4j.Logger;
@@ -34,7 +34,7 @@ import java.util.List;
 import java.util.Properties;
 
 import org.apache.zeppelin.interpreter.thrift.InterpreterCompletion;
-import org.apache.zeppelin.interpreter.xref.Scheduler;
+import com.teragrep.zep_04.scheduler.Scheduler;
 import org.apache.zeppelin.scheduler.SchedulerFactory;
 
 /**
@@ -111,7 +111,7 @@ public class HbaseInterpreter extends AbstractInterpreter {
   }
 
   @Override
-  public InterpreterResultImpl interpret(String cmd, org.apache.zeppelin.interpreter.xref.InterpreterContext interpreterContext) {
+  public InterpreterResultImpl interpret(String cmd, InterpreterContext interpreterContext) {
     try {
       logger.info(cmd);
       this.writer.getBuffer().setLength(0);
@@ -126,7 +126,7 @@ public class HbaseInterpreter extends AbstractInterpreter {
   }
 
   @Override
-  public void cancel(org.apache.zeppelin.interpreter.xref.InterpreterContext context) {}
+  public void cancel(InterpreterContext context) {}
 
   @Override
   public FormType getFormType() {
@@ -134,7 +134,7 @@ public class HbaseInterpreter extends AbstractInterpreter {
   }
 
   @Override
-  public int getProgress(org.apache.zeppelin.interpreter.xref.InterpreterContext context) {
+  public int getProgress(InterpreterContext context) {
     return 0;
   }
 

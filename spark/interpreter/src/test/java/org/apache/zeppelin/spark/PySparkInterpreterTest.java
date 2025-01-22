@@ -20,10 +20,10 @@ package org.apache.zeppelin.spark;
 
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.apache.zeppelin.interpreter.*;
-import org.apache.zeppelin.interpreter.xref.remote.RemoteInterpreterEventClient;
+import com.teragrep.zep_04.remote.RemoteInterpreterEventClient;
 import org.apache.zeppelin.interpreter.remote.RemoteInterpreterEventClientImpl;
-import org.apache.zeppelin.interpreter.xref.Interpreter;
-import org.apache.zeppelin.interpreter.xref.InterpreterException;
+import com.teragrep.zep_04.interpreter.Interpreter;
+import com.teragrep.zep_04.interpreter.InterpreterException;
 import org.apache.zeppelin.python.PythonInterpreterTest;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;

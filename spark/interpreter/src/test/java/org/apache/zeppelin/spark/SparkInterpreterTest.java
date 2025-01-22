@@ -24,17 +24,17 @@ import org.apache.zeppelin.display.ui.Password;
 import org.apache.zeppelin.display.ui.Select;
 import org.apache.zeppelin.display.ui.TextBox;
 import org.apache.zeppelin.interpreter.*;
-import org.apache.zeppelin.interpreter.xref.InterpreterGroup;
-import org.apache.zeppelin.interpreter.xref.InterpreterResult;
-import org.apache.zeppelin.interpreter.xref.remote.RemoteInterpreterEventClient;
+import com.teragrep.zep_04.interpreter.InterpreterGroup;
+import com.teragrep.zep_04.interpreter.InterpreterResult;
+import com.teragrep.zep_04.remote.RemoteInterpreterEventClient;
 import org.apache.zeppelin.interpreter.remote.RemoteInterpreterEventClientImpl;
 import org.apache.zeppelin.interpreter.thrift.InterpreterCompletion;
-import org.apache.zeppelin.interpreter.xref.Code;
-import org.apache.zeppelin.interpreter.xref.InterpreterException;
-import org.apache.zeppelin.interpreter.xref.InterpreterOutput;
-import org.apache.zeppelin.interpreter.xref.InterpreterOutputListener;
-import org.apache.zeppelin.interpreter.xref.InterpreterResultMessageOutput;
-import org.apache.zeppelin.interpreter.xref.Type;
+import com.teragrep.zep_04.interpreter.Code;
+import com.teragrep.zep_04.interpreter.InterpreterException;
+import com.teragrep.zep_04.interpreter.InterpreterOutput;
+import com.teragrep.zep_04.interpreter.InterpreterOutputListener;
+import com.teragrep.zep_04.interpreter.InterpreterResultMessageOutput;
+import com.teragrep.zep_04.interpreter.Type;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
@@ -66,7 +66,7 @@ class SparkInterpreterTest {
   // catch the streaming output in onAppend
   private volatile String output = "";
   // catch the interpreter output in onUpdate
-  private org.apache.zeppelin.interpreter.xref.InterpreterResultMessageOutput messageOutput;
+  private InterpreterResultMessageOutput messageOutput;
 
   private RemoteInterpreterEventClient mockRemoteEventClient;
 
@@ -98,7 +98,7 @@ class SparkInterpreterTest {
     interpreter.setInterpreterGroup(mock(InterpreterGroupImpl.class));
     interpreter.open();
 
-    org.apache.zeppelin.interpreter.xref.InterpreterResult result = interpreter.interpret("val a=\"hello world\"", getInterpreterContext());
+    InterpreterResult result = interpreter.interpret("val a=\"hello world\"", getInterpreterContext());
     assertEquals(Code.SUCCESS, result.code());
     // Use contains instead of equals, because there's behavior difference between different scala versions
     assertTrue(output.contains("a: String = hello world\n"), output);
@@ -356,7 +356,7 @@ class SparkInterpreterTest {
     Thread interpretThread = new Thread() {
       @Override
       public void run() {
-        org.apache.zeppelin.interpreter.xref.InterpreterResult result = null;
+        InterpreterResult result = null;
         try {
           result = interpreter.interpret(
               "val df = sc.parallelize(1 to 10, 5).foreach(e=>Thread.sleep(1000))", context2);
@@ -384,7 +384,7 @@ class SparkInterpreterTest {
     interpretThread = new Thread() {
       @Override
       public void run() {
-        org.apache.zeppelin.interpreter.xref.InterpreterResult result = null;
+        InterpreterResult result = null;
         try {
           result = interpreter.interpret(
               "val df = sc.parallelize(1 to 10, 2).foreach(e=>Thread.sleep(1000))", context3);
@@ -420,7 +420,7 @@ class SparkInterpreterTest {
     interpreter.setInterpreterGroup(mock(InterpreterGroupImpl.class));
     interpreter.open();
 
-    org.apache.zeppelin.interpreter.xref.InterpreterResult result = interpreter.interpret("val a=\"hello world\"", getInterpreterContext());
+    InterpreterResult result = interpreter.interpret("val a=\"hello world\"", getInterpreterContext());
     assertEquals(Code.SUCCESS, result.code());
     // no output for define new variable
     assertEquals("", output);
@@ -448,7 +448,7 @@ class SparkInterpreterTest {
     interpreter.setInterpreterGroup(mock(InterpreterGroupImpl.class));
     interpreter.open();
 
-    org.apache.zeppelin.interpreter.xref.InterpreterResult result = interpreter.interpret("val a=\"hello world\"", getInterpreterContext());
+    InterpreterResult result = interpreter.interpret("val a=\"hello world\"", getInterpreterContext());
     assertEquals(Code.SUCCESS, result.code());
     // Use contains instead of equals, because there's behavior different between different scala versions
     assertTrue(output.contains("a: String = hello world\n"), output);
@@ -496,7 +496,7 @@ class SparkInterpreterTest {
 
     InterpreterContextImpl context = getInterpreterContext();
     context.getLocalProperties().put("pool", "pool1");
-    org.apache.zeppelin.interpreter.xref.InterpreterResult result = interpreter.interpret("sc.range(1, 10).sum", context);
+    InterpreterResult result = interpreter.interpret("sc.range(1, 10).sum", context);
     assertEquals(Code.SUCCESS, result.code());
     assertEquals("pool1", interpreter.getSparkContext().getLocalProperty("spark.scheduler.pool"));
 
@@ -525,7 +525,7 @@ class SparkInterpreterTest {
     interpreter.open();
 
     InterpreterContextImpl context = getInterpreterContext();
-    org.apache.zeppelin.interpreter.xref.InterpreterResult result = interpreter.interpret("sc.range(1, 10).sum", context);
+    InterpreterResult result = interpreter.interpret("sc.range(1, 10).sum", context);
     assertEquals(Code.SUCCESS, result.code());
 
     // spark job url is not sent
@@ -551,7 +551,7 @@ class SparkInterpreterTest {
     interpreter.open();
 
     InterpreterContextImpl context = getInterpreterContext();
-    org.apache.zeppelin.interpreter.xref.InterpreterResult result = interpreter.interpret("sc.range(1, 10).sum", context);
+    InterpreterResult result = interpreter.interpret("sc.range(1, 10).sum", context);
     assertEquals(Code.SUCCESS, result.code());
 
     // spark job url is not sent
@@ -588,7 +588,7 @@ class SparkInterpreterTest {
 
     InterpreterContextImpl context = getInterpreterContext();
 
-    org.apache.zeppelin.interpreter.xref.InterpreterResult result1 = interpreter1.interpret("sc.range(1, 10).sum", context);
+    InterpreterResult result1 = interpreter1.interpret("sc.range(1, 10).sum", context);
     assertEquals(Code.SUCCESS, result1.code());
 
     InterpreterResult result2 = interpreter2.interpret("sc.range(1, 10).sum", context);
@@ -627,7 +627,7 @@ class SparkInterpreterTest {
               }
 
               @Override
-              public void onAppend(int index, org.apache.zeppelin.interpreter.xref.InterpreterResultMessageOutput out, byte[] line) {
+              public void onAppend(int index, InterpreterResultMessageOutput out, byte[] line) {
                 try {
                   output = out.toInterpreterResultMessage().getData();
                 } catch (IOException e) {

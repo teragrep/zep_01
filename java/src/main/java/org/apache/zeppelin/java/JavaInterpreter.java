@@ -26,9 +26,9 @@ import java.util.stream.Stream;
 
 import org.apache.zeppelin.interpreter.*;
 import org.apache.zeppelin.interpreter.thrift.InterpreterCompletion;
-import org.apache.zeppelin.interpreter.xref.Code;
-import org.apache.zeppelin.interpreter.xref.FormType;
-import org.apache.zeppelin.interpreter.xref.InterpreterContext;
+import com.teragrep.zep_04.interpreter.Code;
+import com.teragrep.zep_04.interpreter.FormType;
+import com.teragrep.zep_04.interpreter.InterpreterContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -57,7 +57,7 @@ public class JavaInterpreter extends AbstractInterpreter {
   }
 
   @Override
-  public InterpreterResultImpl interpret(String code, org.apache.zeppelin.interpreter.xref.InterpreterContext context) {
+  public InterpreterResultImpl interpret(String code, InterpreterContext context) {
 
     // choosing new name to class containing Main method
     String generatedClassName = "C" + UUID.randomUUID().toString().replace("-", "");
@@ -74,7 +74,7 @@ public class JavaInterpreter extends AbstractInterpreter {
   }
 
   @Override
-  public void cancel(org.apache.zeppelin.interpreter.xref.InterpreterContext context) {
+  public void cancel(InterpreterContext context) {
 
   }
 
@@ -84,7 +84,7 @@ public class JavaInterpreter extends AbstractInterpreter {
   }
 
   @Override
-  public int getProgress(org.apache.zeppelin.interpreter.xref.InterpreterContext context) {
+  public int getProgress(InterpreterContext context) {
     return 0;
   }
 

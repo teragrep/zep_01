@@ -17,8 +17,8 @@
 package org.apache.zeppelin.resource;
 
 import com.google.gson.Gson;
-import org.apache.zeppelin.interpreter.xref.Resource;
-import org.apache.zeppelin.interpreter.xref.ResourceSet;
+import com.teragrep.zep_04.resource.Resource;
+import com.teragrep.zep_04.resource.ResourceSet;
 
 import java.util.Collection;
 import java.util.LinkedList;

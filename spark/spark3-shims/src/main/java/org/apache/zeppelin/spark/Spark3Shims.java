@@ -27,7 +27,7 @@ import org.apache.spark.sql.Row;
 import org.apache.spark.sql.SparkSession;
 import org.apache.spark.sql.catalyst.expressions.GenericRow;
 import org.apache.spark.sql.types.StructType;
-import org.apache.zeppelin.interpreter.xref.InterpreterContext;
+import com.teragrep.zep_04.interpreter.InterpreterContext;
 import org.apache.zeppelin.interpreter.ResultMessages;
 import org.apache.zeppelin.interpreter.SingleRowInterpreterResult;
 import org.apache.zeppelin.tabledata.TableDataUtils;

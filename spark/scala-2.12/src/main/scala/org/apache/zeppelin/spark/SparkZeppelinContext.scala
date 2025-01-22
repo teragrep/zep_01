@@ -17,13 +17,13 @@
 
 package org.apache.zeppelin.spark
 
+import com.teragrep.zep_04.annotation.ZeppelinApi
+import com.teragrep.zep_04.display.AngularObjectWatcher
+import com.teragrep.zep_04.display.ui.ParamOption
+import com.teragrep.zep_04.interpreter.InterpreterContext
 import java.util
 import org.apache.spark.SparkContext
 import org.apache.zeppelin.display.ui.ParamOptionImpl
-import org.apache.zeppelin.interpreter.xref.InterpreterContext
-import org.apache.zeppelin.interpreter.xref.annotation.ZeppelinApi
-import org.apache.zeppelin.interpreter.xref.display.AngularObjectWatcher
-import org.apache.zeppelin.interpreter.xref.display.ui.ParamOption
 import org.apache.zeppelin.interpreter.{AbstractZeppelinContext, InterpreterHookRegistry}
 
 import scala.collection.Seq

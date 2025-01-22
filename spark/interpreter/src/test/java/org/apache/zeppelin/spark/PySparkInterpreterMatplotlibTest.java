@@ -17,17 +17,17 @@
 
 package org.apache.zeppelin.spark;
 
-import org.apache.zeppelin.interpreter.xref.InterpreterGroup;
-import org.apache.zeppelin.interpreter.xref.InterpreterResult;
-import org.apache.zeppelin.interpreter.xref.display.AngularObjectRegistry;
+import com.teragrep.zep_04.interpreter.InterpreterGroup;
+import com.teragrep.zep_04.interpreter.InterpreterResult;
+import com.teragrep.zep_04.display.AngularObjectRegistry;
 import org.apache.zeppelin.display.AngularObjectRegistryImpl;
 import org.apache.zeppelin.interpreter.*;
 import org.apache.zeppelin.interpreter.remote.RemoteInterpreterEventClientImpl;
-import org.apache.zeppelin.interpreter.xref.Code;
-import org.apache.zeppelin.interpreter.xref.InterpreterContext;
-import org.apache.zeppelin.interpreter.xref.InterpreterException;
-import org.apache.zeppelin.interpreter.xref.InterpreterResultMessage;
-import org.apache.zeppelin.interpreter.xref.Type;
+import com.teragrep.zep_04.interpreter.Code;
+import com.teragrep.zep_04.interpreter.InterpreterContext;
+import com.teragrep.zep_04.interpreter.InterpreterException;
+import com.teragrep.zep_04.interpreter.InterpreterResultMessage;
+import com.teragrep.zep_04.interpreter.Type;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.TestMethodOrder;
@@ -76,7 +76,7 @@ public class PySparkInterpreterMatplotlibTest {
     @Override
     public InterpreterResultImpl interpret(String st, InterpreterContext context) throws InterpreterException {
       context.out().clear();
-      org.apache.zeppelin.interpreter.xref.InterpreterResult result = super.interpret(st, context);
+      InterpreterResult result = super.interpret(st, context);
       List<InterpreterResultMessage> resultMessages = null;
       try {
         context.out().flush();
@@ -136,7 +136,7 @@ public class PySparkInterpreterMatplotlibTest {
   @Test
   void dependenciesAreInstalled() throws InterpreterException {
     // matplotlib
-    org.apache.zeppelin.interpreter.xref.InterpreterResult ret = pyspark.interpret("import matplotlib", context);
+    InterpreterResult ret = pyspark.interpret("import matplotlib", context);
     assertEquals(Code.SUCCESS, ret.code(), ret.message().toString());
 
     // inline backend
@@ -147,7 +147,7 @@ public class PySparkInterpreterMatplotlibTest {
   @Test
   void showPlot() throws InterpreterException {
     // Simple plot test
-    org.apache.zeppelin.interpreter.xref.InterpreterResult ret;
+    InterpreterResult ret;
     ret = pyspark.interpret("import matplotlib.pyplot as plt", context);
     ret = pyspark.interpret("plt.close()", context);
     ret = pyspark.interpret("z.configure_mpl(interactive=False)", context);
@@ -163,9 +163,9 @@ public class PySparkInterpreterMatplotlibTest {
   @Test
   // Test for when configuration is set to auto-close figures after show().
   void testClose() throws InterpreterException {
-    org.apache.zeppelin.interpreter.xref.InterpreterResult ret;
-    org.apache.zeppelin.interpreter.xref.InterpreterResult ret1;
-    org.apache.zeppelin.interpreter.xref.InterpreterResult ret2;
+    InterpreterResult ret;
+    InterpreterResult ret1;
+    InterpreterResult ret2;
     ret = pyspark.interpret("import matplotlib.pyplot as plt", context);
     ret = pyspark.interpret("plt.close()", context);
     ret = pyspark.interpret("z.configure_mpl(interactive=False, close=True, angular=False)", context);
@@ -190,9 +190,9 @@ public class PySparkInterpreterMatplotlibTest {
   @Test
   // Test for when configuration is set to not auto-close figures after show().
   void testNoClose() throws InterpreterException {
-    org.apache.zeppelin.interpreter.xref.InterpreterResult ret;
-    org.apache.zeppelin.interpreter.xref.InterpreterResult ret1;
-    org.apache.zeppelin.interpreter.xref.InterpreterResult ret2;
+    InterpreterResult ret;
+    InterpreterResult ret1;
+    InterpreterResult ret2;
     ret = pyspark.interpret("import matplotlib.pyplot as plt", context);
     ret = pyspark.interpret("plt.close()", context);
     ret = pyspark.interpret("z.configure_mpl(interactive=False, close=False, angular=False)", context);

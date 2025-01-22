@@ -25,7 +25,7 @@ import javax.ws.rs.WebApplicationException;
 import org.apache.zeppelin.service.AuthenticationService;
 import org.apache.zeppelin.service.ServiceContext;
 import org.apache.zeppelin.service.SimpleServiceCallback;
-import org.apache.zeppelin.interpreter.xref.user.AuthenticationInfo;
+import com.teragrep.zep_04.user.AuthenticationInfo;
 import org.apache.zeppelin.user.AuthenticationInfoImpl;
 
 public class AbstractRestApi {

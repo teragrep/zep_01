@@ -16,7 +16,7 @@
  */
 package org.apache.zeppelin.interpreter;
 
-import org.apache.zeppelin.interpreter.xref.Interpreter;
+import com.teragrep.zep_04.interpreter.Interpreter;
 
 /**
  * InterpreterFactory Interface

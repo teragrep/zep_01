@@ -16,7 +16,7 @@
  */
 package org.apache.zeppelin.resource;
 
-import org.apache.zeppelin.interpreter.xref.Resource;
+import com.teragrep.zep_04.resource.Resource;
 import org.junit.Test;
 
 import static org.junit.Assert.assertEquals;
