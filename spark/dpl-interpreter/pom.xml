@@ -67,7 +67,7 @@
     <revision>0.0.1</revision>
     <changelist>-SNAPSHOT</changelist>
     <sha1/>
-    <interpreter.name>spark</interpreter.name>
+    <interpreter.name>dpl</interpreter.name>
     <teragrep.pth_10.version>8.3.1</teragrep.pth_10.version>
   </properties>
   <scm>
@@ -161,6 +161,60 @@
   </dependencies>
   <build>
     <plugins>
+      <plugin>
+        <artifactId>maven-resources-plugin</artifactId>
+        <executions>
+          <execution>
+            <id>copy-interpreter-setting</id>
+            <phase>package</phase>
+            <goals>
+              <goal>resources</goal>
+            </goals>
+            <configuration>
+              <outputDirectory>${project.build.directory}/../../../interpreter/${interpreter.name}</outputDirectory>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
+
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-shade-plugin</artifactId>
+        <configuration>
+          <filters>
+            <filter>
+              <artifact>*:*</artifact>
+              <excludes>
+                <exclude>org/datanucleus/**</exclude>
+                <exclude>META-INF/*.SF</exclude>
+                <exclude>META-INF/*.DSA</exclude>
+                <exclude>META-INF/*.RSA</exclude>
+              </excludes>
+            </filter>
+          </filters>
+
+          <artifactSet>
+            <excludes>
+              <exclude>org.scala-lang:scala-library</exclude>
+              <exclude>org.scala-lang:scala-compiler</exclude>
+              <exclude>org.scala-lang:scala-reflect</exclude>
+              <exclude>commons-lang:commons-lang</exclude>
+              <exclude>org.apache.commons:commons-compress</exclude>
+              <exclude>org.apache.zeppelin:zeppelin-interpreter-shaded</exclude>
+            </excludes>
+          </artifactSet>
+          <outputFile>${project.basedir}/../../interpreter/${interpreter.name}/pth_07-${project.version}.jar</outputFile>
+        </configuration>
+        <executions>
+          <execution>
+            <phase>package</phase>
+            <goals>
+              <goal>shade</goal>
+            </goals>
+          </execution>
+        </executions>
+      </plugin>
+
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-source-plugin</artifactId>
@@ -332,19 +386,6 @@
           <source>8</source>
           <target>8</target>
         </configuration>
-      </plugin>
-      <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-shade-plugin</artifactId>
-        <version>3.2.4</version>
-        <executions>
-          <execution>
-            <phase>package</phase>
-            <goals>
-              <goal>shade</goal>
-            </goals>
-          </execution>
-        </executions>
       </plugin>
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
