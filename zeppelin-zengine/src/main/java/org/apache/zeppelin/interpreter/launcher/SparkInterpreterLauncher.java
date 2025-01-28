@@ -159,6 +159,15 @@ public class SparkInterpreterLauncher extends StandardInterpreterLauncher {
           }
           additionalJars.addAll(interpreterJars);
         }
+        Path dplFolder =  Paths.get(zConf.getZeppelinHome(), "/interpreter/dpl");
+        try (DirectoryStream<Path> dplFolderStream = Files.newDirectoryStream(dplFolder, Files::isRegularFile)) {
+          List<String> dplJars = StreamSupport.stream(dplFolderStream.spliterator(),
+                          false)
+                  .filter(jar -> jar.toFile().getName().startsWith("pth_07")
+                          && jar.toFile().getName().endsWith(".jar"))
+                  .map(jar -> jar.toAbsolutePath().toString()).collect(Collectors.toList());
+          additionalJars.addAll(dplJars);
+        }
 
         if (sparkProperties.containsKey("spark.jars")) {
           sparkProperties.put("spark.jars", sparkProperties.getProperty("spark.jars") + "," +
@@ -166,6 +175,7 @@ public class SparkInterpreterLauncher extends StandardInterpreterLauncher {
         } else {
           sparkProperties.put("spark.jars", StringUtils.join(additionalJars, ","));
         }
+        LOGGER.debug("Added the following additional jars: <{}>", additionalJars);
       } catch (Exception e) {
         throw new IOException("Fail to set additional jars for spark interpreter", e);
       }
