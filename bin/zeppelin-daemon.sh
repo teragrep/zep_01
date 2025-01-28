@@ -55,33 +55,13 @@ ZEPPELIN_MAIN=org.apache.zeppelin.server.ZeppelinServer
 JAVA_OPTS+=" -Dzeppelin.log.file=${ZEPPELIN_LOGFILE}"
 
 # construct classpath
-if [[ -d "${ZEPPELIN_HOME}/zeppelin-interpreter/target/classes" ]]; then
-  ZEPPELIN_CLASSPATH+=":${ZEPPELIN_HOME}/zeppelin-interpreter/target/classes"
-fi
-
-if [[ -d "${ZEPPELIN_HOME}/zeppelin-zengine/target/classes" ]]; then
-  ZEPPELIN_CLASSPATH+=":${ZEPPELIN_HOME}/zeppelin-zengine/target/classes"
-fi
-
-if [[ -d "${ZEPPELIN_HOME}/zeppelin-server/target/classes" ]]; then
-  ZEPPELIN_CLASSPATH+=":${ZEPPELIN_HOME}/zeppelin-server/target/classes"
-fi
-
 if [[ -n "${HADOOP_CONF_DIR}" ]] && [[ -d "${HADOOP_CONF_DIR}" ]]; then
   ZEPPELIN_CLASSPATH+=":${HADOOP_CONF_DIR}"
 fi
 
-# Add jdbc connector jar
-# ZEPPELIN_CLASSPATH+=":${ZEPPELIN_HOME}/jdbc/jars/jdbc-connector-jar"
-
 addJarInDir "${ZEPPELIN_HOME}"
 addJarInDir "${ZEPPELIN_HOME}/lib"
 addJarInDir "${ZEPPELIN_HOME}/lib/interpreter"
-addJarInDir "${ZEPPELIN_HOME}/zeppelin-interpreter/target/lib"
-addJarInDir "${ZEPPELIN_HOME}/zeppelin-zengine/target/lib"
-addJarInDir "${ZEPPELIN_HOME}/zeppelin-server/target/lib"
-addJarInDir "${ZEPPELIN_HOME}/zeppelin-web/target/lib"
-addJarInDir "${ZEPPELIN_HOME}/zeppelin-web-angular/target/lib"
 
 ## Add hadoop jars when env USE_HADOOP is true
 if [[ "${USE_HADOOP}" != "false"  ]]; then
