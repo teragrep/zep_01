@@ -44,9 +44,11 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Properties;
 
 /**
@@ -121,6 +123,8 @@ public class PythonInterpreter extends Interpreter {
     outputStream = new InterpreterOutputStream(LOGGER);
     Map<String, String> env = setupPythonEnv();
     env.put("PY4J_GATEWAY_SECRET", secret);
+    // Do not write bytecode cache as .pyc files are not tracked
+    env.put("PYTHONDONTWRITEBYTECODE", "true");
     if (LOGGER.isInfoEnabled()) {
       LOGGER.info("Launching Python Process Command: {} {}",
           cmd.getExecutable(), StringUtils.join(cmd.getArguments(), " "));
@@ -166,17 +170,9 @@ public class PythonInterpreter extends Interpreter {
 
   private void copyResourceToPythonWorkDir(String srcResourceName,
                                            String dstFileName) throws IOException {
-    FileOutputStream out = null;
-    try {
-      out = new FileOutputStream(pythonWorkDir.getAbsoluteFile() + "/" + dstFileName);
-      IOUtils.copy(
-          getClass().getClassLoader().getResourceAsStream(srcResourceName),
-          out);
-    } finally {
-      if (out != null) {
-        out.close();
-      }
-    }
+    Path outputPath = Path.of(pythonWorkDir.getAbsoluteFile() + "/" + dstFileName);
+    Files.copy(Objects.requireNonNull(getClass().getClassLoader().getResourceAsStream(srcResourceName)), outputPath);
+    outputPath.toFile().deleteOnExit();
   }
 
   protected Map<String, String> setupPythonEnv() throws IOException {
