@@ -16,7 +16,7 @@
 - [ ] I have checked that each test tests only a single behavior.
 - [ ] I have done happy tests.
 - [ ] I have tested only my own code.
-- [ ] I have tested at least all public methods. 
+- [ ] I have tested at least all public methods.
 
 #### Assertions
 
@@ -62,4 +62,4 @@
 - [ ] I have checked that my code follows metrics set in Procedure: Method Metrics.
 - [ ] I have checked that my code follows metrics set in Procedure: Object Quality.
 - [ ] I have checked that my code does not have any NULL values.
-- [ ] I have checked my code does not contain FIXME or TODO comments.  
+- [ ] I have checked my code does not contain FIXME or TODO comments.
