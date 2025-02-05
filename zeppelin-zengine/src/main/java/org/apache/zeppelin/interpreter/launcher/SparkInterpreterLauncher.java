@@ -20,6 +20,7 @@ package org.apache.zeppelin.interpreter.launcher;
 import java.io.FileInputStream;
 import java.io.FilenameFilter;
 import java.io.IOException;
+import java.io.InputStream;
 import java.net.URL;
 import java.net.URLClassLoader;
 import java.nio.charset.StandardCharsets;
@@ -250,7 +251,10 @@ public class SparkInterpreterLauncher extends StandardInterpreterLauncher {
     builder.environment().putAll(env);
     Process process = builder.start();
     process.waitFor();
-    String processOutput = IOUtils.toString(process.getErrorStream(), StandardCharsets.UTF_8);
+    String processOutput;
+    try(InputStream inputStream = process.getErrorStream()) {
+      processOutput = IOUtils.toString(inputStream, StandardCharsets.UTF_8);
+    }
     Pattern pattern = Pattern.compile(".*Using Scala version (.*),.*");
     Matcher matcher = pattern.matcher(processOutput);
     if (matcher.find()) {
