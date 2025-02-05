@@ -22,5 +22,6 @@ jobs:
           java-version: 11
           distribution: 'adopt'
 
+      # Integration tests gets stuck in Github while running verify; can't enable it here right now.
       - name: Run CI
         run: mvn --batch-mode -Pintegration clean package
