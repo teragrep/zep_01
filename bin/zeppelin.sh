@@ -91,27 +91,9 @@ ZEPPELIN_LOGFILE="${ZEPPELIN_LOG_DIR}/zeppelin-${ZEPPELIN_IDENT_STRING}-${HOSTNA
 ZEPPELIN_SERVER=org.apache.zeppelin.server.ZeppelinServer
 JAVA_OPTS+=" -Dzeppelin.log.file=${ZEPPELIN_LOGFILE}"
 
-# construct classpath
-if [[ -d "${ZEPPELIN_HOME}/zeppelin-interpreter/target/classes" ]]; then
-  ZEPPELIN_CLASSPATH+=":${ZEPPELIN_HOME}/zeppelin-interpreter/target/classes"
-fi
-
-if [[ -d "${ZEPPELIN_HOME}/zeppelin-zengine/target/classes" ]]; then
-  ZEPPELIN_CLASSPATH+=":${ZEPPELIN_HOME}/zeppelin-zengine/target/classes"
-fi
-
-if [[ -d "${ZEPPELIN_HOME}/zeppelin-server/target/classes" ]]; then
-  ZEPPELIN_CLASSPATH+=":${ZEPPELIN_HOME}/zeppelin-server/target/classes"
-fi
-
 addJarInDir "${ZEPPELIN_HOME}"
 addJarInDir "${ZEPPELIN_HOME}/lib"
 addJarInDir "${ZEPPELIN_HOME}/lib/interpreter"
-addJarInDir "${ZEPPELIN_HOME}/zeppelin-interpreter/target/lib"
-addJarInDir "${ZEPPELIN_HOME}/zeppelin-zengine/target/lib"
-addJarInDir "${ZEPPELIN_HOME}/zeppelin-server/target/lib"
-addJarInDir "${ZEPPELIN_HOME}/zeppelin-web/target/lib"
-addJarInDir "${ZEPPELIN_HOME}/zeppelin-web-angular/target/lib"
 
 ZEPPELIN_CLASSPATH="$CLASSPATH:$ZEPPELIN_CLASSPATH"
 

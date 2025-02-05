@@ -93,28 +93,17 @@ check_java_version
 ZEPPELIN_INTERPRETER_API_JAR=$(find "${ZEPPELIN_HOME}/interpreter" -name 'zeppelin-interpreter-shaded-*.jar')
 ZEPPELIN_INTP_CLASSPATH+=":${CLASSPATH}:${ZEPPELIN_INTERPRETER_API_JAR}"
 
-# construct classpath
-if [[ -d "${ZEPPELIN_HOME}/zeppelin-interpreter/target/classes" ]]; then
-  ZEPPELIN_INTP_CLASSPATH+=":${ZEPPELIN_HOME}/zeppelin-interpreter/target/classes"
-fi
-
-# add test classes for unittest
+# This is a hack and should be fixed later. Add test classes for unittest
 if [[ -d "${ZEPPELIN_HOME}/zeppelin-zengine/target/test-classes" ]]; then
   ZEPPELIN_INTP_CLASSPATH+=":${ZEPPELIN_HOME}/zeppelin-zengine/target/test-classes"
   addJarInDirForIntp "${ZEPPELIN_HOME}/zeppelin-zengine/target/test-classes"
 fi
 
-addJarInDirForIntp "${ZEPPELIN_HOME}/zeppelin-interpreter-shaded/target"
-
 HOSTNAME=$(hostname)
 ZEPPELIN_SERVER=org.apache.zeppelin.interpreter.remote.RemoteInterpreterServer
 
 INTERPRETER_ID=$(basename "${INTERPRETER_DIR}")
-if [[ "${INTERPRETER_ID}" != "flink" ]]; then
-  # don't add interpreter jar for flink, FlinkInterpreterLauncher will choose the right interpreter jar based
-  # on scala version of current FLINK_HOME.
-  addJarInDirForIntp "${INTERPRETER_DIR}"
-fi
+addJarInDirForIntp "${INTERPRETER_DIR}"
 
 ZEPPELIN_PID="${ZEPPELIN_PID_DIR}/zeppelin-interpreter-${INTP_GROUP_ID}-${ZEPPELIN_IDENT_STRING}-${HOSTNAME}-${PORT}.pid"
 
@@ -204,7 +193,6 @@ if [[ "${INTERPRETER_ID}" == "spark" ]]; then
       fi
     fi
   fi
-
 elif [[ "${INTERPRETER_ID}" == "hbase" ]]; then
   if [[ -n "${HBASE_CONF_DIR}" ]]; then
     ZEPPELIN_INTP_CLASSPATH+=":${HBASE_CONF_DIR}"
@@ -213,59 +201,6 @@ elif [[ "${INTERPRETER_ID}" == "hbase" ]]; then
   else
     echo "HBASE_HOME and HBASE_CONF_DIR are not set, configuration might not be loaded"
   fi
-elif [[ "${INTERPRETER_ID}" == "pig" ]]; then
-   # autodetect HADOOP_CONF_HOME by heuristic
-  if [[ -n "${HADOOP_HOME}" ]] && [[ -z "${HADOOP_CONF_DIR}" ]]; then
-    if [[ -d "${HADOOP_HOME}/etc/hadoop" ]]; then
-      export HADOOP_CONF_DIR="${HADOOP_HOME}/etc/hadoop"
-    elif [[ -d "/etc/hadoop/conf" ]]; then
-      export HADOOP_CONF_DIR="/etc/hadoop/conf"
-    fi
-  fi
-
-  if [[ -n "${HADOOP_CONF_DIR}" ]] && [[ -d "${HADOOP_CONF_DIR}" ]]; then
-    ZEPPELIN_INTP_CLASSPATH+=":${HADOOP_CONF_DIR}"
-  fi
-
-  # autodetect TEZ_CONF_DIR
-  if [[ -n "${TEZ_CONF_DIR}" ]]; then
-    ZEPPELIN_INTP_CLASSPATH+=":${TEZ_CONF_DIR}"
-  elif [[ -d "/etc/tez/conf" ]]; then
-    ZEPPELIN_INTP_CLASSPATH+=":/etc/tez/conf"
-  else
-    echo "TEZ_CONF_DIR is not set, configuration might not be loaded"
-  fi
-elif [[ "${INTERPRETER_ID}" == "flink" ]]; then
-  addEachJarInDirRecursiveForIntp "${FLINK_HOME}/lib"
-
-  FLINK_PYTHON_JAR=$(find "${FLINK_HOME}/opt" -name 'flink-python_*.jar')
-  ZEPPELIN_INTP_CLASSPATH+=":${FLINK_PYTHON_JAR}:${FLINK_APP_JAR}"
-
-  if [[ -n "${HADOOP_CONF_DIR}" ]] && [[ -d "${HADOOP_CONF_DIR}" ]]; then
-    ZEPPELIN_INTP_CLASSPATH+=":${HADOOP_CONF_DIR}"
-    # Don't use `hadoop classpath` if flink-hadoop-shaded in in lib folder
-    flink_hadoop_shaded_jar=$(find "${FLINK_HOME}/lib" -name 'flink-shaded-hadoop-*.jar')
-    if [[ -n "$flink_hadoop_shaded_jar" ]]; then
-      echo ""
-    else
-      if [[ ! ( -x "$(command -v hadoop)" ) && ( "${ZEPPELIN_INTERPRETER_LAUNCHER}" != "yarn" ) ]]; then
-        echo 'Error: hadoop is not in PATH when HADOOP_CONF_DIR is specified and no flink-shaded-hadoop jar '
-        exit 1
-      fi
-      ZEPPELIN_INTP_CLASSPATH+=":$(hadoop classpath)"
-    fi
-    export HADOOP_CONF_DIR=${HADOOP_CONF_DIR}
-  else
-    # autodetect HADOOP_CONF_HOME by heuristic
-    if [[ -n "${HADOOP_HOME}" ]] && [[ -z "${HADOOP_CONF_DIR}" ]]; then
-      if [[ -d "${HADOOP_HOME}/etc/hadoop" ]]; then
-        export HADOOP_CONF_DIR="${HADOOP_HOME}/etc/hadoop"
-      elif [[ -d "/etc/hadoop/conf" ]]; then
-        export HADOOP_CONF_DIR="/etc/hadoop/conf"
-      fi
-    fi
-  fi
-
 fi
 
 if [[ -n "$ZEPPELIN_IMPERSONATE_USER" ]]; then

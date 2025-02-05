@@ -41,24 +41,6 @@ if [[ -z "$ZEPPELIN_PID_DIR" ]]; then
   export ZEPPELIN_PID_DIR="${ZEPPELIN_HOME}/run"
 fi
 
-if [[ -z "${ZEPPELIN_WAR}" ]]; then
-  if [[ -d "${ZEPPELIN_HOME}/zeppelin-web/dist" ]]; then
-    export ZEPPELIN_WAR="${ZEPPELIN_HOME}/zeppelin-web/dist"
-  else
-    ZEPPELIN_WAR=$(find -L "${ZEPPELIN_HOME}" -name "zeppelin-web-[0-9]*.war")
-    export ZEPPELIN_WAR
-  fi
-fi
-
-if [[ -z "${ZEPPELIN_ANGULAR_WAR}" ]]; then
-  if [[ -d "${ZEPPELIN_HOME}/zeppelin-web/dist" ]]; then
-    export ZEPPELIN_ANGULAR_WAR="${ZEPPELIN_HOME}/zeppelin-web-angular/dist/zeppelin"
-  else
-    ZEPPELIN_ANGULAR_WAR=$(find -L "${ZEPPELIN_HOME}" -name "zeppelin-web-angular*.war")
-    export ZEPPELIN_ANGULAR_WAR
-  fi
-fi
-
 if [[ -f "${ZEPPELIN_CONF_DIR}/zeppelin-env.sh" ]]; then
   . "${ZEPPELIN_CONF_DIR}/zeppelin-env.sh"
 fi
@@ -121,10 +103,6 @@ function addJarInDirForIntp() {
 ZEPPELIN_COMMANDLINE_MAIN=org.apache.zeppelin.utils.CommandLineUtils
 
 function getZeppelinVersion(){
-    if [[ -d "${ZEPPELIN_HOME}/zeppelin-server/target/classes" ]]; then
-      ZEPPELIN_CLASSPATH+=":${ZEPPELIN_HOME}/zeppelin-server/target/classes"
-    fi
-    addJarInDir "${ZEPPELIN_HOME}/zeppelin-server/target/lib"
     CLASSPATH+=":${ZEPPELIN_CLASSPATH}"
     $ZEPPELIN_RUNNER -cp "${CLASSPATH}" "${ZEPPELIN_COMMANDLINE_MAIN}" -v
     exit 0
