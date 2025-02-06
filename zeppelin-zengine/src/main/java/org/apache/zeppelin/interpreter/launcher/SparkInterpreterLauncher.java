@@ -168,6 +168,7 @@ public class SparkInterpreterLauncher extends StandardInterpreterLauncher {
                   .map(jar -> jar.toAbsolutePath().toString()).collect(Collectors.toList());
           additionalJars.addAll(dplJars);
         }
+        additionalJars.add("/opt/teragrep/pth_10/lib/pth_10-shaded.jar");
 
         if (sparkProperties.containsKey("spark.jars")) {
           sparkProperties.put("spark.jars", sparkProperties.getProperty("spark.jars") + "," +

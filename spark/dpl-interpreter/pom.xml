@@ -138,6 +138,7 @@
       <groupId>com.teragrep</groupId>
       <artifactId>pth_10</artifactId>
       <version>${teragrep.pth_10.version}</version>
+      <scope>provided</scope>
     </dependency>
     <!-- tests -->
     <dependency>

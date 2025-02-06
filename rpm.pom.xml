@@ -234,6 +234,7 @@
             <require>git</require>
             <require>sudo</require>
             <require>pam</require>
+            <require>com.teragrep-pth_10</require>
           </requires>
           <conflicts>
             <!-- included in the project directly from now on -->
