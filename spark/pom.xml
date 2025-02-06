@@ -60,6 +60,7 @@
 
     <modules>
         <module>interpreter</module>
+        <module>dpl-interpreter</module>
         <module>spark-scala-parent</module>
         <module>scala-2.12</module>
         <module>spark-shims</module>

@@ -234,7 +234,12 @@
             <require>git</require>
             <require>sudo</require>
             <require>pam</require>
+            <require>com.teragrep-pth_10</require>
           </requires>
+          <conflicts>
+            <!-- included in the project directly from now on -->
+            <conflict>com.teragrep-pth_07</conflict>
+          </conflicts>
           <preinstallScriptlet>
             <script>
 getent group srv-zpln > /dev/null || groupadd -r srv-zpln;
@@ -247,14 +252,6 @@ fi;
 exit 0;
             </script>
           </preinstallScriptlet>
-          <postinstallScriptlet>
-            <script>
-if [ -f /opt/teragrep/pth_07/bin/inject_config.py ]; then
-    python3 /opt/teragrep/pth_07/bin/inject_config.py;
-fi;
-exit 0;
-            </script>
-          </postinstallScriptlet>
         </configuration>
       </plugin>
       <plugin>
