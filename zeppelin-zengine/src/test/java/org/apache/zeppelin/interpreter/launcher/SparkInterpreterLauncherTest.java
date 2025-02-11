@@ -39,10 +39,12 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
+@Ignore(value="Depends on old spark 2.x version, requires sparkr that is not being supported")
 public class SparkInterpreterLauncherTest {
 
   private static final Logger LOGGER = LoggerFactory.getLogger(SparkInterpreterLauncher.class);
 
+  private String sparkHome;
   private String zeppelinHome;
 
   @Before
@@ -51,6 +53,7 @@ public class SparkInterpreterLauncherTest {
       System.clearProperty(confVar.getVarName());
     }
 
+    // sparkHome = DownloadUtils.downloadSpark("2.4.4", "2.7");
     System.setProperty(ZeppelinConfiguration.ConfVars.ZEPPELIN_HOME.getVarName(),
             new File("..").getAbsolutePath());
 
@@ -63,6 +66,7 @@ public class SparkInterpreterLauncherTest {
     ZeppelinConfiguration zConf = ZeppelinConfiguration.create();
     SparkInterpreterLauncher launcher = new SparkInterpreterLauncher(zConf, null);
     Properties properties = new Properties();
+    properties.setProperty("SPARK_HOME", sparkHome);
     properties.setProperty(
         ZeppelinConfiguration.ConfVars.ZEPPELIN_INTERPRETER_CONNECT_TIMEOUT.getVarName(), "10000");
     InterpreterOption option = new InterpreterOption();
@@ -79,12 +83,12 @@ public class SparkInterpreterLauncherTest {
     assertTrue(interpreterProcess.isUserImpersonated());
   }
 
-  @Ignore(value="Values provided in the ZEPPELIN_SPARK_CONF are not guaranteed to be in same order -> string matched assertion fails")
   @Test
   public void testLocalMode() throws IOException {
     ZeppelinConfiguration zConf = ZeppelinConfiguration.create();
     SparkInterpreterLauncher launcher = new SparkInterpreterLauncher(zConf, null);
     Properties properties = new Properties();
+    properties.setProperty("SPARK_HOME", sparkHome);
     properties.setProperty("ENV_1", "");
     properties.setProperty("property_1", "value_1");
     properties.setProperty("spark.master", "local[*]");
@@ -100,18 +104,19 @@ public class SparkInterpreterLauncherTest {
     assertTrue(interpreterProcess.getInterpreterDir().endsWith("/interpreter/spark"));
     assertEquals(zConf.getInterpreterRemoteRunnerPath(), interpreterProcess.getInterpreterRunner());
     assertTrue(interpreterProcess.getEnv().size() >= 2);
+    assertEquals(sparkHome, interpreterProcess.getEnv().get("SPARK_HOME"));
     assertFalse(interpreterProcess.getEnv().containsKey("ENV_1"));
     assertEquals("--conf|spark.files=file_1" +
                     "|--conf|spark.jars=jar_1|--conf|spark.app.name=intpGroupId|--conf|spark.master=local[*]",
             interpreterProcess.getEnv().get("ZEPPELIN_SPARK_CONF"));
   }
 
-  @Ignore(value="Values provided in the ZEPPELIN_SPARK_CONF are not guaranteed to be in same order -> string matched assertion fails")
   @Test
   public void testYarnClientMode_1() throws IOException {
     ZeppelinConfiguration zConf = ZeppelinConfiguration.create();
     SparkInterpreterLauncher launcher = new SparkInterpreterLauncher(zConf, null);
     Properties properties = new Properties();
+    properties.setProperty("SPARK_HOME", sparkHome);
     properties.setProperty("property_1", "value_1");
     properties.setProperty("spark.master", "yarn-client");
     properties.setProperty("spark.files", "file_1");
@@ -126,20 +131,23 @@ public class SparkInterpreterLauncherTest {
     assertTrue(interpreterProcess.getInterpreterDir().endsWith("/interpreter/spark"));
     assertEquals(zConf.getInterpreterRemoteRunnerPath(), interpreterProcess.getInterpreterRunner());
     assertTrue(interpreterProcess.getEnv().size() >= 2);
+    assertEquals(sparkHome, interpreterProcess.getEnv().get("SPARK_HOME"));
 
     String sparkJars = "jar_1";
+    String sparkrZip = sparkHome + "/R/lib/sparkr.zip#sparkr";
     String sparkFiles = "file_1";
-    assertEquals("|--conf|spark.files=" + sparkFiles + "|--conf|spark.jars=" + sparkJars +
+    assertEquals("--conf|spark.yarn.dist.archives=" + sparkrZip +
+                    "|--conf|spark.files=" + sparkFiles + "|--conf|spark.jars=" + sparkJars +
                     "|--conf|spark.yarn.isPython=true|--conf|spark.app.name=intpGroupId|--conf|spark.master=yarn-client",
             interpreterProcess.getEnv().get("ZEPPELIN_SPARK_CONF"));
   }
 
-  @Ignore(value="Values provided in the ZEPPELIN_SPARK_CONF are not guaranteed to be in same order -> string matched assertion fails")
   @Test
   public void testYarnClientMode_2() throws IOException {
     ZeppelinConfiguration zConf = ZeppelinConfiguration.create();
     SparkInterpreterLauncher launcher = new SparkInterpreterLauncher(zConf, null);
     Properties properties = new Properties();
+    properties.setProperty("SPARK_HOME", sparkHome);
     properties.setProperty("property_1", "value_1");
     properties.setProperty("spark.master", "yarn");
     properties.setProperty("spark.submit.deployMode", "client");
@@ -155,10 +163,13 @@ public class SparkInterpreterLauncherTest {
     assertTrue(interpreterProcess.getInterpreterDir().endsWith("/interpreter/spark"));
     assertEquals(zConf.getInterpreterRemoteRunnerPath(), interpreterProcess.getInterpreterRunner());
     assertTrue(interpreterProcess.getEnv().size() >= 2);
+    assertEquals(sparkHome, interpreterProcess.getEnv().get("SPARK_HOME"));
 
     String sparkJars = "jar_1";
+    String sparkrZip = sparkHome + "/R/lib/sparkr.zip#sparkr";
     String sparkFiles = "file_1";
-    assertEquals("|--conf|spark.files=" + sparkFiles + "|--conf|spark.jars=" + sparkJars +
+    assertEquals("--conf|spark.yarn.dist.archives=" + sparkrZip +
+                    "|--conf|spark.files=" + sparkFiles + "|--conf|spark.jars=" + sparkJars +
                     "|--conf|spark.submit.deployMode=client" +
                     "|--conf|spark.yarn.isPython=true|--conf|spark.app.name=intpGroupId|--conf|spark.master=yarn",
             interpreterProcess.getEnv().get("ZEPPELIN_SPARK_CONF"));
@@ -170,6 +181,7 @@ public class SparkInterpreterLauncherTest {
     ZeppelinConfiguration zConf = ZeppelinConfiguration.create();
     SparkInterpreterLauncher launcher = new SparkInterpreterLauncher(zConf, null);
     Properties properties = new Properties();
+    properties.setProperty("SPARK_HOME", sparkHome);
     properties.setProperty("property_1", "value_1");
     properties.setProperty("spark.master", "yarn-cluster");
     properties.setProperty("spark.files", "file_1");
@@ -184,13 +196,16 @@ public class SparkInterpreterLauncherTest {
     assertTrue(interpreterProcess.getInterpreterDir().endsWith("/interpreter/spark"));
     assertEquals(zConf.getInterpreterRemoteRunnerPath(), interpreterProcess.getInterpreterRunner());
     assertTrue(interpreterProcess.getEnv().size() >= 3);
+    assertEquals(sparkHome, interpreterProcess.getEnv().get("SPARK_HOME"));
 
     assertEquals("true", interpreterProcess.getEnv().get("ZEPPELIN_SPARK_YARN_CLUSTER"));
     String sparkJars = "jar_1," +
             zeppelinHome + "/interpreter/spark/scala-2.11/spark-scala-2.11-" + Util.getVersion() + ".jar," +
             zeppelinHome + "/interpreter/zeppelin-interpreter-shaded-" + Util.getVersion() + ".jar";
+    String sparkrZip = sparkHome + "/R/lib/sparkr.zip#sparkr";
     String sparkFiles = "file_1," + zeppelinHome + "/conf/log4j_yarn_cluster.properties";
-    assertEquals("|--conf|spark.yarn.maxAppAttempts=1" +
+    assertEquals("--conf|spark.yarn.dist.archives=" + sparkrZip +
+                    "|--conf|spark.yarn.maxAppAttempts=1" +
                     "|--conf|spark.files=" + sparkFiles +
                     "|--conf|spark.jars=" + sparkJars +
                     "|--conf|spark.yarn.isPython=true" +
@@ -206,6 +221,7 @@ public class SparkInterpreterLauncherTest {
     ZeppelinConfiguration zConf = ZeppelinConfiguration.create();
     SparkInterpreterLauncher launcher = new SparkInterpreterLauncher(zConf, null);
     Properties properties = new Properties();
+    properties.setProperty("SPARK_HOME", sparkHome);
     properties.setProperty("property_1", "value_1");
     properties.setProperty("spark.master", "yarn");
     properties.setProperty("spark.submit.deployMode", "cluster");
@@ -223,12 +239,14 @@ public class SparkInterpreterLauncherTest {
     assertTrue(interpreterProcess.getInterpreterDir().endsWith("/interpreter/spark"));
     assertEquals(zConf.getInterpreterRemoteRunnerPath(), interpreterProcess.getInterpreterRunner());
     assertTrue(interpreterProcess.getEnv().size() >= 3);
+    assertEquals(sparkHome, interpreterProcess.getEnv().get("SPARK_HOME"));
     assertEquals("true", interpreterProcess.getEnv().get("ZEPPELIN_SPARK_YARN_CLUSTER"));
     String sparkJars = "jar_1," +
             zeppelinHome + "/interpreter/spark/scala-2.11/spark-scala-2.11-" + Util.getVersion() + ".jar," +
             zeppelinHome + "/interpreter/zeppelin-interpreter-shaded-" + Util.getVersion() + ".jar";
+    String sparkrZip = sparkHome + "/R/lib/sparkr.zip#sparkr";
     String sparkFiles = "file_1," + zeppelinHome + "/conf/log4j_yarn_cluster.properties";
-    assertEquals("--proxy-user|user1" +
+    assertEquals("--proxy-user|user1|--conf|spark.yarn.dist.archives=" + sparkrZip +
             "|--conf|spark.yarn.isPython=true|--conf|spark.app.name=intpGroupId" +
             "|--conf|spark.yarn.maxAppAttempts=1" +
             "|--conf|spark.master=yarn" +
@@ -244,6 +262,7 @@ public class SparkInterpreterLauncherTest {
     ZeppelinConfiguration zConf = ZeppelinConfiguration.create();
     SparkInterpreterLauncher launcher = new SparkInterpreterLauncher(zConf, null);
     Properties properties = new Properties();
+    properties.setProperty("SPARK_HOME", sparkHome);
     properties.setProperty("property_1", "value_1");
     properties.setProperty("spark.master", "yarn");
     properties.setProperty("spark.submit.deployMode", "cluster");
@@ -261,14 +280,17 @@ public class SparkInterpreterLauncherTest {
     assertTrue(interpreterProcess.getInterpreterDir().endsWith("/interpreter/spark"));
     assertEquals(zConf.getInterpreterRemoteRunnerPath(), interpreterProcess.getInterpreterRunner());
     assertTrue(interpreterProcess.getEnv().size() >= 3);
+    assertEquals(sparkHome, interpreterProcess.getEnv().get("SPARK_HOME"));
     assertEquals("true", interpreterProcess.getEnv().get("ZEPPELIN_SPARK_YARN_CLUSTER"));
 
     String sparkJars = "jar_1," +
             zeppelinHome + "/interpreter/spark/scala-2.11/spark-scala-2.11-" + Util.getVersion() + ".jar," +
             zeppelinHome + "/interpreter/zeppelin-interpreter-shaded-" + Util.getVersion() + ".jar";
+    String sparkrZip = sparkHome + "/R/lib/sparkr.zip#sparkr";
     // escape special characters
     String sparkFiles = "{}," + zeppelinHome + "/conf/log4j_yarn_cluster.properties";
     assertEquals("--proxy-user|user1" +
+                    "|--conf|spark.yarn.dist.archives=" + sparkrZip +
                     "|--conf|spark.yarn.isPython=true" +
                     "|--conf|spark.app.name=intpGroupId" +
                     "|--conf|spark.yarn.maxAppAttempts=1" +
