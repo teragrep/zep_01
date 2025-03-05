@@ -295,22 +295,6 @@ public abstract class ZeppelinSparkClusterTest extends AbstractTestRestApi {
     assertEquals("_1\t_2\nhello\t20\n", p.getReturn().message().get(0).getData());
   }
 
-  @Ignore(value="Tests Spark R which we do not support")
-  @Test
-  public void sparkRTest() throws IOException {
-    Note note = TestUtils.getInstance(Notebook.class).createNote("note1", anonymous);
-    Paragraph p = note.addNewParagraph(anonymous);
-
-    p.setText("%spark.r localDF <- data.frame(name=c(\"a\", \"b\", \"c\"), age=c(19, 23, 18))\n" +
-            "df <- createDataFrame(localDF)\n" +
-            "count(df)"
-    );
-
-    note.run(p.getId(), true);
-    assertEquals(Status.FINISHED, p.getStatus());
-    assertEquals("[1] 3", p.getReturn().message().get(0).getData().trim());
-  }
-
   @Test
   public void pySparkTest() throws IOException {
     // create new note

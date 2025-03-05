@@ -89,7 +89,6 @@ public class SparkInterpreterLauncher extends StandardInterpreterLauncher {
     }
 
     setupPropertiesForPySpark(sparkProperties);
-    setupPropertiesForSparkR(sparkProperties);
 
     String condaEnvName = context.getProperties().getProperty("zeppelin.interpreter.conda.env.name");
     if (StringUtils.isNotBlank(condaEnvName)) {
@@ -351,33 +350,6 @@ public class SparkInterpreterLauncher extends StandardInterpreterLauncher {
       sparkProperties.setProperty(propertyName, oldPropertyValue + "," + propertyValue);
     } else {
       sparkProperties.setProperty(propertyName, propertyValue);
-    }
-  }
-
-  private void setupPropertiesForSparkR(Properties sparkProperties) {
-    if (isYarnMode()) {
-      String sparkHome = getEnv("SPARK_HOME");
-      File sparkRBasePath = null;
-      if (sparkHome == null) {
-        if (!getSparkMaster().startsWith("local")) {
-          throw new RuntimeException("SPARK_HOME is not specified in interpreter-setting" +
-                  " for non-local mode, if you specify it in zeppelin-env.sh, please move that into " +
-                  " interpreter setting");
-        }
-        String zeppelinHome = zConf.getString(ZeppelinConfiguration.ConfVars.ZEPPELIN_HOME);
-        sparkRBasePath = new File(zeppelinHome,
-                "interpreter" + File.separator + "spark" + File.separator + "R");
-      } else {
-        sparkRBasePath = new File(sparkHome, "R" + File.separator + "lib");
-      }
-
-      File sparkRPath = new File(sparkRBasePath, "sparkr.zip");
-      if (sparkRPath.exists() && sparkRPath.isFile()) {
-        mergeSparkProperty(sparkProperties, "spark.yarn.dist.archives",
-                sparkRPath.getAbsolutePath() + "#sparkr");
-      } else {
-        LOGGER.warn("sparkr.zip is not found, SparkR may not work.");
-      }
     }
   }
 
