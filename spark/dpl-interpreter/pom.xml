@@ -1,0 +1,453 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+ * Teragrep DPL Spark Integration PTH-07
+ * Copyright (C) 2022  Suomen Kanuuna Oy
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Affero General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Affero General Public License for more details.
+ *
+ * You should have received a copy of the GNU Affero General Public License
+ * along with this program.  If not, see <https://github.com/teragrep/teragrep/blob/main/LICENSE>.
+ *
+ *
+ * Additional permission under GNU Affero General Public License version 3
+ * section 7
+ *
+ * If you modify this Program, or any covered work, by linking or combining it
+ * with other code, such other code is not for that reason alone subject to any
+ * of the requirements of the GNU Affero GPL version 3 as long as this Program
+ * is the same Program as licensed from Suomen Kanuuna Oy without any additional
+ * modifications.
+ *
+ * Supplemented terms under GNU Affero General Public License version 3
+ * section 7
+ *
+ * Origin of the software must be attributed to Suomen Kanuuna Oy. Any modified
+ * versions must be marked as "Modified version of" The Program.
+ *
+ * Names of the licensors and authors may not be used for publicity purposes.
+ *
+ * No rights are granted for use of trade names, trademarks, or service marks
+ * which are in The Program if any.
+ *
+ * Licensee must indemnify licensors and authors for any liability that these
+ * contractual assumptions impose on licensors and authors.
+ *
+ * To the extent this program is licensed as part of the Commercial versions of
+ * Teragrep, the applicable Commercial License may apply to this file if you as
+ * a licensee so wish it.
+-->
+
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+  <parent>
+    <artifactId>spark-parent</artifactId>
+    <groupId>org.apache.zeppelin</groupId>
+    <version>${revision}${sha1}${changelist}</version>
+    <relativePath>../pom.xml</relativePath>
+  </parent>
+  <artifactId>pth_07</artifactId>
+  <packaging>jar</packaging>
+  <version>${revision}${sha1}${changelist}</version>
+  <name>Zeppelin: Teragrep DPL Interpreter</name>
+  <description>Support for DPL in Zeppelin</description>
+  <properties>
+    <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+    <maven.compiler.source>11</maven.compiler.source>
+    <maven.compiler.target>11</maven.compiler.target>
+    <java.version>11</java.version>
+    <revision>0.0.1</revision>
+    <changelist>-SNAPSHOT</changelist>
+    <sha1/>
+    <interpreter.name>dpl</interpreter.name>
+    <teragrep.pth_10.version>8.3.1</teragrep.pth_10.version>
+  </properties>
+  <scm>
+    <connection>scm:git:https://github.com/teragrep/pth_07.git</connection>
+    <developerConnection>scm:git:git@github.com:teragrep/pth_07.git</developerConnection>
+    <url>https://github.com/teragrep/pth_07/tree/master</url>
+  </scm>
+  <dependencies>
+    <!-- spark-core includes a version too old -->
+    <dependency>
+      <groupId>io.netty</groupId>
+      <artifactId>netty-all</artifactId>
+      <version>4.1.95.Final</version>
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
+      <groupId>io.netty</groupId>
+      <artifactId>netty-buffer</artifactId>
+      <version>4.1.95.Final</version>
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.zeppelin</groupId>
+      <artifactId>spark-interpreter</artifactId>
+      <version>${revision}${sha1}${changelist}</version>
+      <scope>provided</scope>
+    </dependency>
+    <!-- spark -->
+    <dependency>
+      <groupId>org.apache.spark</groupId>
+      <artifactId>spark-core_2.12</artifactId>
+      <version>3.4.0</version>
+      <scope>provided</scope>
+      <exclusions>
+        <!-- exclude old netty lib, newer dep version above -->
+        <exclusion>
+          <groupId>io.netty</groupId>
+          <artifactId>netty-all</artifactId>
+        </exclusion>
+      </exclusions>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.spark</groupId>
+      <artifactId>spark-sql_2.12</artifactId>
+      <version>3.4.0</version>
+      <scope>provided</scope>
+      <exclusions>
+        <exclusion>
+          <groupId>org.apache.hadoop</groupId>
+          <artifactId>hadoop-client</artifactId>
+        </exclusion>
+      </exclusions>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.spark</groupId>
+      <artifactId>spark-streaming_2.12</artifactId>
+      <version>3.4.0</version>
+      <scope>provided</scope>
+      <exclusions>
+        <exclusion>
+          <groupId>org.apache.hadoop</groupId>
+          <artifactId>hadoop-client</artifactId>
+        </exclusion>
+      </exclusions>
+    </dependency>
+    <!--DPL-dependencies -->
+    <dependency>
+      <groupId>com.teragrep</groupId>
+      <artifactId>pth_10</artifactId>
+      <version>${teragrep.pth_10.version}</version>
+      <scope>provided</scope>
+    </dependency>
+    <!-- tests -->
+    <dependency>
+      <groupId>org.junit.jupiter</groupId>
+      <artifactId>junit-jupiter-engine</artifactId>
+      <version>5.8.2</version>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.junit.platform</groupId>
+      <artifactId>junit-platform-launcher</artifactId>
+      <version>1.8.2</version>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.junit.jupiter</groupId>
+      <artifactId>junit-jupiter-api</artifactId>
+      <version>5.8.2</version>
+      <scope>test</scope>
+    </dependency>
+  </dependencies>
+  <build>
+    <plugins>
+      <plugin>
+        <artifactId>maven-resources-plugin</artifactId>
+        <executions>
+          <execution>
+            <id>copy-interpreter-setting</id>
+            <phase>package</phase>
+            <goals>
+              <goal>resources</goal>
+            </goals>
+            <configuration>
+              <outputDirectory>${project.build.directory}/../../../interpreter/${interpreter.name}</outputDirectory>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
+
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-shade-plugin</artifactId>
+        <configuration>
+          <filters>
+            <filter>
+              <artifact>*:*</artifact>
+              <excludes>
+                <exclude>org/datanucleus/**</exclude>
+                <exclude>META-INF/*.SF</exclude>
+                <exclude>META-INF/*.DSA</exclude>
+                <exclude>META-INF/*.RSA</exclude>
+              </excludes>
+            </filter>
+          </filters>
+
+          <artifactSet>
+            <excludes>
+              <exclude>org.scala-lang:scala-library</exclude>
+              <exclude>org.scala-lang:scala-compiler</exclude>
+              <exclude>org.scala-lang:scala-reflect</exclude>
+              <exclude>commons-lang:commons-lang</exclude>
+              <exclude>org.apache.commons:commons-compress</exclude>
+              <exclude>org.apache.zeppelin:zeppelin-interpreter-shaded</exclude>
+            </excludes>
+          </artifactSet>
+          <outputFile>${project.basedir}/../../interpreter/${interpreter.name}/pth_07-${project.version}.jar</outputFile>
+        </configuration>
+        <executions>
+          <execution>
+            <phase>package</phase>
+            <goals>
+              <goal>shade</goal>
+            </goals>
+          </execution>
+        </executions>
+      </plugin>
+      <plugin>
+        <groupId>org.apache.rat</groupId>
+        <artifactId>apache-rat-plugin</artifactId>
+        <version>0.16.1</version>
+        <inherited>false</inherited>
+        <executions>
+          <execution>
+            <phase>test</phase>
+            <goals>
+              <goal>check</goal>
+            </goals>
+          </execution>
+        </executions>
+        <configuration>
+          <addDefaultLicenseMatchers>false</addDefaultLicenseMatchers>
+          <addDefaultLicenses>false</addDefaultLicenses>
+          <families>
+            <family>
+              <id>Teragrep</id>
+              <name>Affero General Public License v3</name>
+            </family>
+            <family>
+              <id>Apache</id>
+              <name>Apache License, Version 2.0</name>
+            </family>
+          </families>
+          <licenses>
+            <license>
+              <copyright>
+                <owner>Suomen Kanuuna Oy</owner>
+                <start>2024</start>
+              </copyright>
+              <text>Teragrep DPL Spark Integration PTH-07</text>
+              <family>Teragrep</family>
+            </license>
+            <license>
+              <copyright>
+                <owner>Apache Software Foundation</owner>
+                <start>2024</start>
+              </copyright>
+              <text>Licensed to the Apache Software Foundation (ASF)</text>
+              <family>Apache</family>
+            </license>
+          </licenses>
+          <consoleOutput>true</consoleOutput>
+          <excludeSubProjects>false</excludeSubProjects>
+          <excludes>
+            <!-- git -->
+            <exclude>.git/**</exclude>
+            <exclude>.gitattributes</exclude>
+            <exclude>.gitignore</exclude>
+            <exclude>.gitmodules</exclude>
+            <!-- ci -->
+            <exclude>.github/workflows/*</exclude>
+            <exclude>.github/ISSUE_TEMPLATE/*</exclude>
+            <exclude>.github/PULL_REQUEST_TEMPLATE/*</exclude>
+            <exclude>toolchains.xml</exclude>
+            <exclude>settings.xml</exclude>
+            <exclude>rpm/rpm.pom.xml</exclude>
+            <!-- readme -->
+            <exclude>README.adoc</exclude>
+            <exclude>README.md</exclude>
+          </excludes>
+        </configuration>
+      </plugin>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-enforcer-plugin</artifactId>
+        <version>3.4.1</version>
+        <executions>
+          <execution>
+            <id>enforce-settings</id>
+            <goals>
+              <goal>enforce</goal>
+            </goals>
+            <configuration>
+              <rules>
+                <requireMavenVersion>
+                  <version>3.2.5</version>
+                </requireMavenVersion>
+                <requireJavaVersion>
+                  <version>[11,12)</version>
+                </requireJavaVersion>
+                <banDynamicVersions>
+                  <ignores>
+                    <!-- Dependency io.grpc:grpc-core:jar:1.26.0 (provided) via org.apache.zeppelin:spark-interpreter:jar:0.10.1 -> org.apache.zeppelin:zeppelin-jupyter-interpreter:jar:0.10.1 -> io.grpc:grpc-netty:jar:1.26.0 is referenced with a banned dynamic version [1.26.0,1.26.0] -->
+                    <ignore>io.grpc:grpc-core</ignore>
+                    <!-- FIXME: Fix these when rebranding -->
+                    <ignore>org.apache.zeppelin:spark-interpreter</ignore>
+                    <ignore>org.apache.zeppelin:zeppelin-interpreter-shaded</ignore>
+                    <ignore>org.apache.zeppelin:zeppelin-interpreter</ignore>
+                    <ignore>org.apache.zeppelin:spark3-shims</ignore>
+                    <ignore>org.apache.zeppelin:zeppelin-python</ignore>
+                    <ignore>org.apache.zeppelin:zeppelin-common</ignore>
+                    <ignore>org.apache.zeppelin:spark-shims</ignore>
+                  </ignores>
+                </banDynamicVersions>
+                <requirePluginVersions>
+                  <message>All plugins are required to contain specific version.</message>
+                  <unCheckedPluginList>org.apache.maven.plugins:maven-site-plugin,org.apache.maven.plugins:maven-resources-plugin,org.apache.maven.plugins:maven-clean-plugin,org.apache.maven.plugins:maven-install-plugin,org.apache.maven.plugins:maven-deploy-plugin,org.apache.maven.plugins:maven-compiler-plugin,org.apache.maven.plugins:maven-jar-plugin</unCheckedPluginList>
+                </requirePluginVersions>
+                <requireNoRepositories>
+                  <message>Do not use any external repositories.</message>
+                </requireNoRepositories>
+              </rules>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
+      <plugin>
+        <groupId>org.codehaus.mojo</groupId>
+        <artifactId>flatten-maven-plugin</artifactId>
+        <version>1.1.0</version>
+        <configuration>
+          <updatePomFile>true</updatePomFile>
+          <flattenMode>bom</flattenMode>
+        </configuration>
+        <executions>
+          <execution>
+            <id>flatten</id>
+            <phase>process-resources</phase>
+            <goals>
+              <goal>flatten</goal>
+            </goals>
+          </execution>
+          <execution>
+            <id>flatten.clean</id>
+            <phase>clean</phase>
+            <goals>
+              <goal>clean</goal>
+            </goals>
+          </execution>
+        </executions>
+      </plugin>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-compiler-plugin</artifactId>
+        <version>3.8.1</version>
+        <configuration>
+          <source>8</source>
+          <target>8</target>
+        </configuration>
+      </plugin>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-deploy-plugin</artifactId>
+        <version>2.8.2</version>
+        <configuration>
+          <skip>true</skip>
+        </configuration>
+      </plugin>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-surefire-plugin</artifactId>
+        <version>2.22.2</version>
+        <configuration>
+          <parallel>all</parallel>
+        </configuration>
+      </plugin>
+    </plugins>
+  </build>
+  <profiles>
+    <profile>
+      <id>publish-maven-central</id>
+      <build>
+        <plugins>
+          <plugin>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-gpg-plugin</artifactId>
+            <version>1.6</version>
+            <executions>
+              <execution>
+                <id>sign-artifacts</id>
+                <phase>verify</phase>
+                <goals>
+                  <goal>sign</goal>
+                </goals>
+                <configuration>
+                  <gpgArguments>
+                    <arg>--pinentry-mode</arg>
+                    <arg>loopback</arg>
+                  </gpgArguments>
+                </configuration>
+              </execution>
+            </executions>
+          </plugin>
+        </plugins>
+      </build>
+      <distributionManagement>
+        <snapshotRepository>
+          <id>ossrh</id>
+          <url>https://oss.sonatype.org/content/repositories/snapshots</url>
+        </snapshotRepository>
+        <repository>
+          <id>ossrh</id>
+          <name>Central Repository OSSRH</name>
+          <url>https://oss.sonatype.org/service/local/staging/deploy/maven2/</url>
+        </repository>
+      </distributionManagement>
+    </profile>
+    <profile>
+      <id>publish-github-packages</id>
+      <build>
+        <plugins>
+          <plugin>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-gpg-plugin</artifactId>
+            <version>1.6</version>
+            <executions>
+              <execution>
+                <id>sign-artifacts</id>
+                <phase>verify</phase>
+                <goals>
+                  <goal>sign</goal>
+                </goals>
+                <configuration>
+                  <gpgArguments>
+                    <arg>--pinentry-mode</arg>
+                    <arg>loopback</arg>
+                  </gpgArguments>
+                </configuration>
+              </execution>
+            </executions>
+          </plugin>
+        </plugins>
+      </build>
+      <distributionManagement>
+        <repository>
+          <id>github</id>
+          <name>GitHub Packages</name>
+          <url>https://maven.pkg.github.com/teragrep/pth_07</url>
+        </repository>
+      </distributionManagement>
+    </profile>
+  </profiles>
+</project>
