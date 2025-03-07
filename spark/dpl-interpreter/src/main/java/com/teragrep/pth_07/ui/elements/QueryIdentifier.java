@@ -45,7 +45,7 @@
  */
 package com.teragrep.pth_07.ui.elements;
 
-import org.apache.zeppelin.interpreter.InterpreterContext;
+import com.teragrep.zep_01.interpreter.InterpreterContext;
 
 public class QueryIdentifier extends AbstractUserInterfaceElement {
 

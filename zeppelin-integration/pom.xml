@@ -22,7 +22,7 @@
 
   <parent>
     <artifactId>zeppelin</artifactId>
-    <groupId>org.apache.zeppelin</groupId>
+    <groupId>com.teragrep.zep_01</groupId>
     <version>${revision}${sha1}${changelist}</version>
     <relativePath>..</relativePath>
   </parent>

@@ -2,7 +2,7 @@
   {
     "group": "mock2",
     "name": "mock2",
-    "className": "org.apache.zeppelin.interpreter.mock.MockInterpreter2",
+    "className": "com.teragrep.zep_01.interpreter.mock.MockInterpreter2",
     "properties": {
     },
     "option": {

@@ -17,10 +17,10 @@
 
 package com.teragrep.pth_07;
 
-import org.apache.zeppelin.interpreter.InterpreterContext;
-import org.apache.zeppelin.interpreter.InterpreterException;
-import org.apache.zeppelin.user.AuthenticationInfo;
-import org.apache.zeppelin.spark.SparkVersion;
+import com.teragrep.zep_01.interpreter.InterpreterContext;
+import com.teragrep.zep_01.interpreter.InterpreterException;
+import com.teragrep.zep_01.user.AuthenticationInfo;
+import com.teragrep.zep_01.spark.SparkVersion;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

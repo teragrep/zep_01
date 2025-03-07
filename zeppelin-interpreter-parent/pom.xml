@@ -22,7 +22,7 @@
 
   <parent>
     <artifactId>zeppelin</artifactId>
-    <groupId>org.apache.zeppelin</groupId>
+    <groupId>com.teragrep.zep_01</groupId>
     <version>${revision}${sha1}${changelist}</version>
     <relativePath>../pom.xml</relativePath>
   </parent>
@@ -118,7 +118,7 @@
                   <exclude>META-INF/*.SF</exclude>
                   <exclude>META-INF/*.DSA</exclude>
                   <exclude>META-INF/*.RSA</exclude>
-                  <exclude>org.apache.zeppelin:zeppelin-interpreter-shaded</exclude>
+                  <exclude>com.teragrep.zep_01:zeppelin-interpreter-shaded</exclude>
                 </excludes>
               </filter>
             </filters>
@@ -130,7 +130,7 @@
             </transformers>
             <artifactSet>
               <excludes>
-                <exclude>org.apache.zeppelin:zeppelin-interpreter-shaded</exclude>
+                <exclude>com.teragrep.zep_01:zeppelin-interpreter-shaded</exclude>
               </excludes>
             </artifactSet>
             <outputFile>${project.basedir}/../interpreter/${interpreter.name}/${project.artifactId}-${project.version}.jar</outputFile>

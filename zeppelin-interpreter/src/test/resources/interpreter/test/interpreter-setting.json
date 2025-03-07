@@ -2,7 +2,7 @@
   {
     "group": "test",
     "name": "double_echo",
-    "className": "org.apache.zeppelin.interpreter.DoubleEchoInterpreter",
+    "className": "com.teragrep.zep_01.interpreter.DoubleEchoInterpreter",
     "properties": {
       "property_1": {
         "envName": "PROPERTY_1",
@@ -23,7 +23,7 @@
     "group": "test",
     "name": "echo",
     "defaultInterpreter": true,
-    "className": "org.apache.zeppelin.interpreter.EchoInterpreter",
+    "className": "com.teragrep.zep_01.interpreter.EchoInterpreter",
     "properties": {
       "property_1": {
         "envName": "PROPERTY_1",

@@ -23,7 +23,7 @@
 
   <parent>
     <artifactId>zeppelin</artifactId>
-    <groupId>org.apache.zeppelin</groupId>
+    <groupId>com.teragrep.zep_01</groupId>
     <version>${revision}${sha1}${changelist}</version>
   </parent>
 
@@ -37,12 +37,12 @@
     <changelist>-SNAPSHOT</changelist>
     <sha1/>
     <!--plugin versions-->
-    <shaded.dependency.prefix>org.apache.zeppelin.shaded</shaded.dependency.prefix>
+    <shaded.dependency.prefix>com.teragrep.zep_01.shaded</shaded.dependency.prefix>
   </properties>
 
   <dependencies>
     <dependency>
-      <groupId>org.apache.zeppelin</groupId>
+      <groupId>com.teragrep.zep_01</groupId>
       <artifactId>zeppelin-interpreter</artifactId>
       <version>${revision}${sha1}${changelist}</version>
       <optional>true</optional>

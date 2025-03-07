@@ -49,7 +49,7 @@ import com.teragrep.pth_07.ui.elements.MessageLog;
 import com.teragrep.pth_07.ui.elements.OutputContent;
 import com.teragrep.pth_07.ui.elements.PerformanceIndicator;
 import com.teragrep.pth_07.ui.elements.table_dynamic.DTTableDatasetNg;
-import org.apache.zeppelin.interpreter.InterpreterContext;
+import com.teragrep.zep_01.interpreter.InterpreterContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

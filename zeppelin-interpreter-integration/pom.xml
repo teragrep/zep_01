@@ -22,7 +22,7 @@
 
   <parent>
     <artifactId>zeppelin</artifactId>
-    <groupId>org.apache.zeppelin</groupId>
+    <groupId>com.teragrep.zep_01</groupId>
     <version>${revision}${sha1}${changelist}</version>
     <relativePath>..</relativePath>
   </parent>
@@ -46,7 +46,7 @@
 
   <dependencies>
     <dependency>
-      <groupId>org.apache.zeppelin</groupId>
+      <groupId>com.teragrep.zep_01</groupId>
       <artifactId>zeppelin-client</artifactId>
       <version>${project.version}</version>
       <exclusions>
@@ -58,7 +58,7 @@
     </dependency>
 
     <dependency>
-      <groupId>org.apache.zeppelin</groupId>
+      <groupId>com.teragrep.zep_01</groupId>
       <artifactId>zeppelin-zengine</artifactId>
       <version>${project.version}</version>
       <exclusions>
@@ -76,7 +76,7 @@
     </dependency>
 
     <dependency>
-      <groupId>org.apache.zeppelin</groupId>
+      <groupId>com.teragrep.zep_01</groupId>
       <artifactId>zeppelin-server</artifactId>
       <version>${project.version}</version>
     </dependency>
@@ -107,7 +107,7 @@
 
     <!--test libraries-->
     <dependency>
-      <groupId>org.apache.zeppelin</groupId>
+      <groupId>com.teragrep.zep_01</groupId>
       <artifactId>zeppelin-zengine</artifactId>
       <version>${project.version}</version>
       <classifier>tests</classifier>
@@ -121,7 +121,7 @@
     </dependency>
 
     <dependency>
-      <groupId>org.apache.zeppelin</groupId>
+      <groupId>com.teragrep.zep_01</groupId>
       <artifactId>zeppelin-server</artifactId>
       <version>${project.version}</version>
       <classifier>tests</classifier>

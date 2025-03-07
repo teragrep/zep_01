@@ -2,7 +2,7 @@
   {
     "group": "angular",
     "name": "angular",
-    "className": "org.apache.zeppelin.angular.AngularInterpreter",
+    "className": "com.teragrep.zep_01.angular.AngularInterpreter",
     "properties": {
     },
     "editor": {
@@ -13,7 +13,7 @@
   {
     "group": "angular",
     "name": "ng",
-    "className": "org.apache.zeppelin.angular.AngularInterpreter",
+    "className": "com.teragrep.zep_01.angular.AngularInterpreter",
     "properties": {
     },
     "editor": {

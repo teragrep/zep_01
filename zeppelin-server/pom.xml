@@ -22,7 +22,7 @@
 
   <parent>
     <artifactId>zeppelin</artifactId>
-    <groupId>org.apache.zeppelin</groupId>
+    <groupId>com.teragrep.zep_01</groupId>
     <version>${revision}${sha1}${changelist}</version>
   </parent>
 
@@ -330,7 +330,7 @@
     </dependency>
 
     <dependency>
-      <groupId>org.apache.zeppelin</groupId>
+      <groupId>com.teragrep.zep_01</groupId>
       <artifactId>zeppelin-zengine</artifactId>
       <version>${project.version}</version>
       <classifier>tests</classifier>

@@ -100,7 +100,7 @@ if [[ -d "${ZEPPELIN_HOME}/zeppelin-zengine/target/test-classes" ]]; then
 fi
 
 HOSTNAME=$(hostname)
-ZEPPELIN_SERVER=org.apache.zeppelin.interpreter.remote.RemoteInterpreterServer
+ZEPPELIN_SERVER=com.teragrep.zep_01.interpreter.remote.RemoteInterpreterServer
 
 INTERPRETER_ID=$(basename "${INTERPRETER_DIR}")
 addJarInDirForIntp "${INTERPRETER_DIR}"

@@ -58,7 +58,7 @@ import com.teragrep.pth_03.shaded.org.antlr.v4.runtime.tree.ParseTree;
 import org.apache.spark.sql.Row;
 import org.apache.spark.sql.SparkSession;
 import org.apache.spark.sql.streaming.*;
-import org.apache.zeppelin.interpreter.InterpreterResult;
+import com.teragrep.zep_01.interpreter.InterpreterResult;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

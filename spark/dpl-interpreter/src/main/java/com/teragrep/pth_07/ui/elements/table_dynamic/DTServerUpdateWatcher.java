@@ -45,8 +45,8 @@
  */
 package com.teragrep.pth_07.ui.elements.table_dynamic;
 
-import org.apache.zeppelin.display.AngularObjectWatcher;
-import org.apache.zeppelin.interpreter.InterpreterContext;
+import com.teragrep.zep_01.display.AngularObjectWatcher;
+import com.teragrep.zep_01.interpreter.InterpreterContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
