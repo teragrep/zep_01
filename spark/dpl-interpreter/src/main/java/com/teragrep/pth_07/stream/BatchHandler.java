@@ -49,7 +49,7 @@ import com.teragrep.pth10.ast.DPLParserCatalystVisitor;
 import com.teragrep.pth_07.ui.UserInterfaceManager;
 import org.apache.spark.sql.Dataset;
 import org.apache.spark.sql.Row;
-import org.apache.zeppelin.interpreter.ZeppelinContext;
+import com.teragrep.zep_01.interpreter.ZeppelinContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

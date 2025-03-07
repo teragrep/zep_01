@@ -22,7 +22,7 @@
 
   <parent>
     <artifactId>zeppelin-interpreter-parent</artifactId>
-    <groupId>org.apache.zeppelin</groupId>
+    <groupId>com.teragrep.zep_01</groupId>
     <version>${revision}${sha1}${changelist}</version>
     <relativePath>../zeppelin-interpreter-parent/pom.xml</relativePath>
   </parent>
@@ -172,7 +172,7 @@
           </transformers>
           <artifactSet>
             <excludes>
-              <exclude>org.apache.zeppelin:zeppelin-interpreter-shaded</exclude>
+              <exclude>com.teragrep.zep_01:zeppelin-interpreter-shaded</exclude>
             </excludes>
           </artifactSet>
           <outputFile>${project.build.directory}/../../interpreter/python/${interpreter.jar.name}-${project.version}.jar</outputFile>

@@ -33,7 +33,7 @@ class PyZeppelinContext(object):
     def __init__(self, z, gateway):
         self.z = z
         self.gateway = gateway
-        self.paramOption = gateway.jvm.org.apache.zeppelin.display.ui.OptionInput.ParamOption
+        self.paramOption = gateway.jvm.com.teragrep.zep_01.display.ui.OptionInput.ParamOption
         self.javaList = gateway.jvm.java.util.ArrayList
         self.max_result = z.getMaxResult()
         self._displayhook = lambda *args: None

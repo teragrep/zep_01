@@ -52,12 +52,12 @@ import com.typesafe.config.Config;
 import com.typesafe.config.ConfigFactory;
 import org.apache.spark.SparkContext;
 import org.apache.spark.sql.SparkSession;
-import org.apache.zeppelin.interpreter.*;
-import org.apache.zeppelin.interpreter.InterpreterResult.Code;
-import org.apache.zeppelin.interpreter.thrift.InterpreterCompletion;
-import org.apache.zeppelin.scheduler.Scheduler;
-import org.apache.zeppelin.scheduler.SchedulerFactory;
-import org.apache.zeppelin.spark.SparkInterpreter;
+import com.teragrep.zep_01.interpreter.*;
+import com.teragrep.zep_01.interpreter.InterpreterResult.Code;
+import com.teragrep.zep_01.interpreter.thrift.InterpreterCompletion;
+import com.teragrep.zep_01.scheduler.Scheduler;
+import com.teragrep.zep_01.scheduler.SchedulerFactory;
+import com.teragrep.zep_01.spark.SparkInterpreter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

@@ -2,7 +2,7 @@
   {
     "group": "hbase",
     "name": "hbase",
-    "className": "org.apache.zeppelin.hbase.HbaseInterpreter",
+    "className": "com.teragrep.zep_01.hbase.HbaseInterpreter",
     "properties": {
       "hbase.home": {
         "envName": "HBASE_HOME",

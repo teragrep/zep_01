@@ -2,7 +2,7 @@
   {
     "group": "test",
     "name": "double_echo",
-    "className": "org.apache.zeppelin.interpreter.DoubleEchoInterpreter",
+    "className": "com.teragrep.zep_01.interpreter.DoubleEchoInterpreter",
     "properties": {
       "property_1": {
         "envName": "PROPERTY_1",
@@ -27,7 +27,7 @@
     "group": "test",
     "name": "echo",
     "defaultInterpreter": true,
-    "className": "org.apache.zeppelin.interpreter.EchoInterpreter",
+    "className": "com.teragrep.zep_01.interpreter.EchoInterpreter",
     "properties": {
       "property_1": {
         "envName": "PROPERTY_1",
@@ -52,7 +52,7 @@
     "group": "test",
     "name": "sleep_this_should_not_be_used",
     "defaultInterpreter": false,
-    "className": "org.apache.zeppelin.interpreter.SleepInterpreter",
+    "className": "com.teragrep.zep_01.interpreter.SleepInterpreter",
     "properties": {
 
     },
@@ -66,7 +66,7 @@
     "group": "test",
     "name": "get",
     "defaultInterpreter": false,
-    "className": "org.apache.zeppelin.interpreter.remote.mock.GetEnvPropertyInterpreter",
+    "className": "com.teragrep.zep_01.interpreter.remote.mock.GetEnvPropertyInterpreter",
     "properties": {
 
     },
@@ -80,7 +80,7 @@
     "group": "test",
     "name": "angular_obj",
     "defaultInterpreter": false,
-    "className": "org.apache.zeppelin.interpreter.remote.mock.GetAngularObjectSizeInterpreter",
+    "className": "com.teragrep.zep_01.interpreter.remote.mock.GetAngularObjectSizeInterpreter",
     "properties": {
 
     },
@@ -94,7 +94,7 @@
     "group": "test",
     "name": "mock",
     "defaultInterpreter": false,
-    "className": "org.apache.zeppelin.interpreter.remote.mock.MockInterpreterA",
+    "className": "com.teragrep.zep_01.interpreter.remote.mock.MockInterpreterA",
     "properties": {
 
     },
@@ -108,7 +108,7 @@
     "group": "test",
     "name": "mock_ao",
     "defaultInterpreter": false,
-    "className": "org.apache.zeppelin.interpreter.remote.mock.MockInterpreterAngular",
+    "className": "com.teragrep.zep_01.interpreter.remote.mock.MockInterpreterAngular",
     "properties": {
 
     },
@@ -122,7 +122,7 @@
     "group": "test",
     "name": "mock_stream",
     "defaultInterpreter": false,
-    "className": "org.apache.zeppelin.interpreter.remote.mock.MockInterpreterOutputStream",
+    "className": "com.teragrep.zep_01.interpreter.remote.mock.MockInterpreterOutputStream",
     "properties": {
 
     },

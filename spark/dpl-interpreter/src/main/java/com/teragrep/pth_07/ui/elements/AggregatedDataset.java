@@ -47,7 +47,7 @@ package com.teragrep.pth_07.ui.elements;
 
 import org.apache.spark.sql.Dataset;
 import org.apache.spark.sql.Row;
-import org.apache.zeppelin.interpreter.InterpreterContext;
+import com.teragrep.zep_01.interpreter.InterpreterContext;
 
 import java.io.IOException;
 

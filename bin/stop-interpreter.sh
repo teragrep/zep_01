@@ -26,7 +26,7 @@ bin=$(cd "${bin}">/dev/null; pwd)
 
 export ZEPPELIN_FORCE_STOP=1
 
-ZEPPELIN_STOP_INTERPRETER_MAIN=org.apache.zeppelin.interpreter.recovery.StopInterpreter
+ZEPPELIN_STOP_INTERPRETER_MAIN=com.teragrep.zep_01.interpreter.recovery.StopInterpreter
 ZEPPELIN_LOGFILE="${ZEPPELIN_LOG_DIR}/stop-interpreter.log"
 JAVA_OPTS+=" -Dzeppelin.log.file=${ZEPPELIN_LOGFILE}"
 

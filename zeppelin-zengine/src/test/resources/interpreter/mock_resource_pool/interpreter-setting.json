@@ -2,7 +2,7 @@
   {
     "group": "mock_resource_pool",
     "name": "mock_resource_pool",
-    "className": "org.apache.zeppelin.interpreter.remote.mock.MockInterpreterResourcePool",
+    "className": "com.teragrep.zep_01.interpreter.remote.mock.MockInterpreterResourcePool",
     "properties": {
     },
     "option": {

@@ -18,7 +18,7 @@
 
 include "RemoteInterpreterService.thrift"
 
-namespace java org.apache.zeppelin.interpreter.thrift
+namespace java com.teragrep.zep_01.interpreter.thrift
 
 struct RegisterInfo {
   1: string host,

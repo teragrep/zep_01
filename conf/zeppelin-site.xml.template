@@ -107,7 +107,7 @@
 
 <property>
   <name>zeppelin.notebook.storage</name>
-  <value>org.apache.zeppelin.notebook.repo.GCSNotebookRepo</value>
+  <value>com.teragrep.zep_01.notebook.repo.GCSNotebookRepo</value>
   <description>notebook persistence layer implementation</description>
 </property>
 -->
@@ -141,7 +141,7 @@
 
 <property>
   <name>zeppelin.notebook.storage</name>
-  <value>org.apache.zeppelin.notebook.repo.S3NotebookRepo</value>
+  <value>com.teragrep.zep_01.notebook.repo.S3NotebookRepo</value>
   <description>notebook persistence layer implementation</description>
 </property>
 
@@ -247,7 +247,7 @@
 
 <property>
   <name>zeppelin.notebook.storage</name>
-  <value>org.apache.zeppelin.notebook.repo.OSSNotebookRepo</value>
+  <value>com.teragrep.zep_01.notebook.repo.OSSNotebookRepo</value>
   <description>notebook persistence layer implementation</description>
 </property>
 
@@ -275,7 +275,7 @@
 
 <property>
   <name>zeppelin.notebook.storage</name>
-  <value>org.apache.zeppelin.notebook.repo.AzureNotebookRepo</value>
+  <value>com.teragrep.zep_01.notebook.repo.AzureNotebookRepo</value>
   <description>notebook persistence layer implementation</description>
 </property>
 -->
@@ -283,7 +283,7 @@
 <!-- Notebook storage layer using local file system
 <property>
   <name>zeppelin.notebook.storage</name>
-  <value>org.apache.zeppelin.notebook.repo.VFSNotebookRepo</value>
+  <value>com.teragrep.zep_01.notebook.repo.VFSNotebookRepo</value>
   <description>local notebook persistence layer implementation</description>
 </property>
 -->
@@ -291,7 +291,7 @@
 <!-- Notebook storage layer using hadoop compatible file system
 <property>
   <name>zeppelin.notebook.storage</name>
-  <value>org.apache.zeppelin.notebook.repo.FileSystemNotebookRepo</value>
+  <value>com.teragrep.zep_01.notebook.repo.FileSystemNotebookRepo</value>
   <description>Hadoop compatible file system notebook persistence layer implementation, such as local file system, hdfs, azure wasb, s3 and etc.</description>
 </property>
 
@@ -312,14 +312,14 @@
 <!--
 <property>
   <name>zeppelin.notebook.storage</name>
-  <value>org.apache.zeppelin.notebook.repo.GitNotebookRepo, org.apache.zeppelin.notebook.repo.zeppelinhub.ZeppelinHubRepo</value>
+  <value>com.teragrep.zep_01.notebook.repo.GitNotebookRepo, com.teragrep.zep_01.notebook.repo.zeppelinhub.ZeppelinHubRepo</value>
   <description>two notebook persistence layers (versioned local + ZeppelinHub)</description>
 </property>
 -->
 
 <property>
   <name>zeppelin.notebook.storage</name>
-  <value>org.apache.zeppelin.notebook.repo.GitNotebookRepo</value>
+  <value>com.teragrep.zep_01.notebook.repo.GitNotebookRepo</value>
   <description>versioned notebook persistence layer implementation</description>
 </property>
 
@@ -488,7 +488,7 @@
 <!--
 <property>
   <name>zeppelin.interpreter.lifecyclemanager.class</name>
-  <value>org.apache.zeppelin.interpreter.lifecycle.TimeoutLifecycleManager</value>
+  <value>com.teragrep.zep_01.interpreter.lifecycle.TimeoutLifecycleManager</value>
   <description>LifecycleManager class for managing the lifecycle of interpreters, by default interpreter will
   be closed after timeout</description>
 </property>
@@ -609,13 +609,13 @@
 <!--
 <property>
   <name>zeppelin.recovery.storage.class</name>
-  <value>org.apache.zeppelin.interpreter.recovery.LocalRecoveryStorage</value>
+  <value>com.teragrep.zep_01.interpreter.recovery.LocalRecoveryStorage</value>
   <description>ReoveryStorage implementation based on java native local file system</description>
 </property>
 
 <property>
   <name>zeppelin.recovery.storage.class</name>
-  <value>org.apache.zeppelin.interpreter.recovery.FileSystemRecoveryStorage</value>
+  <value>com.teragrep.zep_01.interpreter.recovery.FileSystemRecoveryStorage</value>
   <description>ReoveryStorage implementation based on hadoop FileSystem</description>
 </property>
 -->

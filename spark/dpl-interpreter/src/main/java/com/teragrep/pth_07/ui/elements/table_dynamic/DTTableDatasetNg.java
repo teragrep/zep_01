@@ -51,8 +51,8 @@ import com.teragrep.pth_07.ui.elements.table_dynamic.pojo.Order;
 import com.teragrep.pth_07.ui.elements.AbstractUserInterfaceElement;
 import org.apache.spark.sql.Dataset;
 import org.apache.spark.sql.Row;
-import org.apache.zeppelin.display.AngularObject;
-import org.apache.zeppelin.interpreter.InterpreterContext;
+import com.teragrep.zep_01.display.AngularObject;
+import com.teragrep.zep_01.interpreter.InterpreterContext;
 
 import javax.json.*;
 import javax.xml.parsers.ParserConfigurationException;
@@ -64,7 +64,7 @@ import java.util.concurrent.locks.ReentrantLock;
 
 import java.lang.reflect.Method;
 import java.lang.reflect.InvocationTargetException;
-import org.apache.zeppelin.interpreter.InterpreterOutput;
+import com.teragrep.zep_01.interpreter.InterpreterOutput;
 
 public final class DTTableDatasetNg extends AbstractUserInterfaceElement {
     // FIXME Exceptions should cause interpreter to stop
