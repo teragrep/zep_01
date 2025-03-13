@@ -18,12 +18,12 @@
 # */
 
 rm -rf gen-java
-rm -rf ../java/org/apache/zeppelin/interpreter/thrift
+rm -rf ../java/com/teragrep/zep_01/interpreter/thrift
 thrift --gen java RemoteInterpreterService.thrift
 thrift --gen java RemoteInterpreterEventService.thrift
-for file in gen-java/org/apache/zeppelin/interpreter/thrift/* ; do
+for file in gen-java/com/teragrep/zep_01/interpreter/thrift/* ; do
   cat java_license_header.txt ${file} > ${file}.tmp
   mv -f ${file}.tmp ${file}
 done
-mv gen-java/org/apache/zeppelin/interpreter/thrift ../java/org/apache/zeppelin/interpreter/thrift
+mv gen-java/com/teragrep/zep_01/interpreter/thrift ../java/com/teragrep/zep_01/interpreter/thrift
 rm -rf gen-java
