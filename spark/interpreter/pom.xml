@@ -21,13 +21,13 @@
   <modelVersion>4.0.0</modelVersion>
 
   <parent>
-    <artifactId>spark-parent</artifactId>
-    <groupId>com.teragrep.zep_01</groupId>
+    <artifactId>zep_01.spark-parent</artifactId>
+    <groupId>com.teragrep</groupId>
     <version>${revision}${sha1}${changelist}</version>
     <relativePath>../pom.xml</relativePath>
   </parent>
 
-  <artifactId>spark-interpreter</artifactId>
+  <artifactId>zep_01.spark-interpreter</artifactId>
   <packaging>jar</packaging>
   <name>Zeppelin: Spark Interpreter</name>
   <description>Zeppelin spark support</description>
@@ -74,14 +74,14 @@
 
   <dependencies>
     <dependency>
-      <groupId>com.teragrep.zep_01</groupId>
-      <artifactId>spark3-shims</artifactId>
+      <groupId>com.teragrep</groupId>
+      <artifactId>zep_01.spark3-shims</artifactId>
       <version>${project.version}</version>
     </dependency>
 
     <dependency>
-      <groupId>com.teragrep.zep_01</groupId>
-      <artifactId>zeppelin-python</artifactId>
+      <groupId>com.teragrep</groupId>
+      <artifactId>zep_01.zeppelin-python</artifactId>
       <version>${project.version}</version>
       <exclusions>
         <exclusion>
@@ -93,7 +93,7 @@
 
     <dependency>
       <groupId>${project.groupId}</groupId>
-      <artifactId>zeppelin-python</artifactId>
+      <artifactId>zep_01.zeppelin-python</artifactId>
       <version>${project.version}</version>
       <classifier>tests</classifier>
       <scope>test</scope>
@@ -381,7 +381,7 @@
               <exclude>org.scala-lang:scala-reflect</exclude>
               <exclude>commons-lang:commons-lang</exclude>
               <exclude>org.apache.commons:commons-compress</exclude>
-              <exclude>com.teragrep.zep_01:zeppelin-interpreter-shaded</exclude>
+              <exclude>com.teragrep:zep_01.zeppelin-interpreter-shaded</exclude>
             </excludes>
           </artifactSet>
 

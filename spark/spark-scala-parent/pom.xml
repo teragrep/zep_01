@@ -20,14 +20,14 @@
   xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
 
     <parent>
-        <groupId>com.teragrep.zep_01</groupId>
-        <artifactId>zeppelin-interpreter-parent</artifactId>
+        <groupId>com.teragrep</groupId>
+        <artifactId>zep_01.zeppelin-interpreter-parent</artifactId>
         <version>${revision}${sha1}${changelist}</version>
         <relativePath>../../zeppelin-interpreter-parent/pom.xml</relativePath>
     </parent>
 
     <modelVersion>4.0.0</modelVersion>
-    <artifactId>spark-scala-parent</artifactId>
+    <artifactId>zep_01.spark-scala-parent</artifactId>
     <packaging>pom</packaging>
     <name>Zeppelin: Spark Scala Parent</name>
 
@@ -43,8 +43,8 @@
 
     <dependencies>
         <dependency>
-            <groupId>com.teragrep.zep_01</groupId>
-            <artifactId>spark-interpreter</artifactId>
+            <groupId>com.teragrep</groupId>
+            <artifactId>zep_01.spark-interpreter</artifactId>
             <version>${project.version}</version>
             <scope>provided</scope>
         </dependency>

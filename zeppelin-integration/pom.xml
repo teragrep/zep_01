@@ -21,13 +21,13 @@
   <modelVersion>4.0.0</modelVersion>
 
   <parent>
-    <artifactId>zeppelin</artifactId>
-    <groupId>com.teragrep.zep_01</groupId>
+    <artifactId>zep_01</artifactId>
+    <groupId>com.teragrep</groupId>
     <version>${revision}${sha1}${changelist}</version>
     <relativePath>..</relativePath>
   </parent>
 
-  <artifactId>zeppelin-integration</artifactId>
+  <artifactId>zep_01.zeppelin-integration</artifactId>
   <packaging>jar</packaging>
   <name>Zeppelin: Integration Test</name>
 
@@ -79,7 +79,7 @@
     </dependency>
     <dependency>
       <groupId>${project.groupId}</groupId>
-      <artifactId>zeppelin-zengine</artifactId>
+      <artifactId>zep_01.zeppelin-zengine</artifactId>
       <version>${project.version}</version>
       <exclusions>
         <exclusion>

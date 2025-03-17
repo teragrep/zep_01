@@ -21,12 +21,12 @@
   <modelVersion>4.0.0</modelVersion>
 
   <parent>
-    <artifactId>zeppelin</artifactId>
-    <groupId>com.teragrep.zep_01</groupId>
+    <artifactId>zep_01</artifactId>
+    <groupId>com.teragrep</groupId>
     <version>${revision}${sha1}${changelist}</version>
   </parent>
 
-  <artifactId>zeppelin-server</artifactId>
+  <artifactId>zep_01.zeppelin-server</artifactId>
   <packaging>jar</packaging>
   <name>Zeppelin: Server</name>
 
@@ -54,7 +54,7 @@
 
     <dependency>
       <groupId>${project.groupId}</groupId>
-      <artifactId>zeppelin-zengine</artifactId>
+      <artifactId>zep_01.zeppelin-zengine</artifactId>
       <version>${project.version}</version>
       <exclusions>
         <exclusion>
@@ -330,8 +330,8 @@
     </dependency>
 
     <dependency>
-      <groupId>com.teragrep.zep_01</groupId>
-      <artifactId>zeppelin-zengine</artifactId>
+      <groupId>com.teragrep</groupId>
+      <artifactId>zep_01.zeppelin-zengine</artifactId>
       <version>${project.version}</version>
       <classifier>tests</classifier>
       <scope>test</scope>

@@ -22,13 +22,13 @@
     <modelVersion>4.0.0</modelVersion>
 
     <parent>
-        <artifactId>zengine-plugins-parent</artifactId>
-        <groupId>com.teragrep.zep_01</groupId>
+        <artifactId>zep_01.zengine-plugins-parent</artifactId>
+        <groupId>com.teragrep</groupId>
         <version>${revision}${sha1}${changelist}</version>
         <relativePath>../../../zeppelin-plugins</relativePath>
     </parent>
 
-    <artifactId>notebookrepo-filesystem</artifactId>
+    <artifactId>zep_01.notebookrepo-filesystem</artifactId>
     <packaging>jar</packaging>
     <name>Zeppelin: Plugin FileSystemNotebookRepo</name>
     <description>NotebookRepo implementation based on Hadoop FileSystem</description>

@@ -20,14 +20,14 @@
   xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
 
   <parent>
-    <artifactId>spark-parent</artifactId>
-    <groupId>com.teragrep.zep_01</groupId>
+    <artifactId>zep_01.spark-parent</artifactId>
+    <groupId>com.teragrep</groupId>
     <version>${revision}${sha1}${changelist}</version>
     <relativePath>../pom.xml</relativePath>
   </parent>
 
   <modelVersion>4.0.0</modelVersion>
-  <artifactId>spark-shims</artifactId>
+  <artifactId>zep_01.spark-shims</artifactId>
   <packaging>jar</packaging>
   <name>Zeppelin: Spark Shims</name>
   <properties>

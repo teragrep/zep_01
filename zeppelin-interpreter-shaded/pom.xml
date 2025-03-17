@@ -22,12 +22,12 @@
   <modelVersion>4.0.0</modelVersion>
 
   <parent>
-    <artifactId>zeppelin</artifactId>
-    <groupId>com.teragrep.zep_01</groupId>
+    <artifactId>zep_01</artifactId>
+    <groupId>com.teragrep</groupId>
     <version>${revision}${sha1}${changelist}</version>
   </parent>
 
-  <artifactId>zeppelin-interpreter-shaded</artifactId>
+  <artifactId>zep_01.zeppelin-interpreter-shaded</artifactId>
   <packaging>jar</packaging>
   <name>Zeppelin: Interpreter Shaded</name>
   <description>Zeppelin Interpreter Shaded</description>
@@ -42,8 +42,8 @@
 
   <dependencies>
     <dependency>
-      <groupId>com.teragrep.zep_01</groupId>
-      <artifactId>zeppelin-interpreter</artifactId>
+      <groupId>com.teragrep</groupId>
+      <artifactId>zep_01.zeppelin-interpreter</artifactId>
       <version>${revision}${sha1}${changelist}</version>
       <optional>true</optional>
     </dependency>
@@ -150,7 +150,7 @@
               <target>
                 <echo>ANT TASK - copying files....</echo>
                 <copy todir="${project.basedir}/../interpreter" overwrite="true" flatten="true">
-                  <fileset dir="${project.build.directory}" includes="zeppelin-interpreter-shaded-*.jar" >
+                  <fileset dir="${project.build.directory}" includes="zep_01.zeppelin-interpreter-shaded-*.jar" >
                   </fileset>
                 </copy>
               </target>

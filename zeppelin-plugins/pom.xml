@@ -22,12 +22,12 @@
     <modelVersion>4.0.0</modelVersion>
 
     <parent>
-        <artifactId>zeppelin</artifactId>
-        <groupId>com.teragrep.zep_01</groupId>
+        <artifactId>zep_01</artifactId>
+        <groupId>com.teragrep</groupId>
         <version>${revision}${sha1}${changelist}</version>
     </parent>
 
-    <artifactId>zengine-plugins-parent</artifactId>
+    <artifactId>zep_01.zengine-plugins-parent</artifactId>
     <packaging>pom</packaging>
     <name>Zeppelin: Plugins Parent</name>
     <description>Zeppelin Plugins Parent</description>
@@ -48,7 +48,7 @@
     <dependencies>
         <dependency>
             <groupId>${project.groupId}</groupId>
-            <artifactId>zeppelin-zengine</artifactId>
+            <artifactId>zep_01.zeppelin-zengine</artifactId>
             <version>${project.version}</version>
             <scope>provided</scope>
             <exclusions>

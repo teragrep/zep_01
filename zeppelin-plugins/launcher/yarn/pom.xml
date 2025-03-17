@@ -23,13 +23,13 @@
   <modelVersion>4.0.0</modelVersion>
 
   <parent>
-    <artifactId>zengine-plugins-parent</artifactId>
-    <groupId>com.teragrep.zep_01</groupId>
+    <artifactId>zep_01.zengine-plugins-parent</artifactId>
+    <groupId>com.teragrep</groupId>
     <version>${revision}${sha1}${changelist}</version>
     <relativePath>../../../zeppelin-plugins</relativePath>
   </parent>
 
-  <artifactId>launcher-yarn</artifactId>
+  <artifactId>zep_01.launcher-yarn</artifactId>
   <packaging>jar</packaging>
   <name>Zeppelin: Plugin Yarn Launcher</name>
   <description>Launcher implementation to run interpreter on yarn</description>

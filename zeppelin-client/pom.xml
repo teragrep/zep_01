@@ -22,13 +22,13 @@
   <modelVersion>4.0.0</modelVersion>
 
   <parent>
-    <artifactId>zeppelin</artifactId>
-    <groupId>com.teragrep.zep_01</groupId>
+    <artifactId>zep_01</artifactId>
+    <groupId>com.teragrep</groupId>
     <version>${revision}${sha1}${changelist}</version>
     <relativePath>../pom.xml</relativePath>
   </parent>
 
-  <artifactId>zeppelin-client</artifactId>
+  <artifactId>zep_01.zeppelin-client</artifactId>
   <packaging>jar</packaging>
   <name>Zeppelin: Client</name>
   <description>Zeppelin Client</description>
@@ -45,7 +45,7 @@
 
     <dependency>
       <groupId>${project.groupId}</groupId>
-      <artifactId>zeppelin-common</artifactId>
+      <artifactId>zep_01.zeppelin-common</artifactId>
       <version>${project.version}</version>
     </dependency>
 

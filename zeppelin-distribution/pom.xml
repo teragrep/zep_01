@@ -21,13 +21,13 @@
   <modelVersion>4.0.0</modelVersion>
 
   <parent>
-    <artifactId>zeppelin</artifactId>
-    <groupId>com.teragrep.zep_01</groupId>
+    <artifactId>zep_01</artifactId>
+    <groupId>com.teragrep</groupId>
     <version>${revision}${sha1}${changelist}</version>
     <relativePath>../pom.xml</relativePath>
   </parent>
 
-  <artifactId>zeppelin-distribution</artifactId>
+  <artifactId>zep_01.zeppelin-distribution</artifactId>
   <packaging>pom</packaging>
   <name>Zeppelin: Packaging distribution</name>
   <properties>
@@ -39,7 +39,7 @@
   <dependencies>
     <dependency>
       <groupId>${project.groupId}</groupId>
-      <artifactId>zeppelin-server</artifactId>
+      <artifactId>zep_01.zeppelin-server</artifactId>
       <version>${project.version}</version>
     </dependency>
   </dependencies>
