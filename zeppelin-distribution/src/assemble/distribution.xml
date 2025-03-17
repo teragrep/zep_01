@@ -23,7 +23,7 @@
     <format>dir</format>
   </formats>
   <includeBaseDirectory>true</includeBaseDirectory>
-  <baseDirectory>zeppelin-${project.version}</baseDirectory>
+  <baseDirectory>zep_01-${project.version}</baseDirectory>
 
   <dependencySets>
     <dependencySet>

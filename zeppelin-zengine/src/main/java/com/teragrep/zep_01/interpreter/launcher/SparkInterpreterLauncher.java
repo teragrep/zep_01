@@ -147,7 +147,7 @@ public class SparkInterpreterLauncher extends StandardInterpreterLauncher {
         try (DirectoryStream<Path> interpreterStream = Files.newDirectoryStream(interpreterFolder, Files::isRegularFile)) {
           List<String> interpreterJars = StreamSupport.stream(interpreterStream.spliterator(),
                 false)
-                .filter(jar -> jar.toFile().getName().startsWith("zeppelin-interpreter-shaded")
+                .filter(jar -> jar.toFile().getName().startsWith("zep_01.zeppelin-interpreter-shaded")
                         && jar.toFile().getName().endsWith(".jar"))
                 .map(jar -> jar.toAbsolutePath().toString())
                 .collect(Collectors.toList());
