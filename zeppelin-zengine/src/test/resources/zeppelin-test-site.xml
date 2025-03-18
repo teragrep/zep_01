@@ -66,14 +66,14 @@
 
 <property>
   <name>zeppelin.notebook.storage</name>
-  <value>org.apache.zeppelin.notebook.repo.S3NotebookRepo</value>
+  <value>com.teragrep.zep_01.notebook.repo.S3NotebookRepo</value>
   <description>notebook persistence layer implementation</description>
 </property>
 -->
 
 <property>
   <name>zeppelin.notebook.storage</name>
-  <value>org.apache.zeppelin.notebook.repo.VFSNotebookRepo</value>
+  <value>com.teragrep.zep_01.notebook.repo.VFSNotebookRepo</value>
   <description>notebook persistence layer implementation</description>
 </property>
 

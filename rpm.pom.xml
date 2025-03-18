@@ -221,7 +221,7 @@
               <recurseDirectories>true</recurseDirectories>
               <sources>
                 <source>
-                  <location>${project.basedir}/zeppelin-distribution/target/zeppelin-${revision}${sha1}${changelist}/zeppelin-${revision}${sha1}${changelist}/lib/</location>
+                  <location>${project.basedir}/zeppelin-distribution/target/zep_01-${revision}${sha1}${changelist}/zep_01-${revision}${sha1}${changelist}/lib/</location>
                 </source>
               </sources>
             </mapping>

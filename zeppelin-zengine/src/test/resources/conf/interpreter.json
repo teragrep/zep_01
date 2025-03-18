@@ -13,7 +13,7 @@
       "interpreterGroup": [
         {
           "name": "echo",
-          "class": "org.apache.zeppelin.interpreter.EchoInterpreter",
+          "class": "com.teragrep.zep_01.interpreter.EchoInterpreter",
           "defaultInterpreter": true,
           "editor": {
             "language": "java",
@@ -47,7 +47,7 @@
       "interpreterGroup": [
         {
           "name": "echo",
-          "class": "org.apache.zeppelin.interpreter.EchoInterpreter",
+          "class": "com.teragrep.zep_01.interpreter.EchoInterpreter",
           "defaultInterpreter": true,
           "editor": {
             "language": "java",
@@ -71,7 +71,7 @@
     "2C4BJDRRZ" : {
       "group": "mock1",
       "name": "mock1",
-      "className": "org.apache.zeppelin.interpreter.mock.MockInterpreter1",
+      "className": "com.teragrep.zep_01.interpreter.mock.MockInterpreter1",
       "properties": {
       },
       "option": {
@@ -89,7 +89,7 @@
     "2C3PTPMUH" : {
       "group": "mock2",
       "name": "mock2",
-      "className": "org.apache.zeppelin.interpreter.mock.MockInterpreter2",
+      "className": "com.teragrep.zep_01.interpreter.mock.MockInterpreter2",
       "properties": {
       },
       "option": {
@@ -107,7 +107,7 @@
     "2C5DCRVGM" : {
       "group": "mock_resource_pool",
       "name": "mock_resource_pool",
-      "className": "org.apache.zeppelin.interpreter.remote.mock.MockInterpreterResourcePool",
+      "className": "com.teragrep.zep_01.interpreter.remote.mock.MockInterpreterResourcePool",
       "properties": {
       },
       "option": {
@@ -125,7 +125,7 @@
     "2C5EERVGA" : {
       "group": "config_test",
       "name": "config_test",
-      "className": "org.apache.zeppelin.interpreter.mock.MockInterpreter1",
+      "className": "com.teragrep.zep_01.interpreter.mock.MockInterpreter1",
       "properties": {
       },
       "config": {

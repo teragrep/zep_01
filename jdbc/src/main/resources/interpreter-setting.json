@@ -2,7 +2,7 @@
   {
     "group": "jdbc",
     "name": "sql",
-    "className": "org.apache.zeppelin.jdbc.JDBCInterpreter",
+    "className": "com.teragrep.zep_01.jdbc.JDBCInterpreter",
     "properties": {
       "default.url": {
         "envName": null,

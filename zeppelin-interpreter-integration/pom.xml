@@ -21,13 +21,13 @@
   <modelVersion>4.0.0</modelVersion>
 
   <parent>
-    <artifactId>zeppelin</artifactId>
-    <groupId>org.apache.zeppelin</groupId>
+    <artifactId>zep_01</artifactId>
+    <groupId>com.teragrep</groupId>
     <version>${revision}${sha1}${changelist}</version>
     <relativePath>..</relativePath>
   </parent>
 
-  <artifactId>zeppelin-interpreter-integration</artifactId>
+  <artifactId>zep_01.zeppelin-interpreter-integration</artifactId>
   <version>${revision}${sha1}${changelist}</version>
   <packaging>jar</packaging>
   <name>Zeppelin: Interpreter Integration Test</name>
@@ -46,8 +46,8 @@
 
   <dependencies>
     <dependency>
-      <groupId>org.apache.zeppelin</groupId>
-      <artifactId>zeppelin-client</artifactId>
+      <groupId>com.teragrep</groupId>
+      <artifactId>zep_01.zeppelin-client</artifactId>
       <version>${project.version}</version>
       <exclusions>
         <exclusion>
@@ -58,8 +58,8 @@
     </dependency>
 
     <dependency>
-      <groupId>org.apache.zeppelin</groupId>
-      <artifactId>zeppelin-zengine</artifactId>
+      <groupId>com.teragrep</groupId>
+      <artifactId>zep_01.zeppelin-zengine</artifactId>
       <version>${project.version}</version>
       <exclusions>
         <exclusion>
@@ -76,8 +76,8 @@
     </dependency>
 
     <dependency>
-      <groupId>org.apache.zeppelin</groupId>
-      <artifactId>zeppelin-server</artifactId>
+      <groupId>com.teragrep</groupId>
+      <artifactId>zep_01.zeppelin-server</artifactId>
       <version>${project.version}</version>
     </dependency>
 
@@ -107,8 +107,8 @@
 
     <!--test libraries-->
     <dependency>
-      <groupId>org.apache.zeppelin</groupId>
-      <artifactId>zeppelin-zengine</artifactId>
+      <groupId>com.teragrep</groupId>
+      <artifactId>zep_01.zeppelin-zengine</artifactId>
       <version>${project.version}</version>
       <classifier>tests</classifier>
       <scope>test</scope>
@@ -121,8 +121,8 @@
     </dependency>
 
     <dependency>
-      <groupId>org.apache.zeppelin</groupId>
-      <artifactId>zeppelin-server</artifactId>
+      <groupId>com.teragrep</groupId>
+      <artifactId>zep_01.zeppelin-server</artifactId>
       <version>${project.version}</version>
       <classifier>tests</classifier>
       <scope>test</scope>

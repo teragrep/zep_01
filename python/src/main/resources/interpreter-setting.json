@@ -2,7 +2,7 @@
   {
     "group": "python",
     "name": "python",
-    "className": "org.apache.zeppelin.python.PythonInterpreter",
+    "className": "com.teragrep.zep_01.python.PythonInterpreter",
     "defaultInterpreter": true,
     "properties": {
       "zeppelin.python": {

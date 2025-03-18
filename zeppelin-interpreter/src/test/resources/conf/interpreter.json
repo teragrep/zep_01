@@ -13,7 +13,7 @@
       "interpreterGroup": [
         {
           "name": "echo",
-          "class": "org.apache.zeppelin.interpreter.EchoInterpreter",
+          "class": "com.teragrep.zep_01.interpreter.EchoInterpreter",
           "defaultInterpreter": true,
           "editor": {
             "language": "java",
@@ -47,7 +47,7 @@
       "interpreterGroup": [
         {
           "name": "echo",
-          "class": "org.apache.zeppelin.interpreter.EchoInterpreter",
+          "class": "com.teragrep.zep_01.interpreter.EchoInterpreter",
           "defaultInterpreter": true,
           "editor": {
             "language": "java",

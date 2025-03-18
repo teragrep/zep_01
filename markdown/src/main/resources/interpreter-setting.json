@@ -2,7 +2,7 @@
   {
     "group": "md",
     "name": "md",
-    "className": "org.apache.zeppelin.markdown.Markdown",
+    "className": "com.teragrep.zep_01.markdown.Markdown",
     "properties": {},
     "editor": {
       "language": "markdown",

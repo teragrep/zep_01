@@ -22,13 +22,13 @@
   <modelVersion>4.0.0</modelVersion>
 
   <parent>
-    <artifactId>zeppelin</artifactId>
-    <groupId>org.apache.zeppelin</groupId>
+    <artifactId>zep_01</artifactId>
+    <groupId>com.teragrep</groupId>
     <version>${revision}${sha1}${changelist}</version>
     <relativePath>../pom.xml</relativePath>
   </parent>
 
-  <artifactId>zeppelin-common</artifactId>
+  <artifactId>zep_01.zeppelin-common</artifactId>
   <packaging>jar</packaging>
   <name>Zeppelin: Common</name>
   <description>Zeppelin Common</description>

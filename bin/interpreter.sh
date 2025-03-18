@@ -90,7 +90,7 @@ fi
 
 check_java_version
 
-ZEPPELIN_INTERPRETER_API_JAR=$(find "${ZEPPELIN_HOME}/interpreter" -name 'zeppelin-interpreter-shaded-*.jar')
+ZEPPELIN_INTERPRETER_API_JAR=$(find "${ZEPPELIN_HOME}/interpreter" -name 'zep_01.zeppelin-interpreter-shaded-*.jar')
 ZEPPELIN_INTP_CLASSPATH+=":${CLASSPATH}:${ZEPPELIN_INTERPRETER_API_JAR}"
 
 # This is a hack and should be fixed later. Add test classes for unittest
@@ -100,7 +100,7 @@ if [[ -d "${ZEPPELIN_HOME}/zeppelin-zengine/target/test-classes" ]]; then
 fi
 
 HOSTNAME=$(hostname)
-ZEPPELIN_SERVER=org.apache.zeppelin.interpreter.remote.RemoteInterpreterServer
+ZEPPELIN_SERVER=com.teragrep.zep_01.interpreter.remote.RemoteInterpreterServer
 
 INTERPRETER_ID=$(basename "${INTERPRETER_DIR}")
 addJarInDirForIntp "${INTERPRETER_DIR}"
@@ -146,7 +146,7 @@ if [[ "${INTERPRETER_ID}" == "spark" ]]; then
   fi
   if [[ -n "${SPARK_HOME}" ]]; then
     export SPARK_SUBMIT="${SPARK_HOME}/bin/spark-submit"
-    SPARK_APP_JAR="$(ls "${ZEPPELIN_HOME}"/interpreter/spark/spark-interpreter*.jar)"
+    SPARK_APP_JAR="$(ls "${ZEPPELIN_HOME}"/interpreter/spark/zep_01.spark-interpreter*.jar)"
     # This will evantually passes SPARK_APP_JAR to classpath of SparkIMain
     ZEPPELIN_INTP_CLASSPATH+=":${SPARK_APP_JAR}"
 

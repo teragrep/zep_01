@@ -19,14 +19,14 @@
          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
   <parent>
-    <groupId>org.apache.zeppelin</groupId>
-    <artifactId>spark-scala-parent</artifactId>
+    <groupId>com.teragrep</groupId>
+    <artifactId>zep_01.spark-scala-parent</artifactId>
     <version>${revision}${sha1}${changelist}</version>
     <relativePath>../spark-scala-parent/pom.xml</relativePath>
   </parent>
 
   <modelVersion>4.0.0</modelVersion>
-  <artifactId>spark-scala-2.12</artifactId>
+  <artifactId>zep_01.spark-scala-2.12</artifactId>
   <packaging>jar</packaging>
   <name>Zeppelin: Spark Interpreter Scala_2.12</name>
 

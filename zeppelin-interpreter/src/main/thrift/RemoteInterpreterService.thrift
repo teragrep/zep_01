@@ -16,7 +16,7 @@
  * limitations under the License.
  */
 
-namespace java org.apache.zeppelin.interpreter.thrift
+namespace java com.teragrep.zep_01.interpreter.thrift
 
 struct RemoteInterpreterContext {
   1: string noteId,

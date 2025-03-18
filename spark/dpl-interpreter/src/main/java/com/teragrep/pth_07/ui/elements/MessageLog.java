@@ -45,9 +45,9 @@
  */
 package com.teragrep.pth_07.ui.elements;
 
-import org.apache.zeppelin.display.AngularObject;
-import org.apache.zeppelin.display.AngularObjectWatcher;
-import org.apache.zeppelin.interpreter.InterpreterContext;
+import com.teragrep.zep_01.display.AngularObject;
+import com.teragrep.zep_01.display.AngularObjectWatcher;
+import com.teragrep.zep_01.interpreter.InterpreterContext;
 
 import java.util.ArrayList;
 

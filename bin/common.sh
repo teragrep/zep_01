@@ -100,7 +100,7 @@ function addJarInDirForIntp() {
   fi
 }
 
-ZEPPELIN_COMMANDLINE_MAIN=org.apache.zeppelin.utils.CommandLineUtils
+ZEPPELIN_COMMANDLINE_MAIN=com.teragrep.zep_01.utils.CommandLineUtils
 
 function getZeppelinVersion(){
     CLASSPATH+=":${ZEPPELIN_CLASSPATH}"

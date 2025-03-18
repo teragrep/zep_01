@@ -88,7 +88,7 @@ fi
 HOSTNAME=$(hostname)
 ZEPPELIN_LOGFILE="${ZEPPELIN_LOG_DIR}/zeppelin-${ZEPPELIN_IDENT_STRING}-${HOSTNAME}.log"
 
-ZEPPELIN_SERVER=org.apache.zeppelin.server.ZeppelinServer
+ZEPPELIN_SERVER=com.teragrep.zep_01.server.ZeppelinServer
 JAVA_OPTS+=" -Dzeppelin.log.file=${ZEPPELIN_LOGFILE}"
 
 addJarInDir "${ZEPPELIN_HOME}"

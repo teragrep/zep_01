@@ -21,13 +21,13 @@
   <modelVersion>4.0.0</modelVersion>
 
   <parent>
-    <artifactId>zeppelin-interpreter-parent</artifactId>
-    <groupId>org.apache.zeppelin</groupId>
+    <artifactId>zep_01.zeppelin-interpreter-parent</artifactId>
+    <groupId>com.teragrep</groupId>
     <version>${revision}${sha1}${changelist}</version>
     <relativePath>../zeppelin-interpreter-parent/pom.xml</relativePath>
   </parent>
 
-  <artifactId>zeppelin-python</artifactId>
+  <artifactId>zep_01.zeppelin-python</artifactId>
   <packaging>jar</packaging>
   <name>Zeppelin: Python interpreter</name>
 
@@ -172,7 +172,7 @@
           </transformers>
           <artifactSet>
             <excludes>
-              <exclude>org.apache.zeppelin:zeppelin-interpreter-shaded</exclude>
+              <exclude>com.teragrep:zep_01.zeppelin-interpreter-shaded</exclude>
             </excludes>
           </artifactSet>
           <outputFile>${project.build.directory}/../../interpreter/python/${interpreter.jar.name}-${project.version}.jar</outputFile>

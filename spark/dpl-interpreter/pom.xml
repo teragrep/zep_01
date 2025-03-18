@@ -49,12 +49,12 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
   <modelVersion>4.0.0</modelVersion>
   <parent>
-    <artifactId>spark-parent</artifactId>
-    <groupId>org.apache.zeppelin</groupId>
+    <artifactId>zep_01.spark-parent</artifactId>
+    <groupId>com.teragrep</groupId>
     <version>${revision}${sha1}${changelist}</version>
     <relativePath>../pom.xml</relativePath>
   </parent>
-  <artifactId>pth_07</artifactId>
+  <artifactId>zep_01.pth_07</artifactId>
   <packaging>jar</packaging>
   <version>${revision}${sha1}${changelist}</version>
   <name>Zeppelin: Teragrep DPL Interpreter</name>
@@ -90,8 +90,8 @@
       <scope>provided</scope>
     </dependency>
     <dependency>
-      <groupId>org.apache.zeppelin</groupId>
-      <artifactId>spark-interpreter</artifactId>
+      <groupId>com.teragrep</groupId>
+      <artifactId>zep_01.spark-interpreter</artifactId>
       <version>${revision}${sha1}${changelist}</version>
       <scope>provided</scope>
     </dependency>
@@ -201,7 +201,7 @@
               <exclude>org.scala-lang:scala-reflect</exclude>
               <exclude>commons-lang:commons-lang</exclude>
               <exclude>org.apache.commons:commons-compress</exclude>
-              <exclude>org.apache.zeppelin:zeppelin-interpreter-shaded</exclude>
+              <exclude>com.teragrep:zep_01.zeppelin-interpreter-shaded</exclude>
             </excludes>
           </artifactSet>
           <outputFile>${project.basedir}/../../interpreter/${interpreter.name}/pth_07-${project.version}.jar</outputFile>
@@ -300,16 +300,10 @@
                 </requireJavaVersion>
                 <banDynamicVersions>
                   <ignores>
-                    <!-- Dependency io.grpc:grpc-core:jar:1.26.0 (provided) via org.apache.zeppelin:spark-interpreter:jar:0.10.1 -> org.apache.zeppelin:zeppelin-jupyter-interpreter:jar:0.10.1 -> io.grpc:grpc-netty:jar:1.26.0 is referenced with a banned dynamic version [1.26.0,1.26.0] -->
+                    <!-- Allow only local development builds by default -->
+                    <ignore>com.teragrep:*:0.0.1-SNAPSHOT</ignore>
+                    <!-- Dependency io.grpc:grpc-core:jar:1.26.0 (provided) via com.teragrep.zep_01:spark-interpreter:jar:0.10.1 -> com.teragrep.zep_01:zeppelin-jupyter-interpreter:jar:0.10.1 -> io.grpc:grpc-netty:jar:1.26.0 is referenced with a banned dynamic version [1.26.0,1.26.0] -->
                     <ignore>io.grpc:grpc-core</ignore>
-                    <!-- FIXME: Fix these when rebranding -->
-                    <ignore>org.apache.zeppelin:spark-interpreter</ignore>
-                    <ignore>org.apache.zeppelin:zeppelin-interpreter-shaded</ignore>
-                    <ignore>org.apache.zeppelin:zeppelin-interpreter</ignore>
-                    <ignore>org.apache.zeppelin:spark3-shims</ignore>
-                    <ignore>org.apache.zeppelin:zeppelin-python</ignore>
-                    <ignore>org.apache.zeppelin:zeppelin-common</ignore>
-                    <ignore>org.apache.zeppelin:spark-shims</ignore>
                   </ignores>
                 </banDynamicVersions>
                 <requirePluginVersions>

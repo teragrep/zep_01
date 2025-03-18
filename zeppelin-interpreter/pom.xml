@@ -22,13 +22,13 @@
   <modelVersion>4.0.0</modelVersion>
 
   <parent>
-    <artifactId>zeppelin</artifactId>
-    <groupId>org.apache.zeppelin</groupId>
+    <artifactId>zep_01</artifactId>
+    <groupId>com.teragrep</groupId>
     <version>${revision}${sha1}${changelist}</version>
     <relativePath>../pom.xml</relativePath>
   </parent>
 
-  <artifactId>zeppelin-interpreter</artifactId>
+  <artifactId>zep_01.zeppelin-interpreter</artifactId>
   <packaging>jar</packaging>
   <name>Zeppelin: Interpreter</name>
   <description>Zeppelin Interpreter</description>
@@ -51,7 +51,7 @@
   <dependencies>
     <dependency>
       <groupId>${project.groupId}</groupId>
-      <artifactId>zeppelin-common</artifactId>
+      <artifactId>zep_01.zeppelin-common</artifactId>
       <version>${project.version}</version>
     </dependency>
 

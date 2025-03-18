@@ -21,13 +21,13 @@
   <modelVersion>4.0.0</modelVersion>
 
   <parent>
-    <artifactId>spark-parent</artifactId>
-    <groupId>org.apache.zeppelin</groupId>
+    <artifactId>zep_01.spark-parent</artifactId>
+    <groupId>com.teragrep</groupId>
     <version>${revision}${sha1}${changelist}</version>
     <relativePath>../pom.xml</relativePath>
   </parent>
 
-  <artifactId>spark-interpreter</artifactId>
+  <artifactId>zep_01.spark-interpreter</artifactId>
   <packaging>jar</packaging>
   <name>Zeppelin: Spark Interpreter</name>
   <description>Zeppelin spark support</description>
@@ -74,14 +74,14 @@
 
   <dependencies>
     <dependency>
-      <groupId>org.apache.zeppelin</groupId>
-      <artifactId>spark3-shims</artifactId>
+      <groupId>com.teragrep</groupId>
+      <artifactId>zep_01.spark3-shims</artifactId>
       <version>${project.version}</version>
     </dependency>
 
     <dependency>
-      <groupId>org.apache.zeppelin</groupId>
-      <artifactId>zeppelin-python</artifactId>
+      <groupId>com.teragrep</groupId>
+      <artifactId>zep_01.zeppelin-python</artifactId>
       <version>${project.version}</version>
       <exclusions>
         <exclusion>
@@ -93,7 +93,7 @@
 
     <dependency>
       <groupId>${project.groupId}</groupId>
-      <artifactId>zeppelin-python</artifactId>
+      <artifactId>zep_01.zeppelin-python</artifactId>
       <version>${project.version}</version>
       <classifier>tests</classifier>
       <scope>test</scope>
@@ -381,7 +381,7 @@
               <exclude>org.scala-lang:scala-reflect</exclude>
               <exclude>commons-lang:commons-lang</exclude>
               <exclude>org.apache.commons:commons-compress</exclude>
-              <exclude>org.apache.zeppelin:zeppelin-interpreter-shaded</exclude>
+              <exclude>com.teragrep:zep_01.zeppelin-interpreter-shaded</exclude>
             </excludes>
           </artifactSet>
 
@@ -394,15 +394,15 @@
           <relocations>
             <relocation>
               <pattern>io.netty</pattern>
-              <shadedPattern>org.apache.zeppelin.io.netty</shadedPattern>
+              <shadedPattern>com.teragrep.zep_01.io.netty</shadedPattern>
             </relocation>
             <relocation>
               <pattern>com.google</pattern>
-              <shadedPattern>org.apache.zeppelin.com.google</shadedPattern>
+              <shadedPattern>com.teragrep.zep_01.com.google</shadedPattern>
             </relocation>
             <relocation>
               <pattern>com.facebook.fb303</pattern>
-              <shadedPattern>org.apache.zeppelin.com.facebook.fb303</shadedPattern>
+              <shadedPattern>com.teragrep.zep_01.com.facebook.fb303</shadedPattern>
             </relocation>
           </relocations>
           <outputFile>${project.basedir}/../../interpreter/${interpreter.name}/${project.artifactId}-${project.version}.jar</outputFile>

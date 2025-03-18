@@ -2,7 +2,7 @@
   {
     "group": "java",
     "name": "java",
-    "className": "org.apache.zeppelin.java.JavaInterpreter",
+    "className": "com.teragrep.zep_01.java.JavaInterpreter",
     "defaultInterpreter": true,
     "properties": {
     },
