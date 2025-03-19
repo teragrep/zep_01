@@ -132,5 +132,5 @@ admin = *
 /api/configurations/** = authc, roles[admin]
 /api/credential/** = authc, roles[admin]
 /api/admin/** = authc, roles[admin]
-#/** = anon
+/ = anon
 /** = authc
