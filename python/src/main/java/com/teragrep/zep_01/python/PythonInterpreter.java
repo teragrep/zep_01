@@ -203,7 +203,7 @@ public class PythonInterpreter extends Interpreter {
     } else if (condaPythonExec != null) {
       return condaPythonExec;
     } else {
-      return getProperty("zeppelin.python", "python");
+      return getProperty("zeppelin.python", "python3");
     }
   }
 
