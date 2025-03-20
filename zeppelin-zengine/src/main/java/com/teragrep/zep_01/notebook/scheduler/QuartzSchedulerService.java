@@ -27,7 +27,7 @@ import javax.inject.Inject;
 import com.google.common.annotations.VisibleForTesting;
 import com.teragrep.zep_01.conf.ZeppelinConfiguration;
 import com.teragrep.zep_01.notebook.Note;
-import com.teragrep.zep_01.notebook.Notebook;
+import com.teragrep.zep_01.notebook.LegacyNotebook;
 import org.quartz.CronScheduleBuilder;
 import org.quartz.CronTrigger;
 import org.quartz.JobBuilder;
@@ -46,12 +46,12 @@ public class QuartzSchedulerService implements SchedulerService {
   private static final Logger LOGGER = LoggerFactory.getLogger(QuartzSchedulerService.class);
 
   private final ZeppelinConfiguration zeppelinConfiguration;
-  private final Notebook notebook;
+  private final LegacyNotebook notebook;
   private final Scheduler scheduler;
   private final Thread loadingNotesThread;
 
   @Inject
-  public QuartzSchedulerService(ZeppelinConfiguration zeppelinConfiguration, Notebook notebook)
+  public QuartzSchedulerService(ZeppelinConfiguration zeppelinConfiguration, LegacyNotebook notebook)
       throws SchedulerException {
     this.zeppelinConfiguration = zeppelinConfiguration;
     this.notebook = notebook;

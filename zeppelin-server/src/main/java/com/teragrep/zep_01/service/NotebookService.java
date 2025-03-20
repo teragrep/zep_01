@@ -47,8 +47,8 @@ import com.teragrep.zep_01.interpreter.thrift.InterpreterCompletion;
 import com.teragrep.zep_01.notebook.Note;
 import com.teragrep.zep_01.notebook.NoteInfo;
 import com.teragrep.zep_01.notebook.NoteManager;
-import com.teragrep.zep_01.notebook.Notebook;
-import com.teragrep.zep_01.notebook.Paragraph;
+import com.teragrep.zep_01.notebook.LegacyNotebook;
+import com.teragrep.zep_01.notebook.LegacyParagraph;
 import com.teragrep.zep_01.notebook.AuthorizationService;
 import com.teragrep.zep_01.notebook.exception.CorruptedNoteException;
 import com.teragrep.zep_01.notebook.exception.NotePathAlreadyExistsException;
@@ -67,7 +67,7 @@ import org.slf4j.LoggerFactory;
 
 
 /**
- * Service class for Notebook related operations. It use {@link Notebook} which provides
+ * Service class for Notebook related operations. It use {@link LegacyNotebook} which provides
  * high level api to access notes.
  *
  * In most of methods, this class will check permission first and whether this note existed.
@@ -82,13 +82,13 @@ public class NotebookService {
           DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss").withZone(ZoneId.systemDefault());
 
   private final ZeppelinConfiguration zConf;
-  private final Notebook notebook;
+  private final LegacyNotebook notebook;
   private final AuthorizationService authorizationService;
   private final SchedulerService schedulerService;
 
   @Inject
   public NotebookService(
-      Notebook notebook,
+      LegacyNotebook notebook,
       AuthorizationService authorizationService,
       ZeppelinConfiguration zeppelinConfiguration,
       SchedulerService schedulerService) {
@@ -341,7 +341,7 @@ public class NotebookService {
                               boolean failIfDisabled,
                               boolean blocking,
                               ServiceContext context,
-                              ServiceCallback<Paragraph> callback) throws IOException {
+                              ServiceCallback<LegacyParagraph> callback) throws IOException {
 
     LOGGER.info("Start to run paragraph: {} of note: {}", paragraphId, noteId);
     if (!checkPermission(noteId, Permission.RUNNER, Message.OP.RUN_PARAGRAPH, context, callback)) {
@@ -353,7 +353,7 @@ public class NotebookService {
       callback.onFailure(new NoteNotFoundException(noteId), context);
       return false;
     }
-    Paragraph p = note.getParagraph(paragraphId);
+    LegacyParagraph p = note.getParagraph(paragraphId);
     if (p == null) {
       callback.onFailure(new ParagraphNotFoundException(paragraphId), context);
       return false;
@@ -415,7 +415,7 @@ public class NotebookService {
   public boolean runAllParagraphs(String noteId,
                                   List<Map<String, Object>> paragraphs,
                                   ServiceContext context,
-                                  ServiceCallback<Paragraph> callback) throws IOException {
+                                  ServiceCallback<LegacyParagraph> callback) throws IOException {
     if (!checkPermission(noteId, Permission.RUNNER, Message.OP.RUN_ALL_PARAGRAPHS, context,
         callback)) {
       return false;
@@ -449,7 +449,7 @@ public class NotebookService {
               return false;
             }
             // also stop execution when user code in a paragraph fails
-            Paragraph p = note.getParagraph(paragraphId);
+            LegacyParagraph p = note.getParagraph(paragraphId);
             InterpreterResult result = p.getReturn();
             if (result != null && result.code() == ERROR) {
               return false;
@@ -481,7 +481,7 @@ public class NotebookService {
   public void cancelParagraph(String noteId,
                               String paragraphId,
                               ServiceContext context,
-                              ServiceCallback<Paragraph> callback) throws IOException {
+                              ServiceCallback<LegacyParagraph> callback) throws IOException {
     if (!checkPermission(noteId, Permission.RUNNER, Message.OP.CANCEL_PARAGRAPH, context,
         callback)) {
       return;
@@ -490,7 +490,7 @@ public class NotebookService {
     if (note == null) {
       throw new NoteNotFoundException(noteId);
     }
-    Paragraph p = note.getParagraph(paragraphId);
+    LegacyParagraph p = note.getParagraph(paragraphId);
     if (p == null) {
       throw new ParagraphNotFoundException(paragraphId);
     }
@@ -502,7 +502,7 @@ public class NotebookService {
                             String paragraphId,
                             int newIndex,
                             ServiceContext context,
-                            ServiceCallback<Paragraph> callback) throws IOException {
+                            ServiceCallback<LegacyParagraph> callback) throws IOException {
     if (!checkPermission(noteId, Permission.WRITER, Message.OP.MOVE_PARAGRAPH, context,
         callback)) {
       return;
@@ -527,7 +527,7 @@ public class NotebookService {
   public void removeParagraph(String noteId,
                               String paragraphId,
                               ServiceContext context,
-                              ServiceCallback<Paragraph> callback) throws IOException {
+                              ServiceCallback<LegacyParagraph> callback) throws IOException {
     if (!checkPermission(noteId, Permission.WRITER, Message.OP.PARAGRAPH_REMOVE, context,
         callback)) {
       return;
@@ -539,16 +539,16 @@ public class NotebookService {
     if (note.getParagraph(paragraphId) == null) {
       throw new ParagraphNotFoundException(paragraphId);
     }
-    Paragraph p = note.removeParagraph(context.getAutheInfo().getUser(), paragraphId);
+    LegacyParagraph p = note.removeParagraph(context.getAutheInfo().getUser(), paragraphId);
     notebook.saveNote(note, context.getAutheInfo());
     callback.onSuccess(p, context);
   }
 
-  public Paragraph insertParagraph(String noteId,
-                                   int index,
-                                   Map<String, Object> config,
-                                   ServiceContext context,
-                                   ServiceCallback<Paragraph> callback) throws IOException {
+  public LegacyParagraph insertParagraph(String noteId,
+                                         int index,
+                                         Map<String, Object> config,
+                                         ServiceContext context,
+                                         ServiceCallback<LegacyParagraph> callback) throws IOException {
     if (!checkPermission(noteId, Permission.WRITER, Message.OP.INSERT_PARAGRAPH, context,
         callback)) {
       return null;
@@ -557,7 +557,7 @@ public class NotebookService {
     if (note == null) {
       throw new NoteNotFoundException(noteId);
     }
-    Paragraph newPara = note.insertNewParagraph(index, context.getAutheInfo());
+    LegacyParagraph newPara = note.insertNewParagraph(index, context.getAutheInfo());
     newPara.mergeConfig(config);
     notebook.saveNote(note, context.getAutheInfo());
     callback.onSuccess(newPara, context);
@@ -631,7 +631,7 @@ public class NotebookService {
                               Map<String, Object> params,
                               Map<String, Object> config,
                               ServiceContext context,
-                              ServiceCallback<Paragraph> callback) throws IOException {
+                              ServiceCallback<LegacyParagraph> callback) throws IOException {
     if (!checkPermission(noteId, Permission.WRITER, Message.OP.COMMIT_PARAGRAPH, context,
         callback)) {
       return;
@@ -641,7 +641,7 @@ public class NotebookService {
       callback.onFailure(new NoteNotFoundException(noteId), context);
       return;
     }
-    Paragraph p = note.getParagraph(paragraphId);
+    LegacyParagraph p = note.getParagraph(paragraphId);
     if (p == null) {
       callback.onFailure(new ParagraphNotFoundException(paragraphId), context);
       return;
@@ -662,10 +662,10 @@ public class NotebookService {
     callback.onSuccess(p, context);
   }
 
-  public Paragraph getNextSessionParagraph(String noteId,
-                                        int maxParagraph,
-                                        ServiceContext context,
-                                        ServiceCallback<Paragraph> callback) throws IOException {
+  public LegacyParagraph getNextSessionParagraph(String noteId,
+                                                 int maxParagraph,
+                                                 ServiceContext context,
+                                                 ServiceCallback<LegacyParagraph> callback) throws IOException {
     if (!checkPermission(noteId, Permission.WRITER, Message.OP.PARAGRAPH_CLEAR_OUTPUT, context,
             callback)) {
       throw new IOException("No privilege to access this note");
@@ -696,7 +696,7 @@ public class NotebookService {
   public void clearParagraphOutput(String noteId,
                                    String paragraphId,
                                    ServiceContext context,
-                                   ServiceCallback<Paragraph> callback) throws IOException {
+                                   ServiceCallback<LegacyParagraph> callback) throws IOException {
     if (!checkPermission(noteId, Permission.WRITER, Message.OP.PARAGRAPH_CLEAR_OUTPUT, context,
         callback)) {
       return;
@@ -706,12 +706,12 @@ public class NotebookService {
       callback.onFailure(new NoteNotFoundException(noteId), context);
       return;
     }
-    Paragraph p = note.getParagraph(paragraphId);
+    LegacyParagraph p = note.getParagraph(paragraphId);
     if (p == null) {
       callback.onFailure(new ParagraphNotFoundException(paragraphId), context);
       return;
     }
-    Paragraph returnedParagraph;
+    LegacyParagraph returnedParagraph;
     if (note.isPersonalizedMode()) {
       returnedParagraph = note.clearPersonalizedParagraphOutput(paragraphId,
           context.getAutheInfo().getUser());
@@ -1111,7 +1111,7 @@ public class NotebookService {
   public void spell(String noteId,
                     Message message,
                     ServiceContext context,
-                    ServiceCallback<Paragraph> callback) throws IOException {
+                    ServiceCallback<LegacyParagraph> callback) throws IOException {
 
     try {
       if (!checkPermission(noteId, Permission.RUNNER, Message.OP.RUN_PARAGRAPH_USING_SPELL, context,
@@ -1131,7 +1131,7 @@ public class NotebookService {
       Map<String, Object> config = (Map<String, Object>) message.get("config");
 
       Note note = notebook.getNote(noteId);
-      Paragraph p = setParagraphUsingMessage(note, message, paragraphId,
+      LegacyParagraph p = setParagraphUsingMessage(note, message, paragraphId,
           text, title, params, config);
       p.setResult((InterpreterResult) message.get("results"));
       p.setErrorMessage((String) message.get("errorMessage"));
@@ -1163,7 +1163,7 @@ public class NotebookService {
 
   }
 
-  private void addNewParagraphIfLastParagraphIsExecuted(Note note, Paragraph p) {
+  private void addNewParagraphIfLastParagraphIsExecuted(Note note, LegacyParagraph p) {
     // if it's the last paragraph and not empty, let's add a new one
     boolean isTheLastParagraph = note.isLastParagraph(p.getId());
     if (!(StringUtils.isEmpty(p.getText()) ||
@@ -1174,10 +1174,10 @@ public class NotebookService {
   }
 
 
-  private Paragraph setParagraphUsingMessage(Note note, Message fromMessage, String paragraphId,
-                                             String text, String title, Map<String, Object> params,
-                                             Map<String, Object> config) {
-    Paragraph p = note.getParagraph(paragraphId);
+  private LegacyParagraph setParagraphUsingMessage(Note note, Message fromMessage, String paragraphId,
+                                                   String text, String title, Map<String, Object> params,
+                                                   Map<String, Object> config) {
+    LegacyParagraph p = note.getParagraph(paragraphId);
     p.setText(text);
     p.setTitle(title);
     AuthenticationInfo subject =
@@ -1267,7 +1267,7 @@ public class NotebookService {
       if (note == null) {
         return;
       }
-      Paragraph p = note.getParagraph(paragraphId);
+      LegacyParagraph p = note.getParagraph(paragraphId);
       if (p == null) {
         return;
       }

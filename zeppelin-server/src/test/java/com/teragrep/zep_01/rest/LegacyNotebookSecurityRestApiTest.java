@@ -30,18 +30,18 @@ import java.util.Map;
 import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.util.EntityUtils;
 import com.teragrep.zep_01.notebook.Note;
-import com.teragrep.zep_01.notebook.Notebook;
+import com.teragrep.zep_01.notebook.LegacyNotebook;
 import com.teragrep.zep_01.utils.TestUtils;
 import org.hamcrest.Matcher;
 import org.junit.*;
 
-public class NotebookSecurityRestApiTest extends AbstractTestRestApi {
+public class LegacyNotebookSecurityRestApiTest extends AbstractTestRestApi {
   Gson gson = new Gson();
 
   @BeforeClass
   public static void init() throws Exception {
     AbstractTestRestApi.startUpWithAuthenticationEnable(
-            NotebookSecurityRestApiTest.class.getSimpleName());
+            LegacyNotebookSecurityRestApiTest.class.getSimpleName());
   }
 
   @AfterClass
@@ -99,7 +99,7 @@ public class NotebookSecurityRestApiTest extends AbstractTestRestApi {
     userTryRemoveNote(noteId, "user2", "password3", isForbidden());
     userTryRemoveNote(noteId, "user1", "password2", isAllowed());
 
-    Note deletedNote = TestUtils.getInstance(Notebook.class).getNote(noteId);
+    Note deletedNote = TestUtils.getInstance(LegacyNotebook.class).getNote(noteId);
     assertNull("Deleted note should be null", deletedNote);
   }
 
@@ -135,7 +135,7 @@ public class NotebookSecurityRestApiTest extends AbstractTestRestApi {
           EntityUtils.toString(post.getEntity(), StandardCharsets.UTF_8), new TypeToken<Map<String, Object>>() {}.getType());
     post.close();
     String newNoteId = (String) resp.get("body");
-    Notebook notebook = TestUtils.getInstance(Notebook.class);
+    LegacyNotebook notebook = TestUtils.getInstance(LegacyNotebook.class);
     Note newNote = notebook.getNote(newNoteId);
     assertNotNull("Can not find new note by id", newNote);
     return newNoteId;
@@ -146,7 +146,7 @@ public class NotebookSecurityRestApiTest extends AbstractTestRestApi {
     assertThat("Test delete method:", delete, isAllowed());
     delete.close();
     // make sure note is deleted
-    Note deletedNote = TestUtils.getInstance(Notebook.class).getNote(noteId);
+    Note deletedNote = TestUtils.getInstance(LegacyNotebook.class).getNote(noteId);
     assertNull("Deleted note should be null", deletedNote);
   }
 

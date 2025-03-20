@@ -80,22 +80,22 @@ public abstract class NoteEventAsyncListener implements NoteEventListener, Close
   }
 
   @Override
-  public void onParagraphCreate(Paragraph p) {
+  public void onParagraphCreate(LegacyParagraph p) {
     executor.execute(new EventHandling(new ParagraphCreateEvent(p)));
   }
 
   @Override
-  public void onParagraphRemove(Paragraph p) {
+  public void onParagraphRemove(LegacyParagraph p) {
     executor.execute(new EventHandling(new ParagraphRemoveEvent(p)));
   }
 
   @Override
-  public void onParagraphUpdate(Paragraph p) {
+  public void onParagraphUpdate(LegacyParagraph p) {
     executor.execute(new EventHandling(new ParagraphUpdateEvent(p)));
   }
 
   @Override
-  public void onParagraphStatusChange(Paragraph p, Job.Status status) {
+  public void onParagraphStatusChange(LegacyParagraph p, Job.Status status) {
     executor.execute(new EventHandling(new ParagraphStatusChangeEvent(p)));
   }
 
@@ -176,49 +176,49 @@ public abstract class NoteEventAsyncListener implements NoteEventListener, Close
   }
 
   public static class ParagraphCreateEvent implements NoteEvent {
-    private final Paragraph p;
+    private final LegacyParagraph p;
 
-    public ParagraphCreateEvent(Paragraph p) {
+    public ParagraphCreateEvent(LegacyParagraph p) {
       this.p = p;
     }
 
-    public Paragraph getParagraph() {
+    public LegacyParagraph getParagraph() {
       return p;
     }
   }
 
   public static class ParagraphUpdateEvent implements NoteEvent {
-    private final Paragraph p;
+    private final LegacyParagraph p;
 
-    public ParagraphUpdateEvent(Paragraph p) {
+    public ParagraphUpdateEvent(LegacyParagraph p) {
       this.p = p;
     }
 
-    public Paragraph getParagraph() {
+    public LegacyParagraph getParagraph() {
       return p;
     }
   }
 
   public static class ParagraphRemoveEvent implements NoteEvent {
-    private final Paragraph p;
+    private final LegacyParagraph p;
 
-    public ParagraphRemoveEvent(Paragraph p) {
+    public ParagraphRemoveEvent(LegacyParagraph p) {
       this.p = p;
     }
 
-    public Paragraph getParagraph() {
+    public LegacyParagraph getParagraph() {
       return p;
     }
   }
 
   public static class ParagraphStatusChangeEvent implements NoteEvent {
-    private final Paragraph p;
+    private final LegacyParagraph p;
 
-    public ParagraphStatusChangeEvent(Paragraph p) {
+    public ParagraphStatusChangeEvent(LegacyParagraph p) {
       this.p = p;
     }
 
-    public Paragraph getParagraph() {
+    public LegacyParagraph getParagraph() {
       return p;
     }
   }

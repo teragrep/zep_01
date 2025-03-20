@@ -45,7 +45,6 @@ import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 
-import org.apache.commons.io.IOUtils;
 import org.apache.thrift.TException;
 import com.teragrep.zep_01.conf.ZeppelinConfiguration;
 import com.teragrep.zep_01.display.AngularObject;
@@ -54,19 +53,15 @@ import com.teragrep.zep_01.interpreter.InterpreterGroup;
 import com.teragrep.zep_01.interpreter.InterpreterSetting;
 import com.teragrep.zep_01.interpreter.remote.RemoteAngularObjectRegistry;
 import com.teragrep.zep_01.interpreter.thrift.ParagraphInfo;
-import com.teragrep.zep_01.interpreter.thrift.ServiceException;
 import com.teragrep.zep_01.notebook.AuthorizationService;
 import com.teragrep.zep_01.notebook.Note;
-import com.teragrep.zep_01.notebook.Notebook;
-import com.teragrep.zep_01.notebook.Paragraph;
+import com.teragrep.zep_01.notebook.LegacyNotebook;
+import com.teragrep.zep_01.notebook.LegacyParagraph;
 import com.teragrep.zep_01.notebook.repo.NotebookRepoWithVersionControl;
-import com.teragrep.zep_01.notebook.scheduler.QuartzSchedulerService;
-import com.teragrep.zep_01.notebook.scheduler.SchedulerService;
 import com.teragrep.zep_01.common.Message;
 import com.teragrep.zep_01.common.Message.OP;
 import com.teragrep.zep_01.rest.AbstractTestRestApi;
 import com.teragrep.zep_01.scheduler.Job;
-import com.teragrep.zep_01.service.ConfigurationService;
 import com.teragrep.zep_01.service.NotebookService;
 import com.teragrep.zep_01.service.ServiceContext;
 import com.teragrep.zep_01.user.AuthenticationInfo;
@@ -78,8 +73,8 @@ import org.junit.*;
 @Ignore(value="[ERROR] Crashed tests:\n" +
         "[ERROR] com.teragrep.zep_01.socket.NotebookServerTest\n" +
         "[ERROR] ExecutionException The forked VM terminated without properly saying goodbye. VM crash or System.exit called?\n")
-public class NotebookServerTest extends AbstractTestRestApi {
-  private static Notebook notebook;
+public class LegacyNotebookServerTest extends AbstractTestRestApi {
+  private static LegacyNotebook notebook;
   private static NotebookServer notebookServer;
   private static NotebookService notebookService;
   private static AuthorizationService authorizationService;
@@ -88,8 +83,8 @@ public class NotebookServerTest extends AbstractTestRestApi {
 
   @BeforeClass
   public static void init() throws Exception {
-    AbstractTestRestApi.startUp(NotebookServerTest.class.getSimpleName());
-    notebook = TestUtils.getInstance(Notebook.class);
+    AbstractTestRestApi.startUp(LegacyNotebookServerTest.class.getSimpleName());
+    notebook = TestUtils.getInstance(LegacyNotebook.class);
     authorizationService =  TestUtils.getInstance(AuthorizationService.class);
     notebookServer = TestUtils.getInstance(NotebookServer.class);
     notebookService = TestUtils.getInstance(NotebookService.class);
@@ -140,7 +135,7 @@ public class NotebookServerTest extends AbstractTestRestApi {
     notebookServer.onMessage(sock1, message.toJson());
     notebookServer.onMessage(sock2, message.toJson());
 
-    Paragraph paragraph = createdNote.getParagraphs().get(0);
+    LegacyParagraph paragraph = createdNote.getParagraphs().get(0);
     String paragraphId = paragraph.getId();
 
     String[] patches = new String[]{
@@ -198,7 +193,7 @@ public class NotebookServerTest extends AbstractTestRestApi {
     }
 
     // start interpreter process
-    Paragraph p1 = note1.addNewParagraph(AuthenticationInfo.ANONYMOUS);
+    LegacyParagraph p1 = note1.addNewParagraph(AuthenticationInfo.ANONYMOUS);
     p1.setText("%md start remote interpreter process");
     p1.setAuthenticationInfo(anonymous);
     note1.run(p1.getId());
@@ -264,7 +259,7 @@ public class NotebookServerTest extends AbstractTestRestApi {
     }
 
     // start interpreter process
-    Paragraph p1 = note1.addNewParagraph(AuthenticationInfo.ANONYMOUS);
+    LegacyParagraph p1 = note1.addNewParagraph(AuthenticationInfo.ANONYMOUS);
     p1.setText("%angular <h2>Bind here : {{COMMAND_TYPE}}</h2>");
     p1.setAuthenticationInfo(anonymous);
     note1.run(p1.getId());
@@ -361,7 +356,7 @@ public class NotebookServerTest extends AbstractTestRestApi {
     }
 
     // start interpreter process
-    Paragraph p1 = note1.addNewParagraph(AuthenticationInfo.ANONYMOUS);
+    LegacyParagraph p1 = note1.addNewParagraph(AuthenticationInfo.ANONYMOUS);
     p1.setText("%angular <h2>Bind here : {{COMMAND_TYPE}}</h2>");
     p1.setAuthenticationInfo(anonymous);
     note1.run(p1.getId());
@@ -429,13 +424,13 @@ public class NotebookServerTest extends AbstractTestRestApi {
             .put("value", value)
             .put("paragraphId", "paragraphId");
 
-    final Notebook notebook = mock(Notebook.class);
+    final LegacyNotebook notebook = mock(LegacyNotebook.class);
     notebookServer.setNotebook(() -> notebook);
     notebookServer.setNotebookService(() -> notebookService);
     final Note note = mock(Note.class, RETURNS_DEEP_STUBS);
 
     when(notebook.getNote("noteId")).thenReturn(note);
-    final Paragraph paragraph = mock(Paragraph.class, RETURNS_DEEP_STUBS);
+    final LegacyParagraph paragraph = mock(LegacyParagraph.class, RETURNS_DEEP_STUBS);
     when(note.getParagraph("paragraphId")).thenReturn(paragraph);
 
     final RemoteAngularObjectRegistry mdRegistry = mock(RemoteAngularObjectRegistry.class);
@@ -480,12 +475,12 @@ public class NotebookServerTest extends AbstractTestRestApi {
             .put("name", varName)
             .put("paragraphId", "paragraphId");
 
-    final Notebook notebook = mock(Notebook.class);
+    final LegacyNotebook notebook = mock(LegacyNotebook.class);
     notebookServer.setNotebook(() -> notebook);
     notebookServer.setNotebookService(() -> notebookService);
     final Note note = mock(Note.class, RETURNS_DEEP_STUBS);
     when(notebook.getNote("noteId")).thenReturn(note);
-    final Paragraph paragraph = mock(Paragraph.class, RETURNS_DEEP_STUBS);
+    final LegacyParagraph paragraph = mock(LegacyParagraph.class, RETURNS_DEEP_STUBS);
     when(note.getParagraph("paragraphId")).thenReturn(paragraph);
 
     final RemoteAngularObjectRegistry mdRegistry = mock(RemoteAngularObjectRegistry.class);
@@ -596,7 +591,7 @@ public class NotebookServerTest extends AbstractTestRestApi {
     infos.put("paraId", paragraphId);
 
     notebookServer.onParaInfosReceived(nodeId, paragraphId, "spark", infos);
-    Paragraph paragraph = note.getParagraph(paragraphId);
+    LegacyParagraph paragraph = note.getParagraph(paragraphId);
 
     // check RuntimeInfos
     assertTrue(paragraph.getRuntimeInfos().containsKey("jobUrl"));
@@ -611,7 +606,7 @@ public class NotebookServerTest extends AbstractTestRestApi {
   @Test
   public void testGetParagraphList() throws IOException {
     Note note = notebook.createNote("note1", anonymous);
-    Paragraph p1 = note.addNewParagraph(anonymous);
+    LegacyParagraph p1 = note.addNewParagraph(anonymous);
     p1.setText("%md start remote interpreter process");
     p1.setAuthenticationInfo(anonymous);
     notebook.saveNote(note, anonymous);

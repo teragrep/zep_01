@@ -65,8 +65,8 @@ import org.slf4j.LoggerFactory;
  * refresh cron and update InterpreterSetting, these are done through NoteEventListener.
  *
  */
-public class Notebook {
-  private static final Logger LOGGER = LoggerFactory.getLogger(Notebook.class);
+public class LegacyNotebook {
+  private static final Logger LOGGER = LoggerFactory.getLogger(LegacyNotebook.class);
 
   private AuthorizationService authorizationService;
   private NoteManager noteManager;
@@ -85,7 +85,7 @@ public class Notebook {
    * @throws IOException
    * @throws SchedulerException
    */
-  public Notebook(
+  public LegacyNotebook(
       ZeppelinConfiguration conf,
       AuthorizationService authorizationService,
       NotebookRepo notebookRepo,
@@ -124,7 +124,7 @@ public class Notebook {
       getNoteStream().forEach(note -> {
         try {
           boolean hasRecoveredParagraph = false;
-          for (Paragraph paragraph : note.getParagraphs()) {
+          for (LegacyParagraph paragraph : note.getParagraphs()) {
             if (paragraph.getStatus() == Job.Status.RUNNING) {
               paragraph.recover();
               hasRecoveredParagraph = true;
@@ -151,7 +151,7 @@ public class Notebook {
   }
 
   @Inject
-  public Notebook(
+  public LegacyNotebook(
       ZeppelinConfiguration conf,
       AuthorizationService authorizationService,
       NotebookRepo notebookRepo,
@@ -297,8 +297,8 @@ public class Notebook {
       notePath = oldNote.getName();
     }
     Note newNote = createNote(notePath, subject);
-    List<Paragraph> paragraphs = oldNote.getParagraphs();
-    for (Paragraph p : paragraphs) {
+    List<LegacyParagraph> paragraphs = oldNote.getParagraphs();
+    for (LegacyParagraph p : paragraphs) {
       newNote.addCloneParagraph(p, subject);
     }
     noteManager.saveNote(newNote, subject);
@@ -320,8 +320,8 @@ public class Notebook {
       throw new IOException("Source note: " + sourceNoteId + " not found");
     }
     Note newNote = createNote(newNotePath, subject, false);
-    List<Paragraph> paragraphs = sourceNote.getParagraphs();
-    for (Paragraph p : paragraphs) {
+    List<LegacyParagraph> paragraphs = sourceNote.getParagraphs();
+    for (LegacyParagraph p : paragraphs) {
       newNote.addCloneParagraph(p, subject);
     }
 
@@ -385,7 +385,7 @@ public class Notebook {
     note.setParagraphJobListener(paragraphJobListener);
     note.setNoteEventListeners(noteEventListeners);
     note.setCredentials(credentials);
-    for (Paragraph p : note.getParagraphs()) {
+    for (LegacyParagraph p : note.getParagraphs()) {
       p.setNote(note);
     }
     return note;
@@ -522,7 +522,7 @@ public class Notebook {
 
     // restore angular object --------------
     Date lastUpdatedDate = new Date(0);
-    for (Paragraph p : note.getParagraphs()) {
+    for (LegacyParagraph p : note.getParagraphs()) {
       p.setNote(note);
       if (p.getDateFinished() != null && lastUpdatedDate.before(p.getDateFinished())) {
         lastUpdatedDate = p.getDateFinished();
@@ -626,7 +626,7 @@ public class Notebook {
       note.setParagraphJobListener(paragraphJobListener);
       note.setNoteEventListeners(noteEventListeners);
       note.setCredentials(credentials);
-      for (Paragraph p : note.getParagraphs()) {
+      for (LegacyParagraph p : note.getParagraphs()) {
         p.setNote(note);
         p.setListener(paragraphJobListener);
       }
@@ -682,7 +682,7 @@ public class Notebook {
       return new ArrayList<>();
     }
     Set<InterpreterSetting> settings = new HashSet<>();
-    for (Paragraph p : note.getParagraphs()) {
+    for (LegacyParagraph p : note.getParagraphs()) {
       try {
         Interpreter intp = p.getBindedInterpreter();
         settings.add((

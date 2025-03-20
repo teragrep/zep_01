@@ -60,7 +60,7 @@ import org.apache.lucene.store.Directory;
 import org.apache.lucene.store.FSDirectory;
 import com.teragrep.zep_01.conf.ZeppelinConfiguration;
 import com.teragrep.zep_01.notebook.Note;
-import com.teragrep.zep_01.notebook.Paragraph;
+import com.teragrep.zep_01.notebook.LegacyParagraph;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -218,7 +218,7 @@ public class LuceneSearch extends SearchService {
   }
 
   @Override
-  public void updateParagraphIndex(Paragraph p) throws IOException {
+  public void updateParagraphIndex(LegacyParagraph p) throws IOException {
     LOGGER.debug("Update paragraph index: {}", p.getId());
     updateDoc(p.getNote().getId(), p.getNote().getName(), p);
   }
@@ -232,7 +232,7 @@ public class LuceneSearch extends SearchService {
    * @param p paragraph
    * @throws IOException if there is a low-level IO error
    */
-  private void updateDoc(String noteId, String noteName, Paragraph p) throws IOException {
+  private void updateDoc(String noteId, String noteName, LegacyParagraph p) throws IOException {
     String id = formatId(noteId, p);
     Document doc = newDocument(id, noteName, p);
     try {
@@ -247,7 +247,7 @@ public class LuceneSearch extends SearchService {
    * If paragraph is not null, id is <noteId>/paragraphs/<paragraphId>, otherwise it's just
    * <noteId>.
    */
-  static String formatId(String noteId, Paragraph p) {
+  static String formatId(String noteId, LegacyParagraph p) {
     String id = noteId;
     if (null != p) {
       id = String.join("/", id, PARAGRAPH, p.getId());
@@ -255,7 +255,7 @@ public class LuceneSearch extends SearchService {
     return id;
   }
 
-  static String formatDeleteId(String noteId, Paragraph p) {
+  static String formatDeleteId(String noteId, LegacyParagraph p) {
     String id = noteId;
     if (null != p) {
       id = String.join("/", id, PARAGRAPH, p.getId());
@@ -273,7 +273,7 @@ public class LuceneSearch extends SearchService {
    * @param p paragraph
    * @return a document
    */
-  private Document newDocument(String id, String noteName, Paragraph p) {
+  private Document newDocument(String id, String noteName, LegacyParagraph p) {
     Document doc = new Document();
 
     Field pathField = new StringField(ID_FIELD, id, Field.Store.YES);
@@ -309,7 +309,7 @@ public class LuceneSearch extends SearchService {
   }
 
   @Override
-  public void addParagraphIndex(Paragraph paragraph) throws IOException {
+  public void addParagraphIndex(LegacyParagraph paragraph) throws IOException {
     updateDoc(paragraph.getNote().getId(), paragraph.getNote().getName(), paragraph);
   }
 
@@ -321,7 +321,7 @@ public class LuceneSearch extends SearchService {
    */
   private void addIndexDocAsync(Note note) throws IOException {
     indexNoteName(note.getId(), note.getName());
-    for (Paragraph paragraph : note.getParagraphs()) {
+    for (LegacyParagraph paragraph : note.getParagraphs()) {
       updateDoc(note.getId(), note.getName(), paragraph);
     }
   }
@@ -335,7 +335,7 @@ public class LuceneSearch extends SearchService {
       return;
     }
     deleteDoc(note.getId(), null);
-    for (Paragraph paragraph : note.getParagraphs()) {
+    for (LegacyParagraph paragraph : note.getParagraphs()) {
       deleteParagraphIndex(note.getId(), paragraph);
     }
   }
@@ -345,7 +345,7 @@ public class LuceneSearch extends SearchService {
    *  #deleteIndexDoc(com.teragrep.zep_01.notebook.Note, com.teragrep.zep_01.notebook.Paragraph)
    */
   @Override
-  public void deleteParagraphIndex(String noteId, Paragraph p) throws IOException{
+  public void deleteParagraphIndex(String noteId, LegacyParagraph p) throws IOException{
     deleteDoc(noteId, p);
   }
 
@@ -355,7 +355,7 @@ public class LuceneSearch extends SearchService {
    * @param noteId id of the note
    * @param p paragraph
    */
-  private void deleteDoc(String noteId, Paragraph p) throws IOException {
+  private void deleteDoc(String noteId, LegacyParagraph p) throws IOException {
     String fullNoteOrJustParagraph = formatDeleteId(noteId, p);
     LOGGER.debug("Deleting note {}, out of: {}", noteId, indexWriter.getDocStats().numDocs);
     try {

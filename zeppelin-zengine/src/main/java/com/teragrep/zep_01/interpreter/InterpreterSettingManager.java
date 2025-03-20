@@ -36,7 +36,7 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import javax.inject.Inject;
-import org.apache.commons.io.FileUtils;
+
 import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.StringUtils;
 import com.teragrep.zep_01.conf.ZeppelinConfiguration;
@@ -50,8 +50,8 @@ import com.teragrep.zep_01.interpreter.remote.RemoteInterpreterProcess;
 import com.teragrep.zep_01.interpreter.remote.RemoteInterpreterProcessListener;
 import com.teragrep.zep_01.notebook.Note;
 import com.teragrep.zep_01.notebook.NoteEventListener;
-import com.teragrep.zep_01.notebook.Notebook;
-import com.teragrep.zep_01.notebook.Paragraph;
+import com.teragrep.zep_01.notebook.LegacyNotebook;
+import com.teragrep.zep_01.notebook.LegacyParagraph;
 import com.teragrep.zep_01.notebook.ParagraphTextParser;
 import com.teragrep.zep_01.resource.Resource;
 import com.teragrep.zep_01.resource.ResourcePool;
@@ -64,9 +64,6 @@ import org.eclipse.jetty.util.annotation.ManagedAttribute;
 import org.eclipse.jetty.util.annotation.ManagedObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.eclipse.aether.repository.Proxy;
-import org.eclipse.aether.repository.RemoteRepository;
-import org.eclipse.aether.repository.Authentication;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -127,7 +124,7 @@ public class InterpreterSettingManager implements NoteEventListener {
   private String defaultInterpreterGroup;
   private final Gson gson;
 
-  private Notebook notebook;
+  private LegacyNotebook notebook;
   private AngularObjectRegistryListener angularObjectRegistryListener;
   private RemoteInterpreterProcessListener remoteInterpreterProcessListener;
   private RecoveryStorage recoveryStorage;
@@ -406,11 +403,11 @@ public class InterpreterSettingManager implements NoteEventListener {
     }
   }
 
-  public void setNotebook(Notebook notebook) {
+  public void setNotebook(LegacyNotebook notebook) {
     this.notebook = notebook;
   }
 
-  public Notebook getNotebook() {
+  public LegacyNotebook getNotebook() {
     return notebook;
   }
 
@@ -1015,7 +1012,7 @@ public class InterpreterSettingManager implements NoteEventListener {
   public void onNoteRemove(Note note, AuthenticationInfo subject) throws IOException {
     // stop all associated interpreters
     if (note.getParagraphs() != null) {
-      for (Paragraph paragraph : note.getParagraphs()) {
+      for (LegacyParagraph paragraph : note.getParagraphs()) {
         try {
           Interpreter interpreter = paragraph.getInterpreter();
           if (interpreter != null) {
@@ -1040,14 +1037,14 @@ public class InterpreterSettingManager implements NoteEventListener {
         AngularObjectRegistry registry = interpreterGroup.getAngularObjectRegistry();
         if (registry instanceof RemoteAngularObjectRegistry) {
           // remove paragraph scope object
-          for (Paragraph p : note.getParagraphs()) {
+          for (LegacyParagraph p : note.getParagraphs()) {
             ((RemoteAngularObjectRegistry) registry).removeAllAndNotifyRemoteProcess(note.getId(), p.getId());
           }
           // remove note scope object
           ((RemoteAngularObjectRegistry) registry).removeAllAndNotifyRemoteProcess(note.getId(), null);
         } else {
           // remove paragraph scope object
-          for (Paragraph p : note.getParagraphs()) {
+          for (LegacyParagraph p : note.getParagraphs()) {
             registry.removeAll(note.getId(), p.getId());
           }
           // remove note scope object
@@ -1070,22 +1067,22 @@ public class InterpreterSettingManager implements NoteEventListener {
   }
 
   @Override
-  public void onParagraphRemove(Paragraph p) throws IOException {
+  public void onParagraphRemove(LegacyParagraph p) throws IOException {
 
   }
 
   @Override
-  public void onParagraphCreate(Paragraph p) throws IOException {
+  public void onParagraphCreate(LegacyParagraph p) throws IOException {
 
   }
 
   @Override
-  public void onParagraphUpdate(Paragraph p) throws IOException {
+  public void onParagraphUpdate(LegacyParagraph p) throws IOException {
 
   }
 
   @Override
-  public void onParagraphStatusChange(Paragraph p, Job.Status status) throws IOException {
+  public void onParagraphStatusChange(LegacyParagraph p, Job.Status status) throws IOException {
 
   }
 }

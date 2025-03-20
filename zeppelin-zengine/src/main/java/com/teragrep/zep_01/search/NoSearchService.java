@@ -17,9 +17,8 @@
 
 package com.teragrep.zep_01.search;
 
-import com.teragrep.zep_01.conf.ZeppelinConfiguration;
 import com.teragrep.zep_01.notebook.Note;
-import com.teragrep.zep_01.notebook.Paragraph;
+import com.teragrep.zep_01.notebook.LegacyParagraph;
 
 import javax.inject.Inject;
 import java.io.IOException;
@@ -46,7 +45,7 @@ public class NoSearchService extends SearchService {
   }
 
   @Override
-  public void updateParagraphIndex(Paragraph paragraph) throws IOException {
+  public void updateParagraphIndex(LegacyParagraph paragraph) throws IOException {
 
   }
 
@@ -56,7 +55,7 @@ public class NoSearchService extends SearchService {
   }
 
   @Override
-  public void addParagraphIndex(Paragraph pargaraph) throws IOException {
+  public void addParagraphIndex(LegacyParagraph pargaraph) throws IOException {
 
   }
 
@@ -66,7 +65,7 @@ public class NoSearchService extends SearchService {
   }
 
   @Override
-  public void deleteParagraphIndex(String noteId, Paragraph p) throws IOException {
+  public void deleteParagraphIndex(String noteId, LegacyParagraph p) throws IOException {
 
   }
 

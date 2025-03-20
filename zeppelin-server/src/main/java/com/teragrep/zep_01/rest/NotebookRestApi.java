@@ -44,8 +44,8 @@ import com.teragrep.zep_01.conf.ZeppelinConfiguration;
 import com.teragrep.zep_01.interpreter.InterpreterResult;
 import com.teragrep.zep_01.notebook.Note;
 import com.teragrep.zep_01.notebook.NoteInfo;
-import com.teragrep.zep_01.notebook.Notebook;
-import com.teragrep.zep_01.notebook.Paragraph;
+import com.teragrep.zep_01.notebook.LegacyNotebook;
+import com.teragrep.zep_01.notebook.LegacyParagraph;
 import com.teragrep.zep_01.notebook.AuthorizationService;
 import com.teragrep.zep_01.notebook.scheduler.SchedulerService;
 import com.teragrep.zep_01.rest.exception.BadRequestException;
@@ -85,7 +85,7 @@ public class NotebookRestApi extends AbstractRestApi {
   private static final Gson GSON = new Gson();
 
   private final ZeppelinConfiguration zConf;
-  private final Notebook notebook;
+  private final LegacyNotebook notebook;
   private final NotebookServer notebookServer;
   private final SearchService noteSearchService;
   private final AuthorizationService authorizationService;
@@ -96,7 +96,7 @@ public class NotebookRestApi extends AbstractRestApi {
 
   @Inject
   public NotebookRestApi(
-      Notebook notebook,
+      LegacyNotebook notebook,
       NotebookServer notebookServer,
       NotebookService notebookService,
       SearchService search,
@@ -225,7 +225,7 @@ public class NotebookRestApi extends AbstractRestApi {
     }
   }
 
-  private void checkIfParagraphIsNotNull(Paragraph paragraph, String paragraphId) {
+  private void checkIfParagraphIsNotNull(LegacyParagraph paragraph, String paragraphId) {
     if (paragraph == null) {
       throw new ParagraphNotFoundException(paragraphId);
     }
@@ -397,7 +397,7 @@ public class NotebookRestApi extends AbstractRestApi {
     AuthenticationInfo subject = new AuthenticationInfo(authenticationService.getPrincipal());
     if (request.getParagraphs() != null) {
       for (NewParagraphRequest paragraphRequest : request.getParagraphs()) {
-        Paragraph p = note.addNewParagraph(subject);
+        LegacyParagraph p = note.addNewParagraph(subject);
         initParagraph(p, paragraphRequest, user);
       }
     }
@@ -515,7 +515,7 @@ public class NotebookRestApi extends AbstractRestApi {
 
     NewParagraphRequest request = NewParagraphRequest.fromJson(message);
     AuthenticationInfo subject = new AuthenticationInfo(user);
-    Paragraph p;
+    LegacyParagraph p;
     Double indexDouble = request.getIndex();
     if (indexDouble == null) {
       p = note.addNewParagraph(subject);
@@ -543,7 +543,7 @@ public class NotebookRestApi extends AbstractRestApi {
     Note note = notebook.getNote(noteId);
     checkIfNoteIsNotNull(note, noteId);
     checkIfUserCanRead(noteId, "Insufficient privileges you cannot get this paragraph");
-    Paragraph p = note.getParagraph(paragraphId);
+    LegacyParagraph p = note.getParagraph(paragraphId);
     checkIfParagraphIsNotNull(p, paragraphId);
     return new JsonResponse<>(Status.OK, "", p).build();
   }
@@ -566,7 +566,7 @@ public class NotebookRestApi extends AbstractRestApi {
     Note note = notebook.getNote(noteId);
     checkIfNoteIsNotNull(note, noteId);
     checkIfUserCanWrite(noteId, "Insufficient privileges you cannot update this paragraph");
-    Paragraph p = note.getParagraph(paragraphId);
+    LegacyParagraph p = note.getParagraph(paragraphId);
     checkIfParagraphIsNotNull(p, paragraphId);
 
     UpdateParagraphRequest updatedParagraph = GSON.fromJson(message, UpdateParagraphRequest.class);
@@ -604,7 +604,7 @@ public class NotebookRestApi extends AbstractRestApi {
     Note note = notebook.getNote(noteId);
     checkIfNoteIsNotNull(note, noteId);
     checkIfUserCanWrite(noteId, "Insufficient privileges you cannot update this paragraph config");
-    Paragraph p = note.getParagraph(paragraphId);
+    LegacyParagraph p = note.getParagraph(paragraphId);
     checkIfParagraphIsNotNull(p, paragraphId);
 
     Map<String, Object> newConfig = GSON.fromJson(message, HashMap.class);
@@ -632,9 +632,9 @@ public class NotebookRestApi extends AbstractRestApi {
     LOGGER.info("Move paragraph {} {} {}", noteId, paragraphId, newIndex);
     notebookService.moveParagraph(noteId, paragraphId, Integer.parseInt(newIndex),
             getServiceContext(),
-            new RestServiceCallback<Paragraph>() {
+            new RestServiceCallback<LegacyParagraph>() {
               @Override
-              public void onSuccess(Paragraph result, ServiceContext context) throws IOException {
+              public void onSuccess(LegacyParagraph result, ServiceContext context) throws IOException {
                 notebookServer.broadcastNote(result.getNote());
               }
             });
@@ -656,9 +656,9 @@ public class NotebookRestApi extends AbstractRestApi {
 
     LOGGER.info("Delete paragraph {} {}", noteId, paragraphId);
     notebookService.removeParagraph(noteId, paragraphId, getServiceContext(),
-            new RestServiceCallback<Paragraph>() {
+            new RestServiceCallback<LegacyParagraph>() {
               @Override
-              public void onSuccess(Paragraph p, ServiceContext context) throws IOException {
+              public void onSuccess(LegacyParagraph p, ServiceContext context) throws IOException {
                 notebookServer.broadcastNote(p.getNote());
               }
             });
@@ -671,7 +671,7 @@ public class NotebookRestApi extends AbstractRestApi {
   public Response nextSessionParagraph(@PathParam("noteId") String noteId,
                                        @QueryParam("maxParagraph") int maxParagraph) throws IOException {
 
-    Paragraph p = notebookService.getNextSessionParagraph(noteId, maxParagraph,
+    LegacyParagraph p = notebookService.getNextSessionParagraph(noteId, maxParagraph,
             getServiceContext(),
             new RestServiceCallback<>());
     return new JsonResponse<>(Status.OK, p.getId()).build();
@@ -758,7 +758,7 @@ public class NotebookRestApi extends AbstractRestApi {
     checkIfNoteIsNotNull(note, noteId);
     checkIfUserCanRun(noteId, "Insufficient privileges you cannot stop this job for this note");
 
-    for (Paragraph p : note.getParagraphs()) {
+    for (LegacyParagraph p : note.getParagraphs()) {
       if (!p.isTerminated()) {
         p.abort();
       }
@@ -809,7 +809,7 @@ public class NotebookRestApi extends AbstractRestApi {
     checkIfNoteIsNotNull(note, noteId);
     checkIfUserCanRead(noteId, "Insufficient privileges you cannot get job status");
 
-    Paragraph paragraph = note.getParagraph(paragraphId);
+    LegacyParagraph paragraph = note.getParagraph(paragraphId);
     checkIfParagraphIsNotNull(paragraph, paragraphId);
 
     return new JsonResponse<>(Status.OK, null, new ParagraphJobStatus(paragraph)).build();
@@ -837,7 +837,7 @@ public class NotebookRestApi extends AbstractRestApi {
 
     Note note = notebook.getNote(noteId);
     checkIfNoteIsNotNull(note, noteId);
-    Paragraph paragraph = note.getParagraph(paragraphId);
+    LegacyParagraph paragraph = note.getParagraph(paragraphId);
     checkIfParagraphIsNotNull(paragraph, paragraphId);
 
     Map<String, Object> params = new HashMap<>();
@@ -875,7 +875,7 @@ public class NotebookRestApi extends AbstractRestApi {
 
     Note note = notebook.getNote(noteId);
     checkIfNoteIsNotNull(note, noteId);
-    Paragraph paragraph = note.getParagraph(paragraphId);
+    LegacyParagraph paragraph = note.getParagraph(paragraphId);
     checkIfParagraphIsNotNull(paragraph, paragraphId);
 
     Map<String, Object> params = new HashMap<>();
@@ -889,7 +889,7 @@ public class NotebookRestApi extends AbstractRestApi {
             paragraph.getText(), params,
             new HashMap<>(), sessionId, false, true, getServiceContext(), new RestServiceCallback<>())) {
       note = notebookService.getNote(noteId, getServiceContext(), new RestServiceCallback<>());
-      Paragraph p = note.getParagraph(paragraphId);
+      LegacyParagraph p = note.getParagraph(paragraphId);
       InterpreterResult result = p.getReturn();
       return new JsonResponse<>(Status.OK, result).build();
     } else {
@@ -914,7 +914,7 @@ public class NotebookRestApi extends AbstractRestApi {
       throws IOException, IllegalArgumentException {
     LOGGER.info("stop paragraph job {} ", noteId);
     notebookService.cancelParagraph(noteId, paragraphId, getServiceContext(),
-            new RestServiceCallback<Paragraph>());
+            new RestServiceCallback<LegacyParagraph>());
     return new JsonResponse<>(Status.OK).build();
   }
 
@@ -1086,7 +1086,7 @@ public class NotebookRestApi extends AbstractRestApi {
   }
 
 
-  private void handleParagraphParams(String message, Note note, Paragraph paragraph)
+  private void handleParagraphParams(String message, Note note, LegacyParagraph paragraph)
       throws IOException {
     // handle params if presented
     if (!StringUtils.isEmpty(message)) {
@@ -1101,7 +1101,7 @@ public class NotebookRestApi extends AbstractRestApi {
     }
   }
 
-  private void initParagraph(Paragraph p, NewParagraphRequest request, String user) {
+  private void initParagraph(LegacyParagraph p, NewParagraphRequest request, String user) {
     LOGGER.info("Init Paragraph for user {}", user);
     checkIfParagraphIsNotNull(p, "");
     p.setTitle(request.getTitle());
@@ -1112,7 +1112,7 @@ public class NotebookRestApi extends AbstractRestApi {
     }
   }
 
-  private void configureParagraph(Paragraph p, Map<String, Object> newConfig, String user) {
+  private void configureParagraph(LegacyParagraph p, Map<String, Object> newConfig, String user) {
     LOGGER.info("Configure Paragraph for user {}", user);
     if (newConfig == null || newConfig.isEmpty()) {
       LOGGER.warn("{} is trying to update paragraph {} of note {} with empty config",

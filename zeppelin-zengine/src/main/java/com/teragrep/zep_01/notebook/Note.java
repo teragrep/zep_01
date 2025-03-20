@@ -98,7 +98,7 @@ public class Note implements JsonSerializable {
       if(field.getName().equals("path")) {
         return true;
       }
-      if (field.getDeclaringClass().equals(Paragraph.class)) {
+      if (field.getDeclaringClass().equals(LegacyParagraph.class)) {
         return paragraphExcludeFields.contains(field.getName());
       } else {
         return noteExcludeFields.contains(field.getName());
@@ -121,7 +121,7 @@ public class Note implements JsonSerializable {
   private static final DateTimeFormatter DATE_TIME_FORMATTER =
           DateTimeFormatter.ofPattern("yyyy-MM-dd_HH-mm-ss");
 
-  private CopyOnWriteArrayList<Paragraph> paragraphs = new CopyOnWriteArrayList<>();
+  private CopyOnWriteArrayList<LegacyParagraph> paragraphs = new CopyOnWriteArrayList<>();
   private String name = "";
   private String id;
   private String defaultInterpreterGroup;
@@ -233,7 +233,7 @@ public class Note implements JsonSerializable {
 
   public boolean isParagraphRunning() {
     if (paragraphs != null) {
-      for (Paragraph p : paragraphs) {
+      for (LegacyParagraph p : paragraphs) {
         if (p.isRunning()) {
           return true;
         }
@@ -260,7 +260,7 @@ public class Note implements JsonSerializable {
 
   private void clearUserParagraphs(boolean isPersonalized) {
     if (!isPersonalized) {
-      for (Paragraph p : paragraphs) {
+      for (LegacyParagraph p : paragraphs) {
         p.clearUserParagraphs();
       }
     }
@@ -476,7 +476,7 @@ public class Note implements JsonSerializable {
   /**
    * Create a new paragraph and add it to the end of the note.
    */
-  public Paragraph addNewParagraph(AuthenticationInfo authenticationInfo) {
+  public LegacyParagraph addNewParagraph(AuthenticationInfo authenticationInfo) {
     return insertNewParagraph(paragraphs.size(), authenticationInfo);
   }
 
@@ -485,10 +485,10 @@ public class Note implements JsonSerializable {
    *
    * @param srcParagraph source paragraph
    */
-  void addCloneParagraph(Paragraph srcParagraph, AuthenticationInfo subject) {
+  void addCloneParagraph(LegacyParagraph srcParagraph, AuthenticationInfo subject) {
 
     // Keep paragraph original ID
-    Paragraph newParagraph = new Paragraph(srcParagraph.getId(), this, paragraphJobListener);
+    LegacyParagraph newParagraph = new LegacyParagraph(srcParagraph.getId(), this, paragraphJobListener);
 
     Map<String, Object> config = new HashMap<>(srcParagraph.getConfig());
     Map<String, Object> param = srcParagraph.settings.getParams();
@@ -524,20 +524,20 @@ public class Note implements JsonSerializable {
 
   }
 
-  public void fireParagraphCreateEvent(Paragraph p) throws IOException {
+  public void fireParagraphCreateEvent(LegacyParagraph p) throws IOException {
     for (NoteEventListener listener : noteEventListeners) {
       listener.onParagraphCreate(p);
     }
   }
 
-  public void fireParagraphRemoveEvent(Paragraph p) throws IOException {
+  public void fireParagraphRemoveEvent(LegacyParagraph p) throws IOException {
     for (NoteEventListener listener : noteEventListeners) {
       listener.onParagraphRemove(p);
     }
   }
 
 
-  public void fireParagraphUpdateEvent(Paragraph p) throws IOException {
+  public void fireParagraphUpdateEvent(LegacyParagraph p) throws IOException {
     for (NoteEventListener listener : noteEventListeners) {
       listener.onParagraphUpdate(p);
     }
@@ -548,8 +548,8 @@ public class Note implements JsonSerializable {
    *
    * @param index index of paragraphs
    */
-  public Paragraph insertNewParagraph(int index, AuthenticationInfo authenticationInfo) {
-    Paragraph paragraph = new Paragraph(this, paragraphJobListener);
+  public LegacyParagraph insertNewParagraph(int index, AuthenticationInfo authenticationInfo) {
+    LegacyParagraph paragraph = new LegacyParagraph(this, paragraphJobListener);
     if (null != interpreterSettingManager) {
       // Set the default parameter configuration for the paragraph
       // based on `interpreter-setting.json` config
@@ -563,11 +563,11 @@ public class Note implements JsonSerializable {
     return paragraph;
   }
 
-  public void addParagraph(Paragraph paragraph) {
+  public void addParagraph(LegacyParagraph paragraph) {
     insertParagraph(paragraph, paragraphs.size());
   }
 
-  private void insertParagraph(Paragraph paragraph, int index) {
+  private void insertParagraph(LegacyParagraph paragraph, int index) {
     paragraphs.add(index, paragraph);
     try {
       fireParagraphCreateEvent(paragraph);
@@ -582,10 +582,10 @@ public class Note implements JsonSerializable {
    * @param paragraphId ID of paragraph
    * @return a paragraph that was deleted, or <code>null</code> otherwise
    */
-  public Paragraph removeParagraph(String user, String paragraphId) {
+  public LegacyParagraph removeParagraph(String user, String paragraphId) {
     removeAllAngularObjectInParagraph(user, paragraphId);
     interpreterSettingManager.removeResourcesBelongsToParagraph(getId(), paragraphId);
-    for (Paragraph p : paragraphs) {
+    for (LegacyParagraph p : paragraphs) {
       if (p.getId().equals(paragraphId)) {
         paragraphs.remove(p);
         try {
@@ -599,14 +599,14 @@ public class Note implements JsonSerializable {
     return null;
   }
 
-  public void clearParagraphOutputFields(Paragraph p) {
+  public void clearParagraphOutputFields(LegacyParagraph p) {
     p.setReturn(null, null);
     p.cleanRuntimeInfos();
     p.cleanOutputBuffer();
   }
 
-  public Paragraph clearPersonalizedParagraphOutput(String paragraphId, String user) {
-    for (Paragraph p : paragraphs) {
+  public LegacyParagraph clearPersonalizedParagraphOutput(String paragraphId, String user) {
+    for (LegacyParagraph p : paragraphs) {
       if (!p.getId().equals(paragraphId)) {
         continue;
       }
@@ -624,8 +624,8 @@ public class Note implements JsonSerializable {
    * @param paragraphId ID of paragraph
    * @return Paragraph
    */
-  public Paragraph clearParagraphOutput(String paragraphId) {
-    for (Paragraph p : paragraphs) {
+  public LegacyParagraph clearParagraphOutput(String paragraphId) {
+    for (LegacyParagraph p : paragraphs) {
       if (!p.getId().equals(paragraphId)) {
         continue;
       }
@@ -640,7 +640,7 @@ public class Note implements JsonSerializable {
    * Clear all paragraph output of note
    */
   public void clearAllParagraphOutput() {
-    for (Paragraph p : paragraphs) {
+    for (LegacyParagraph p : paragraphs) {
       p.setReturn(null, null);
     }
   }
@@ -665,7 +665,7 @@ public class Note implements JsonSerializable {
    */
   public void moveParagraph(String paragraphId, int index, boolean throwWhenIndexIsOutOfBound) {
     int oldIndex;
-    Paragraph p = null;
+    LegacyParagraph p = null;
 
     if (index < 0 || index >= paragraphs.size()) {
       if (throwWhenIndexIsOutOfBound) {
@@ -706,8 +706,8 @@ public class Note implements JsonSerializable {
     return paragraphs.size();
   }
 
-  public Paragraph getParagraph(String paragraphId) {
-    for (Paragraph p : paragraphs) {
+  public LegacyParagraph getParagraph(String paragraphId) {
+    for (LegacyParagraph p : paragraphs) {
       if (p.getId().equals(paragraphId)) {
         return p;
       }
@@ -715,15 +715,15 @@ public class Note implements JsonSerializable {
     return null;
   }
 
-  public Paragraph getParagraph(int index) {
+  public LegacyParagraph getParagraph(int index) {
     return paragraphs.get(index);
   }
 
-  public Paragraph getLastParagraph() {
+  public LegacyParagraph getLastParagraph() {
     return paragraphs.get(paragraphs.size() - 1);
   }
 
-  private void setParagraphMagic(Paragraph p, int index) {
+  private void setParagraphMagic(LegacyParagraph p, int index) {
     if (!paragraphs.isEmpty()) {
       String replName;
       if (index == 0) {
@@ -788,7 +788,7 @@ public class Note implements JsonSerializable {
    */
   private void runAllSync(AuthenticationInfo authInfo, boolean isolated, Map<String, Object> params) throws Exception {
     try {
-      for (Paragraph p : getParagraphs()) {
+      for (LegacyParagraph p : getParagraphs()) {
         if (!p.isEnabled()) {
           continue;
         }
@@ -824,7 +824,7 @@ public class Note implements JsonSerializable {
         LOGGER.info("Releasing interpreters used by this note: {}", id);
         for (InterpreterSetting setting : getUsedInterpreterSettings()) {
           setting.closeInterpreters(getExecutionContext());
-          for (Paragraph p : paragraphs) {
+          for (LegacyParagraph p : paragraphs) {
             p.setInterpreter(null);
           }
         }
@@ -864,7 +864,7 @@ public class Note implements JsonSerializable {
                      String interpreterGroupId,
                      boolean blocking,
                      String ctxUser) {
-    Paragraph p = getParagraph(paragraphId);
+    LegacyParagraph p = getParagraph(paragraphId);
 
     if (isPersonalizedMode() && ctxUser != null)
       p = p.getUserParagraph(ctxUser);
@@ -877,7 +877,7 @@ public class Note implements JsonSerializable {
    * Return true if there is a running or pending paragraph
    */
   public boolean haveRunningOrPendingParagraphs() {
-    for (Paragraph p : paragraphs) {
+    for (LegacyParagraph p : paragraphs) {
       Status status = p.getStatus();
       if (status.isRunning() || status.isPending()) {
         return true;
@@ -894,13 +894,13 @@ public class Note implements JsonSerializable {
                                                 String buffer,
                                                 int cursor,
                                                 AuthenticationInfo authInfo) {
-    Paragraph p = getParagraph(paragraphId);
+    LegacyParagraph p = getParagraph(paragraphId);
     p.setListener(this.paragraphJobListener);
     p.setAuthenticationInfo(authInfo);
     return p.completion(buffer, cursor);
   }
 
-  public CopyOnWriteArrayList<Paragraph> getParagraphs() {
+  public CopyOnWriteArrayList<LegacyParagraph> getParagraphs() {
     return this.paragraphs;
   }
 
@@ -967,7 +967,7 @@ public class Note implements JsonSerializable {
     }
 
     // add interpreter group used by each paragraph
-    for (Paragraph p : getParagraphs()) {
+    for (LegacyParagraph p : getParagraphs()) {
       try {
         Interpreter intp = p.getBindedInterpreter();
         InterpreterSetting interpreterSetting = (
@@ -989,7 +989,7 @@ public class Note implements JsonSerializable {
    */
   public List<InterpreterSetting> getUsedInterpreterSettings() {
     Set<InterpreterSetting> settings = new HashSet<>();
-    for (Paragraph p : getParagraphs()) {
+    for (LegacyParagraph p : getParagraphs()) {
       Interpreter intp = p.getInterpreter();
       if (intp != null) {
         settings.add((
@@ -1013,8 +1013,8 @@ public class Note implements JsonSerializable {
     newNote.config = getConfig();
     newNote.angularObjects = getAngularObjects();
 
-    Paragraph newParagraph;
-    for (Paragraph p : paragraphs) {
+    LegacyParagraph newParagraph;
+    for (LegacyParagraph p : paragraphs) {
       newParagraph = p.getUserParagraph(user);
       if (null == newParagraph) {
         newParagraph = p.cloneParagraphForUser(user);
@@ -1130,7 +1130,7 @@ public class Note implements JsonSerializable {
   }
 
   public void postProcessParagraphs() {
-    for (Paragraph p : paragraphs) {
+    for (LegacyParagraph p : paragraphs) {
       p.parseText();
       p.setNote(this);
 
@@ -1144,7 +1144,7 @@ public class Note implements JsonSerializable {
   }
 
   private static void convertOldInput(Note note) {
-    for (Paragraph p : note.paragraphs) {
+    for (LegacyParagraph p : note.paragraphs) {
       p.settings.convertOldInput();
     }
   }

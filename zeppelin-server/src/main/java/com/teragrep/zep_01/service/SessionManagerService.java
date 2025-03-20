@@ -19,12 +19,11 @@
 package com.teragrep.zep_01.service;
 
 import com.teragrep.zep_01.conf.ZeppelinConfiguration;
-import com.teragrep.zep_01.interpreter.InterpreterGroup;
 import com.teragrep.zep_01.interpreter.InterpreterSettingManager;
 import com.teragrep.zep_01.interpreter.ManagedInterpreterGroup;
 import com.teragrep.zep_01.interpreter.remote.RemoteInterpreterProcess;
 import com.teragrep.zep_01.notebook.Note;
-import com.teragrep.zep_01.notebook.Notebook;
+import com.teragrep.zep_01.notebook.LegacyNotebook;
 import com.teragrep.zep_01.common.SessionInfo;
 import com.teragrep.zep_01.scheduler.ExecutorFactory;
 import com.teragrep.zep_01.user.AuthenticationInfo;
@@ -51,10 +50,10 @@ public class SessionManagerService {
 
   private final Map<String, SessionInfo> sessions = new ConcurrentHashMap<>();
   private final InterpreterSettingManager interpreterSettingManager;
-  private final Notebook notebook;
+  private final LegacyNotebook notebook;
   private final ScheduledExecutorService sessionCheckerExecutor;
 
-  public SessionManagerService(Notebook notebook, InterpreterSettingManager interpreterSettingManager) {
+  public SessionManagerService(LegacyNotebook notebook, InterpreterSettingManager interpreterSettingManager) {
     this.notebook = notebook;
     this.interpreterSettingManager = interpreterSettingManager;
     this.sessionCheckerExecutor = ExecutorFactory.singleton().createOrGetScheduled("Session-Checker-Executor", 1);

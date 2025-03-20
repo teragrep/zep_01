@@ -27,7 +27,7 @@ import com.teragrep.zep_01.display.Input;
 import com.teragrep.zep_01.notebook.Note;
 import com.teragrep.zep_01.notebook.NoteInfo;
 import com.teragrep.zep_01.notebook.NotebookImportDeserializer;
-import com.teragrep.zep_01.notebook.Paragraph;
+import com.teragrep.zep_01.notebook.LegacyParagraph;
 import com.teragrep.zep_01.notebook.AuthorizationService;
 import com.teragrep.zep_01.common.Message;
 import com.teragrep.zep_01.notebook.socket.WatcherMessage;
@@ -337,7 +337,7 @@ public class ConnectionManager {
     broadcastToWatchers(StringUtils.EMPTY, StringUtils.EMPTY, m);
   }
 
-  public void unicastParagraph(Note note, Paragraph p, String user, String msgId) {
+  public void unicastParagraph(Note note, LegacyParagraph p, String user, String msgId) {
     if (!note.isPersonalizedMode() || p == null || user == null) {
       return;
     }
@@ -385,7 +385,7 @@ public class ConnectionManager {
     broadcast(note.getId(), new Message(Message.OP.NOTE).put("note", note));
   }
 
-  public void broadcastParagraph(Note note, Paragraph p) {
+  public void broadcastParagraph(Note note, LegacyParagraph p) {
     broadcastNoteForms(note);
 
     if (note.isPersonalizedMode()) {
@@ -395,7 +395,7 @@ public class ConnectionManager {
     }
   }
 
-  public void broadcastParagraphs(Map<String, Paragraph> userParagraphMap) {
+  public void broadcastParagraphs(Map<String, LegacyParagraph> userParagraphMap) {
     if (null != userParagraphMap) {
       for (String user : userParagraphMap.keySet()) {
         multicastToUser(user,
@@ -404,7 +404,7 @@ public class ConnectionManager {
     }
   }
 
-  private void broadcastNewParagraph(Note note, Paragraph para) {
+  private void broadcastNewParagraph(Note note, LegacyParagraph para) {
     LOGGER.info("Broadcasting paragraph on run call instead of note.");
     int paraIndex = note.getParagraphs().indexOf(para);
     broadcast(note.getId(),

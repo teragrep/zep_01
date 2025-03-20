@@ -44,7 +44,7 @@ import org.apache.shiro.subject.Subject;
 import com.teragrep.zep_01.annotation.ZeppelinApi;
 import com.teragrep.zep_01.conf.ZeppelinConfiguration;
 import com.teragrep.zep_01.notebook.AuthorizationService;
-import com.teragrep.zep_01.notebook.Notebook;
+import com.teragrep.zep_01.notebook.LegacyNotebook;
 import com.teragrep.zep_01.realm.jwt.JWTAuthenticationToken;
 import com.teragrep.zep_01.realm.jwt.KnoxJwtRealm;
 import com.teragrep.zep_01.realm.kerberos.KerberosRealm;
@@ -70,7 +70,7 @@ public class LoginRestApi {
   private final AuthorizationService authorizationService;
 
   @Inject
-  public LoginRestApi(Notebook notebook,
+  public LoginRestApi(LegacyNotebook notebook,
                       AuthenticationService authenticationService,
                       AuthorizationService authorizationService) {
     this.zConf = notebook.getConf();

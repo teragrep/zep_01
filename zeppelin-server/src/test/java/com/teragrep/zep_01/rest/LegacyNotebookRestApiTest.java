@@ -28,7 +28,7 @@ import com.google.gson.reflect.TypeToken;
 
 import com.teragrep.zep_01.interpreter.InterpreterSetting;
 import com.teragrep.zep_01.interpreter.InterpreterSettingManager;
-import com.teragrep.zep_01.notebook.Notebook;
+import com.teragrep.zep_01.notebook.LegacyNotebook;
 import com.teragrep.zep_01.rest.message.ParametersRequest;
 import com.teragrep.zep_01.socket.NotebookServer;
 import com.teragrep.zep_01.utils.TestUtils;
@@ -46,7 +46,7 @@ import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.util.EntityUtils;
 import com.teragrep.zep_01.interpreter.InterpreterResult;
 import com.teragrep.zep_01.notebook.Note;
-import com.teragrep.zep_01.notebook.Paragraph;
+import com.teragrep.zep_01.notebook.LegacyParagraph;
 import com.teragrep.zep_01.scheduler.Job;
 import com.teragrep.zep_01.user.AuthenticationInfo;
 
@@ -55,14 +55,14 @@ import com.teragrep.zep_01.user.AuthenticationInfo;
  */
 @Ignore(value="Flaky tests: HttpHostConnect Connect to localhost:8080 [localhost/127.0.0.1] failed: Connection refused (Connection refused)")
 @FixMethodOrder(MethodSorters.NAME_ASCENDING)
-public class NotebookRestApiTest extends AbstractTestRestApi {
+public class LegacyNotebookRestApiTest extends AbstractTestRestApi {
   Gson gson = new Gson();
   AuthenticationInfo anonymous;
 
   @BeforeClass
   public static void init() throws Exception {
-    startUp(NotebookRestApiTest.class.getSimpleName());
-    TestUtils.getInstance(Notebook.class).setParagraphJobListener(NotebookServer.getInstance());
+    startUp(LegacyNotebookRestApiTest.class.getSimpleName());
+    TestUtils.getInstance(LegacyNotebook.class).setParagraphJobListener(NotebookServer.getInstance());
   }
 
   @AfterClass
@@ -78,9 +78,9 @@ public class NotebookRestApiTest extends AbstractTestRestApi {
   @Test
   public void testGetReloadNote() throws IOException {
     LOG.debug("Running testGetNote");
-    Note note1 = TestUtils.getInstance(Notebook.class).createNote("note1", anonymous);
+    Note note1 = TestUtils.getInstance(LegacyNotebook.class).createNote("note1", anonymous);
     note1.addNewParagraph(AuthenticationInfo.ANONYMOUS);
-    TestUtils.getInstance(Notebook.class).saveNote(note1, anonymous);
+    TestUtils.getInstance(LegacyNotebook.class).saveNote(note1, anonymous);
     CloseableHttpResponse get = httpGet("/notebook/" + note1.getId());
     assertThat(get, isAllowed());
     Map<String, Object> resp = gson.fromJson(EntityUtils.toString(get.getEntity(), StandardCharsets.UTF_8),
@@ -103,7 +103,7 @@ public class NotebookRestApiTest extends AbstractTestRestApi {
   @Test
   public void testGetNoteParagraphJobStatus() throws IOException {
     LOG.debug("Running testGetNoteParagraphJobStatus");
-    Note note1 = TestUtils.getInstance(Notebook.class).createNote("note1", anonymous);
+    Note note1 = TestUtils.getInstance(LegacyNotebook.class).createNote("note1", anonymous);
     note1.addNewParagraph(AuthenticationInfo.ANONYMOUS);
 
     String paragraphId = note1.getLastParagraph().getId();
@@ -123,10 +123,10 @@ public class NotebookRestApiTest extends AbstractTestRestApi {
   @Test
   public void testRunParagraphJob() throws Exception {
     LOG.debug("Running testRunParagraphJob");
-    Note note1 = TestUtils.getInstance(Notebook.class).createNote("note1", anonymous);
+    Note note1 = TestUtils.getInstance(LegacyNotebook.class).createNote("note1", anonymous);
     note1.addNewParagraph(AuthenticationInfo.ANONYMOUS);
 
-    Paragraph p = note1.addNewParagraph(AuthenticationInfo.ANONYMOUS);
+    LegacyParagraph p = note1.addNewParagraph(AuthenticationInfo.ANONYMOUS);
 
     // run blank paragraph
     CloseableHttpResponse post = httpPost("/notebook/job/" + note1.getId() + "/" + p.getId(), "");
@@ -153,10 +153,10 @@ public class NotebookRestApiTest extends AbstractTestRestApi {
   @Test
   public void testRunParagraphSynchronously() throws IOException {
     LOG.debug("Running testRunParagraphSynchronously");
-    Note note1 = TestUtils.getInstance(Notebook.class).createNote("note1", anonymous);
+    Note note1 = TestUtils.getInstance(LegacyNotebook.class).createNote("note1", anonymous);
     note1.addNewParagraph(AuthenticationInfo.ANONYMOUS);
 
-    Paragraph p = note1.addNewParagraph(AuthenticationInfo.ANONYMOUS);
+    LegacyParagraph p = note1.addNewParagraph(AuthenticationInfo.ANONYMOUS);
 
     // run non-blank paragraph
     String title = "title";
@@ -211,7 +211,7 @@ public class NotebookRestApiTest extends AbstractTestRestApi {
     assertEquals("OK", resp1.get("status"));
 
     String noteId1 = (String) resp1.get("body");
-    Note note1 = TestUtils.getInstance(Notebook.class).getNote(noteId1);
+    Note note1 = TestUtils.getInstance(LegacyNotebook.class).getNote(noteId1);
     assertEquals("test1", note1.getName());
     assertEquals(1, note1.getParagraphCount());
     assertNull(note1.getParagraph(0).getText());
@@ -226,7 +226,7 @@ public class NotebookRestApiTest extends AbstractTestRestApi {
     assertEquals("OK", resp2.get("status"));
 
     String noteId2 = (String) resp2.get("body");
-    Note note2 = TestUtils.getInstance(Notebook.class).getNote(noteId2);
+    Note note2 = TestUtils.getInstance(LegacyNotebook.class).getNote(noteId2);
     assertEquals("test2", note2.getName());
     assertEquals(0, note2.getParagraphCount());
   }
@@ -234,7 +234,7 @@ public class NotebookRestApiTest extends AbstractTestRestApi {
   @Test
   public void testRunNoteBlocking() throws IOException {
     LOG.debug("Running testRunNoteBlocking");
-    Note note1 = TestUtils.getInstance(Notebook.class).createNote("note1", anonymous);
+    Note note1 = TestUtils.getInstance(LegacyNotebook.class).createNote("note1", anonymous);
       // 2 paragraphs
       // P1:
       //    %python
@@ -246,8 +246,8 @@ public class NotebookRestApiTest extends AbstractTestRestApi {
       //    %python
       //    print(user)
       //
-      Paragraph p1 = note1.addNewParagraph(AuthenticationInfo.ANONYMOUS);
-      Paragraph p2 = note1.addNewParagraph(AuthenticationInfo.ANONYMOUS);
+      LegacyParagraph p1 = note1.addNewParagraph(AuthenticationInfo.ANONYMOUS);
+      LegacyParagraph p2 = note1.addNewParagraph(AuthenticationInfo.ANONYMOUS);
       p1.setText("%python from __future__ import print_function\nimport time\ntime.sleep(1)\nuser='abc'");
       p2.setText("%python print(user)");
 
@@ -267,7 +267,7 @@ public class NotebookRestApiTest extends AbstractTestRestApi {
   @Test
   public void testRunNoteNonBlocking() throws Exception {
     LOG.debug("Running testRunNoteNonBlocking");
-    Note note1 = TestUtils.getInstance(Notebook.class).createNote("note1", anonymous);
+    Note note1 = TestUtils.getInstance(LegacyNotebook.class).createNote("note1", anonymous);
     // 2 paragraphs
     // P1:
     //    %python
@@ -279,8 +279,8 @@ public class NotebookRestApiTest extends AbstractTestRestApi {
     //    %%sh(interpolate=true)
     //    echo '{name}'
     //
-    Paragraph p1 = note1.addNewParagraph(AuthenticationInfo.ANONYMOUS);
-    Paragraph p2 = note1.addNewParagraph(AuthenticationInfo.ANONYMOUS);
+    LegacyParagraph p1 = note1.addNewParagraph(AuthenticationInfo.ANONYMOUS);
+    LegacyParagraph p2 = note1.addNewParagraph(AuthenticationInfo.ANONYMOUS);
     p1.setText("%python import time\ntime.sleep(5)\nname='hello'\nz.put('name', name)");
     p2.setText("%sh(interpolate=true) echo '{name}'");
 
@@ -307,7 +307,7 @@ public class NotebookRestApiTest extends AbstractTestRestApi {
     InterpreterSetting interpreterSetting = interpreterSettingManager.getInterpreterSettingByName("python");
     int pythonProcessNum = interpreterSetting.getAllInterpreterGroups().size();
 
-    Note note1 = TestUtils.getInstance(Notebook.class).createNote("note1", anonymous);
+    Note note1 = TestUtils.getInstance(LegacyNotebook.class).createNote("note1", anonymous);
     // 2 paragraphs
     // P1:
     //    %python
@@ -319,8 +319,8 @@ public class NotebookRestApiTest extends AbstractTestRestApi {
     //    %python
     //    print(user)
     //
-    Paragraph p1 = note1.addNewParagraph(AuthenticationInfo.ANONYMOUS);
-    Paragraph p2 = note1.addNewParagraph(AuthenticationInfo.ANONYMOUS);
+    LegacyParagraph p1 = note1.addNewParagraph(AuthenticationInfo.ANONYMOUS);
+    LegacyParagraph p2 = note1.addNewParagraph(AuthenticationInfo.ANONYMOUS);
     p1.setText("%python from __future__ import print_function\nimport time\ntime.sleep(1)\nuser='abc'");
     p2.setText("%python print(user)");
 
@@ -347,7 +347,7 @@ public class NotebookRestApiTest extends AbstractTestRestApi {
     InterpreterSetting interpreterSetting = interpreterSettingManager.getInterpreterSettingByName("python");
     int pythonProcessNum = interpreterSetting.getAllInterpreterGroups().size();
 
-    Note note1 = TestUtils.getInstance(Notebook.class).createNote("note1", anonymous);
+    Note note1 = TestUtils.getInstance(LegacyNotebook.class).createNote("note1", anonymous);
     // 2 paragraphs
     // P1:
     //    %python
@@ -359,8 +359,8 @@ public class NotebookRestApiTest extends AbstractTestRestApi {
     //    %python
     //    print(user)
     //
-    Paragraph p1 = note1.addNewParagraph(AuthenticationInfo.ANONYMOUS);
-    Paragraph p2 = note1.addNewParagraph(AuthenticationInfo.ANONYMOUS);
+    LegacyParagraph p1 = note1.addNewParagraph(AuthenticationInfo.ANONYMOUS);
+    LegacyParagraph p2 = note1.addNewParagraph(AuthenticationInfo.ANONYMOUS);
     p1.setText("%python from __future__ import print_function\nimport time\ntime.sleep(1)\nuser='abc'");
     p2.setText("%python print(user)");
 
@@ -385,7 +385,7 @@ public class NotebookRestApiTest extends AbstractTestRestApi {
 
   @Test
   public void testRunNoteWithParams() throws IOException, InterruptedException {
-    Note note1 = TestUtils.getInstance(Notebook.class).createNote("note1", anonymous);
+    Note note1 = TestUtils.getInstance(LegacyNotebook.class).createNote("note1", anonymous);
     // 2 paragraphs
     // P1:
     //    %python
@@ -395,8 +395,8 @@ public class NotebookRestApiTest extends AbstractTestRestApi {
     //    %sh
     //    echo ${name|world}
     //
-    Paragraph p1 = note1.addNewParagraph(AuthenticationInfo.ANONYMOUS);
-    Paragraph p2 = note1.addNewParagraph(AuthenticationInfo.ANONYMOUS);
+    LegacyParagraph p1 = note1.addNewParagraph(AuthenticationInfo.ANONYMOUS);
+    LegacyParagraph p2 = note1.addNewParagraph(AuthenticationInfo.ANONYMOUS);
     p1.setText("%python name = z.input('name', 'world')\nprint(name)");
     p2.setText("%sh echo '${name=world}'");
 
@@ -441,7 +441,7 @@ public class NotebookRestApiTest extends AbstractTestRestApi {
   @Test
   public void testRunAllParagraph_FirstFailed() throws IOException {
     LOG.debug("Running testRunAllParagraph_FirstFailed");
-    Note note1 = TestUtils.getInstance(Notebook.class).createNote("note1", anonymous);
+    Note note1 = TestUtils.getInstance(LegacyNotebook.class).createNote("note1", anonymous);
     // 2 paragraphs
     // P1:
     //    %python
@@ -455,8 +455,8 @@ public class NotebookRestApiTest extends AbstractTestRestApi {
     //    user2='abc'
     //    print(user2)
     //
-    Paragraph p1 = note1.addNewParagraph(AuthenticationInfo.ANONYMOUS);
-    Paragraph p2 = note1.addNewParagraph(AuthenticationInfo.ANONYMOUS);
+    LegacyParagraph p1 = note1.addNewParagraph(AuthenticationInfo.ANONYMOUS);
+    LegacyParagraph p2 = note1.addNewParagraph(AuthenticationInfo.ANONYMOUS);
     p1.setText("%python from __future__ import print_function\nimport time\ntime.sleep(1)\nprint(user2)");
     p2.setText("%python user2='abc'\nprint(user2)");
 
@@ -473,7 +473,7 @@ public class NotebookRestApiTest extends AbstractTestRestApi {
   public void testCloneNote() throws IOException {
     LOG.debug("Running testCloneNote");
     String clonedNoteId = null;
-    Note note1 = TestUtils.getInstance(Notebook.class).createNote("note1", anonymous);
+    Note note1 = TestUtils.getInstance(LegacyNotebook.class).createNote("note1", anonymous);
     CloseableHttpResponse post = httpPost("/notebook/" + note1.getId(), "");
     String postResponse = EntityUtils.toString(post.getEntity(), StandardCharsets.UTF_8);
     LOG.debug("testCloneNote response\n" + postResponse);
@@ -497,7 +497,7 @@ public class NotebookRestApiTest extends AbstractTestRestApi {
   public void testRenameNote() throws IOException {
     LOG.debug("Running testRenameNote");
     String oldName = "old_name";
-    Note note = TestUtils.getInstance(Notebook.class).createNote(oldName, anonymous);
+    Note note = TestUtils.getInstance(LegacyNotebook.class).createNote(oldName, anonymous);
     assertEquals(oldName, note.getName());
     String noteId = note.getId();
 
@@ -514,9 +514,9 @@ public class NotebookRestApiTest extends AbstractTestRestApi {
   @Test
   public void testUpdateParagraphConfig() throws IOException {
     LOG.debug("Running testUpdateParagraphConfig");
-    Note note = TestUtils.getInstance(Notebook.class).createNote("note1", anonymous);
+    Note note = TestUtils.getInstance(LegacyNotebook.class).createNote("note1", anonymous);
     String noteId = note.getId();
-    Paragraph p = note.addNewParagraph(AuthenticationInfo.ANONYMOUS);
+    LegacyParagraph p = note.addNewParagraph(AuthenticationInfo.ANONYMOUS);
     assertNull(p.getConfig().get("colWidth"));
     String paragraphId = p.getId();
     String jsonRequest = "{\"colWidth\": 6.0}";
@@ -532,20 +532,20 @@ public class NotebookRestApiTest extends AbstractTestRestApi {
     put.close();
 
     assertEquals(6.0, config.get("colWidth"));
-    note = TestUtils.getInstance(Notebook.class).getNote(noteId);
+    note = TestUtils.getInstance(LegacyNotebook.class).getNote(noteId);
     assertEquals(6.0, note.getParagraph(paragraphId).getConfig().get("colWidth"));
   }
 
   @Test
   public void testClearAllParagraphOutput() throws IOException {
     LOG.debug("Running testClearAllParagraphOutput");
-    Note note = TestUtils.getInstance(Notebook.class).createNote("note1", anonymous);
-    Paragraph p1 = note.addNewParagraph(AuthenticationInfo.ANONYMOUS);
+    Note note = TestUtils.getInstance(LegacyNotebook.class).createNote("note1", anonymous);
+    LegacyParagraph p1 = note.addNewParagraph(AuthenticationInfo.ANONYMOUS);
     InterpreterResult result = new InterpreterResult(InterpreterResult.Code.SUCCESS,
             InterpreterResult.Type.TEXT, "result");
     p1.setResult(result);
 
-    Paragraph p2 = note.addNewParagraph(AuthenticationInfo.ANONYMOUS);
+    LegacyParagraph p2 = note.addNewParagraph(AuthenticationInfo.ANONYMOUS);
     p2.setReturn(result, new Throwable());
 
     // clear paragraph result
@@ -575,7 +575,7 @@ public class NotebookRestApiTest extends AbstractTestRestApi {
   @Test
   public void testRunWithServerRestart() throws Exception {
     LOG.debug("Running testRunWithServerRestart");
-    Note note1 = TestUtils.getInstance(Notebook.class).createNote("note1", anonymous);
+    Note note1 = TestUtils.getInstance(LegacyNotebook.class).createNote("note1", anonymous);
     // 2 paragraphs
     // P1:
     //    %python
@@ -587,8 +587,8 @@ public class NotebookRestApiTest extends AbstractTestRestApi {
     //    %python
     //    print(user)
     //
-    Paragraph p1 = note1.addNewParagraph(AuthenticationInfo.ANONYMOUS);
-    Paragraph p2 = note1.addNewParagraph(AuthenticationInfo.ANONYMOUS);
+    LegacyParagraph p1 = note1.addNewParagraph(AuthenticationInfo.ANONYMOUS);
+    LegacyParagraph p2 = note1.addNewParagraph(AuthenticationInfo.ANONYMOUS);
     p1.setText("%python from __future__ import print_function\nimport time\ntime.sleep(1)\nuser='abc'");
     p2.setText("%python print(user)");
 
@@ -602,9 +602,9 @@ public class NotebookRestApiTest extends AbstractTestRestApi {
 
     // restart server (while keeping interpreter configuration)
     AbstractTestRestApi.shutDown(false);
-    startUp(NotebookRestApiTest.class.getSimpleName(), false);
+    startUp(LegacyNotebookRestApiTest.class.getSimpleName(), false);
 
-    note1 = TestUtils.getInstance(Notebook.class).getNote(note1.getId());
+    note1 = TestUtils.getInstance(LegacyNotebook.class).getNote(note1.getId());
     p1 = note1.getParagraph(p1.getId());
     p2 = note1.getParagraph(p2.getId());
 

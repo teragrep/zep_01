@@ -18,7 +18,7 @@
 package com.teragrep.zep_01.rest.message;
 
 import org.apache.commons.lang.StringUtils;
-import com.teragrep.zep_01.notebook.Paragraph;
+import com.teragrep.zep_01.notebook.LegacyParagraph;
 import com.teragrep.zep_01.scheduler.Job;
 
 public class ParagraphJobStatus {
@@ -29,7 +29,7 @@ public class ParagraphJobStatus {
   private String finished;
   private String progress;
 
-  public ParagraphJobStatus(Paragraph p) {
+  public ParagraphJobStatus(LegacyParagraph p) {
     this.id = p.getId();
     this.status = p.getStatus().toString();
     if (p.getDateStarted() != null) {

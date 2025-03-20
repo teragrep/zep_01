@@ -23,7 +23,6 @@ import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 import static org.mockito.Mockito.mock;
 
-import com.google.common.io.Files;
 import java.io.File;
 import java.io.IOException;
 import java.time.Instant;
@@ -41,8 +40,8 @@ import com.teragrep.zep_01.notebook.AuthorizationService;
 import com.teragrep.zep_01.notebook.Note;
 import com.teragrep.zep_01.notebook.NoteInfo;
 import com.teragrep.zep_01.notebook.NoteManager;
-import com.teragrep.zep_01.notebook.Notebook;
-import com.teragrep.zep_01.notebook.Paragraph;
+import com.teragrep.zep_01.notebook.LegacyNotebook;
+import com.teragrep.zep_01.notebook.LegacyParagraph;
 import com.teragrep.zep_01.search.SearchService;
 import com.teragrep.zep_01.storage.ConfigStorage;
 import com.teragrep.zep_01.user.AuthenticationInfo;
@@ -54,13 +53,13 @@ import org.quartz.SchedulerException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class NotebookRepoSyncTest {
+public class LegacyNotebookRepoSyncTest {
 
   private File ZEPPELIN_HOME;
   private ZeppelinConfiguration conf;
   private File mainNotebookDir;
   private File secNotebookDir;
-  private Notebook notebook;
+  private LegacyNotebook notebook;
   private NotebookRepoSync notebookRepoSync;
   private InterpreterFactory factory;
   private InterpreterSettingManager interpreterSettingManager;
@@ -69,7 +68,7 @@ public class NotebookRepoSyncTest {
   private AuthenticationInfo anonymous;
   private NoteManager noteManager;
   private AuthorizationService authorizationService;
-  private static final Logger LOG = LoggerFactory.getLogger(NotebookRepoSyncTest.class);
+  private static final Logger LOG = LoggerFactory.getLogger(LegacyNotebookRepoSyncTest.class);
 
   @Before
   public void setUp() throws Exception {
@@ -105,7 +104,7 @@ public class NotebookRepoSyncTest {
     noteManager = new NoteManager(notebookRepoSync);
     authorizationService = new AuthorizationService(noteManager, conf);
     credentials = new Credentials(conf);
-    notebook = new Notebook(conf, authorizationService, notebookRepoSync, noteManager, factory, interpreterSettingManager, search, credentials, null);
+    notebook = new LegacyNotebook(conf, authorizationService, notebookRepoSync, noteManager, factory, interpreterSettingManager, search, credentials, null);
     anonymous = new AuthenticationInfo("anonymous");
   }
 
@@ -167,7 +166,7 @@ public class NotebookRepoSyncTest {
     /* create note */
     Note note = notebook.createNote("/test", "test", anonymous);
     note.setInterpreterFactory(mock(InterpreterFactory.class));
-    Paragraph p1 = note.addNewParagraph(AuthenticationInfo.ANONYMOUS);
+    LegacyParagraph p1 = note.addNewParagraph(AuthenticationInfo.ANONYMOUS);
     Map config = p1.getConfig();
     config.put("enabled", true);
     p1.setConfig(config);
@@ -244,7 +243,7 @@ public class NotebookRepoSyncTest {
     System.setProperty(ConfVars.ZEPPELIN_NOTEBOOK_ONE_WAY_SYNC.getVarName(), "true");
     conf = ZeppelinConfiguration.create();
     notebookRepoSync = new NotebookRepoSync(conf);
-    notebook = new Notebook(conf, mock(AuthorizationService.class), notebookRepoSync, new NoteManager(notebookRepoSync), factory, interpreterSettingManager, search, credentials, null);
+    notebook = new LegacyNotebook(conf, mock(AuthorizationService.class), notebookRepoSync, new NoteManager(notebookRepoSync), factory, interpreterSettingManager, search, credentials, null);
 
     // check that both storage repos are empty
     assertTrue(notebookRepoSync.getRepoCount() > 1);
@@ -291,7 +290,7 @@ public class NotebookRepoSyncTest {
     ZeppelinConfiguration vConf = ZeppelinConfiguration.create();
 
     NotebookRepoSync vRepoSync = new NotebookRepoSync(vConf);
-    Notebook vNotebookSync = new Notebook(vConf, mock(AuthorizationService.class), vRepoSync, new NoteManager(vRepoSync), factory, interpreterSettingManager, search, credentials, null);
+    LegacyNotebook vNotebookSync = new LegacyNotebook(vConf, mock(AuthorizationService.class), vRepoSync, new NoteManager(vRepoSync), factory, interpreterSettingManager, search, credentials, null);
 
     // one git versioned storage initialized
     assertThat(vRepoSync.getRepoCount()).isEqualTo(1);
@@ -314,7 +313,7 @@ public class NotebookRepoSyncTest {
     assertThat(vCount).isEqualTo(1);
 
     note.setInterpreterFactory(mock(InterpreterFactory.class));
-    Paragraph p = note.addNewParagraph(AuthenticationInfo.ANONYMOUS);
+    LegacyParagraph p = note.addNewParagraph(AuthenticationInfo.ANONYMOUS);
     Map<String, Object> config = p.getConfig();
     config.put("enabled", true);
     p.setConfig(config);
@@ -348,7 +347,7 @@ public class NotebookRepoSyncTest {
 
     /* update note and save on secondary storage */
     note.setInterpreterFactory(mock(InterpreterFactory.class));
-    Paragraph p1 = note.addNewParagraph(AuthenticationInfo.ANONYMOUS);
+    LegacyParagraph p1 = note.addNewParagraph(AuthenticationInfo.ANONYMOUS);
     p1.setText("hello world");
     assertEquals(1, note.getParagraphs().size());
     notebookRepoSync.save(1, note, null);

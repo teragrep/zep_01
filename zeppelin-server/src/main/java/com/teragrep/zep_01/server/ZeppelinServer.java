@@ -71,15 +71,14 @@ import com.teragrep.zep_01.metric.JVMInfoBinder;
 import com.teragrep.zep_01.metric.PrometheusServlet;
 import com.teragrep.zep_01.notebook.NoteEventListener;
 import com.teragrep.zep_01.notebook.NoteManager;
-import com.teragrep.zep_01.notebook.Notebook;
+import com.teragrep.zep_01.notebook.LegacyNotebook;
 import com.teragrep.zep_01.notebook.AuthorizationService;
-import com.teragrep.zep_01.notebook.Paragraph;
+import com.teragrep.zep_01.notebook.LegacyParagraph;
 import com.teragrep.zep_01.notebook.repo.NotebookRepo;
 import com.teragrep.zep_01.notebook.repo.NotebookRepoSync;
 import com.teragrep.zep_01.notebook.scheduler.NoSchedulerService;
 import com.teragrep.zep_01.notebook.scheduler.QuartzSchedulerService;
 import com.teragrep.zep_01.notebook.scheduler.SchedulerService;
-import com.teragrep.zep_01.plugin.PluginManager;
 import com.teragrep.zep_01.rest.exception.WebApplicationExceptionMapper;
 import com.teragrep.zep_01.search.LuceneSearch;
 import com.teragrep.zep_01.search.NoSearchService;
@@ -90,7 +89,6 @@ import com.teragrep.zep_01.socket.ConnectionManager;
 import com.teragrep.zep_01.socket.NotebookServer;
 import com.teragrep.zep_01.user.AuthenticationInfo;
 import com.teragrep.zep_01.user.Credentials;
-import com.teragrep.zep_01.util.ReflectionUtils;
 import com.teragrep.zep_01.utils.PEMImporter;
 import org.eclipse.jetty.http.HttpScheme;
 import org.eclipse.jetty.http.HttpVersion;
@@ -193,7 +191,7 @@ public class ZeppelinServer extends ResourceConfig {
             bindAsContract(ConfigurationService.class).in(Singleton.class);
             bindAsContract(NotebookService.class).in(Singleton.class);
             bindAsContract(JobManagerService.class).in(Singleton.class);
-            bindAsContract(Notebook.class).in(Singleton.class);
+            bindAsContract(LegacyNotebook.class).in(Singleton.class);
             bindAsContract(NotebookServer.class)
                 .to(AngularObjectRegistryListener.class)
                 .to(RemoteInterpreterProcessListener.class)
@@ -259,8 +257,8 @@ public class ZeppelinServer extends ResourceConfig {
     // Try to get Notebook from ServiceLocator, because Notebook instantiation is lazy, it is
     // created when user open zeppelin in browser if we don't get it explicitly here.
     // Lazy loading will cause paragraph recovery and cron job initialization is delayed.
-    Notebook notebook = ServiceLocatorUtilities.getService(
-            sharedServiceLocator, Notebook.class.getName());
+    LegacyNotebook notebook = ServiceLocatorUtilities.getService(
+            sharedServiceLocator, LegacyNotebook.class.getName());
     // Try to recover here, don't do it in constructor of Notebook, because it would cause deadlock.
     notebook.recoveryIfNecessary();
 
@@ -315,7 +313,7 @@ public class ZeppelinServer extends ResourceConfig {
                   if (!conf.isRecoveryEnabled()) {
                     sharedServiceLocator.getService(InterpreterSettingManager.class).close();
                   }
-                  sharedServiceLocator.getService(Notebook.class).close();
+                  sharedServiceLocator.getService(LegacyNotebook.class).close();
                 }
                 Thread.sleep(3000);
               } catch (Exception e) {
@@ -393,13 +391,13 @@ public class ZeppelinServer extends ResourceConfig {
                 ServiceContext.class);
       }
 
-      boolean success = notebookService.runAllParagraphs(noteIdToRun, null, serviceContext, new ServiceCallback<Paragraph>() {
+      boolean success = notebookService.runAllParagraphs(noteIdToRun, null, serviceContext, new ServiceCallback<LegacyParagraph>() {
         @Override
         public void onStart(String message, ServiceContext context) throws IOException {
         }
 
         @Override
-        public void onSuccess(Paragraph result, ServiceContext context) throws IOException {
+        public void onSuccess(LegacyParagraph result, ServiceContext context) throws IOException {
         }
 
         @Override

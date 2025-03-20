@@ -24,7 +24,6 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -65,10 +64,10 @@ import com.google.common.annotations.VisibleForTesting;
 /**
  * Paragraph is a representation of an execution unit.
  */
-public class Paragraph extends JobWithProgressPoller<InterpreterResult> implements Cloneable,
+public class LegacyParagraph extends JobWithProgressPoller<InterpreterResult> implements Cloneable,
     JsonSerializable {
 
-  private static final Logger LOGGER = LoggerFactory.getLogger(Paragraph.class);
+  private static final Logger LOGGER = LoggerFactory.getLogger(LegacyParagraph.class);
 
   private String title;
   // text is composed of intpText and scriptText.
@@ -91,7 +90,7 @@ public class Paragraph extends JobWithProgressPoller<InterpreterResult> implemen
   private transient Note note;
   private transient AuthenticationInfo subject;
   // personalized
-  private transient Map<String, Paragraph> userParagraphMap = new HashMap<>();
+  private transient Map<String, LegacyParagraph> userParagraphMap = new HashMap<>();
   private transient Map<String, String> localProperties = new HashMap<>();
 
   private Map<String, ParagraphRuntimeInfo> runtimeInfos = new HashMap<>();
@@ -99,22 +98,22 @@ public class Paragraph extends JobWithProgressPoller<InterpreterResult> implemen
 
 
   @VisibleForTesting
-  Paragraph() {
+  LegacyParagraph() {
     super(generateId(), null);
   }
 
-  public Paragraph(String paragraphId, Note note, JobListener listener) {
+  public LegacyParagraph(String paragraphId, Note note, JobListener listener) {
     super(paragraphId, generateId(), listener);
     this.note = note;
   }
 
-  public Paragraph(Note note, JobListener listener) {
+  public LegacyParagraph(Note note, JobListener listener) {
     super(generateId(), listener);
     this.note = note;
   }
 
   // used for clone paragraph
-  public Paragraph(Paragraph p2) {
+  public LegacyParagraph(LegacyParagraph p2) {
     super(p2.getId(), null);
     this.note = p2.note;
     this.settings.setParams(new HashMap<>(p2.settings.getParams()));
@@ -131,11 +130,11 @@ public class Paragraph extends JobWithProgressPoller<InterpreterResult> implemen
     return "paragraph_" + System.currentTimeMillis() + "_" + Math.abs(new SecureRandom().nextInt());
   }
 
-  public Map<String, Paragraph> getUserParagraphMap() {
+  public Map<String, LegacyParagraph> getUserParagraphMap() {
     return userParagraphMap;
   }
 
-  public Paragraph getUserParagraph(String user) {
+  public LegacyParagraph getUserParagraph(String user) {
     if (!userParagraphMap.containsKey(user)) {
       cloneParagraphForUser(user);
     }
@@ -147,8 +146,8 @@ public class Paragraph extends JobWithProgressPoller<InterpreterResult> implemen
     this.results = result;
   }
 
-  public Paragraph cloneParagraphForUser(String user) {
-    Paragraph p = new Paragraph(this);
+  public LegacyParagraph cloneParagraphForUser(String user) {
+    LegacyParagraph p = new LegacyParagraph(this);
     // reset status to READY when clone Paragraph for personalization.
     p.status = Status.READY;
     addUser(p, user);
@@ -163,7 +162,7 @@ public class Paragraph extends JobWithProgressPoller<InterpreterResult> implemen
     userParagraphMap.clear();
   }
 
-  public void addUser(Paragraph p, String user) {
+  public void addUser(LegacyParagraph p, String user) {
     userParagraphMap.put(user, p);
   }
 
@@ -427,7 +426,7 @@ public class Paragraph extends JobWithProgressPoller<InterpreterResult> implemen
         }
       }
 
-      for (Paragraph p : userParagraphMap.values()) {
+      for (LegacyParagraph p : userParagraphMap.values()) {
         p.setText(getText());
       }
 
@@ -491,7 +490,7 @@ public class Paragraph extends JobWithProgressPoller<InterpreterResult> implemen
           return getReturn();
         }
 
-        Paragraph p = getUserParagraph(getUser());
+        LegacyParagraph p = getUserParagraph(getUser());
         if (null != p) {
           p.setResult(ret);
           p.settings.setParams(settings.getParams());
@@ -713,7 +712,7 @@ public class Paragraph extends JobWithProgressPoller<InterpreterResult> implemen
       return false;
     }
 
-    Paragraph paragraph = (Paragraph) o;
+    LegacyParagraph paragraph = (LegacyParagraph) o;
 
     if (title != null ? !title.equals(paragraph.title) : paragraph.title != null) {
       return false;
@@ -758,8 +757,8 @@ public class Paragraph extends JobWithProgressPoller<InterpreterResult> implemen
     return Note.getGSON().toJson(this);
   }
 
-  public static Paragraph fromJson(String json) {
-    return Note.getGSON().fromJson(json, Paragraph.class);
+  public static LegacyParagraph fromJson(String json) {
+    return Note.getGSON().fromJson(json, LegacyParagraph.class);
   }
 
   public void updateOutputBuffer(int index, InterpreterResult.Type type, String output) {

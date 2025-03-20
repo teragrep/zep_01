@@ -57,9 +57,9 @@ import com.teragrep.zep_01.interpreter.thrift.ServiceException;
 import com.teragrep.zep_01.notebook.Note;
 import com.teragrep.zep_01.notebook.NoteEventListener;
 import com.teragrep.zep_01.notebook.NoteInfo;
-import com.teragrep.zep_01.notebook.Notebook;
+import com.teragrep.zep_01.notebook.LegacyNotebook;
 import com.teragrep.zep_01.notebook.NotebookImportDeserializer;
-import com.teragrep.zep_01.notebook.Paragraph;
+import com.teragrep.zep_01.notebook.LegacyParagraph;
 import com.teragrep.zep_01.notebook.ParagraphJobListener;
 import com.teragrep.zep_01.notebook.AuthorizationService;
 import com.teragrep.zep_01.notebook.repo.NotebookRepoWithVersionControl.Revision;
@@ -75,7 +75,6 @@ import com.teragrep.zep_01.service.SimpleServiceCallback;
 import com.teragrep.zep_01.ticket.TicketContainer;
 import com.teragrep.zep_01.types.InterpreterSettingsList;
 import com.teragrep.zep_01.user.AuthenticationInfo;
-import com.teragrep.zep_01.util.IdHashes;
 import com.teragrep.zep_01.utils.CorsUtils;
 import com.teragrep.zep_01.utils.TestUtils;
 import org.eclipse.jetty.util.annotation.ManagedAttribute;
@@ -133,7 +132,7 @@ public class NotebookServer extends WebSocketServlet
   private final boolean sendParagraphStatusToFrontend = ZeppelinConfiguration.create().getBoolean(
           ZeppelinConfiguration.ConfVars.ZEPPELIN_WEBSOCKET_PARAGRAPH_STATUS_PROGRESS);
 
-  private Provider<Notebook> notebookProvider;
+  private Provider<LegacyNotebook> notebookProvider;
   private Provider<NotebookService> notebookServiceProvider;
   private Provider<AuthorizationService> authorizationServiceProvider;
   private Provider<ConfigurationService> configurationServiceProvider;
@@ -151,7 +150,7 @@ public class NotebookServer extends WebSocketServlet
   }
 
   @Inject
-  public void setNotebook(Provider<Notebook> notebookProvider) {
+  public void setNotebook(Provider<LegacyNotebook> notebookProvider) {
     this.notebookProvider = notebookProvider;
     LOG.info("Injected NotebookProvider");
   }
@@ -192,7 +191,7 @@ public class NotebookServer extends WebSocketServlet
     return TestUtils.getInstance(NotebookServer.class);
   }
 
-  public Notebook getNotebook() {
+  public LegacyNotebook getNotebook() {
     return notebookProvider.get();
   }
 
@@ -585,7 +584,7 @@ public class NotebookServer extends WebSocketServlet
     getConnectionManager().broadcast(note.getId(), message);
   }
 
-  private void inlineBroadcastParagraph(Note note, Paragraph p, String msgId) {
+  private void inlineBroadcastParagraph(Note note, LegacyParagraph p, String msgId) {
     broadcastNoteForms(note);
 
     if (note.isPersonalizedMode()) {
@@ -596,11 +595,11 @@ public class NotebookServer extends WebSocketServlet
     }
   }
 
-  public void broadcastParagraph(Note note, Paragraph p, String msgId) {
+  public void broadcastParagraph(Note note, LegacyParagraph p, String msgId) {
     inlineBroadcastParagraph(note, p, msgId);
   }
 
-  private void inlineBroadcastParagraphs(Map<String, Paragraph> userParagraphMap,
+  private void inlineBroadcastParagraphs(Map<String, LegacyParagraph> userParagraphMap,
                                          String msgId) {
     if (null != userParagraphMap) {
       for (String user : userParagraphMap.keySet()) {
@@ -610,13 +609,13 @@ public class NotebookServer extends WebSocketServlet
     }
   }
 
-  private void broadcastParagraphs(Map<String, Paragraph> userParagraphMap,
-                                   Paragraph defaultParagraph,
+  private void broadcastParagraphs(Map<String, LegacyParagraph> userParagraphMap,
+                                   LegacyParagraph defaultParagraph,
                                    String msgId) {
     inlineBroadcastParagraphs(userParagraphMap, msgId);
   }
 
-  private void inlineBroadcastNewParagraph(Note note, Paragraph para) {
+  private void inlineBroadcastNewParagraph(Note note, LegacyParagraph para) {
     LOG.info("Broadcasting paragraph on run call instead of note.");
     int paraIndex = note.getParagraphs().indexOf(para);
 
@@ -624,7 +623,7 @@ public class NotebookServer extends WebSocketServlet
     getConnectionManager().broadcast(note.getId(), message);
   }
 
-  private void broadcastNewParagraph(Note note, Paragraph para) {
+  private void broadcastNewParagraph(Note note, LegacyParagraph para) {
     inlineBroadcastNewParagraph(note, para);
   }
 
@@ -680,7 +679,7 @@ public class NotebookServer extends WebSocketServlet
   /**
    * @return false if user doesn't have writer permission for this paragraph
    */
-  private boolean hasParagraphWriterPermission(NotebookSocket conn, Notebook notebook,
+  private boolean hasParagraphWriterPermission(NotebookSocket conn, LegacyNotebook notebook,
                                                String noteId, Set<String> userAndRoles,
                                                String principal, String op)
       throws IOException {
@@ -733,7 +732,7 @@ public class NotebookServer extends WebSocketServlet
    * Update the AngularObject object in the note to InterpreterGroup and AngularObjectRegistry.
    */
   private void updateAngularObjectRegistry(NotebookSocket conn, Note note) {
-    for(Paragraph paragraph : note.getParagraphs()) {
+    for(LegacyParagraph paragraph : note.getParagraphs()) {
       InterpreterGroup interpreterGroup = null;
       try {
         interpreterGroup = findInterpreterGroupForParagraph(note, paragraph.getId());
@@ -1028,12 +1027,12 @@ public class NotebookServer extends WebSocketServlet
     Map<String, Object> config = (Map<String, Object>) fromMessage.get("config");
 
     getNotebookService().updateParagraph(noteId, paragraphId, title, text, params, config, context,
-        new WebSocketServiceCallback<Paragraph>(conn) {
+        new WebSocketServiceCallback<LegacyParagraph>(conn) {
           @Override
-          public void onSuccess(Paragraph p, ServiceContext context) throws IOException {
+          public void onSuccess(LegacyParagraph p, ServiceContext context) throws IOException {
             super.onSuccess(p, context);
             if (p.getNote().isPersonalizedMode()) {
-              Map<String, Paragraph> userParagraphMap =
+              Map<String, LegacyParagraph> userParagraphMap =
                   p.getNote().getParagraph(paragraphId).getUserParagraphMap();
               broadcastParagraphs(userParagraphMap, p, fromMessage.msgId);
             } else {
@@ -1145,9 +1144,9 @@ public class NotebookServer extends WebSocketServlet
     final String paragraphId = (String) fromMessage.get("id");
     String noteId = getConnectionManager().getAssociatedNoteId(conn);
     getNotebookService().removeParagraph(noteId, paragraphId,
-        context, new WebSocketServiceCallback<Paragraph>(conn) {
+        context, new WebSocketServiceCallback<LegacyParagraph>(conn) {
           @Override
-          public void onSuccess(Paragraph p, ServiceContext context) throws IOException {
+          public void onSuccess(LegacyParagraph p, ServiceContext context) throws IOException {
             super.onSuccess(p, context);
             getConnectionManager().broadcast(p.getNote().getId(), new Message(OP.PARAGRAPH_REMOVED).
                 put("id", p.getId()));
@@ -1161,9 +1160,9 @@ public class NotebookServer extends WebSocketServlet
     final String paragraphId = (String) fromMessage.get("id");
     String noteId = getConnectionManager().getAssociatedNoteId(conn);
     getNotebookService().clearParagraphOutput(noteId, paragraphId, context,
-        new WebSocketServiceCallback<Paragraph>(conn) {
+        new WebSocketServiceCallback<LegacyParagraph>(conn) {
           @Override
-          public void onSuccess(Paragraph p, ServiceContext context) throws IOException {
+          public void onSuccess(LegacyParagraph p, ServiceContext context) throws IOException {
             super.onSuccess(p, context);
             if (p.getNote().isPersonalizedMode()) {
               getConnectionManager().unicastParagraph(p.getNote(), p, context.getAutheInfo().getUser(), fromMessage.msgId);
@@ -1296,7 +1295,7 @@ public class NotebookServer extends WebSocketServlet
 
   private InterpreterGroup findInterpreterGroupForParagraph(Note note, String paragraphId)
       throws Exception {
-    final Paragraph paragraph = note.getParagraph(paragraphId);
+    final LegacyParagraph paragraph = note.getParagraph(paragraphId);
     if (paragraph == null) {
       throw new IllegalArgumentException("Unknown paragraph with id : " + paragraphId);
     }
@@ -1340,9 +1339,9 @@ public class NotebookServer extends WebSocketServlet
     final int newIndex = (int) Double.parseDouble(fromMessage.get("index").toString());
     String noteId = getConnectionManager().getAssociatedNoteId(conn);
     getNotebookService().moveParagraph(noteId, paragraphId, newIndex, context,
-        new WebSocketServiceCallback<Paragraph>(conn) {
+        new WebSocketServiceCallback<LegacyParagraph>(conn) {
           @Override
-          public void onSuccess(Paragraph result, ServiceContext context) throws IOException {
+          public void onSuccess(LegacyParagraph result, ServiceContext context) throws IOException {
             super.onSuccess(result, context);
             getConnectionManager().broadcast(result.getNote().getId(),
                 new Message(OP.PARAGRAPH_MOVED).put("id", paragraphId).put("index", newIndex));
@@ -1362,10 +1361,10 @@ public class NotebookServer extends WebSocketServlet
       config = new HashMap<>();
     }
 
-    Paragraph newPara = getNotebookService().insertParagraph(noteId, index, config, context,
-        new WebSocketServiceCallback<Paragraph>(conn) {
+    LegacyParagraph newPara = getNotebookService().insertParagraph(noteId, index, config, context,
+        new WebSocketServiceCallback<LegacyParagraph>(conn) {
           @Override
-          public void onSuccess(Paragraph p, ServiceContext context) throws IOException {
+          public void onSuccess(LegacyParagraph p, ServiceContext context) throws IOException {
             super.onSuccess(p, context);
             broadcastNewParagraph(p.getNote(), p);
           }
@@ -1406,12 +1405,12 @@ public class NotebookServer extends WebSocketServlet
     executorService.submit(() -> {
       try {
         if (!getNotebookService().runAllParagraphs(noteId, paragraphs, context,
-                new WebSocketServiceCallback<Paragraph>(conn))) {
+                new WebSocketServiceCallback<LegacyParagraph>(conn))) {
           // If one paragraph fails, we need to broadcast paragraph states to the client,
           // or paragraphs not run will stay in PENDING state.
           Note note = getNotebookService().getNote(noteId, context, new SimpleServiceCallback());
           if (note != null) {
-            for (Paragraph p : note.getParagraphs()) {
+            for (LegacyParagraph p : note.getParagraphs()) {
               broadcastParagraph(note, p, null);
             }
           }
@@ -1428,9 +1427,9 @@ public class NotebookServer extends WebSocketServlet
 
     String noteId = getConnectionManager().getAssociatedNoteId(conn);
     getNotebookService().spell(noteId, fromMessage,
-        context, new WebSocketServiceCallback<Paragraph>(conn) {
+        context, new WebSocketServiceCallback<LegacyParagraph>(conn) {
           @Override
-          public void onSuccess(Paragraph p, ServiceContext context) throws IOException {
+          public void onSuccess(LegacyParagraph p, ServiceContext context) throws IOException {
             super.onSuccess(p, context);
             // broadcast to other clients only
             getConnectionManager().broadcastExcept(p.getNote().getId(),
@@ -1450,12 +1449,12 @@ public class NotebookServer extends WebSocketServlet
     Map<String, Object> config = (Map<String, Object>) fromMessage.get("config");
     getNotebookService().runParagraph(noteId, paragraphId, title, text, params, config, null,
         false, false, context,
-        new WebSocketServiceCallback<Paragraph>(conn) {
+        new WebSocketServiceCallback<LegacyParagraph>(conn) {
           @Override
-          public void onSuccess(Paragraph p, ServiceContext context) throws IOException {
+          public void onSuccess(LegacyParagraph p, ServiceContext context) throws IOException {
             super.onSuccess(p, context);
             if (p.getNote().isPersonalizedMode()) {
-              Paragraph p2 = p.getNote().clearPersonalizedParagraphOutput(paragraphId,
+              LegacyParagraph p2 = p.getNote().clearPersonalizedParagraphOutput(paragraphId,
                   context.getAutheInfo().getUser());
               getConnectionManager().unicastParagraph(p.getNote(), p2, context.getAutheInfo().getUser(), fromMessage.msgId);
             }
@@ -1465,7 +1464,7 @@ public class NotebookServer extends WebSocketServlet
             if (!(StringUtils.isEmpty(p.getText()) ||
               StringUtils.isEmpty(p.getScriptText())) &&
                 isTheLastParagraph) {
-              Paragraph newPara = p.getNote().addNewParagraph(p.getAuthenticationInfo());
+              LegacyParagraph newPara = p.getNote().addNewParagraph(p.getAuthenticationInfo());
               broadcastNewParagraph(p.getNote(), newPara);
             }
           }
@@ -1621,7 +1620,7 @@ public class NotebookServer extends WebSocketServlet
         LOG.warn("Note {} not found", noteId);
         return;
       }
-      Paragraph paragraph = note.getParagraph(paragraphId);
+      LegacyParagraph paragraph = note.getParagraph(paragraphId);
       paragraph.updateOutputBuffer(index, type, output);
       if (note.isPersonalizedMode()) {
         String user = note.getParagraph(paragraphId).getUser();
@@ -1652,7 +1651,7 @@ public class NotebookServer extends WebSocketServlet
         LOG.warn("Note {} doesn't existed, it maybe deleted.", noteId);
       } else {
         note.clearParagraphOutput(paragraphId);
-        Paragraph paragraph = note.getParagraph(paragraphId);
+        LegacyParagraph paragraph = note.getParagraph(paragraphId);
         broadcastParagraph(note, paragraph, MSG_ID_NOT_DEFINED);
       }
     } catch (IOException e) {
@@ -1695,7 +1694,7 @@ public class NotebookServer extends WebSocketServlet
     }
     // run the whole note except the current paragraph
     if (paragraphIds.isEmpty() && paragraphIndices.isEmpty()) {
-      for (Paragraph paragraph : note.getParagraphs()) {
+      for (LegacyParagraph paragraph : note.getParagraphs()) {
         if (!paragraph.getId().equals(curParagraphId)) {
           toBeRunParagraphIds.add(paragraph.getId());
         }
@@ -1714,7 +1713,7 @@ public class NotebookServer extends WebSocketServlet
 
 
   @Override
-  public void onParagraphRemove(Paragraph p) {
+  public void onParagraphRemove(LegacyParagraph p) {
     try {
       ServiceContext context = new ServiceContext(new AuthenticationInfo(),
               getNotebookAuthorizationService().getOwners(p.getNote().getId()));
@@ -1743,7 +1742,7 @@ public class NotebookServer extends WebSocketServlet
   }
 
   @Override
-  public void onParagraphCreate(Paragraph p) {
+  public void onParagraphCreate(LegacyParagraph p) {
     try {
       getJobManagerService().getNoteJobInfo(p.getNote().getId(), null,
           new JobManagerServiceCallback());
@@ -1753,7 +1752,7 @@ public class NotebookServer extends WebSocketServlet
   }
 
   @Override
-  public void onParagraphUpdate(Paragraph p) {
+  public void onParagraphUpdate(LegacyParagraph p) {
 
   }
 
@@ -1773,7 +1772,7 @@ public class NotebookServer extends WebSocketServlet
   }
 
   @Override
-  public void onParagraphStatusChange(Paragraph p, Status status) {
+  public void onParagraphStatusChange(LegacyParagraph p, Status status) {
     try {
       getJobManagerService().getNoteJobInfo(p.getNote().getId(), null,
           new JobManagerServiceCallback());
@@ -1799,7 +1798,7 @@ public class NotebookServer extends WebSocketServlet
 
 
   @Override
-  public void onProgressUpdate(Paragraph p, int progress) {
+  public void onProgressUpdate(LegacyParagraph p, int progress) {
     if (!sendParagraphStatusToFrontend) {
       return;
     }
@@ -1808,7 +1807,7 @@ public class NotebookServer extends WebSocketServlet
   }
 
   @Override
-  public void onStatusChange(Paragraph p, Status before, Status after) {
+  public void onStatusChange(LegacyParagraph p, Status before, Status after) {
     if (after == Status.ERROR) {
       if (p.getException() != null) {
         LOG.error("Error", p.getException());
@@ -2016,7 +2015,7 @@ public class NotebookServer extends WebSocketServlet
     try {
       Note note = getNotebook().getNote(noteId);
       if (note != null) {
-        Paragraph paragraph = note.getParagraph(paragraphId);
+        LegacyParagraph paragraph = note.getParagraph(paragraphId);
         if (paragraph != null) {
           InterpreterSetting setting = getNotebook().getInterpreterSettingManager()
                   .get(interpreterSettingId);
@@ -2044,7 +2043,7 @@ public class NotebookServer extends WebSocketServlet
   @Override
   public List<ParagraphInfo> getParagraphList(String user, String noteId)
       throws TException, IOException {
-    Notebook notebook = getNotebook();
+    LegacyNotebook notebook = getNotebook();
     Note note = notebook.getNote(noteId);
     if (null == note) {
       throw new ServiceException("Not found this note : " + noteId);
@@ -2064,8 +2063,8 @@ public class NotebookServer extends WebSocketServlet
 
     // Convert Paragraph to ParagraphInfo
     List<ParagraphInfo> paragraphInfos = new ArrayList<>();
-    List<Paragraph> paragraphs = note.getParagraphs();
-    for (Paragraph paragraph : paragraphs) {
+    List<LegacyParagraph> paragraphs = note.getParagraphs();
+    for (LegacyParagraph paragraph : paragraphs) {
       ParagraphInfo paraInfo = new ParagraphInfo();
       paraInfo.setNoteId(noteId);
       paraInfo.setParagraphId(paragraph.getId());

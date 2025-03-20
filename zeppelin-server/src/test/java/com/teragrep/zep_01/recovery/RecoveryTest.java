@@ -18,7 +18,6 @@ package com.teragrep.zep_01.recovery;
 
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
-import org.apache.commons.io.FileUtils;
 import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.util.EntityUtils;
 import com.teragrep.zep_01.conf.ZeppelinConfiguration;
@@ -28,8 +27,8 @@ import com.teragrep.zep_01.interpreter.ManagedInterpreterGroup;
 import com.teragrep.zep_01.interpreter.recovery.FileSystemRecoveryStorage;
 import com.teragrep.zep_01.interpreter.recovery.StopInterpreter;
 import com.teragrep.zep_01.notebook.Note;
-import com.teragrep.zep_01.notebook.Notebook;
-import com.teragrep.zep_01.notebook.Paragraph;
+import com.teragrep.zep_01.notebook.LegacyNotebook;
+import com.teragrep.zep_01.notebook.LegacyParagraph;
 import com.teragrep.zep_01.rest.AbstractTestRestApi;
 import com.teragrep.zep_01.scheduler.Job;
 import com.teragrep.zep_01.server.ZeppelinServer;
@@ -42,8 +41,6 @@ import org.junit.Test;
 
 import java.io.File;
 import java.nio.charset.StandardCharsets;
-import java.nio.file.Files;
-import java.time.Instant;
 import java.util.Map;
 
 import static org.junit.Assert.assertEquals;
@@ -56,7 +53,7 @@ public class RecoveryTest extends AbstractTestRestApi {
   private Gson gson = new Gson();
   private static File recoveryDir = null;
 
-  private Notebook notebook;
+  private LegacyNotebook notebook;
 
   private AuthenticationInfo anonymous = new AuthenticationInfo("anonymous");
 
@@ -70,7 +67,7 @@ public class RecoveryTest extends AbstractTestRestApi {
             recoveryDir.getAbsolutePath());
     startUp(RecoveryTest.class.getSimpleName());
 
-    notebook = ZeppelinServer.sharedServiceLocator.getService(Notebook.class);
+    notebook = ZeppelinServer.sharedServiceLocator.getService(LegacyNotebook.class);
   }
 
   @After
@@ -86,7 +83,7 @@ public class RecoveryTest extends AbstractTestRestApi {
     Note note1 = notebook.createNote("note1", anonymous);
 
     // run python interpreter and create new variable `user`
-    Paragraph p1 = note1.addNewParagraph(AuthenticationInfo.ANONYMOUS);
+    LegacyParagraph p1 = note1.addNewParagraph(AuthenticationInfo.ANONYMOUS);
     p1.setText("%python user='abc'");
     CloseableHttpResponse post = httpPost("/notebook/job/" + note1.getId() +"?blocking=true", "");
     assertThat(post, isAllowed());
@@ -95,16 +92,16 @@ public class RecoveryTest extends AbstractTestRestApi {
     assertEquals("OK", resp.get("status"));
     post.close();
     assertEquals(Job.Status.FINISHED, p1.getStatus());
-    TestUtils.getInstance(Notebook.class).saveNote(note1, anonymous);
+    TestUtils.getInstance(LegacyNotebook.class).saveNote(note1, anonymous);
 
     // shutdown zeppelin and restart it
     shutDown();
     startUp(RecoveryTest.class.getSimpleName(), false);
 
     // run the paragraph again, but change the text to print variable `user`
-    note1 = TestUtils.getInstance(Notebook.class).getNote(note1.getId());
+    note1 = TestUtils.getInstance(LegacyNotebook.class).getNote(note1.getId());
     Thread.sleep(10 * 1000);
-    note1 = TestUtils.getInstance(Notebook.class).getNote(note1.getId());
+    note1 = TestUtils.getInstance(LegacyNotebook.class).getNote(note1.getId());
     p1 = note1.getParagraph(p1.getId());
     p1.setText("%python print(user)");
     post = httpPost("/notebook/job/" + note1.getId() + "?blocking=true", "");
@@ -120,7 +117,7 @@ public class RecoveryTest extends AbstractTestRestApi {
     Note note1 = notebook.createNote("note2", AuthenticationInfo.ANONYMOUS);
 
     // run python interpreter and create new variable `user`
-    Paragraph p1 = note1.addNewParagraph(AuthenticationInfo.ANONYMOUS);
+    LegacyParagraph p1 = note1.addNewParagraph(AuthenticationInfo.ANONYMOUS);
     p1.setText("%python user='abc'");
     CloseableHttpResponse post = httpPost("/notebook/job/" + note1.getId() + "?blocking=true", "");
     assertThat(post, isAllowed());
@@ -129,9 +126,9 @@ public class RecoveryTest extends AbstractTestRestApi {
     assertEquals("OK", resp.get("status"));
     post.close();
     assertEquals(Job.Status.FINISHED, p1.getStatus());
-    TestUtils.getInstance(Notebook.class).saveNote(note1, AuthenticationInfo.ANONYMOUS);
+    TestUtils.getInstance(LegacyNotebook.class).saveNote(note1, AuthenticationInfo.ANONYMOUS);
     // restart the python interpreter
-    TestUtils.getInstance(Notebook.class).getInterpreterSettingManager().restart(
+    TestUtils.getInstance(LegacyNotebook.class).getInterpreterSettingManager().restart(
         ((ManagedInterpreterGroup) p1.getBindedInterpreter().getInterpreterGroup())
             .getInterpreterSetting().getId()
     );
@@ -143,7 +140,7 @@ public class RecoveryTest extends AbstractTestRestApi {
     Thread.sleep(5 * 1000);
     // run the paragraph again, but change the text to print variable `user`.
     // can not recover the python interpreter, because it has been shutdown.
-    note1 = TestUtils.getInstance(Notebook.class).getNote(note1.getId());
+    note1 = TestUtils.getInstance(LegacyNotebook.class).getNote(note1.getId());
     p1 = note1.getParagraph(p1.getId());
     p1.setText("%python print(user)");
     post = httpPost("/notebook/job/" + note1.getId() + "?blocking=true", "");
@@ -155,10 +152,10 @@ public class RecoveryTest extends AbstractTestRestApi {
   @Test
   public void testRecovery_3() throws Exception {
     LOG.debug("Test testRecovery_3");
-    Note note1 = TestUtils.getInstance(Notebook.class).createNote("note3", AuthenticationInfo.ANONYMOUS);
+    Note note1 = TestUtils.getInstance(LegacyNotebook.class).createNote("note3", AuthenticationInfo.ANONYMOUS);
 
     // run python interpreter and create new variable `user`
-    Paragraph p1 = note1.addNewParagraph(AuthenticationInfo.ANONYMOUS);
+    LegacyParagraph p1 = note1.addNewParagraph(AuthenticationInfo.ANONYMOUS);
     p1.setText("%python user='abc'");
     CloseableHttpResponse post = httpPost("/notebook/job/" + note1.getId() + "?blocking=true", "");
     assertThat(post, isAllowed());
@@ -167,7 +164,7 @@ public class RecoveryTest extends AbstractTestRestApi {
     assertEquals("OK", resp.get("status"));
     post.close();
     assertEquals(Job.Status.FINISHED, p1.getStatus());
-    TestUtils.getInstance(Notebook.class).saveNote(note1, AuthenticationInfo.ANONYMOUS);
+    TestUtils.getInstance(LegacyNotebook.class).saveNote(note1, AuthenticationInfo.ANONYMOUS);
 
     // shutdown zeppelin and restart it
     shutDown();
@@ -178,7 +175,7 @@ public class RecoveryTest extends AbstractTestRestApi {
     Thread.sleep(5 * 1000);
     // run the paragraph again, but change the text to print variable `user`.
     // can not recover the python interpreter, because it has been shutdown.
-    note1 = TestUtils.getInstance(Notebook.class).getNote(note1.getId());
+    note1 = TestUtils.getInstance(LegacyNotebook.class).getNote(note1.getId());
     p1 = note1.getParagraph(p1.getId());
     p1.setText("%python print(user)");
     post = httpPost("/notebook/job/" + note1.getId() + "?blocking=true", "");
@@ -195,10 +192,10 @@ public class RecoveryTest extends AbstractTestRestApi {
     interpreterSetting.setProperty("zeppelin.python.useIPython", "false");
     interpreterSetting.setProperty("zeppelin.interpreter.result.cache", "100");
 
-    Note note1 = TestUtils.getInstance(Notebook.class).createNote("note4", AuthenticationInfo.ANONYMOUS);
+    Note note1 = TestUtils.getInstance(LegacyNotebook.class).createNote("note4", AuthenticationInfo.ANONYMOUS);
 
     // run  paragraph async, print 'hello' after 10 seconds
-    Paragraph p1 = note1.addNewParagraph(AuthenticationInfo.ANONYMOUS);
+    LegacyParagraph p1 = note1.addNewParagraph(AuthenticationInfo.ANONYMOUS);
     p1.setText("%python import time\n" +
             "for i in range(1, 10):\n" +
             "    time.sleep(1)\n" +

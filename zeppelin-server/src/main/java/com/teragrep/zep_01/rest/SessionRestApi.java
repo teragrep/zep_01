@@ -20,7 +20,7 @@ package com.teragrep.zep_01.rest;
 import org.apache.commons.lang3.StringUtils;
 import com.teragrep.zep_01.annotation.ZeppelinApi;
 import com.teragrep.zep_01.interpreter.InterpreterSettingManager;
-import com.teragrep.zep_01.notebook.Notebook;
+import com.teragrep.zep_01.notebook.LegacyNotebook;
 import com.teragrep.zep_01.common.SessionInfo;
 import com.teragrep.zep_01.rest.exception.SessionNoteFoundException;
 import com.teragrep.zep_01.server.JsonResponse;
@@ -53,7 +53,7 @@ public class SessionRestApi {
   private final SessionManagerService sessionManagerService;
 
   @Inject
-  public SessionRestApi(Notebook notebook, InterpreterSettingManager interpreterSettingManager) {
+  public SessionRestApi(LegacyNotebook notebook, InterpreterSettingManager interpreterSettingManager) {
     this.sessionManagerService = new SessionManagerService(notebook, interpreterSettingManager);
   }
 

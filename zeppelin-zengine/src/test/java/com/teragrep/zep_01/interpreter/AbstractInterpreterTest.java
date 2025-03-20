@@ -23,7 +23,7 @@ import com.teragrep.zep_01.conf.ZeppelinConfiguration;
 import com.teragrep.zep_01.display.AngularObjectRegistryListener;
 import com.teragrep.zep_01.interpreter.remote.RemoteInterpreterProcessListener;
 import com.teragrep.zep_01.notebook.Note;
-import com.teragrep.zep_01.notebook.Notebook;
+import com.teragrep.zep_01.notebook.LegacyNotebook;
 import org.junit.After;
 import org.junit.Before;
 import org.slf4j.Logger;
@@ -33,7 +33,6 @@ import java.io.File;
 import java.time.Instant;
 
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
 
 /**
  * This class will load configuration files under
@@ -48,7 +47,7 @@ public abstract class AbstractInterpreterTest {
 
   protected InterpreterSettingManager interpreterSettingManager;
   protected InterpreterFactory interpreterFactory;
-  protected Notebook mockNotebook;
+  protected LegacyNotebook mockNotebook;
   protected File zeppelinHome;
   protected File interpreterDir;
   protected File confDir;
@@ -82,7 +81,7 @@ public abstract class AbstractInterpreterTest {
         mock(AngularObjectRegistryListener.class), mock(RemoteInterpreterProcessListener.class));
     interpreterFactory = new InterpreterFactory(interpreterSettingManager);
 
-    mockNotebook = mock(Notebook.class);
+    mockNotebook = mock(LegacyNotebook.class);
     interpreterSettingManager.setNotebook(mockNotebook);
   }
 

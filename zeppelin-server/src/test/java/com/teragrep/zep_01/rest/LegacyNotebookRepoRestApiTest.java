@@ -41,13 +41,13 @@ import com.teragrep.zep_01.user.AuthenticationInfo;
  * NotebookRepo rest api test.
  */
 @FixMethodOrder(MethodSorters.NAME_ASCENDING)
-public class NotebookRepoRestApiTest extends AbstractTestRestApi {
+public class LegacyNotebookRepoRestApiTest extends AbstractTestRestApi {
   Gson gson = new Gson();
   AuthenticationInfo anonymous;
 
   @BeforeClass
   public static void init() throws Exception {
-    AbstractTestRestApi.startUp(NotebookRepoRestApiTest.class.getSimpleName());
+    AbstractTestRestApi.startUp(LegacyNotebookRepoRestApiTest.class.getSimpleName());
   }
 
   @AfterClass
