@@ -51,7 +51,7 @@ class PythonInterpreterMatplotlibTest implements InterpreterOutputListener {
   @BeforeEach
   public void setUp() throws Exception {
     Properties p = new Properties();
-    p.setProperty("zeppelin.python", "python");
+    p.setProperty("zeppelin.python", "python3");
     p.setProperty("zeppelin.python.maxResult", "100");
     p.setProperty("zeppelin.python.gatewayserver_address", "127.0.0.1");
 
