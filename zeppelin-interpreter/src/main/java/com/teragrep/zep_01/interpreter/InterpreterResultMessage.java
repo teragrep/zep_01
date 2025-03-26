@@ -17,6 +17,9 @@
 package com.teragrep.zep_01.interpreter;
 
 import java.io.Serializable;
+import jakarta.json.Json;
+import jakarta.json.JsonObject;
+import jakarta.json.JsonObjectBuilder;
 
 /**
  * Interpreter result message
@@ -40,5 +43,12 @@ public class InterpreterResultMessage implements Serializable {
 
   public String toString() {
     return "%" + type.name().toLowerCase() + " " + data;
+  }
+
+  public JsonObject json(){
+    JsonObjectBuilder builder = Json.createObjectBuilder();
+    builder.add("type",type.name());
+    builder.add("data",data);
+    return builder.build();
   }
 }

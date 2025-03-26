@@ -18,6 +18,10 @@
 package com.teragrep.zep_01.interpreter;
 
 
+import com.teragrep.zep_01.conf.ZeppelinConfiguration;
+import jakarta.json.Json;
+import jakarta.json.JsonObject;
+import jakarta.json.JsonObjectBuilder;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.reflect.FieldUtils;
 import com.teragrep.zep_01.annotation.Experimental;
@@ -36,6 +40,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
+import java.util.stream.Collectors;
 
 /**
  * Interface for interpreters.
@@ -470,6 +475,28 @@ public abstract class Interpreter {
    */
   public enum SchedulingMode {
     FIFO, PARALLEL
+  }
+
+  public JsonObject json(){
+    JsonObjectBuilder builder = Json.createObjectBuilder();
+    builder.add("className",getClassName());
+    HashMap<String,String> props = properties.entrySet().stream().collect(
+            Collectors.toMap(
+                    entry-> String.valueOf(entry.getKey()),
+                    entry-> String.valueOf(entry.getValue()),
+                    (prev,next) -> next,HashMap::new
+            ));
+    JsonObjectBuilder propertiesBuilder = Json.createObjectBuilder(props);
+    builder.add("properties",propertiesBuilder);
+    // IntepretergroupId can contain scoping information after a "-", which will lead to nullpointerException when searching for an interpretergroup
+    if(interpreterGroup != null){
+      String interpreterGroupId = interpreterGroup.id.contains("-") ? interpreterGroup.id.substring(0,interpreterGroup.id.indexOf("-")) : interpreterGroup.id;
+      builder.add("defaultInterpreterGroup",interpreterGroupId);
+    }
+    else {
+      builder.add("defaultInterpreterGroup", ZeppelinConfiguration.create().getString(ZeppelinConfiguration.ConfVars.ZEPPELIN_INTERPRETER_GROUP_DEFAULT));
+    }
+    return builder.build();
   }
 
 }

@@ -22,21 +22,13 @@ import com.google.gson.ExclusionStrategy;
 import com.google.gson.FieldAttributes;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import com.teragrep.zep_01.interpreter.*;
 import org.apache.commons.lang3.StringUtils;
 import com.teragrep.zep_01.common.JsonSerializable;
 import com.teragrep.zep_01.conf.ZeppelinConfiguration;
 import com.teragrep.zep_01.display.AngularObject;
 import com.teragrep.zep_01.display.AngularObjectRegistry;
 import com.teragrep.zep_01.display.Input;
-import com.teragrep.zep_01.interpreter.ExecutionContext;
-import com.teragrep.zep_01.interpreter.Interpreter;
-import com.teragrep.zep_01.interpreter.InterpreterFactory;
-import com.teragrep.zep_01.interpreter.InterpreterGroup;
-import com.teragrep.zep_01.interpreter.InterpreterNotFoundException;
-import com.teragrep.zep_01.interpreter.InterpreterResult;
-import com.teragrep.zep_01.interpreter.InterpreterSetting;
-import com.teragrep.zep_01.interpreter.InterpreterSettingManager;
-import com.teragrep.zep_01.interpreter.ManagedInterpreterGroup;
 import com.teragrep.zep_01.interpreter.remote.RemoteAngularObject;
 import com.teragrep.zep_01.interpreter.remote.RemoteAngularObjectRegistry;
 import com.teragrep.zep_01.interpreter.thrift.InterpreterCompletion;
@@ -51,6 +43,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
@@ -1222,5 +1216,33 @@ public class Note implements JsonSerializable {
     executionContext.setInIsolatedMode(isIsolatedMode());
     executionContext.setStartTime(getStartTime());
     return executionContext;
+  }
+
+  // Turn a legacy Note object into a Notebook with this method.
+  public Notebook toNotebook(){
+    Path path = Paths.get(zConf.getNotebookDir(),this.path+"_"+id+".zpln");
+    LinkedHashMap<String,Paragraph> paragraphMap = new LinkedHashMap<>();
+    for (LegacyParagraph paragraph:paragraphs) {
+      Result result;
+      if(paragraph.getReturn()!= null){
+        result = new Result(paragraph.getReturn().code(),paragraph.getReturn().message());
+      }
+      else {
+        result = new Result(InterpreterResult.Code.SUCCESS,new ArrayList<>());
+      }
+      Interpreter interpreter;
+      try{
+        interpreter = paragraph.getBindedInterpreter();
+      }catch (InterpreterNotFoundException exception){
+        LOGGER.warn("Interpreter not found for paragraph {} in notebook {}, using default!",paragraph.getId(),id);
+        interpreter = interpreterSettingManager.getDefaultInterpreterSetting().getDefaultInterpreter(paragraph.getUser(),id);
+      }
+      String paragraphText = paragraph.getText() != null ? paragraph.getText() : "";
+      Script script = new Script(paragraphText,interpreter, InterpreterContext.builder().build());
+      Paragraph newpara = new Paragraph(paragraph.getId(),paragraph.getTitle(),result,script);
+      paragraphMap.put(newpara.id(),newpara);
+    }
+    Notebook notebook = new Notebook(name,id,path,paragraphMap);
+    return notebook;
   }
 }

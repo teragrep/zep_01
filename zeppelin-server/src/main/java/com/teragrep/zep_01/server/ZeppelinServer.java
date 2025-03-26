@@ -22,6 +22,7 @@ import com.google.gson.Gson;
 
 import static com.teragrep.zep_01.server.HtmlAddonResource.HTML_ADDON_IDENTIFIER;
 
+import com.teragrep.zep_01.notebook.repo.NotebookRepo;
 import io.micrometer.core.instrument.Clock;
 import io.micrometer.core.instrument.Metrics;
 import io.micrometer.core.instrument.Tags;
@@ -74,8 +75,7 @@ import com.teragrep.zep_01.notebook.NoteManager;
 import com.teragrep.zep_01.notebook.LegacyNotebook;
 import com.teragrep.zep_01.notebook.AuthorizationService;
 import com.teragrep.zep_01.notebook.LegacyParagraph;
-import com.teragrep.zep_01.notebook.repo.NotebookRepo;
-import com.teragrep.zep_01.notebook.repo.NotebookRepoSync;
+import com.teragrep.zep_01.notebook.repo.NotebookRepository;
 import com.teragrep.zep_01.notebook.scheduler.NoSchedulerService;
 import com.teragrep.zep_01.notebook.scheduler.QuartzSchedulerService;
 import com.teragrep.zep_01.notebook.scheduler.SchedulerService;
@@ -159,7 +159,7 @@ public class ZeppelinServer extends ResourceConfig {
     sharedServiceLocator = ServiceLocatorFactory.getInstance().create("shared-locator");
     ServiceLocatorUtilities.enableImmediateScope(sharedServiceLocator);
     ServiceLocatorUtilities.addClasses(sharedServiceLocator,
-      NotebookRepoSync.class,
+      NotebookRepository.class,
       ImmediateErrorHandlerImpl.class);
     ImmediateErrorHandlerImpl handler = sharedServiceLocator.getService(ImmediateErrorHandlerImpl.class);
 
@@ -170,7 +170,7 @@ public class ZeppelinServer extends ResourceConfig {
           protected void configure() {
             Credentials credentials = new Credentials(conf);
             bindAsContract(InterpreterFactory.class).in(Singleton.class);
-            bindAsContract(NotebookRepoSync.class).to(NotebookRepo.class).in(Immediate.class);
+            bindAsContract(NotebookRepository.class).to(NotebookRepo.class).in(Immediate.class);
             bind(conf).to(ZeppelinConfiguration.class);
             bindAsContract(InterpreterSettingManager.class).in(Singleton.class);
             bindAsContract(InterpreterService.class).in(Singleton.class);
