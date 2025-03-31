@@ -1,6 +1,6 @@
 [
   {
-    "group": "spark",
+    "group": "dummy",
     "name": "dummy",
     "className": "com.teragrep.pth_07.DPLInterpreter",
     "defaultInterpreter": true,
