@@ -23,6 +23,7 @@ import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.io.StringReader;
+import java.util.Map;
 import java.util.Properties;
 
 /**
@@ -67,6 +68,12 @@ public class ConfInterpreter extends Interpreter {
       finalProperties.putAll(getProperties());
       Properties newProperties = new Properties();
       newProperties.load(new StringReader(st));
+      // Verify that every key to be added exists within the Interpreter's defined properties already.
+      for (Map.Entry keyValuePair : newProperties.entrySet()){
+        if(!((Map<String,InterpreterProperty>)interpreterSetting.getProperties()).containsKey(keyValuePair.getKey())){
+          throw new InterpreterException("Tried to add an unknown key to Interpreter's properties: "+ keyValuePair.getKey() + " Please make sure that the key is listed as a property in the Interpreters page.");
+        }
+      }
       finalProperties.putAll(newProperties);
       LOGGER.debug("Properties for InterpreterGroup: {} is {}", interpreterGroupId, finalProperties);
       interpreterSetting.setInterpreterGroupProperties(interpreterGroupId, finalProperties);
