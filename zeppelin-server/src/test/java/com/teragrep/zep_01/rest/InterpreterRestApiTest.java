@@ -20,17 +20,15 @@ import com.google.gson.Gson;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
-import com.google.gson.reflect.TypeToken;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.util.EntityUtils;
 import com.teragrep.zep_01.interpreter.InterpreterOption;
 import com.teragrep.zep_01.interpreter.InterpreterSetting;
 import com.teragrep.zep_01.notebook.Note;
-import com.teragrep.zep_01.notebook.Notebook;
-import com.teragrep.zep_01.notebook.Paragraph;
+import com.teragrep.zep_01.notebook.LegacyNotebook;
+import com.teragrep.zep_01.notebook.LegacyParagraph;
 import com.teragrep.zep_01.scheduler.Job.Status;
-import com.teragrep.zep_01.server.ZeppelinServer;
 import com.teragrep.zep_01.user.AuthenticationInfo;
 import com.teragrep.zep_01.utils.TestUtils;
 import org.junit.*;
@@ -39,7 +37,6 @@ import org.junit.runners.MethodSorters;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
-import java.util.List;
 import java.util.Map;
 
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -78,7 +75,7 @@ public class InterpreterRestApiTest extends AbstractTestRestApi {
 
     // then
     assertThat(get, isAllowed());
-    assertEquals(TestUtils.getInstance(Notebook.class).getInterpreterSettingManager()
+    assertEquals(TestUtils.getInstance(LegacyNotebook.class).getInterpreterSettingManager()
                     .getInterpreterSettingTemplates().size(), body.entrySet().size());
     get.close();
   }
@@ -223,9 +220,9 @@ public class InterpreterRestApiTest extends AbstractTestRestApi {
   @Ignore(value="This was not enabled")
   @Test
   public void testInterpreterRestart() throws IOException, InterruptedException {
-    Note note = TestUtils.getInstance(Notebook.class).createNote("note1", anonymous);
+    Note note = TestUtils.getInstance(LegacyNotebook.class).createNote("note1", anonymous);
     note.addNewParagraph(AuthenticationInfo.ANONYMOUS);
-    Paragraph p = note.getLastParagraph();
+    LegacyParagraph p = note.getLastParagraph();
     Map config = p.getConfig();
     config.put("enabled", true);
 
@@ -267,9 +264,9 @@ public class InterpreterRestApiTest extends AbstractTestRestApi {
 
   @Test
   public void testRestartInterpreterPerNote() throws IOException, InterruptedException {
-    Note note = TestUtils.getInstance(Notebook.class).createNote("note2", anonymous);
+    Note note = TestUtils.getInstance(LegacyNotebook.class).createNote("note2", anonymous);
     note.addNewParagraph(AuthenticationInfo.ANONYMOUS);
-    Paragraph p = note.getLastParagraph();
+    LegacyParagraph p = note.getLastParagraph();
     Map config = p.getConfig();
     config.put("enabled", true);
 

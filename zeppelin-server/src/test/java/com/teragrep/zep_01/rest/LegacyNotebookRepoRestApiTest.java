@@ -41,13 +41,13 @@ import com.teragrep.zep_01.user.AuthenticationInfo;
  * NotebookRepo rest api test.
  */
 @FixMethodOrder(MethodSorters.NAME_ASCENDING)
-public class NotebookRepoRestApiTest extends AbstractTestRestApi {
+public class LegacyNotebookRepoRestApiTest extends AbstractTestRestApi {
   Gson gson = new Gson();
   AuthenticationInfo anonymous;
 
   @BeforeClass
   public static void init() throws Exception {
-    AbstractTestRestApi.startUp(NotebookRepoRestApiTest.class.getSimpleName());
+    AbstractTestRestApi.startUp(LegacyNotebookRepoRestApiTest.class.getSimpleName());
   }
 
   @AfterClass
@@ -60,6 +60,7 @@ public class NotebookRepoRestApiTest extends AbstractTestRestApi {
     anonymous = new AuthenticationInfo("anonymous");
   }
 
+  @Ignore("Depends on ZeppelinServer having an instance of NotebookRepoSync")
   private List<Map<String, Object>> getListOfReposotiry() throws IOException {
     CloseableHttpResponse get = httpGet("/notebook-repositories");
     Map<String, Object> responce = gson.fromJson(EntityUtils.toString(get.getEntity(), StandardCharsets.UTF_8),
@@ -76,12 +77,14 @@ public class NotebookRepoRestApiTest extends AbstractTestRestApi {
   }
 
   @Test
+  @Ignore("Depends on ZeppelinServer having an instance of NotebookRepoSync")
   public void thatCanGetNotebookRepositoiesSettings() throws IOException {
     List<Map<String, Object>> listOfRepositories = getListOfReposotiry();
     assertThat(listOfRepositories.size(), is(not(0)));
   }
 
   @Test
+  @Ignore("Depends on ZeppelinServer having an instance of NotebookRepoSync")
   public void reloadRepositories() throws IOException {
     CloseableHttpResponse get = httpGet("/notebook-repositories/reload");
     int status = get.getStatusLine().getStatusCode();
@@ -90,6 +93,7 @@ public class NotebookRepoRestApiTest extends AbstractTestRestApi {
   }
 
   @Test
+  @Ignore("Depends on ZeppelinServer having an instance of NotebookRepoSync")
   public void setNewDirectoryForLocalDirectory() throws IOException {
     List<Map<String, Object>> listOfRepositories = getListOfReposotiry();
     String localVfs = StringUtils.EMPTY;

@@ -26,11 +26,10 @@ import java.util.HashSet;
 import java.util.Set;
 
 import org.apache.shiro.mgt.DefaultSecurityManager;
-import org.apache.shiro.subject.SimplePrincipalCollection;
 import org.apache.shiro.util.LifecycleUtils;
 import org.apache.shiro.util.ThreadContext;
 import com.teragrep.zep_01.conf.ZeppelinConfiguration;
-import com.teragrep.zep_01.notebook.Notebook;
+import com.teragrep.zep_01.notebook.LegacyNotebook;
 import com.teragrep.zep_01.realm.jwt.KnoxJwtRealm;
 import org.junit.Before;
 import org.junit.Ignore;
@@ -101,7 +100,7 @@ public class ShiroAuthenticationServiceTest {
     when(subject.isAuthenticated()).thenReturn(true);
     when(subject.getPrincipal()).thenReturn(new TestPrincipal(expectedName));
 
-    Notebook notebook = Mockito.mock(Notebook.class);
+    LegacyNotebook notebook = Mockito.mock(LegacyNotebook.class);
     when(notebook.getConf())
         .thenReturn(ZeppelinConfiguration.create("zeppelin-site.xml"));
 

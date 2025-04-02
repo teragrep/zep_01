@@ -22,7 +22,7 @@ import com.teragrep.zep_01.conf.ZeppelinConfiguration.ConfVars;
 import com.teragrep.zep_01.notebook.Note;
 import com.teragrep.zep_01.notebook.NoteInfo;
 import com.teragrep.zep_01.notebook.OldNoteInfo;
-import com.teragrep.zep_01.notebook.Paragraph;
+import com.teragrep.zep_01.notebook.LegacyParagraph;
 import com.teragrep.zep_01.plugin.PluginManager;
 import com.teragrep.zep_01.user.AuthenticationInfo;
 import com.teragrep.zep_01.util.Util;
@@ -436,7 +436,7 @@ public class NotebookRepoSync implements NotebookRepoWithVersionControl {
     Date latest = new Date(0L);
     Date tempCreated, tempStarted, tempFinished;
 
-    for (Paragraph paragraph : note.getParagraphs()) {
+    for (LegacyParagraph paragraph : note.getParagraphs()) {
       tempCreated = paragraph.getDateCreated();
       tempStarted = paragraph.getDateStarted();
       tempFinished = paragraph.getDateFinished();

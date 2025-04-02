@@ -30,9 +30,17 @@ public class InterpreterFactory implements InterpreterFactoryInterface {
 
   private final InterpreterSettingManager interpreterSettingManager;
 
+  // Static instance for compatibility reasons, Remove when refactoring Interpreter creation
+  public static InterpreterFactory INSTANCE;
   @Inject
   public InterpreterFactory(InterpreterSettingManager interpreterSettingManager) {
     this.interpreterSettingManager = interpreterSettingManager;
+    INSTANCE = this;
+  }
+
+  // Getter for interpreterFactory for compatibility reasons. Used when creating Script objects as they require an Interpreter
+  public static InterpreterFactory getInstance(){
+    return INSTANCE;
   }
 
   @Override

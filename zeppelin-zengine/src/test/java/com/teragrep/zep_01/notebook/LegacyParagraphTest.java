@@ -66,12 +66,12 @@ import org.junit.rules.ExpectedException;
 
 import org.mockito.Mockito;
 
-public class ParagraphTest extends AbstractInterpreterTest {
+public class LegacyParagraphTest extends AbstractInterpreterTest {
 
   @Test
   public void scriptBodyWithReplName() {
     Note note = createNote();
-    Paragraph paragraph = new Paragraph(note, null);
+    LegacyParagraph paragraph = new LegacyParagraph(note, null);
     paragraph.setText("%test (1234567");
     assertEquals("test", paragraph.getIntpText());
     assertEquals("(1234567", paragraph.getScriptText());
@@ -84,7 +84,7 @@ public class ParagraphTest extends AbstractInterpreterTest {
   @Test
   public void scriptBodyWithoutReplName() {
     Note note = createNote();
-    Paragraph paragraph = new Paragraph(note, null);
+    LegacyParagraph paragraph = new LegacyParagraph(note, null);
     paragraph.setText("1234567");
     assertEquals("", paragraph.getIntpText());
     assertEquals("1234567", paragraph.getScriptText());
@@ -93,7 +93,7 @@ public class ParagraphTest extends AbstractInterpreterTest {
   @Test
   public void replNameAndNoBody() {
     Note note = createNote();
-    Paragraph paragraph = new Paragraph(note, null);
+    LegacyParagraph paragraph = new LegacyParagraph(note, null);
     paragraph.setText("%test");
     assertEquals("test", paragraph.getIntpText());
     assertEquals("", paragraph.getScriptText());
@@ -102,7 +102,7 @@ public class ParagraphTest extends AbstractInterpreterTest {
   @Test
   public void replSingleCharName() {
     Note note = createNote();
-    Paragraph paragraph = new Paragraph(note, null);
+    LegacyParagraph paragraph = new LegacyParagraph(note, null);
     paragraph.setText("%r a");
     assertEquals("r", paragraph.getIntpText());
     assertEquals("a", paragraph.getScriptText());
@@ -111,7 +111,7 @@ public class ParagraphTest extends AbstractInterpreterTest {
   @Test
   public void testParagraphProperties() {
     Note note = createNote();
-    Paragraph paragraph = new Paragraph(note, null);
+    LegacyParagraph paragraph = new LegacyParagraph(note, null);
     paragraph.setText("%test(p1=v1,p2=v2) a");
     assertEquals("test", paragraph.getIntpText());
     assertEquals("a", paragraph.getScriptText());
@@ -143,14 +143,14 @@ public class ParagraphTest extends AbstractInterpreterTest {
     expectedEx.expectMessage("Invalid paragraph properties format");
 
     Note note = createNote();
-    Paragraph paragraph = new Paragraph(note, null);
+    LegacyParagraph paragraph = new LegacyParagraph(note, null);
     paragraph.setText("%test(p1=v1=v2) a");
   }
 
   @Test
   public void replInvalid() {
     Note note = createNote();
-    Paragraph paragraph = new Paragraph(note, null);
+    LegacyParagraph paragraph = new LegacyParagraph(note, null);
     paragraph.setText("foo %r");
     assertEquals("", paragraph.getIntpText());
     assertEquals("foo %r", paragraph.getScriptText());
@@ -167,7 +167,7 @@ public class ParagraphTest extends AbstractInterpreterTest {
   @Test
   public void replNameEndsWithWhitespace() {
     Note note = createNote();
-    Paragraph paragraph = new Paragraph(note, null);
+    LegacyParagraph paragraph = new LegacyParagraph(note, null);
     paragraph.setText("%test\r\n###Hello");
     assertEquals("test", paragraph.getIntpText());
     assertEquals("\r\n###Hello", paragraph.getScriptText());
@@ -220,7 +220,7 @@ public class ParagraphTest extends AbstractInterpreterTest {
     final String scriptBody = "My name is ${name} and I am ${age=20} years old. " +
             "My occupation is ${ job = engineer | developer | artists}";
 
-    final Paragraph paragraph = new Paragraph(note, null);
+    final LegacyParagraph paragraph = new LegacyParagraph(note, null);
     final String paragraphId = paragraph.getId();
 
     final AngularObject<String> nameAO = AngularObjectBuilder.build("name", "DuyHai DOAN", noteId,
@@ -246,10 +246,10 @@ public class ParagraphTest extends AbstractInterpreterTest {
 
   @Test
   public void returnDefaultParagraphWithNewUser() {
-    Paragraph p = new Paragraph("para_1", null, null);
+    LegacyParagraph p = new LegacyParagraph("para_1", null, null);
     String defaultValue = "Default Value";
     p.setResult(new InterpreterResult(Code.SUCCESS, defaultValue));
-    Paragraph newUserParagraph = p.getUserParagraph("new_user");
+    LegacyParagraph newUserParagraph = p.getUserParagraph("new_user");
     assertNotNull(newUserParagraph);
     assertEquals(defaultValue, newUserParagraph.getReturn().message().get(0).getData());
   }
@@ -258,7 +258,7 @@ public class ParagraphTest extends AbstractInterpreterTest {
   public void returnUnchangedResultsWithDifferentUser() throws Throwable {
     Note mockNote = mock(Note.class);
     when(mockNote.getCredentials()).thenReturn(mock(Credentials.class));
-    Paragraph spyParagraph = spy(new Paragraph("para_1", mockNote,  null));
+    LegacyParagraph spyParagraph = spy(new LegacyParagraph("para_1", mockNote,  null));
 
     Interpreter mockInterpreter = mock(Interpreter.class);
     spyParagraph.setInterpreter(mockInterpreter);
@@ -300,7 +300,7 @@ public class ParagraphTest extends AbstractInterpreterTest {
     AuthenticationInfo user1 = new AuthenticationInfo("user1");
     spyParagraph.setAuthenticationInfo(user1);
     spyParagraph.jobRun();
-    Paragraph p1 = spyParagraph.getUserParagraph(user1.getUser());
+    LegacyParagraph p1 = spyParagraph.getUserParagraph(user1.getUser());
 
     mockInterpreterResult = mock(InterpreterResult.class);
     when(mockInterpreter.interpret(anyString(), Mockito.<InterpreterContext>any())).thenReturn(mockInterpreterResult);
@@ -313,7 +313,7 @@ public class ParagraphTest extends AbstractInterpreterTest {
     AuthenticationInfo user2 = new AuthenticationInfo("user2");
     spyParagraph.setAuthenticationInfo(user2);
     spyParagraph.jobRun();
-    Paragraph p2 = spyParagraph.getUserParagraph(user2.getUser());
+    LegacyParagraph p2 = spyParagraph.getUserParagraph(user2.getUser());
 
     assertNotEquals(p1.getReturn().toString(), p2.getReturn().toString());
 
@@ -322,7 +322,7 @@ public class ParagraphTest extends AbstractInterpreterTest {
 
   @Test
   public void testCursorPosition() {
-    Paragraph paragraph = spy(new Paragraph());
+    LegacyParagraph paragraph = spy(new LegacyParagraph());
     // left = buffer, middle = cursor position into source code, right = cursor position after parse
     List<Triple<String, Integer, Integer>> dataSet = Arrays.asList(
         Triple.of("%jdbc schema.", 13, 7),
@@ -359,7 +359,7 @@ public class ParagraphTest extends AbstractInterpreterTest {
     Note mockNote = mock(Note.class);
     Credentials creds = mock(Credentials.class);
     when(mockNote.getCredentials()).thenReturn(creds);
-    Paragraph spyParagraph = spy(new Paragraph("para_1", mockNote, null));
+    LegacyParagraph spyParagraph = spy(new LegacyParagraph("para_1", mockNote, null));
     UserCredentials uc = mock(UserCredentials.class);
     when(creds.getUserCredentials(anyString())).thenReturn(uc);
     UsernamePassword up = new UsernamePassword("user", "pwd");

@@ -20,9 +20,6 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonParseException;
 import com.google.gson.JsonParser;
 
-import org.apache.commons.exec.CommandLine;
-import org.apache.commons.exec.DefaultExecutor;
-import org.apache.commons.exec.PumpStreamHandler;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.http.Header;
@@ -42,7 +39,7 @@ import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClients;
 import org.apache.http.message.BasicNameValuePair;
-import com.teragrep.zep_01.notebook.Notebook;
+import com.teragrep.zep_01.notebook.LegacyNotebook;
 import com.teragrep.zep_01.plugin.PluginManager;
 import com.teragrep.zep_01.utils.TestUtils;
 import org.hamcrest.Description;
@@ -306,13 +303,13 @@ public abstract class AbstractTestRestApi {
   protected static void shutDown(final boolean deleteConfDir,
                                  boolean forceShutdownInterpreter) throws Exception {
 
-    if (!WAS_RUNNING && TestUtils.getInstance(Notebook.class) != null) {
+    if (!WAS_RUNNING && TestUtils.getInstance(LegacyNotebook.class) != null) {
       // restart interpreter to stop all interpreter processes
-      List<InterpreterSetting> settingList = TestUtils.getInstance(Notebook.class).getInterpreterSettingManager()
+      List<InterpreterSetting> settingList = TestUtils.getInstance(LegacyNotebook.class).getInterpreterSettingManager()
               .get();
-      if (!TestUtils.getInstance(Notebook.class).getConf().isRecoveryEnabled() || forceShutdownInterpreter) {
+      if (!TestUtils.getInstance(LegacyNotebook.class).getConf().isRecoveryEnabled() || forceShutdownInterpreter) {
         for (InterpreterSetting setting : settingList) {
-          TestUtils.getInstance(Notebook.class).getInterpreterSettingManager().restart(setting.getId());
+          TestUtils.getInstance(LegacyNotebook.class).getInterpreterSettingManager().restart(setting.getId());
         }
       }
       LOG.debug("Terminating Zeppelin Server...");
@@ -340,7 +337,7 @@ public abstract class AbstractTestRestApi {
         isRunningWithAuth = shiroIni.exists();
       }
 
-      if (deleteConfDir && !TestUtils.getInstance(Notebook.class).getConf().isRecoveryEnabled()) {
+      if (deleteConfDir && !TestUtils.getInstance(LegacyNotebook.class).getConf().isRecoveryEnabled()) {
         // don't delete interpreter.json when recovery is enabled. otherwise the interpreter setting
         // id will change after zeppelin restart, then we can not recover interpreter process
         // properly

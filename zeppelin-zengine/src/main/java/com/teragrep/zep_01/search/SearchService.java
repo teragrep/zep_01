@@ -23,7 +23,7 @@ import java.util.stream.Stream;
 
 import com.teragrep.zep_01.notebook.Note;
 import com.teragrep.zep_01.notebook.NoteEventAsyncListener;
-import com.teragrep.zep_01.notebook.Paragraph;
+import com.teragrep.zep_01.notebook.LegacyParagraph;
 
 import javax.annotation.PreDestroy;
 
@@ -64,7 +64,7 @@ public abstract class SearchService extends NoteEventAsyncListener {
    * @throws IOException
    */
 
-  public abstract void updateParagraphIndex(Paragraph paragraph) throws IOException;
+  public abstract void updateParagraphIndex(LegacyParagraph paragraph) throws IOException;
 
   /**
    * Indexes the given note.
@@ -78,7 +78,7 @@ public abstract class SearchService extends NoteEventAsyncListener {
    *
    * @throws IOException If there is a low-level I/O error
    */
-  public abstract void addParagraphIndex(Paragraph pargaraph) throws IOException;
+  public abstract void addParagraphIndex(LegacyParagraph pargaraph) throws IOException;
 
 
   /**
@@ -93,7 +93,7 @@ public abstract class SearchService extends NoteEventAsyncListener {
    * @param p
    * @throws IOException
    */
-  public abstract void deleteParagraphIndex(String noteId, Paragraph p) throws IOException;
+  public abstract void deleteParagraphIndex(String noteId, LegacyParagraph p) throws IOException;
 
   /**
    * Frees the recourses used by index
@@ -125,7 +125,7 @@ public abstract class SearchService extends NoteEventAsyncListener {
 
   @Override
   public void handleParagraphRemoveEvent(ParagraphRemoveEvent paragraphRemoveEvent) throws Exception {
-    Paragraph p = paragraphRemoveEvent.getParagraph();
+    LegacyParagraph p = paragraphRemoveEvent.getParagraph();
     deleteParagraphIndex(p.getNote().getId(), p);
   }
 

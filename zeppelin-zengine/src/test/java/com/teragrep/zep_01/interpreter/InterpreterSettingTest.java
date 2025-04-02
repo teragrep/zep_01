@@ -17,12 +17,10 @@
 
 package com.teragrep.zep_01.interpreter;
 
-import com.google.common.collect.Lists;
 import com.teragrep.zep_01.notebook.Note;
 import com.teragrep.zep_01.notebook.NoteInfo;
-import com.teragrep.zep_01.notebook.Notebook;
+import com.teragrep.zep_01.notebook.LegacyNotebook;
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -45,7 +43,7 @@ public class InterpreterSettingTest {
   private static final Logger LOGGER = LoggerFactory.getLogger(InterpreterSettingTest.class);
 
   private InterpreterSettingManager interpreterSettingManager;
-  private Notebook notebook;
+  private LegacyNotebook notebook;
   private Note note1;
   private Note note2;
 
@@ -53,7 +51,7 @@ public class InterpreterSettingTest {
   @Before
   public void setUp() throws IOException {
     interpreterSettingManager = mock(InterpreterSettingManager.class);
-    notebook = mock(Notebook.class);
+    notebook = mock(LegacyNotebook.class);
     when(interpreterSettingManager.getNotebook()).thenReturn(notebook);
 
     note1 = new Note(new NoteInfo("note1", "/note_1"));

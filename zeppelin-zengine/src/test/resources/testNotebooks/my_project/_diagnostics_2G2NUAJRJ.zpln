@@ -1,0 +1,405 @@
+{
+  "paragraphs": [
+    {
+      "text": "%angular\n<h1>Angular</h1>\n<h2>example</h2>",
+      "user": "admin",
+      "dateUpdated": "2022-11-09T12:14:31+0000",
+      "progress": 0,
+      "config": {
+        "editorSetting": {
+          "language": "text",
+          "editOnDblClick": false,
+          "completionKey": "TAB",
+          "completionSupport": true
+        },
+        "colWidth": 12,
+        "editorMode": "ace/mode/text",
+        "fontSize": 9,
+        "results": {},
+        "enabled": true,
+        "lineNumbers": true
+      },
+      "settings": {
+        "params": {},
+        "forms": {}
+      },
+      "apps": [],
+      "runtimeInfos": {},
+      "progressUpdateIntervalMs": 500,
+      "jobName": "paragraph_1618399520406_72512112",
+      "id": "paragraph_1618399520406_72512112",
+      "dateCreated": "2021-04-14T11:25:20+0000",
+      "dateStarted": "2022-11-09T12:14:31+0000",
+      "dateFinished": "2022-11-09T12:14:31+0000",
+      "status": "FINISHED",
+      "focus": true,
+      "$$hashKey": "object:5404"
+    },
+    {
+      "text": "%java\n\npublic class JavaExample {\n    public static void main(String[] args) {\n        System.out.println(\"Java? Yes!\");\n    }\n}",
+      "user": "admin",
+      "dateUpdated": "2022-11-09T12:13:46+0000",
+      "progress": 0,
+      "config": {
+        "tableHide": false,
+        "editorSetting": {
+          "language": "java",
+          "editOnDblClick": false,
+          "completionKey": "TAB",
+          "completionSupport": true
+        },
+        "colWidth": 12,
+        "editorMode": "ace/mode/java",
+        "fontSize": 9,
+        "editorHide": false,
+        "results": {
+          "0": {
+            "graph": {
+              "mode": "table",
+              "height": 300,
+              "optionOpen": false,
+              "setting": {
+                "table": {
+                  "tableGridState": {},
+                  "tableColumnTypeState": {
+                    "names": {
+                      "Word": "string",
+                      "Count": "string"
+                    },
+                    "updated": false
+                  },
+                  "tableOptionSpecHash": "[{\"name\":\"useFilter\",\"valueType\":\"boolean\",\"defaultValue\":false,\"widget\":\"checkbox\",\"description\":\"Enable filter for columns\"},{\"name\":\"showPagination\",\"valueType\":\"boolean\",\"defaultValue\":false,\"widget\":\"checkbox\",\"description\":\"Enable pagination for better navigation\"},{\"name\":\"showAggregationFooter\",\"valueType\":\"boolean\",\"defaultValue\":false,\"widget\":\"checkbox\",\"description\":\"Enable a footer for displaying aggregated values\"}]",
+                  "tableOptionValue": {
+                    "useFilter": false,
+                    "showPagination": false,
+                    "showAggregationFooter": false
+                  },
+                  "updated": false,
+                  "initialized": false
+                }
+              },
+              "commonSetting": {}
+            }
+          }
+        },
+        "enabled": true,
+        "lineNumbers": true
+      },
+      "settings": {
+        "params": {},
+        "forms": {}
+      },
+      "apps": [],
+      "runtimeInfos": {},
+      "progressUpdateIntervalMs": 500,
+      "jobName": "paragraph_1615381335665_932163263",
+      "id": "paragraph_1610621514055_170597964",
+      "dateCreated": "2021-03-10T13:02:15+0000",
+      "dateStarted": "2022-11-09T12:13:46+0000",
+      "dateFinished": "2022-11-09T12:13:49+0000",
+      "status": "FINISHED",
+      "$$hashKey": "object:5405"
+    },
+    {
+      "text": "%spark\n\nprintln(sc.version)\nprintln(util.Properties.versionString)\nprintln(java.net.InetAddress.getLocalHost().getHostName())\nprintln(System.getProperty(\"user.name\"))\nprintln(java.time.LocalDateTime.now.format(java.time.format.DateTimeFormatter.ofPattern(\"dd.MM.yyyy hh:mm:ss\")))\n",
+      "user": "admin",
+      "dateUpdated": "2022-11-09T12:13:49+0000",
+      "progress": 0,
+      "config": {
+        "tableHide": false,
+        "editorSetting": {
+          "language": "scala",
+          "editOnDblClick": false,
+          "completionSupport": true,
+          "completionKey": "TAB"
+        },
+        "colWidth": 12,
+        "editorMode": "ace/mode/scala",
+        "fontSize": 9,
+        "editorHide": false,
+        "results": {},
+        "enabled": true,
+        "lineNumbers": true
+      },
+      "settings": {
+        "params": {},
+        "forms": {}
+      },
+      "apps": [],
+      "runtimeInfos": {},
+      "progressUpdateIntervalMs": 500,
+      "jobName": "paragraph_1615381335664_1617179157",
+      "id": "paragraph_1605266912140_1157881181",
+      "dateCreated": "2021-03-10T13:02:15+0000",
+      "dateStarted": "2022-11-09T12:13:49+0000",
+      "dateFinished": "2022-11-09T12:14:02+0000",
+      "status": "FINISHED",
+      "$$hashKey": "object:5406"
+    },
+    {
+      "text": "%md\nMarkdown Example\n===\nList\n\n* Item 1\n\nNumbered list\n1. Item\n",
+      "user": "admin",
+      "dateUpdated": "2022-11-09T12:14:02+0000",
+      "progress": 0,
+      "config": {
+        "tableHide": false,
+        "editorSetting": {
+          "language": "markdown",
+          "editOnDblClick": true,
+          "completionKey": "TAB",
+          "completionSupport": false
+        },
+        "colWidth": 12,
+        "editorMode": "ace/mode/markdown",
+        "fontSize": 9,
+        "editorHide": false,
+        "results": {
+          "0": {
+            "graph": {
+              "mode": "table",
+              "height": 244.767,
+              "optionOpen": false
+            }
+          }
+        },
+        "enabled": true,
+        "lineNumbers": true
+      },
+      "settings": {
+        "params": {},
+        "forms": {}
+      },
+      "apps": [],
+      "runtimeInfos": {},
+      "progressUpdateIntervalMs": 500,
+      "jobName": "paragraph_1615381335665_2026987940",
+      "id": "paragraph_1610551376867_2025765678",
+      "dateCreated": "2021-03-10T13:02:15+0000",
+      "dateStarted": "2022-11-09T12:14:02+0000",
+      "dateFinished": "2022-11-09T12:14:05+0000",
+      "status": "FINISHED",
+      "$$hashKey": "object:5407"
+    },
+    {
+      "text": "%python\nimport sys\nimport datetime\nimport socket\nimport getpass\nimport numpy\n\nprint(sys.version)\nprint(numpy)\nprint(socket.gethostname())\nprint(getpass.getuser())\nprint(datetime.datetime.now())\n",
+      "user": "admin",
+      "dateUpdated": "2022-11-09T12:14:05+0000",
+      "progress": 0,
+      "config": {
+        "tableHide": false,
+        "editorSetting": {
+          "language": "python",
+          "editOnDblClick": false,
+          "completionKey": "TAB",
+          "completionSupport": true
+        },
+        "colWidth": 12,
+        "editorMode": "ace/mode/python",
+        "fontSize": 9,
+        "results": {},
+        "enabled": true,
+        "editorHide": false,
+        "lineNumbers": true
+      },
+      "settings": {
+        "params": {},
+        "forms": {}
+      },
+      "apps": [],
+      "runtimeInfos": {},
+      "progressUpdateIntervalMs": 500,
+      "jobName": "paragraph_1615381335665_1969828024",
+      "id": "paragraph_1610621597068_1274261108",
+      "dateCreated": "2021-03-10T13:02:15+0000",
+      "dateStarted": "2022-11-09T12:14:05+0000",
+      "dateFinished": "2022-11-09T12:14:08+0000",
+      "status": "FINISHED",
+      "$$hashKey": "object:5408"
+    },
+    {
+      "text": "%sh\nwhoami\nhostname\ndate",
+      "user": "admin",
+      "dateUpdated": "2022-11-09T12:14:08+0000",
+      "progress": 0,
+      "config": {
+        "tableHide": false,
+        "editorSetting": {
+          "language": "sh",
+          "editOnDblClick": false,
+          "completionKey": "TAB",
+          "completionSupport": false
+        },
+        "colWidth": 12,
+        "editorMode": "ace/mode/sh",
+        "fontSize": 9,
+        "results": {},
+        "enabled": true,
+        "editorHide": false,
+        "lineNumbers": true
+      },
+      "settings": {
+        "params": {},
+        "forms": {}
+      },
+      "apps": [],
+      "runtimeInfos": {},
+      "progressUpdateIntervalMs": 500,
+      "jobName": "paragraph_1615381335665_663291001",
+      "id": "paragraph_1610626909542_289804581",
+      "dateCreated": "2021-03-10T13:02:15+0000",
+      "dateStarted": "2022-11-09T12:14:08+0000",
+      "dateFinished": "2022-11-09T12:14:11+0000",
+      "status": "FINISHED",
+      "$$hashKey": "object:5409"
+    },
+    {
+      "text": "%spark\nsc",
+      "user": "admin",
+      "dateUpdated": "2022-11-09T12:14:11+0000",
+      "progress": 0,
+      "config": {
+        "colWidth": 12,
+        "fontSize": 9,
+        "enabled": true,
+        "results": {},
+        "editorSetting": {
+          "language": "scala",
+          "editOnDblClick": false,
+          "completionKey": "TAB",
+          "completionSupport": true
+        },
+        "editorMode": "ace/mode/scala",
+        "lineNumbers": true
+      },
+      "settings": {
+        "params": {},
+        "forms": {}
+      },
+      "apps": [],
+      "runtimeInfos": {},
+      "progressUpdateIntervalMs": 500,
+      "jobName": "paragraph_1615458580845_383218975",
+      "id": "paragraph_1615458580845_383218975",
+      "dateCreated": "2021-03-11T10:29:40+0000",
+      "dateStarted": "2022-11-09T12:14:11+0000",
+      "dateFinished": "2022-11-09T12:14:11+0000",
+      "status": "FINISHED",
+      "$$hashKey": "object:5410"
+    },
+    {
+      "text": "%pyspark\nimport sys\nimport datetime\nimport socket\nimport getpass\nimport numpy\n\nprint(sys.version)\nprint(numpy)\nprint(socket.gethostname())\nprint(getpass.getuser())\nprint(datetime.datetime.now())",
+      "user": "admin",
+      "dateUpdated": "2022-11-09T12:14:11+0000",
+      "progress": 0,
+      "config": {
+        "colWidth": 12,
+        "fontSize": 9,
+        "enabled": true,
+        "results": {},
+        "editorSetting": {
+          "language": "python",
+          "editOnDblClick": false,
+          "completionKey": "TAB",
+          "completionSupport": true
+        },
+        "editorMode": "ace/mode/python",
+        "lineNumbers": true
+      },
+      "settings": {
+        "params": {},
+        "forms": {}
+      },
+      "apps": [],
+      "runtimeInfos": {},
+      "progressUpdateIntervalMs": 500,
+      "jobName": "paragraph_1615461790807_1245417542",
+      "id": "paragraph_1615461790807_1245417542",
+      "dateCreated": "2021-03-11T11:23:10+0000",
+      "dateStarted": "2022-11-09T12:14:11+0000",
+      "dateFinished": "2022-11-09T12:14:12+0000",
+      "status": "FINISHED",
+      "$$hashKey": "object:5411"
+    }
+  ],
+  "name": "__diagnostics",
+  "id": "2G2NUAJRJ",
+  "defaultInterpreterGroup": "spark",
+  "version": "0.9.0-preview2",
+  "noteParams": {},
+  "noteForms": {},
+  "angularObjects": {
+    "spark-admin": [
+      {
+        "name": "pageRefresh",
+        "object": true,
+        "noteId": "2G2NUAJRJ",
+        "paragraphId": "paragraph_1605266912140_1157881181"
+      },
+      {
+        "name": "pageRefresh",
+        "object": true,
+        "noteId": "2G2NUAJRJ",
+        "paragraphId": "paragraph_1615458580845_383218975"
+      },
+      {
+        "name": "pageRefresh",
+        "object": true,
+        "noteId": "2G2NUAJRJ",
+        "paragraphId": "paragraph_1615461790807_1245417542"
+      }
+    ],
+    "angular-shared_process": [
+      {
+        "name": "pageRefresh",
+        "object": true,
+        "noteId": "2G2NUAJRJ",
+        "paragraphId": "paragraph_1618399520406_72512112"
+      }
+    ],
+    "sh-admin": [
+      {
+        "name": "pageRefresh",
+        "object": true,
+        "noteId": "2G2NUAJRJ",
+        "paragraphId": "paragraph_1610626909542_289804581"
+      }
+    ],
+    "java-shared_process": [
+      {
+        "name": "pageRefresh",
+        "object": true,
+        "noteId": "2G2NUAJRJ",
+        "paragraphId": "paragraph_1610621514055_170597964"
+      }
+    ],
+    "python-shared_process": [
+      {
+        "name": "pageRefresh",
+        "object": true,
+        "noteId": "2G2NUAJRJ",
+        "paragraphId": "paragraph_1610621597068_1274261108"
+      }
+    ],
+    "md-shared_process": [
+      {
+        "name": "pageRefresh",
+        "object": true,
+        "noteId": "2G2NUAJRJ",
+        "paragraphId": "paragraph_1610551376867_2025765678"
+      }
+    ]
+  },
+  "config": {
+    "isZeppelinNotebookCronEnable": false,
+    "looknfeel": "default",
+    "personalizedMode": "false",
+    "cronExecutingUser": "",
+    "cronExecutingRoles": "",
+    "cron": ""
+  },
+  "info": {
+    "inIsolatedMode": false,
+    "isRunning": false
+  },
+  "path": "/__diagnostics"
+}

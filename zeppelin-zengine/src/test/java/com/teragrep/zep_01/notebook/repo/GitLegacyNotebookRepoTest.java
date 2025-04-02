@@ -33,21 +33,20 @@ import com.teragrep.zep_01.conf.ZeppelinConfiguration.ConfVars;
 import com.teragrep.zep_01.interpreter.InterpreterFactory;
 import com.teragrep.zep_01.notebook.Note;
 import com.teragrep.zep_01.notebook.NoteInfo;
-import com.teragrep.zep_01.notebook.Paragraph;
+import com.teragrep.zep_01.notebook.LegacyParagraph;
 import com.teragrep.zep_01.notebook.repo.NotebookRepoWithVersionControl.Revision;
 import com.teragrep.zep_01.user.AuthenticationInfo;
 import org.eclipse.jgit.api.Git;
 import org.eclipse.jgit.api.errors.GitAPIException;
 import org.eclipse.jgit.diff.DiffEntry;
 import org.eclipse.jgit.revwalk.RevCommit;
-import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class GitNotebookRepoTest {
-  private static final Logger LOG = LoggerFactory.getLogger(GitNotebookRepoTest.class);
+public class GitLegacyNotebookRepoTest {
+  private static final Logger LOG = LoggerFactory.getLogger(GitLegacyNotebookRepoTest.class);
 
   private static final String TEST_NOTE_ID = "2A94M5J1Z";
   private static final String TEST_NOTE_ID2 = "2A94M5J2Z";
@@ -71,7 +70,7 @@ public class GitNotebookRepoTest {
     notebookDir.mkdirs();
 
     FileUtils.copyDirectory(
-            new File(GitNotebookRepoTest.class.getResource("/notebook").getFile()),
+            new File(GitLegacyNotebookRepoTest.class.getResource("/notebook").getFile()),
             new File(notebooksDir));
 
     System.setProperty(ConfVars.ZEPPELIN_HOME.getVarName(), zeppelinDir.getAbsolutePath());
@@ -135,7 +134,7 @@ public class GitNotebookRepoTest {
     //modify, save and checkpoint first note
     Note note = notebookRepo.get(TEST_NOTE_ID, TEST_NOTE_PATH, null);
     note.setInterpreterFactory(mock(InterpreterFactory.class));
-    Paragraph p = note.addNewParagraph(AuthenticationInfo.ANONYMOUS);
+    LegacyParagraph p = note.addNewParagraph(AuthenticationInfo.ANONYMOUS);
     Map<String, Object> config = p.getConfig();
     config.put("enabled", true);
     p.setConfig(config);
@@ -178,7 +177,7 @@ public class GitNotebookRepoTest {
     // add changes to note
     Note note = notebookRepo.get(TEST_NOTE_ID, TEST_NOTE_PATH, null);
     note.setInterpreterFactory(mock(InterpreterFactory.class));
-    Paragraph p = note.addNewParagraph(AuthenticationInfo.ANONYMOUS);
+    LegacyParagraph p = note.addNewParagraph(AuthenticationInfo.ANONYMOUS);
     Map<String, Object> config = p.getConfig();
     config.put("enabled", true);
     p.setConfig(config);
@@ -201,7 +200,7 @@ public class GitNotebookRepoTest {
     // add changes to note2
     Note note2 = notebookRepo.get(TEST_NOTE_ID2, TEST_NOTE_PATH2, null);
     note2.setInterpreterFactory(mock(InterpreterFactory.class));
-    Paragraph p2 = note2.addNewParagraph(AuthenticationInfo.ANONYMOUS);
+    LegacyParagraph p2 = note2.addNewParagraph(AuthenticationInfo.ANONYMOUS);
     Map<String, Object> config2 = p2.getConfig();
     config2.put("enabled", true);
     p2.setConfig(config);
@@ -245,7 +244,7 @@ public class GitNotebookRepoTest {
     // add paragraph and save
     Note note = notebookRepo.get(TEST_NOTE_ID, TEST_NOTE_PATH, null);
     note.setInterpreterFactory(mock(InterpreterFactory.class));
-    Paragraph p1 = note.addNewParagraph(AuthenticationInfo.ANONYMOUS);
+    LegacyParagraph p1 = note.addNewParagraph(AuthenticationInfo.ANONYMOUS);
     Map<String, Object> config = p1.getConfig();
     config.put("enabled", true);
     p1.setConfig(config);
@@ -268,7 +267,7 @@ public class GitNotebookRepoTest {
     assertThat(note.getParagraphs().size()).isEqualTo(paragraphCount_2);
 
     // add one more paragraph and save
-    Paragraph p2 = note.addNewParagraph(AuthenticationInfo.ANONYMOUS);
+    LegacyParagraph p2 = note.addNewParagraph(AuthenticationInfo.ANONYMOUS);
     config.put("enabled", false);
     p2.setConfig(config);
     p2.setText("get revision when modified note test text");
@@ -306,7 +305,7 @@ public class GitNotebookRepoTest {
     assertThat(note.getParagraphs().size()).isEqualTo(paragraphCount_1);
 
     // add one more paragraph and save
-    Paragraph p1 = note.addNewParagraph(AuthenticationInfo.ANONYMOUS);
+    LegacyParagraph p1 = note.addNewParagraph(AuthenticationInfo.ANONYMOUS);
     Map<String, Object> config = p1.getConfig();
     config.put("enabled", true);
     p1.setConfig(config);
@@ -350,7 +349,7 @@ public class GitNotebookRepoTest {
     assertThat(notebookRepo.revisionHistory(TEST_NOTE_ID, TEST_NOTE_PATH, null).size()).isEqualTo(1);
 
     // add one more paragraph and save
-    Paragraph p1 = note.addNewParagraph(AuthenticationInfo.ANONYMOUS);
+    LegacyParagraph p1 = note.addNewParagraph(AuthenticationInfo.ANONYMOUS);
     Map<String, Object> config = p1.getConfig();
     config.put("enabled", true);
     p1.setConfig(config);

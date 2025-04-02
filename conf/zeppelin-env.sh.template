@@ -105,3 +105,9 @@
 #### Zeppelin impersonation configuration
 # export ZEPPELIN_IMPERSONATE_CMD       # Optional, when user want to run interpreter as end web user. eg) 'sudo -H -u ${ZEPPELIN_IMPERSONATE_USER} bash -c '
 # export ZEPPELIN_IMPERSONATE_SPARK_PROXY_USER  #Optional, by default is true; can be set to false if you don't want to use --proxy-user option with Spark interpreter when impersonation enabled
+
+export ZEPPELIN_ADDR=0.0.0.0
+export ZEPPELIN_PORT=8080
+export ZEPPELIN_WAR=/opt/teragrep/ajs_01/lib/ajs_01.war
+export ZEPPELIN_CLASSPATH=/opt/teragrep/ajs_01/lib/*:/opt/teragrep/pth_10/lib/*
+export SPARK_HOME=/opt/teragrep/spk_02

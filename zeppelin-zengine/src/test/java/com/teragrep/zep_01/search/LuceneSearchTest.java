@@ -24,7 +24,6 @@ import static org.mockito.Mockito.when;
 
 import java.io.File;
 import java.io.IOException;
-import java.nio.file.Files;
 import java.util.List;
 import java.util.Map;
 
@@ -36,8 +35,8 @@ import com.teragrep.zep_01.interpreter.InterpreterSettingManager;
 import com.teragrep.zep_01.notebook.AuthorizationService;
 import com.teragrep.zep_01.notebook.Note;
 import com.teragrep.zep_01.notebook.NoteManager;
-import com.teragrep.zep_01.notebook.Notebook;
-import com.teragrep.zep_01.notebook.Paragraph;
+import com.teragrep.zep_01.notebook.LegacyNotebook;
+import com.teragrep.zep_01.notebook.LegacyParagraph;
 import com.teragrep.zep_01.notebook.repo.NotebookRepo;
 import com.teragrep.zep_01.user.AuthenticationInfo;
 import com.teragrep.zep_01.user.Credentials;
@@ -49,7 +48,7 @@ import org.junit.Test;
 @Ignore(value="Contains sleep, timeout, while loops or something similar waiting/cycleburning")
 public class LuceneSearchTest {
 
-  private Notebook notebook;
+  private LegacyNotebook notebook;
   private InterpreterSettingManager interpreterSettingManager;
   private LuceneSearch noteSearchService;
   private File indexDir;
@@ -64,7 +63,7 @@ public class LuceneSearchTest {
     InterpreterSetting defaultInterpreterSetting = mock(InterpreterSetting.class);
     when(defaultInterpreterSetting.getName()).thenReturn("test");
     when(interpreterSettingManager.getDefaultInterpreterSetting()).thenReturn(defaultInterpreterSetting);
-    notebook = new Notebook(ZeppelinConfiguration.create(), mock(AuthorizationService.class), mock(NotebookRepo.class), mock(NoteManager.class),
+    notebook = new LegacyNotebook(ZeppelinConfiguration.create(), mock(AuthorizationService.class), mock(NotebookRepo.class), mock(NoteManager.class),
             mock(InterpreterFactory.class), interpreterSettingManager,
             noteSearchService,
             mock(Credentials.class), null);
@@ -169,7 +168,7 @@ public class LuceneSearchTest {
     drainSearchEvents();
 
     // when
-    Paragraph p2 = note2.getLastParagraph();
+    LegacyParagraph p2 = note2.getLastParagraph();
     p2.setText("test indeed");
     noteSearchService.updateNoteIndex(note2);
     noteSearchService.updateParagraphIndex(p2);
@@ -221,7 +220,7 @@ public class LuceneSearchTest {
     assertThat(resultForQuery("test").size()).isEqualTo(3);
 
     // when
-    Paragraph p1 = note1.getLastParagraph();
+    LegacyParagraph p1 = note1.getLastParagraph();
     p1.setText("no no no");
     notebook.saveNote(note1, AuthenticationInfo.ANONYMOUS);
     p1.getNote().fireParagraphUpdateEvent(p1);
@@ -291,14 +290,14 @@ public class LuceneSearchTest {
     return note1;
   }
 
-  private Paragraph addParagraphWithText(Note note, String text) {
-    Paragraph p = note.addNewParagraph(AuthenticationInfo.ANONYMOUS);
+  private LegacyParagraph addParagraphWithText(Note note, String text) {
+    LegacyParagraph p = note.addNewParagraph(AuthenticationInfo.ANONYMOUS);
     p.setText(text);
     return p;
   }
 
-  private Paragraph addParagraphWithTextAndTitle(Note note, String text, String title) {
-    Paragraph p = note.addNewParagraph(AuthenticationInfo.ANONYMOUS);
+  private LegacyParagraph addParagraphWithTextAndTitle(Note note, String text, String title) {
+    LegacyParagraph p = note.addNewParagraph(AuthenticationInfo.ANONYMOUS);
     p.setText(text);
     p.setTitle(title);
     return p;

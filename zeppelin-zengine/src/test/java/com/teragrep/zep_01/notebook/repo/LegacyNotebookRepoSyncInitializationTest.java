@@ -34,8 +34,8 @@ import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
 //TODO(zjffdu) move it to zeppelin-zengine
-public class NotebookRepoSyncInitializationTest {
-  private static final Logger LOGGER = LoggerFactory.getLogger(NotebookRepoSyncInitializationTest.class);
+public class LegacyNotebookRepoSyncInitializationTest {
+  private static final Logger LOGGER = LoggerFactory.getLogger(LegacyNotebookRepoSyncInitializationTest.class);
   private String validFirstStorageClass = "com.teragrep.zep_01.notebook.repo.VFSNotebookRepo";
   private String validSecondStorageClass = "com.teragrep.zep_01.notebook.repo.mock.VFSNotebookRepoMock";
   private String invalidStorageClass = "com.teragrep.zep_01.notebook.repo.DummyNotebookRepo";

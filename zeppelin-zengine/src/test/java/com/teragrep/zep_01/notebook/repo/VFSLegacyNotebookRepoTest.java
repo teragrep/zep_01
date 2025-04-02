@@ -22,14 +22,12 @@ import org.apache.commons.io.FileUtils;
 import com.teragrep.zep_01.conf.ZeppelinConfiguration;
 import com.teragrep.zep_01.notebook.Note;
 import com.teragrep.zep_01.notebook.NoteInfo;
-import com.teragrep.zep_01.notebook.Paragraph;
+import com.teragrep.zep_01.notebook.LegacyParagraph;
 import com.teragrep.zep_01.user.AuthenticationInfo;
-import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
 import java.io.File;
-import java.nio.file.Files;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.time.Instant;
@@ -38,7 +36,7 @@ import java.util.Map;
 
 import static org.junit.Assert.assertEquals;
 
-public class VFSNotebookRepoTest {
+public class VFSLegacyNotebookRepoTest {
 
   private ZeppelinConfiguration zConf;
   private VFSNotebookRepo notebookRepo;
@@ -62,7 +60,7 @@ public class VFSNotebookRepoTest {
     // create note1
     Note note1 = new Note();
     note1.setPath("/my_project/my_note1");
-    Paragraph p1 = note1.insertNewParagraph(0, AuthenticationInfo.ANONYMOUS);
+    LegacyParagraph p1 = note1.insertNewParagraph(0, AuthenticationInfo.ANONYMOUS);
     p1.setText("%md hello world");
     p1.setTitle("my title");
     notebookRepo.save(note1, AuthenticationInfo.ANONYMOUS);
@@ -75,7 +73,7 @@ public class VFSNotebookRepoTest {
     // create note2
     Note note2 = new Note();
     note2.setPath("/my_note2");
-    Paragraph p2 = note2.insertNewParagraph(0, AuthenticationInfo.ANONYMOUS);
+    LegacyParagraph p2 = note2.insertNewParagraph(0, AuthenticationInfo.ANONYMOUS);
     p2.setText("%md hello world2");
     p2.setTitle("my title2");
     notebookRepo.save(note2, AuthenticationInfo.ANONYMOUS);
@@ -110,7 +108,7 @@ public class VFSNotebookRepoTest {
     // create note with colon in name
     Note note1 = new Note();
     note1.setPath("/my_project/my:note1");
-    Paragraph p1 = note1.insertNewParagraph(0, AuthenticationInfo.ANONYMOUS);
+    LegacyParagraph p1 = note1.insertNewParagraph(0, AuthenticationInfo.ANONYMOUS);
     p1.setText("%md hello world");
     p1.setTitle("my title");
     notebookRepo.save(note1, AuthenticationInfo.ANONYMOUS);

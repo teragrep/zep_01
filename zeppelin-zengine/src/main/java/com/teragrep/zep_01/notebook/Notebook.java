@@ -1,751 +1,263 @@
-/*
- * Licensed to the Apache Software Foundation (ASF) under one or more
- * contributor license agreements.  See the NOTICE file distributed with
- * this work for additional information regarding copyright ownership.
- * The ASF licenses this file to You under the Apache License, Version 2.0
- * (the "License"); you may not use this file except in compliance with
- * the License.  You may obtain a copy of the License at
- *
- *    http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
-
 package com.teragrep.zep_01.notebook;
 
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Map.Entry;
-import java.util.Set;
-import java.util.function.Function;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
-import javax.inject.Inject;
 
-import com.google.common.annotations.VisibleForTesting;
+import com.teragrep.zep_01.notebook.repo.ZeppelinFile;
+import com.teragrep.zep_01.notebook.repo.Directory;
+import jakarta.json.*;
 import com.teragrep.zep_01.conf.ZeppelinConfiguration;
-import com.teragrep.zep_01.conf.ZeppelinConfiguration.ConfVars;
-import com.teragrep.zep_01.display.AngularObject;
-import com.teragrep.zep_01.display.AngularObjectRegistry;
-import com.teragrep.zep_01.interpreter.Interpreter;
-import com.teragrep.zep_01.interpreter.InterpreterFactory;
-import com.teragrep.zep_01.interpreter.InterpreterGroup;
-import com.teragrep.zep_01.interpreter.InterpreterNotFoundException;
-import com.teragrep.zep_01.interpreter.InterpreterSetting;
-import com.teragrep.zep_01.interpreter.InterpreterSettingManager;
-import com.teragrep.zep_01.interpreter.ManagedInterpreterGroup;
-import com.teragrep.zep_01.notebook.NoteManager.Folder;
-import com.teragrep.zep_01.notebook.NoteManager.NoteNode;
-import com.teragrep.zep_01.notebook.repo.NotebookRepo;
-import com.teragrep.zep_01.notebook.repo.NotebookRepoSync;
-import com.teragrep.zep_01.notebook.repo.NotebookRepoWithVersionControl;
-import com.teragrep.zep_01.notebook.repo.NotebookRepoWithVersionControl.Revision;
-import com.teragrep.zep_01.scheduler.Job;
-import com.teragrep.zep_01.search.SearchService;
-import com.teragrep.zep_01.user.AuthenticationInfo;
-import com.teragrep.zep_01.user.Credentials;
-import org.quartz.SchedulerException;
+import com.teragrep.zep_01.notebook.repo.ByteOrderMarkRemoved;
+import com.teragrep.zep_01.interpreter.*;
+import com.teragrep.zep_01.notebook.utility.IdHashes;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.io.StringReader;
+import java.io.StringWriter;
+import java.nio.charset.Charset;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.util.*;
+import java.util.stream.Collectors;
+
 /**
- * High level api of Notebook related operations, such as create, move & delete note/folder.
- * It will also do other thing which is caused by these operation, such as update index,
- * refresh cron and update InterpreterSetting, these are done through NoteEventListener.
- *
+ * Represents a single Notebook within Zeppelin
  */
-public class Notebook {
+public final class Notebook extends ZeppelinFile implements Stubable {
+
   private static final Logger LOGGER = LoggerFactory.getLogger(Notebook.class);
+  private final LinkedHashMap<String,Paragraph> paragraphs;
+  private final String title;
 
-  private AuthorizationService authorizationService;
-  private NoteManager noteManager;
-  private InterpreterFactory replFactory;
-  private InterpreterSettingManager interpreterSettingManager;
-  private ZeppelinConfiguration conf;
-  private ParagraphJobListener paragraphJobListener;
-  private NotebookRepo notebookRepo;
-  private SearchService noteSearchService;
-  private List<NoteEventListener> noteEventListeners = new ArrayList<>();
-  private Credentials credentials;
+  // Compatibility fields, remove these once Interpreter is refactored
+  private final ExecutionContext executionContext;
+  // End compatibility fields
+  public Notebook(String title, String id, Path path, LinkedHashMap<String,Paragraph> paragraphs) {
+    super(id,path);
+    this.title = title;
+    this.paragraphs = paragraphs;
 
-  /**
-   * Main constructor \w manual Dependency Injection
-   *
-   * @throws IOException
-   * @throws SchedulerException
-   */
-  public Notebook(
-      ZeppelinConfiguration conf,
-      AuthorizationService authorizationService,
-      NotebookRepo notebookRepo,
-      NoteManager noteManager,
-      InterpreterFactory replFactory,
-      InterpreterSettingManager interpreterSettingManager,
-      SearchService noteSearchService,
-      Credentials credentials)
-      throws IOException {
-    this.conf = conf;
-    this.authorizationService = authorizationService;
-    this.noteManager = noteManager;
-    this.notebookRepo = notebookRepo;
-    this.replFactory = replFactory;
-    this.interpreterSettingManager = interpreterSettingManager;
-    // TODO(zjffdu) cycle refer, not a good solution
-    this.interpreterSettingManager.setNotebook(this);
-    this.noteSearchService = noteSearchService;
-    this.credentials = credentials;
-    this.noteEventListeners.add(this.noteSearchService);
-    this.noteEventListeners.add(this.interpreterSettingManager);
+    // Compatibility fields, remove once Interpreter is refactored
+    this.executionContext = new ExecutionContext();
+    this.executionContext.setNoteId(id);
+    this.executionContext.setDefaultInterpreterGroup(ZeppelinConfiguration.create().getString(ZeppelinConfiguration.ConfVars.ZEPPELIN_INTERPRETER_GROUP_DEFAULT));
+    // End compatibility fields
+  }
 
-    if (conf.isIndexRebuild()) {
-      noteSearchService.startRebuildIndex(getNoteStream());
+  // Remove file from disk
+  @Override
+  public void delete() throws IOException {
+    Files.delete(path());
+  }
+
+  // Checks if searched ID matches with this Notebooks ID.
+  @Override
+  public ZeppelinFile findFile(String id) throws FileNotFoundException {
+    if(id().equals(id)){
+      return this;
+    }
+    else {
+      throw new FileNotFoundException("Searched id "+id+" does not match with"+id());
     }
   }
 
-  public void recoveryIfNecessary() {
-    if (conf.isRecoveryEnabled()) {
-      recoverRunningParagraphs();
+  // Checks if searched path matches with this Notebooks path.
+  @Override
+  public ZeppelinFile findFile(Path path) throws FileNotFoundException {
+    if(path().equals(path)){
+      return this;
+    }
+    else {
+      throw new FileNotFoundException("Searched path "+path+" does not match with"+path());
     }
   }
 
-  private void recoverRunningParagraphs() {
-    Thread thread = new Thread(() -> {
-      getNoteStream().forEach(note -> {
-        try {
-          boolean hasRecoveredParagraph = false;
-          for (Paragraph paragraph : note.getParagraphs()) {
-            if (paragraph.getStatus() == Job.Status.RUNNING) {
-              paragraph.recover();
-              hasRecoveredParagraph = true;
-            }
-          }
-          // unload note to save memory when there's no paragraph recovering.
-          if (!hasRecoveredParagraph) {
-            note.unLoad();
-          }
-        } catch (Exception e) {
-          LOGGER.warn("Fail to recovery note: {}", note.getPath(), e);
-        }
-      });
-    });
-    thread.setName("Recovering-Thread");
-    thread.start();
-    LOGGER.info("Start paragraph recovering thread");
+  public String title() {
+    return title;
+  }
+  public LinkedHashMap<String,Paragraph> paragraphs(){
+    return paragraphs;
+  }
 
-    try {
-      thread.join();
-    } catch (InterruptedException e) {
-      e.printStackTrace();
+  // Executes every Paragraph in order.
+  public Notebook runAll() throws Exception {
+    LinkedHashMap<String,Paragraph> executedParagraphs = new LinkedHashMap();
+    for (Paragraph paragraph : paragraphs.values()) {
+      executedParagraphs.put(paragraph.id(),new Paragraph(paragraph.id(),paragraph.title(),paragraph.run(),paragraph.script()));
+    }
+    return new Notebook(title,id(),path(),executedParagraphs);
+  }
+
+  public JsonObject json(){
+    JsonObjectBuilder builder = Json.createObjectBuilder();
+    builder.add("id",id());
+    builder.add("name", title);
+    //compatibility fields//
+    builder.add("config",Json.createObjectBuilder(new HashMap<>()).build());
+    // end //
+    JsonArrayBuilder arrayBuilder = Json.createArrayBuilder();
+
+    for (Paragraph paragraph:paragraphs.values()
+    ) {
+      arrayBuilder.add(paragraph.json());
+    }
+    JsonArray paragraphJsonArray = arrayBuilder.build();
+    builder.add("paragraphs",paragraphJsonArray);
+    return builder.build();
+  }
+  public Notebook copy(Path path, String id) throws IOException {
+    return copy(title,path,id);
+  }
+
+  @Override
+  public Map<String, ZeppelinFile> children() {
+    return new HashMap<>();
+  }
+
+  @Override
+  public Map<String, NoteInfo> toNoteInfo(HashMap<String, NoteInfo> noteInfoMap, Path rootDir) {
+    noteInfoMap.put(id(),new FormattedNoteInfo(id(),rootDir.relativize(path()).toString()));
+    return noteInfoMap;
+  }
+
+  @Override
+  public void printTree() {
+    System.out.println("File ID: "+id()+", Path: "+path());
+    LOGGER.debug("File ID: {}, Path: {}",id(),path());
+  }
+
+  @Override
+  public Notebook load() throws IOException {
+    String content = new ByteOrderMarkRemoved(readFile()).toString();
+    StringReader stringReader = new StringReader(content);
+    JsonReader jsonReader = Json.createReader(stringReader);
+    JsonObject object = jsonReader.readObject();
+    jsonReader.close();
+    stringReader.close();
+
+    String name = object.getString("name");
+    String id = object.getString("id");
+    JsonArray paragraphJsonArray = object.getJsonArray("paragraphs");
+    LinkedHashMap<String, Paragraph> paragraphs = new LinkedHashMap<>();
+    for (JsonObject paragraphJson:paragraphJsonArray.getValuesAs(JsonObject.class)
+    ) {
+      NullParagraph nullParagraph = new NullParagraph();
+      Paragraph paragraph = nullParagraph.fromJson(paragraphJson);
+      paragraphs.put(paragraph.id(),paragraph);
+    }
+    return new Notebook(name,id,path(),paragraphs);
+  }
+
+  @Override
+  public List<ZeppelinFile> listAllChildren() {
+    return new ArrayList<>();
+  }
+
+  public Notebook copy(String title, Path path, String id) throws IOException {
+    LinkedHashMap<String, Paragraph> copyParagraphs = new LinkedHashMap<String,Paragraph>();
+    for (Paragraph paragraph: paragraphs.values()) {
+      String copyParagraphId = IdHashes.generateId();
+      InterpreterContext copyInterpreterContext = InterpreterContext.builder()
+              .setParagraphId(copyParagraphId)
+              .setNoteId(id)
+              .setParagraphText(paragraph.script().interpreterContext().getParagraphText())
+              .setReplName(paragraph.script().interpreterContext().getReplName())
+              .build();
+      Script copyScript = new Script(paragraph.script().text(),paragraph.script().interpreter(),copyInterpreterContext);
+      Result copyResult = new Result(paragraph.result().code(),paragraph.result().messages());
+      Paragraph copyParagraph = new Paragraph(copyParagraphId,paragraph.title(),copyResult,copyScript);
+      copyParagraphs.put(copyParagraph.id(),copyParagraph);
+    }
+    Notebook copyNotebook = new Notebook(title,id,path,copyParagraphs);
+    copyNotebook.save();
+    return copyNotebook;
+  }
+
+  public void save() throws IOException {
+    try{
+      StringWriter stringWriter = new StringWriter();
+      Files.createDirectories(path().getParent());
+      Files.write(path(), json().toString().getBytes());
+      stringWriter.close();
+    }
+    catch (IOException exception){
+      throw new IOException("Failed to save notebook to path"+path()+"!",exception);
     }
   }
 
-  @Inject
-  public Notebook(
-      ZeppelinConfiguration conf,
-      AuthorizationService authorizationService,
-      NotebookRepo notebookRepo,
-      NoteManager noteManager,
-      InterpreterFactory replFactory,
-      InterpreterSettingManager interpreterSettingManager,
-      SearchService noteSearchService,
-      Credentials credentials,
-      NoteEventListener noteEventListener)
-      throws IOException {
-    this(
-        conf,
-        authorizationService,
-        notebookRepo,
-        noteManager,
-        replFactory,
-        interpreterSettingManager,
-        noteSearchService,
-        credentials);
-    if (null != noteEventListener) {
-      this.noteEventListeners.add(noteEventListener);
-    }
-    this.paragraphJobListener = (ParagraphJobListener) noteEventListener;
+  @Override
+  public boolean isDirectory() {
+    return false;
   }
 
-  public NoteManager getNoteManager() {
-    return noteManager;
+  public void rename(String fileName) throws IOException {
+    move(Paths.get(path().getParent().toString(),fileName));
   }
 
-  /**
-   * This method will be called only NotebookService to register {@link *
-   * com.teragrep.zep_01.notebook.ParagraphJobListener}.
-   */
-  public void setParagraphJobListener(ParagraphJobListener paragraphJobListener) {
-    this.paragraphJobListener = paragraphJobListener;
+  public void move(Path path) throws IOException {
+    Notebook movedNotebook = copy(path,id());
+    movedNotebook.save();
+    delete();
+  }
+  public Notebook move(Directory parentDirectory) throws IOException {
+    return move(parentDirectory,path().getFileName().toString());
+  }
+  public Notebook move(Directory parentDirectory, String fileName) throws IOException {
+    Notebook movedNotebook = copy(Paths.get(parentDirectory.path().toString(),fileName),id());
+    movedNotebook.save();
+    delete();
+    return movedNotebook;
   }
 
-  /**
-   * Creating new note. defaultInterpreterGroup is not provided, so the global
-   * defaultInterpreterGroup (zeppelin.interpreter.group.default) is used
-   *
-   * @param notePath
-   * @param subject
-   * @return
-   * @throws IOException
-   */
-  public Note createNote(String notePath,
-                         AuthenticationInfo subject) throws IOException {
-    return createNote(notePath, interpreterSettingManager.getDefaultInterpreterSetting().getName(),
-        subject);
+  public ExecutionContext executionContext(){
+    return executionContext;
   }
 
-  /**
-   * Creating new note. defaultInterpreterGroup is not provided, so the global
-   * defaultInterpreterGroup (zeppelin.interpreter.group.default) is used
-   *
-   * @param notePath
-   * @param subject
-   * @param save
-   * @return
-   * @throws IOException
-   */
-  public Note createNote(String notePath,
-                         AuthenticationInfo subject,
-                         boolean save) throws IOException {
-    return createNote(notePath, interpreterSettingManager.getDefaultInterpreterSetting().getName(),
-            subject, save);
-  }
+  // Move a paragraph to a given index.
+  // As paragraphs are stored in a Map, their order is
+  public Notebook reorderParagraph(String paragraphId, int index){
+    Paragraph paragraphToMove = paragraphs.get(paragraphId);
+    ArrayList<Paragraph> paragraphlist = new ArrayList<>(paragraphs.values());
+    int currentIndex = paragraphlist.indexOf(paragraphToMove);
+    int swapsNeeded = index - currentIndex;
 
-  /**
-   * Creating new note.
-   *
-   * @param notePath
-   * @param defaultInterpreterGroup
-   * @param subject
-   * @return
-   * @throws IOException
-   */
-  public Note createNote(String notePath,
-                         String defaultInterpreterGroup,
-                         AuthenticationInfo subject) throws IOException {
-    return createNote(notePath, defaultInterpreterGroup, subject, true);
-  }
-
-  /**
-   * Creating new note.
-   *
-   * @param notePath
-   * @param defaultInterpreterGroup
-   * @param subject
-   * @return
-   * @throws IOException
-   */
-  public Note createNote(String notePath,
-                         String defaultInterpreterGroup,
-                         AuthenticationInfo subject,
-                         boolean save) throws IOException {
-    Note note =
-            new Note(notePath, defaultInterpreterGroup, replFactory, interpreterSettingManager,
-                    paragraphJobListener, credentials, noteEventListeners);
-    noteManager.addNote(note, subject);
-    // init noteMeta
-    authorizationService.createNoteAuth(note.getId(), subject);
-    authorizationService.saveNoteAuth(note.getId(), subject);
-    if (save) {
-      noteManager.saveNote(note, subject);
-    }
-    fireNoteCreateEvent(note, subject);
-    return note;
-  }
-
-  /**
-   * Export existing note.
-   *
-   * @param noteId - the note ID to clone
-   * @return Note JSON
-   * @throws IOException, IllegalArgumentException
-   */
-  public String exportNote(String noteId) throws IOException {
-    try {
-      Note note = getNote(noteId);
-      if (note == null) {
-        throw new IOException("Note " + noteId + " not found");
-      }
-      return note.toJson();
-    } catch (IOException e) {
-      throw new IOException(noteId + " not found");
-    }
-  }
-
-  /**
-   * import JSON as a new note.
-   *
-   * @param sourceJson - the note JSON to import
-   * @param notePath   - the path of the new note
-   * @return note ID
-   * @throws IOException
-   */
-  public Note importNote(String sourceJson, String notePath, AuthenticationInfo subject)
-      throws IOException {
-    Note oldNote = Note.fromJson(null, sourceJson);
-    if (notePath == null) {
-      notePath = oldNote.getName();
-    }
-    Note newNote = createNote(notePath, subject);
-    List<Paragraph> paragraphs = oldNote.getParagraphs();
-    for (Paragraph p : paragraphs) {
-      newNote.addCloneParagraph(p, subject);
-    }
-    noteManager.saveNote(newNote, subject);
-    return newNote;
-  }
-
-  /**
-   * Clone existing note.
-   *
-   * @param sourceNoteId - the note ID to clone
-   * @param newNotePath  - the path of the new note
-   * @return noteId
-   * @throws IOException
-   */
-  public Note cloneNote(String sourceNoteId, String newNotePath, AuthenticationInfo subject)
-      throws IOException {
-    Note sourceNote = getNote(sourceNoteId);
-    if (sourceNote == null) {
-      throw new IOException("Source note: " + sourceNoteId + " not found");
-    }
-    Note newNote = createNote(newNotePath, subject, false);
-    List<Paragraph> paragraphs = sourceNote.getParagraphs();
-    for (Paragraph p : paragraphs) {
-      newNote.addCloneParagraph(p, subject);
+    if(swapsNeeded == 0){
+      return this;
     }
 
-    newNote.setConfig(new HashMap<>(sourceNote.getConfig()));
-    newNote.setInfo(new HashMap<>(sourceNote.getInfo()));
-    newNote.setDefaultInterpreterGroup(sourceNote.getDefaultInterpreterGroup());
-    newNote.setNoteForms(new HashMap<>(sourceNote.getNoteForms()));
-    newNote.setNoteParams(new HashMap<>(sourceNote.getNoteParams()));
-    newNote.setRunning(false);
-
-    saveNote(newNote, subject);
-    authorizationService.cloneNoteMeta(newNote.getId(), sourceNoteId, subject);
-    return newNote;
-  }
-
-  public void removeNote(Note note, AuthenticationInfo subject) throws IOException {
-    LOGGER.info("Remove note: {}", note.getId());
-    // Set Remove to true to cancel saving this note
-    note.setRemoved(true);
-    noteManager.removeNote(note.getId(), subject);
-    authorizationService.removeNoteAuth(note.getId());
-    fireNoteRemoveEvent(note, subject);
-  }
-
-  public void removeCorruptedNote(String noteId, AuthenticationInfo subject) throws IOException {
-    LOGGER.info("Remove corrupted note: {}", noteId);
-    noteManager.removeNote(noteId, subject);
-    authorizationService.removeNoteAuth(noteId);
-  }
-
-  public void removeNote(String noteId, AuthenticationInfo subject) throws IOException {
-    Note note = getNote(noteId);
-    removeNote(note, subject);
-  }
-
-  /**
-   * Get note from NotebookRepo and also initialize it with other properties that is not
-   * persistent in NotebookRepo, such as paragraphJobListener.
-   * @param noteId
-   * @return null if note not found.
-   * @throws IOException when fail to get it from NotebookRepo.
-   */
-  public Note getNote(String noteId) throws IOException {
-    return getNote(noteId, false);
-  }
-
-  /**
-   * Get note from NotebookRepo and also initialize it with other properties that is not
-   * persistent in NotebookRepo, such as paragraphJobListener.
-   * @param noteId
-   * @return null if note not found.
-   * @throws IOException when fail to get it from NotebookRepo.
-   */
-  public Note getNote(String noteId, boolean reload) throws IOException {
-    Note note = noteManager.getNote(noteId, reload);
-    if (note == null) {
-      return null;
-    }
-    note.setInterpreterFactory(replFactory);
-    note.setInterpreterSettingManager(interpreterSettingManager);
-    note.setParagraphJobListener(paragraphJobListener);
-    note.setNoteEventListeners(noteEventListeners);
-    note.setCredentials(credentials);
-    for (Paragraph p : note.getParagraphs()) {
-      p.setNote(note);
-    }
-    return note;
-  }
-
-  public void saveNote(Note note, AuthenticationInfo subject) throws IOException {
-    noteManager.saveNote(note, subject);
-  }
-
-  public void updateNote(Note note, AuthenticationInfo subject) throws IOException {
-    noteManager.saveNote(note, subject);
-    fireNoteUpdateEvent(note, subject);
-  }
-
-  public boolean containsNote(String notePath) {
-    return noteManager.containsNote(notePath);
-  }
-
-  public boolean containsFolder(String folderPath) {
-    return noteManager.containsFolder(folderPath);
-  }
-
-  public void moveNote(String noteId, String newNotePath, AuthenticationInfo subject) throws IOException {
-    LOGGER.info("Move note {} to {}", noteId, newNotePath);
-    noteManager.moveNote(noteId, newNotePath, subject);
-  }
-
-  public void moveFolder(String folderPath, String newFolderPath, AuthenticationInfo subject) throws IOException {
-    LOGGER.info("Move folder from {} to {}", folderPath, newFolderPath);
-    noteManager.moveFolder(folderPath, newFolderPath, subject);
-  }
-
-  public void removeFolder(String folderPath, AuthenticationInfo subject) throws IOException {
-    LOGGER.info("Remove folder {}", folderPath);
-    // TODO(zjffdu) NotebookRepo.remove is called twice here
-    List<Note> notes = noteManager.removeFolder(folderPath, subject);
-    for (Note note : notes) {
-      fireNoteRemoveEvent(note, subject);
-    }
-  }
-
-  public void emptyTrash(AuthenticationInfo subject) throws IOException {
-    LOGGER.info("Empty Trash");
-    removeFolder("/" + NoteManager.TRASH_FOLDER, subject);
-  }
-
-  public void restoreAll(AuthenticationInfo subject) throws IOException {
-    NoteManager.Folder trash = noteManager.getTrashFolder();
-    // restore notes under trash folder
-    // If the value changes in the loop, a concurrent modification exception is thrown.
-    // Collector implementation of collect methods to maintain immutability.
-    List<NoteNode> notes = trash.getNotes().values().stream().collect(Collectors.toList());
-    for (NoteManager.NoteNode noteNode : notes) {
-      moveNote(noteNode.getNoteId(), noteNode.getNotePath().replace("/~Trash", ""), subject);
-    }
-    // restore folders under trash folder
-    List<Folder> folders = trash.getFolders().values().stream().collect(Collectors.toList());
-    for (NoteManager.Folder folder : folders) {
-      moveFolder(folder.getPath(), folder.getPath().replace("/~Trash", ""), subject);
-    }
-  }
-
-  public Revision checkpointNote(String noteId, String notePath, String checkpointMessage,
-      AuthenticationInfo subject) throws IOException {
-    if (((NotebookRepoSync) notebookRepo).isRevisionSupportedInDefaultRepo()) {
-      return ((NotebookRepoWithVersionControl) notebookRepo)
-          .checkpoint(noteId, notePath, checkpointMessage, subject);
-    } else {
-      return null;
-    }
-  }
-
-  public List<Revision> listRevisionHistory(String noteId,
-                                            String notePath,
-                                            AuthenticationInfo subject) throws IOException {
-    if (((NotebookRepoSync) notebookRepo).isRevisionSupportedInDefaultRepo()) {
-      return ((NotebookRepoWithVersionControl) notebookRepo)
-          .revisionHistory(noteId, notePath, subject);
-    } else {
-      return null;
-    }
-  }
-
-  public Note setNoteRevision(String noteId, String notePath, String revisionId, AuthenticationInfo subject)
-      throws IOException {
-    if (((NotebookRepoSync) notebookRepo).isRevisionSupportedInDefaultRepo()) {
-      Note note = ((NotebookRepoWithVersionControl) notebookRepo)
-              .setNoteRevision(noteId, notePath, revisionId, subject);
-      noteManager.saveNote(note);
-      return note;
-    } else {
-      return null;
-    }
-  }
-
-  public Note getNoteByRevision(String noteId, String noteName,
-                                String revisionId, AuthenticationInfo subject)
-      throws IOException {
-    if (((NotebookRepoSync) notebookRepo).isRevisionSupportedInDefaultRepo()) {
-      return ((NotebookRepoWithVersionControl) notebookRepo).get(noteId, noteName,
-          revisionId, subject);
-    } else {
-      return null;
-    }
-  }
-
-  @SuppressWarnings("rawtypes")
-  public Note loadNoteFromRepo(String id, AuthenticationInfo subject) {
-    Note note = null;
-    try {
-      note = noteManager.getNote(id);
-    } catch (IOException e) {
-      LOGGER.error("Fail to get note: {}", id, e);
-      return null;
-    }
-    if (note == null) {
-      return null;
-    }
-
-    //Manually inject ALL dependencies, as DI constructor was NOT used
-    note.setCredentials(this.credentials);
-
-    note.setInterpreterFactory(replFactory);
-    note.setInterpreterSettingManager(interpreterSettingManager);
-
-    note.setParagraphJobListener(this.paragraphJobListener);
-    note.setCronSupported(getConf());
-
-    if (note.getDefaultInterpreterGroup() == null) {
-      note.setDefaultInterpreterGroup(conf.getString(ConfVars.ZEPPELIN_INTERPRETER_GROUP_DEFAULT));
-    }
-
-    Map<String, SnapshotAngularObject> angularObjectSnapshot = new HashMap<>();
-
-    // restore angular object --------------
-    Date lastUpdatedDate = new Date(0);
-    for (Paragraph p : note.getParagraphs()) {
-      p.setNote(note);
-      if (p.getDateFinished() != null && lastUpdatedDate.before(p.getDateFinished())) {
-        lastUpdatedDate = p.getDateFinished();
+    if(swapsNeeded < 0){
+      // Move backwards
+      for (int swapsPerformed = 0; swapsPerformed < Math.abs(swapsNeeded); swapsPerformed++) {
+        Collections.swap(paragraphlist,currentIndex,currentIndex-1);
+        currentIndex--;
       }
     }
 
-    Map<String, List<AngularObject>> savedObjects = note.getAngularObjects();
-
-    if (savedObjects != null) {
-      for (Entry<String, List<AngularObject>> intpGroupNameEntry : savedObjects.entrySet()) {
-        String intpGroupName = intpGroupNameEntry.getKey();
-        List<AngularObject> objectList = intpGroupNameEntry.getValue();
-
-        for (AngularObject object : objectList) {
-          SnapshotAngularObject snapshot = angularObjectSnapshot.get(object.getName());
-          if (snapshot == null || snapshot.getLastUpdate().before(lastUpdatedDate)) {
-            angularObjectSnapshot.put(object.getName(),
-                new SnapshotAngularObject(intpGroupName, object, lastUpdatedDate));
-          }
-        }
+    else {
+      // Move forwards
+      for (int swapsPerformed = 0; swapsPerformed < Math.abs(swapsNeeded); swapsPerformed++) {
+        Collections.swap(paragraphlist,currentIndex,currentIndex+1);
+        currentIndex++;
       }
     }
 
-    note.setNoteEventListeners(this.noteEventListeners);
-
-    for (Entry<String, SnapshotAngularObject> angularObjectSnapshotEntry : angularObjectSnapshot.entrySet()) {
-      String name = angularObjectSnapshotEntry.getKey();
-      SnapshotAngularObject snapshot = angularObjectSnapshotEntry.getValue();
-      List<InterpreterSetting> settings = interpreterSettingManager.get();
-      for (InterpreterSetting setting : settings) {
-        InterpreterGroup intpGroup = setting.getInterpreterGroup(note.getExecutionContext());
-        if (intpGroup != null && intpGroup.getId().equals(snapshot.getIntpGroupId())) {
-          AngularObjectRegistry registry = intpGroup.getAngularObjectRegistry();
-          String noteId = snapshot.getAngularObject().getNoteId();
-          String paragraphId = snapshot.getAngularObject().getParagraphId();
-          // at this point, remote interpreter process is not created.
-          // so does not make sense add it to the remote.
-          //
-          // therefore instead of addAndNotifyRemoteProcess(), need to use add()
-          // that results add angularObject only in ZeppelinServer side not remoteProcessSide
-          registry.add(name, snapshot.getAngularObject().get(), noteId, paragraphId);
-        }
-      }
+    LinkedHashMap<String,Paragraph> reorderedParagraphs = new LinkedHashMap<>();
+    for (Paragraph paragraph:paragraphlist) {
+      reorderedParagraphs.put(paragraph.id(),paragraph);
     }
-
-    return note;
+    Notebook reorderedNotebook = new Notebook(this.title,id(),this.path(),reorderedParagraphs);
+    return reorderedNotebook;
   }
-
-  /**
-   * Reload all notes from repository after clearing `notes` and `folders`
-   * to reflect the changes of added/deleted/modified notes on file system level.
-   *
-   * @throws IOException
-   */
-  public void reloadAllNotes(AuthenticationInfo subject) throws IOException {
-    this.noteManager.reloadNotes();
-
-    if (notebookRepo instanceof NotebookRepoSync) {
-      NotebookRepoSync mainRepo = (NotebookRepoSync) notebookRepo;
-      if (mainRepo.getRepoCount() > 1) {
-        mainRepo.sync(subject);
-      }
-    }
+  public boolean isStub(){
+    return false;
   }
-
-  private class SnapshotAngularObject {
-    String intpGroupId;
-    AngularObject angularObject;
-    Date lastUpdate;
-
-    SnapshotAngularObject(String intpGroupId, AngularObject angularObject, Date lastUpdate) {
-      super();
-      this.intpGroupId = intpGroupId;
-      this.angularObject = angularObject;
-      this.lastUpdate = lastUpdate;
-    }
-
-    String getIntpGroupId() {
-      return intpGroupId;
-    }
-
-    AngularObject getAngularObject() {
-      return angularObject;
-    }
-
-    Date getLastUpdate() {
-      return lastUpdate;
-    }
-  }
-
-  public List<NoteInfo> getNotesInfo() {
-    return noteManager.getNotesInfo().entrySet().stream()
-        .map(entry -> new NoteInfo(entry.getKey(), entry.getValue()))
-        .collect(Collectors.toList());
-  }
-
-  public Stream<Note> getNoteStream() {
-    return noteManager.getNotesStream().map(note -> {
-      note.setInterpreterFactory(replFactory);
-      note.setInterpreterSettingManager(interpreterSettingManager);
-      note.setParagraphJobListener(paragraphJobListener);
-      note.setNoteEventListeners(noteEventListeners);
-      note.setCredentials(credentials);
-      for (Paragraph p : note.getParagraphs()) {
-        p.setNote(note);
-        p.setListener(paragraphJobListener);
-      }
-      return note;
-    });
-  }
-
-  @VisibleForTesting
-  public List<Note> getAllNotes(Function<Note, Boolean> func){
-    return getAllNotes().stream()
-        .filter(note -> func.apply(note))
-        .collect(Collectors.toList());
-  }
-
-  @VisibleForTesting
-  public List<Note> getAllNotes() {
-    List<Note> notes = getNoteStream().collect(Collectors.toList());
-    Collections.sort(notes, Comparator.comparing(Note::getPath));
-    return notes;
-  }
-
-  public List<NoteInfo> getNotesInfo(Function<String, Boolean> func) {
-    String homescreenNoteId = conf.getString(ConfVars.ZEPPELIN_NOTEBOOK_HOMESCREEN);
-    boolean hideHomeScreenNotebookFromList =
-        conf.getBoolean(ConfVars.ZEPPELIN_NOTEBOOK_HOMESCREEN_HIDE);
-
-    synchronized (noteManager.getNotesInfo()) {
-      List<NoteInfo> notesInfo = noteManager.getNotesInfo().entrySet().stream().filter(entry ->
-              func.apply(entry.getKey()) &&
-              ((!hideHomeScreenNotebookFromList) ||
-                  ((hideHomeScreenNotebookFromList) && !entry.getKey().equals(homescreenNoteId))))
-          .map(entry -> new NoteInfo(entry.getKey(), entry.getValue()))
-          .collect(Collectors.toList());
-
-      notesInfo.sort((note1, note2) -> {
-            String name1 = note1.getId();
-            if (note1.getPath() != null) {
-              name1 = note1.getPath();
-            }
-            String name2 = note2.getId();
-            if (note2.getPath() != null) {
-              name2 = note2.getPath();
-            }
-            return name1.compareTo(name2);
-          });
-      return notesInfo;
-    }
-  }
-
-  public List<InterpreterSetting> getBindedInterpreterSettings(String noteId) throws IOException {
-    Note note  = getNote(noteId);
-    if (note == null) {
-      return new ArrayList<>();
-    }
-    Set<InterpreterSetting> settings = new HashSet<>();
-    for (Paragraph p : note.getParagraphs()) {
-      try {
-        Interpreter intp = p.getBindedInterpreter();
-        settings.add((
-                (ManagedInterpreterGroup) intp.getInterpreterGroup()).getInterpreterSetting());
-      } catch (InterpreterNotFoundException e) {
-        // ignore this
-      }
-    }
-    // add the default interpreter group
-    InterpreterSetting defaultIntpSetting =
-            interpreterSettingManager.getByName(note.getDefaultInterpreterGroup());
-    if (defaultIntpSetting != null) {
-      settings.add(defaultIntpSetting);
-    }
-    return new ArrayList<>(settings);
-  }
-
-  public InterpreterFactory getInterpreterFactory() {
-    return replFactory;
-  }
-
-  public InterpreterSettingManager getInterpreterSettingManager() {
-    return interpreterSettingManager;
-  }
-
-  public ZeppelinConfiguration getConf() {
-    return conf;
-  }
-
-  public void close() {
-    this.notebookRepo.close();
-    this.noteSearchService.close();
-  }
-
-  public void addNotebookEventListener(NoteEventListener listener) {
-    noteEventListeners.add(listener);
-  }
-
-  private void fireNoteCreateEvent(Note note, AuthenticationInfo subject) throws IOException {
-    for (NoteEventListener listener : noteEventListeners) {
-      listener.onNoteCreate(note, subject);
-    }
-  }
-
-  private void fireNoteUpdateEvent(Note note, AuthenticationInfo subject) throws IOException {
-    for (NoteEventListener listener : noteEventListeners) {
-      listener.onNoteUpdate(note, subject);
-    }
-  }
-
-  private void fireNoteRemoveEvent(Note note, AuthenticationInfo subject) throws IOException {
-    for (NoteEventListener listener : noteEventListeners) {
-      listener.onNoteRemove(note, subject);
-    }
-  }
-
-  public Boolean isRevisionSupported() {
-    if (notebookRepo instanceof NotebookRepoSync) {
-      return ((NotebookRepoSync) notebookRepo).isRevisionSupportedInDefaultRepo();
-    } else if (notebookRepo instanceof NotebookRepoWithVersionControl) {
-      return true;
-    } else {
-      return false;
-    }
+  public String readFile() throws IOException {
+    List<String> lines = Files.readAllLines(path(), Charset.defaultCharset());
+    String concatenatedLines = lines.stream()
+            .map(n -> String.valueOf(n))
+            .collect(Collectors.joining("\n"));
+    return concatenatedLines;
   }
 }

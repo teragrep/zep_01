@@ -35,7 +35,6 @@ import static org.mockito.Mockito.when;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.nio.file.Files;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -56,8 +55,8 @@ import com.teragrep.zep_01.notebook.AuthorizationService;
 import com.teragrep.zep_01.notebook.Note;
 import com.teragrep.zep_01.notebook.NoteInfo;
 import com.teragrep.zep_01.notebook.NoteManager;
-import com.teragrep.zep_01.notebook.Notebook;
-import com.teragrep.zep_01.notebook.Paragraph;
+import com.teragrep.zep_01.notebook.LegacyNotebook;
+import com.teragrep.zep_01.notebook.LegacyParagraph;
 import com.teragrep.zep_01.notebook.exception.NotePathAlreadyExistsException;
 import com.teragrep.zep_01.notebook.repo.NotebookRepo;
 import com.teragrep.zep_01.notebook.repo.VFSNotebookRepo;
@@ -68,13 +67,12 @@ import com.teragrep.zep_01.user.AuthenticationInfo;
 import com.teragrep.zep_01.user.Credentials;
 import org.junit.After;
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.mockito.ArgumentCaptor;
 
 import com.google.gson.Gson;
 
-public class NotebookServiceTest {
+public class LegacyNotebookServiceTest {
 
   private static NotebookService notebookService;
 
@@ -120,8 +118,8 @@ public class NotebookServiceTest {
     Credentials credentials = new Credentials();
     NoteManager noteManager = new NoteManager(notebookRepo);
     AuthorizationService authorizationService = new AuthorizationService(noteManager, zeppelinConfiguration);
-    Notebook notebook =
-        new Notebook(
+    LegacyNotebook notebook =
+        new LegacyNotebook(
             zeppelinConfiguration,
             authorizationService,
             notebookRepo,
@@ -377,7 +375,7 @@ public class NotebookServiceTest {
 
     // add paragraph
     reset(callback);
-    Paragraph p = notebookService.insertParagraph(note1.getId(), 0, new HashMap<>(), context,
+    LegacyParagraph p = notebookService.insertParagraph(note1.getId(), 0, new HashMap<>(), context,
         callback);
     assertNotNull(p);
     verify(callback).onSuccess(p, context);

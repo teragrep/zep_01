@@ -40,7 +40,7 @@ import java.util.Map;
 
 import static org.junit.Assert.assertEquals;
 
-public class FileSystemNotebookRepoTest {
+public class FileSystemLegacyNotebookRepoTest {
 
   private ZeppelinConfiguration zConf;
   private Configuration hadoopConf;

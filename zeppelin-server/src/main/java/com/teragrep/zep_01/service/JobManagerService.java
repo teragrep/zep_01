@@ -22,8 +22,8 @@ import org.apache.commons.lang3.StringUtils;
 import com.teragrep.zep_01.conf.ZeppelinConfiguration;
 import com.teragrep.zep_01.notebook.AuthorizationService;
 import com.teragrep.zep_01.notebook.Note;
-import com.teragrep.zep_01.notebook.Notebook;
-import com.teragrep.zep_01.notebook.Paragraph;
+import com.teragrep.zep_01.notebook.LegacyNotebook;
+import com.teragrep.zep_01.notebook.LegacyParagraph;
 import com.teragrep.zep_01.scheduler.Job;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -41,12 +41,12 @@ public class JobManagerService {
 
   private static final Logger LOGGER = LoggerFactory.getLogger(JobManagerService.class);
 
-  private final Notebook notebook;
+  private final LegacyNotebook notebook;
   private final AuthorizationService authorizationService;
   private final ZeppelinConfiguration conf;
 
   @Inject
-  public JobManagerService(Notebook notebook,
+  public JobManagerService(LegacyNotebook notebook,
                            AuthorizationService authorizationService,
                            ZeppelinConfiguration conf) {
     this.notebook = notebook;
@@ -104,7 +104,7 @@ public class JobManagerService {
     callback.onSuccess(notesJobInfo, context);
   }
 
-  private static long getUnixTimeLastRunParagraph(Paragraph paragraph) {
+  private static long getUnixTimeLastRunParagraph(LegacyParagraph paragraph) {
     if (paragraph.isTerminated() && paragraph.getDateFinished() != null) {
       return paragraph.getDateFinished().getTime();
     } else if (paragraph.isRunning()) {
@@ -122,7 +122,7 @@ public class JobManagerService {
     private String name;
     private Job.Status status;
 
-    public ParagraphJobInfo(Paragraph p) {
+    public ParagraphJobInfo(LegacyParagraph p) {
       this.id = p.getId();
       if (StringUtils.isBlank(p.getTitle())) {
         this.name = p.getId();
@@ -164,7 +164,7 @@ public class JobManagerService {
 
       // set paragraphs
       this.paragraphs = new ArrayList<>();
-      for (Paragraph paragraph : note.getParagraphs()) {
+      for (LegacyParagraph paragraph : note.getParagraphs()) {
         // check paragraph's status.
         if (paragraph.getStatus().isRunning()) {
           isNoteRunning = true;

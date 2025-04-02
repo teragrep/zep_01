@@ -24,7 +24,7 @@ import org.junit.rules.ExpectedException;
 
 import static junit.framework.TestCase.assertEquals;
 
-public class ParagraphTextParserTest {
+public class LegacyParagraphTextParserTest {
 
   @Ignore(value="Uses interpreter we do not support")
   @Test
