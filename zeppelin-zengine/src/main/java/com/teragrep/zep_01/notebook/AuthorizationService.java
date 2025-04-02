@@ -267,11 +267,13 @@ public class AuthorizationService {
   }
 
   private boolean isAdmin(Set<String> entities) {
-    String adminRole = conf.getString(ZeppelinConfiguration.ConfVars.ZEPPELIN_OWNER_ROLE);
-    if (StringUtils.isBlank(adminRole)) {
-      return false;
+    String[] adminRoles = conf.getString(ZeppelinConfiguration.ConfVars.ZEPPELIN_OWNER_ROLE).split(",");
+    for (String adminRole : adminRoles) {
+      if(entities.contains(adminRole)){
+        return true;
+      }
     }
-    return entities.contains(adminRole);
+    return false;
   }
 
   // return true if b is empty or if (a intersection b) is non-empty
