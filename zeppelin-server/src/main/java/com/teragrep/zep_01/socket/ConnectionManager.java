@@ -168,19 +168,8 @@ public class ConnectionManager {
     synchronized (noteSocketMap) {
       Set<String> noteIds = noteSocketMap.keySet();
       for (String noteId : noteIds) {
-        removeConnectionFromNote(noteId, socket);
+        removeNoteConnection(noteId, socket);
       }
-    }
-  }
-
-  private void removeConnectionFromNote(String noteId, NotebookSocket socket) {
-    LOGGER.debug("Remove connection {} from note: {}", socket, noteId);
-    synchronized (noteSocketMap) {
-      List<NotebookSocket> socketList = noteSocketMap.get(noteId);
-      if (socketList != null) {
-        socketList.remove(socket);
-      }
-      checkCollaborativeStatus(noteId, socketList);
     }
   }
 
