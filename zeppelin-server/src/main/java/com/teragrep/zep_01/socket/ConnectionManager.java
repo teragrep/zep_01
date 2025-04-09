@@ -77,7 +77,6 @@ public class ConnectionManager {
    */
   final Queue<NotebookSocket> watcherSockets = new ConcurrentLinkedQueue<>();
 
-  private final HashSet<String> collaborativeModeList = new HashSet<>();
   private final Boolean collaborativeModeEnable = ZeppelinConfiguration
       .create()
       .isZeppelinNotebookCollaborativeModeEnable();
@@ -121,10 +120,10 @@ public class ConnectionManager {
     LOGGER.debug("Remove connection {} from note: {}", socket, noteId);
     synchronized (noteSocketMap) {
       List<NotebookSocket> socketList = noteSocketMap.get(noteId);
-      if (socketList != null) {
+      if (socketList != null && socketList.contains(socket)) {
         socketList.remove(socket);
+        checkCollaborativeStatus(noteId, socketList);
       }
-      checkCollaborativeStatus(noteId, socketList);
     }
   }
 
@@ -179,21 +178,17 @@ public class ConnectionManager {
     }
     boolean collaborativeStatusNew = socketList.size() > 1;
     if (collaborativeStatusNew) {
-      collaborativeModeList.add(noteId);
-    } else {
-      collaborativeModeList.remove(noteId);
-    }
-
-    Message message = new Message(Message.OP.COLLABORATIVE_MODE_STATUS);
-    message.put("status", collaborativeStatusNew);
-    if (collaborativeStatusNew) {
-      HashSet<String> userList = new HashSet<>();
-      for (NotebookSocket noteSocket : socketList) {
-        userList.add(noteSocket.getUser());
+      Message message = new Message(Message.OP.COLLABORATIVE_MODE_STATUS);
+      message.put("status", collaborativeStatusNew);
+      if (collaborativeStatusNew) {
+        HashSet<String> userList = new HashSet<>();
+        for (NotebookSocket noteSocket : socketList) {
+          userList.add(noteSocket.getUser());
+        }
+        message.put("users", userList);
       }
-      message.put("users", userList);
+      broadcast(noteId, message);
     }
-    broadcast(noteId, message);
   }
 
 
