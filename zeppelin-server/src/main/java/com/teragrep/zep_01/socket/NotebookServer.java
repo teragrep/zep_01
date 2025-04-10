@@ -454,6 +454,7 @@ public class NotebookServer extends WebSocketServlet
         default:
           break;
       }
+      MDC.clear();
     } catch (Exception e) {
       LOG.error("Can't handle message: " + msg, e);
       try {

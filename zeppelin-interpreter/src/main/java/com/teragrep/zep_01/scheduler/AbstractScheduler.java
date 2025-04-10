@@ -20,6 +20,7 @@ package com.teragrep.zep_01.scheduler;
 import com.teragrep.zep_01.interpreter.InterpreterResult;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.slf4j.MDC;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -117,6 +118,7 @@ public abstract class AbstractScheduler implements Scheduler {
    * @param runningJob
    */
   protected void runJob(Job runningJob) {
+    MDC.put("notebookId",runningJob.notebookId());
     if (runningJob.isAborted()) {
       LOGGER.info("Job {} is aborted", runningJob.getId());
       runningJob.setStatus(Job.Status.ABORT);

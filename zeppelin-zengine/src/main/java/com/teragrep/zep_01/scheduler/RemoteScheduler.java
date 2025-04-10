@@ -22,6 +22,7 @@ import com.teragrep.zep_01.scheduler.Job.Status;
 import com.teragrep.zep_01.util.ExecutorUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.slf4j.MDC;
 
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.TimeUnit;
@@ -100,6 +101,7 @@ public class RemoteScheduler extends AbstractScheduler {
 
     @Override
     public void run() {
+      MDC.put("notebookId",job.notebookId());
       while (terminate == false) {
         synchronized (this) {
           try {

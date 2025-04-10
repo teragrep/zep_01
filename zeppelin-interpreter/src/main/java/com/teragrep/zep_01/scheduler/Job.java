@@ -84,6 +84,7 @@ public abstract class Job<T> {
   private volatile String errorMessage;
   private transient volatile Throwable exception;
   private transient JobListener listener;
+  private String notebookId;
 
   public Job(String jobName, JobListener listener) {
     this.jobName = jobName;
@@ -100,6 +101,8 @@ public abstract class Job<T> {
     id = jobId;
     setStatus(Status.READY);
   }
+
+  public abstract String notebookId();
 
   public void setId(String id) {
     this.id = id;

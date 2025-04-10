@@ -89,6 +89,11 @@ public class TimeoutLifecycleManagerTest extends AbstractInterpreterTest {
     // simulate how zeppelin submit paragraph
     remoteInterpreter.getScheduler().submit(new Job<Object>("test-job", null) {
       @Override
+      public String notebookId() {
+        return "";
+      }
+
+      @Override
       public Object getReturn() {
         return null;
       }

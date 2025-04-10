@@ -66,6 +66,7 @@ import com.teragrep.pth_03.antlr.DPLLexer;
 import com.teragrep.pth_03.antlr.DPLParser;
 
 import com.teragrep.functions.dpf_02.BatchCollect;
+import org.slf4j.MDC;
 
 import java.util.concurrent.TimeoutException;
 

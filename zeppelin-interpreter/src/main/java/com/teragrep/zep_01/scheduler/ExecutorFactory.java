@@ -49,7 +49,6 @@ public class ExecutorFactory {
   }
 
   public ExecutorService createOrGet(String name, int numThread) {
-    MDC.clear();
     synchronized (executors) {
       if (!executors.containsKey(name)) {
         executors.put(name, Executors.newScheduledThreadPool(

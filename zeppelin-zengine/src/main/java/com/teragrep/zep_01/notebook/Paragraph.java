@@ -127,6 +127,16 @@ public class Paragraph extends JobWithProgressPoller<InterpreterResult> implemen
     setStatus(p2.getStatus());
   }
 
+  @Override
+  public String notebookId(){
+    if(note != null){
+      return note.getId() != null ? note.getId() : "";
+    }
+    else {
+      return "";
+    }
+  }
+
   private static String generateId() {
     return "paragraph_" + System.currentTimeMillis() + "_" + Math.abs(new SecureRandom().nextInt());
   }
