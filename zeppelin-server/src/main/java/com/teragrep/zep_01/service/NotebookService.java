@@ -64,6 +64,7 @@ import com.teragrep.zep_01.user.AuthenticationInfo;
 import org.bitbucket.cowwoc.diffmatchpatch.DiffMatchPatch;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.slf4j.MDC;
 
 
 /**
@@ -306,6 +307,7 @@ public class NotebookService {
       Note note = notebook.importNote(noteJson, notePath == null ?
               notePath : normalizeNotePath(notePath),
           context.getAutheInfo());
+      MDC.put("notebookId",note.getId());
       callback.onSuccess(note, context);
       return note;
     } catch (IOException e) {

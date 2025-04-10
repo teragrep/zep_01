@@ -43,6 +43,7 @@ import com.teragrep.zep_01.scheduler.Scheduler;
 import com.teragrep.zep_01.scheduler.SchedulerFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.slf4j.MDC;
 
 import java.io.IOException;
 import java.util.List;
@@ -190,6 +191,7 @@ public class RemoteInterpreter extends Interpreter {
   @Override
   public InterpreterResult interpret(final String st, final InterpreterContext context)
       throws InterpreterException {
+    MDC.put("notebookId",context.getNoteId());
     if (LOGGER.isDebugEnabled()) {
       LOGGER.debug("st:\n{}", st);
     }
@@ -236,9 +238,7 @@ public class RemoteInterpreter extends Interpreter {
           }
 
           return convert(remoteResult);
-        }
-    );
-
+        }, MDC.getCopyOfContextMap());
   }
 
   @Override

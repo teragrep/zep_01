@@ -58,6 +58,7 @@ import com.teragrep.zep_01.user.Credentials;
 import org.quartz.SchedulerException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.slf4j.MDC;
 
 /**
  * High level api of Notebook related operations, such as create, move & delete note/folder.
@@ -252,6 +253,7 @@ public class Notebook {
     Note note =
             new Note(notePath, defaultInterpreterGroup, replFactory, interpreterSettingManager,
                     paragraphJobListener, credentials, noteEventListeners);
+    MDC.put("notebookId",note.getId());
     noteManager.addNote(note, subject);
     // init noteMeta
     authorizationService.createNoteAuth(note.getId(), subject);

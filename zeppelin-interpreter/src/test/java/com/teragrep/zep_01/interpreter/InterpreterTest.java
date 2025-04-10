@@ -17,14 +17,23 @@
 
 package com.teragrep.zep_01.interpreter;
 
+import org.apache.log4j.AppenderSkeleton;
+import org.apache.log4j.Level;
+import org.apache.log4j.Logger;
+import org.apache.log4j.spi.LoggingEvent;
+import org.junit.Assert;
 import org.junit.Test;
+import org.slf4j.MDC;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Properties;
 
 import static org.junit.Assert.assertEquals;
 
 //TODO(zjffdu) add more test for Interpreter which is a very important class
 public class InterpreterTest {
+  private static Logger LOGGER = Logger.getLogger(InterpreterTest.class);
 
   @Test
   public void testDefaultProperty() {
@@ -83,6 +92,58 @@ public class InterpreterTest {
     );
   }
 
+  @Test
+  public void testNotebookIdLogging() throws InterpreterException {
+
+    // Add an appender that stores all of the logging output in a list we can access programmatically.
+    Log4jTestAppender appender = new Log4jTestAppender();
+    LOGGER.addAppender(appender);
+
+    // Create a DummyInterpreter
+    Properties p = new Properties();
+    p.put("p1", "v1");
+    Interpreter intp = new DummyInterpreter(p);
+
+    // Add a notebookId to MDC
+    MDC.put("notebookId","dummyNotebook");
+
+    // Run interpreter
+    intp.interpret("dummy code", InterpreterContext.builder().build());
+
+    // There should only be one row of log information present, originating from DummyInterpreter
+    Assert.assertEquals(1,appender.recordedEvents().size());
+
+    // Assert that the log looks as it should, and that it contains the MDC information.
+    // {timestamp}  INFO [main] [{{notebookId,dummyNotebook}}] org.apache.zeppelin.interpreter.InterpreterTest:{lineNumber} - test log
+    LoggingEvent logLine = appender.recordedEvents().get(0);
+    Assert.assertEquals(Level.INFO,logLine.getLevel());
+    Assert.assertEquals("dummyNotebook",logLine.getMDC("notebookId"));
+    Assert.assertEquals("com.teragrep.zep_01.interpreter.InterpreterTest$DummyInterpreter",logLine.getLocationInformation().getClassName());
+    Assert.assertEquals("test log",logLine.getMessage());
+    LOGGER.removeAllAppenders();
+  }
+
+  class Log4jTestAppender extends AppenderSkeleton {
+
+    private final List<LoggingEvent> recordedEvents = new ArrayList<LoggingEvent>();
+    @Override
+    protected void append(LoggingEvent event) {
+      recordedEvents.add(event);
+    }
+
+    @Override
+    public void close() {
+    }
+
+    @Override
+    public boolean requiresLayout() {
+      return false;
+    }
+
+    public List<LoggingEvent> recordedEvents() {
+      return new ArrayList<LoggingEvent>(recordedEvents);
+    }
+  }
   public static class DummyInterpreter extends Interpreter {
 
     public DummyInterpreter(Properties property) {
@@ -101,6 +162,7 @@ public class InterpreterTest {
 
     @Override
     public InterpreterResult interpret(String st, InterpreterContext context) {
+      LOGGER.info("test log");
       return null;
     }
 

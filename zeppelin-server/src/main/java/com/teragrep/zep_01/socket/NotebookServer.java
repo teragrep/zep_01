@@ -86,6 +86,7 @@ import org.eclipse.jetty.websocket.servlet.WebSocketServletFactory;
 import org.glassfish.hk2.api.ServiceLocator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.slf4j.MDC;
 
 import static com.teragrep.zep_01.common.Message.MSG_ID_NOT_DEFINED;
 
@@ -539,6 +540,7 @@ public class NotebookServer extends WebSocketServlet
                                      Message fromMessage) throws IOException {
     List<InterpreterSettingsList> settingList = new ArrayList<>();
     String noteId = (String) fromMessage.data.get("noteId");
+    MDC.put("notebookId",noteId);
     Note note = getNotebook().getNote(noteId);
     if (note != null) {
       List<InterpreterSetting> bindedSettings =
@@ -555,6 +557,7 @@ public class NotebookServer extends WebSocketServlet
   public void saveInterpreterBindings(NotebookSocket conn, ServiceContext context, Message fromMessage) throws IOException {
     List<InterpreterSettingsList> settingList = new ArrayList<>();
     String noteId = (String) fromMessage.data.get("noteId");
+    MDC.put("notebookId",noteId);
     Note note = getNotebook().getNote(noteId);
     if (note != null) {
       List<String> settingIdList =
@@ -697,6 +700,7 @@ public class NotebookServer extends WebSocketServlet
 
   private void getNote(NotebookSocket conn, ServiceContext context, Message fromMessage) throws IOException {
     String noteId = (String) fromMessage.get("id");
+    MDC.put("notebookId",noteId);
     if (noteId == null) {
       return;
     }
@@ -714,6 +718,7 @@ public class NotebookServer extends WebSocketServlet
 
   private void reloadNote(NotebookSocket conn, ServiceContext context, Message fromMessage) throws IOException {
     String noteId = (String) fromMessage.get("id");
+    MDC.put("notebookId",noteId);
     if (noteId == null) {
       return;
     }
@@ -781,6 +786,7 @@ public class NotebookServer extends WebSocketServlet
                           ServiceContext context,
                           Message fromMessage) throws IOException {
     String noteId = (String) fromMessage.get("id");
+    MDC.put("notebookId",noteId);
     String name = (String) fromMessage.get("name");
     Map<String, Object> config = (Map<String, Object>) fromMessage.get("config");
     if (noteId == null) {
@@ -806,6 +812,7 @@ public class NotebookServer extends WebSocketServlet
                                       ServiceContext context,
                                       Message fromMessage) throws IOException {
     String noteId = (String) fromMessage.get("id");
+    MDC.put("notebookId",noteId);
     String personalized = (String) fromMessage.get("personalized");
     boolean isPersonalized = personalized.equals("true");
 
@@ -823,6 +830,7 @@ public class NotebookServer extends WebSocketServlet
                           ServiceContext context,
                           Message fromMessage) throws IOException {
     String noteId = (String) fromMessage.get("id");
+    MDC.put("notebookId",noteId);
     String name = (String) fromMessage.get("name");
     boolean isRelativePath = false;
     if (fromMessage.get("relative") != null) {
@@ -895,6 +903,7 @@ public class NotebookServer extends WebSocketServlet
                           ServiceContext context,
                           Message fromMessage) throws IOException {
     String noteId = (String) fromMessage.get("id");
+    MDC.put("notebookId",noteId);
     getNotebookService().removeNote(noteId, context,
         new WebSocketServiceCallback<String>(conn) {
           @Override
@@ -930,6 +939,7 @@ public class NotebookServer extends WebSocketServlet
                                ServiceContext context,
                                Message fromMessage) throws IOException {
     String noteId = (String) fromMessage.get("id");
+    MDC.put("notebookId",noteId);
     getNotebookService().moveNoteToTrash(noteId, context,
         new WebSocketServiceCallback<Note>(conn) {
           @Override
@@ -962,6 +972,7 @@ public class NotebookServer extends WebSocketServlet
                            ServiceContext context,
                            Message fromMessage) throws IOException {
     String noteId = (String) fromMessage.get("id");
+    MDC.put("notebookId",noteId);
     getNotebookService().restoreNote(noteId, context,
         new WebSocketServiceCallback<Note>(conn) {
           @Override
@@ -1019,6 +1030,7 @@ public class NotebookServer extends WebSocketServlet
                                Message fromMessage) throws IOException {
     String paragraphId = (String) fromMessage.get("id");
     String noteId = getConnectionManager().getAssociatedNoteId(conn);
+    MDC.put("notebookId",noteId);
     if (noteId == null) {
       noteId = (String) fromMessage.get("noteId");
     }
@@ -1055,6 +1067,7 @@ public class NotebookServer extends WebSocketServlet
     }
 
     String noteId = getConnectionManager().getAssociatedNoteId(conn);
+    MDC.put("notebookId",noteId);
     if (noteId == null) {
       noteId = fromMessage.getType("noteId", LOG);
       if (noteId == null) {
@@ -1083,6 +1096,7 @@ public class NotebookServer extends WebSocketServlet
                          ServiceContext context,
                          Message fromMessage) throws IOException {
     String noteId = getConnectionManager().getAssociatedNoteId(conn);
+    MDC.put("notebookId",noteId);
     String name = (String) fromMessage.get("name");
     getNotebookService().cloneNote(noteId, name, context,
         new WebSocketServiceCallback<Note>(conn) {
@@ -1100,6 +1114,7 @@ public class NotebookServer extends WebSocketServlet
                                        ServiceContext context,
                                        Message fromMessage) throws IOException {
     final String noteId = (String) fromMessage.get("id");
+    MDC.put("notebookId",noteId);
     getNotebookService().clearAllParagraphOutput(noteId, context,
         new WebSocketServiceCallback<Note>(conn) {
           @Override
@@ -1144,6 +1159,7 @@ public class NotebookServer extends WebSocketServlet
                                Message fromMessage) throws IOException {
     final String paragraphId = (String) fromMessage.get("id");
     String noteId = getConnectionManager().getAssociatedNoteId(conn);
+    MDC.put("notebookId",noteId);
     getNotebookService().removeParagraph(noteId, paragraphId,
         context, new WebSocketServiceCallback<Paragraph>(conn) {
           @Override
@@ -1160,6 +1176,7 @@ public class NotebookServer extends WebSocketServlet
                                     Message fromMessage) throws IOException {
     final String paragraphId = (String) fromMessage.get("id");
     String noteId = getConnectionManager().getAssociatedNoteId(conn);
+    MDC.put("notebookId",noteId);
     getNotebookService().clearParagraphOutput(noteId, paragraphId, context,
         new WebSocketServiceCallback<Paragraph>(conn) {
           @Override
@@ -1178,6 +1195,7 @@ public class NotebookServer extends WebSocketServlet
                           ServiceContext context,
                           Message fromMessage) throws IOException {
     String noteId = getConnectionManager().getAssociatedNoteId(conn);
+    MDC.put("notebookId",noteId);
     String paragraphId = (String) fromMessage.get("id");
     String buffer = (String) fromMessage.get("buf");
     int cursor = (int) Double.parseDouble(fromMessage.get("cursor").toString());
@@ -1217,6 +1235,7 @@ public class NotebookServer extends WebSocketServlet
                                     ServiceContext context,
                                     Message fromMessage) throws IOException {
     String noteId = (String) fromMessage.get("noteId");
+    MDC.put("notebookId",noteId);
     String paragraphId = (String) fromMessage.get("paragraphId");
     String interpreterGroupId = (String) fromMessage.get("interpreterGroupId");
     String varName = (String) fromMessage.get("name");
@@ -1247,6 +1266,7 @@ public class NotebookServer extends WebSocketServlet
   protected void angularObjectClientBind(NotebookSocket conn,
                                          Message fromMessage) throws Exception {
     String noteId = fromMessage.getType("noteId");
+    MDC.put("notebookId",noteId);
     String varName = fromMessage.getType("name");
     Object varValue = fromMessage.get("value");
     String paragraphId = fromMessage.getType("paragraphId");
@@ -1275,6 +1295,7 @@ public class NotebookServer extends WebSocketServlet
   protected void angularObjectClientUnbind(NotebookSocket conn,
                                            Message fromMessage) throws Exception {
     String noteId = fromMessage.getType("noteId");
+    MDC.put("notebookId",noteId);
     String varName = fromMessage.getType("name");
     String paragraphId = fromMessage.getType("paragraphId");
     Note note = getNotebook().getNote(noteId);
@@ -1339,6 +1360,7 @@ public class NotebookServer extends WebSocketServlet
     final String paragraphId = (String) fromMessage.get("id");
     final int newIndex = (int) Double.parseDouble(fromMessage.get("index").toString());
     String noteId = getConnectionManager().getAssociatedNoteId(conn);
+    MDC.put("notebookId",noteId);
     getNotebookService().moveParagraph(noteId, paragraphId, newIndex, context,
         new WebSocketServiceCallback<Paragraph>(conn) {
           @Override
@@ -1355,6 +1377,7 @@ public class NotebookServer extends WebSocketServlet
                                  Message fromMessage) throws IOException {
     final int index = (int) Double.parseDouble(fromMessage.get("index").toString());
     String noteId = getConnectionManager().getAssociatedNoteId(conn);
+    MDC.put("notebookId",noteId);
     Map<String, Object> config;
     if (fromMessage.get("config") != null) {
       config = (Map<String, Object>) fromMessage.get("config");
@@ -1390,6 +1413,7 @@ public class NotebookServer extends WebSocketServlet
   private void cancelParagraph(NotebookSocket conn, ServiceContext context, Message fromMessage) throws IOException {
     final String paragraphId = (String) fromMessage.get("id");
     String noteId = getConnectionManager().getAssociatedNoteId(conn);
+    MDC.put("notebookId",noteId);
     getNotebookService().cancelParagraph(noteId, paragraphId, context,
         new WebSocketServiceCallback<>(conn));
   }
@@ -1398,6 +1422,7 @@ public class NotebookServer extends WebSocketServlet
                                 ServiceContext context,
                                 Message fromMessage) throws IOException {
     final String noteId = (String) fromMessage.get("noteId");
+    MDC.put("notebookId",noteId);
     List<Map<String, Object>> paragraphs =
         gson.fromJson(String.valueOf(fromMessage.data.get("paragraphs")),
             new TypeToken<List<Map<String, Object>>>() {
@@ -1427,6 +1452,7 @@ public class NotebookServer extends WebSocketServlet
                                        Message fromMessage) throws IOException {
 
     String noteId = getConnectionManager().getAssociatedNoteId(conn);
+    MDC.put("notebookId",noteId);
     getNotebookService().spell(noteId, fromMessage,
         context, new WebSocketServiceCallback<Paragraph>(conn) {
           @Override
@@ -1444,6 +1470,7 @@ public class NotebookServer extends WebSocketServlet
                             Message fromMessage) throws IOException {
     String paragraphId = (String) fromMessage.get("id");
     String noteId = getConnectionManager().getAssociatedNoteId(conn);
+    MDC.put("notebookId",noteId);
     String text = (String) fromMessage.get("paragraph");
     String title = (String) fromMessage.get("title");
     Map<String, Object> params = (Map<String, Object>) fromMessage.get("params");
@@ -1494,6 +1521,7 @@ public class NotebookServer extends WebSocketServlet
                               Message fromMessage)
       throws IOException {
     String noteId = (String) fromMessage.get("noteId");
+    MDC.put("notebookId",noteId);
     String commitMessage = (String) fromMessage.get("commitMessage");
 
     getNotebookService().checkpointNote(noteId, commitMessage, context,
@@ -1522,6 +1550,7 @@ public class NotebookServer extends WebSocketServlet
                                    Message fromMessage)
       throws IOException {
     String noteId = (String) fromMessage.get("noteId");
+    MDC.put("notebookId",noteId);
     getNotebookService().listRevisionHistory(noteId, context,
         new WebSocketServiceCallback<List<Revision>>(conn) {
           @Override
@@ -1538,6 +1567,7 @@ public class NotebookServer extends WebSocketServlet
                                ServiceContext context,
                                Message fromMessage) throws IOException {
     String noteId = (String) fromMessage.get("noteId");
+    MDC.put("notebookId",noteId);
     String revisionId = (String) fromMessage.get("revisionId");
     getNotebookService().setNoteRevision(noteId, revisionId, context,
         new WebSocketServiceCallback<Note>(conn) {
@@ -1556,6 +1586,7 @@ public class NotebookServer extends WebSocketServlet
                                  Message fromMessage)
       throws IOException {
     String noteId = (String) fromMessage.get("noteId");
+    MDC.put("notebookId",noteId);
     String revisionId = (String) fromMessage.get("revisionId");
     getNotebookService().getNotebyRevision(noteId, revisionId, context,
         new WebSocketServiceCallback<Note>(conn) {
@@ -1573,6 +1604,7 @@ public class NotebookServer extends WebSocketServlet
                                            ServiceContext context,
                                            Message fromMessage) throws IOException {
     String noteId = (String) fromMessage.get("noteId");
+    MDC.put("notebookId",noteId);
     String revisionId = (String) fromMessage.get("revisionId");
     String position = (String) fromMessage.get("position");
     getNotebookService().getNoteByRevisionForCompare(noteId, revisionId, context,
@@ -1665,6 +1697,7 @@ public class NotebookServer extends WebSocketServlet
                             List<Integer> paragraphIndices,
                             List<String> paragraphIds,
                             String curParagraphId) throws IOException {
+    MDC.put("notebookId",noteId);
     final Note note = getNotebook().getNote(noteId);
     final List<String> toBeRunParagraphIds = new ArrayList<>();
     if (note == null) {
@@ -1715,6 +1748,7 @@ public class NotebookServer extends WebSocketServlet
 
   @Override
   public void onParagraphRemove(Paragraph p) {
+    MDC.put("notebookId",p.getNote().getId());
     try {
       ServiceContext context = new ServiceContext(new AuthenticationInfo(),
               getNotebookAuthorizationService().getOwners(p.getNote().getId()));
@@ -1975,6 +2009,7 @@ public class NotebookServer extends WebSocketServlet
     String paragraphId = (String) fromMessage.get("paragraphId");
     String paragraphText = (String) fromMessage.get("paragraphText");
     String noteId = getConnectionManager().getAssociatedNoteId(conn);
+    MDC.put("notebookId",noteId);
 
     getNotebookService().getEditorSetting(noteId, paragraphText, context,
         new WebSocketServiceCallback<Map<String, Object>>(conn) {
