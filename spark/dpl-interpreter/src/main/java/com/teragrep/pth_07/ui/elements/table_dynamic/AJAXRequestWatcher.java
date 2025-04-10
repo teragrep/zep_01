@@ -82,7 +82,8 @@ public class AJAXRequestWatcher extends AngularObjectWatcher {
         AJAXRequest ajaxRequest = gson.fromJson((String) o1, AJAXRequest.class);
 
         // validate request
-        if (ajaxRequest.getDraw() != null
+        if (ajaxRequest != null
+                && ajaxRequest.getDraw() != null
                 && ajaxRequest.getStart() != null
                 && ajaxRequest.getLength() != null
                 && ajaxRequest.getSearch() != null
