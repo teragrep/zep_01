@@ -23,6 +23,7 @@ import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.io.StringReader;
+import java.util.Map;
 import java.util.Properties;
 
 /**
@@ -70,7 +71,14 @@ public class ConfInterpreter extends Interpreter {
       finalProperties.putAll(newProperties);
       LOGGER.debug("Properties for InterpreterGroup: {} is {}", interpreterGroupId, finalProperties);
       interpreterSetting.setInterpreterGroupProperties(interpreterGroupId, finalProperties);
-      return new InterpreterResult(InterpreterResult.Code.SUCCESS);
+      String msg = "";
+      if(newProperties.entrySet().size() > 0){
+        msg = "New properties set! Properties for " + interpreterGroupId + " are now:\n";
+        for(Map.Entry property : finalProperties.entrySet()){
+          msg = msg + property.getKey() + " = " +property.getValue() + "\n";
+        }
+      }
+      return new InterpreterResult(InterpreterResult.Code.SUCCESS,msg);
     } catch (IOException e) {
       LOGGER.error("Fail to update interpreter setting", e);
       return new InterpreterResult(InterpreterResult.Code.ERROR, ExceptionUtils.getStackTrace(e));
