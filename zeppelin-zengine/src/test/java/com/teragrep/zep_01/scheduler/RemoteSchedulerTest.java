@@ -83,6 +83,11 @@ public class RemoteSchedulerTest extends AbstractInterpreterTest
       Object results;
 
       @Override
+      public String notebookId() {
+        return "";
+      }
+
+      @Override
       public Object getReturn() {
         return results;
       }
@@ -158,6 +163,11 @@ public class RemoteSchedulerTest extends AbstractInterpreterTest
           .build();
 
       @Override
+      public String notebookId() {
+        return "";
+      }
+
+      @Override
       public Object getReturn() {
         return results;
       }
@@ -203,6 +213,11 @@ public class RemoteSchedulerTest extends AbstractInterpreterTest
           .setParagraphId("jobId2")
           .setResourcePool(new LocalResourcePool("pool1"))
           .build();
+
+      @Override
+      public String notebookId() {
+        return "";
+      }
 
       @Override
       public Object getReturn() {

@@ -25,6 +25,7 @@ import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
 import com.teragrep.zep_01.util.ExecutorUtil;
+import org.slf4j.MDC;
 
 /**
  * Factory class for Executor

@@ -72,6 +72,11 @@ public class SleepingJob extends Job {
   }
 
   @Override
+  public String notebookId() {
+    return "";
+  }
+
+  @Override
   public Object getReturn() {
     return results;
   }

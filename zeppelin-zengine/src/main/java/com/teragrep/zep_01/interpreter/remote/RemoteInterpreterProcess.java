@@ -26,10 +26,12 @@ import com.teragrep.zep_01.interpreter.launcher.InterpreterClient;
 import com.teragrep.zep_01.interpreter.thrift.RemoteInterpreterService.Client;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.slf4j.MDC;
 
 import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.Map;
 
 /**
  * Abstract class for interpreter process
@@ -94,6 +96,11 @@ public abstract class RemoteInterpreterProcess implements InterpreterClient, Aut
        client.angularObjectUpdate(name, noteId, paragraphId, GSON.toJson(o));
        return null;
     });
+  }
+
+  public <R> R callRemoteFunction(PooledRemoteClient.RemoteFunction<R, Client> func, Map<String, String> mdc) {
+    MDC.setContextMap(mdc);
+    return remoteClient.callRemoteFunction(func);
   }
 
   public <R> R callRemoteFunction(PooledRemoteClient.RemoteFunction<R, Client> func) {

@@ -686,6 +686,10 @@ public class RemoteInterpreterServer extends Thread
     }
 
     @Override
+    public String notebookId(){
+      return context.getNoteId() != null ? context.getNoteId() : "";
+    }
+    @Override
     public InterpreterResult getReturn() {
       return results;
     }
