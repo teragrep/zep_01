@@ -117,7 +117,6 @@ public class ConfInterpreterTest extends AbstractInterpreterTest {
       assertTrue(result.toString().contains("property_3 = value_3"));
       assertTrue(result.toString().contains("property_2 = new_value_2"));
       assertTrue(result.toString().contains("property_1 = new_value"));
-      System.out.println(result);
     });
   }
 }
