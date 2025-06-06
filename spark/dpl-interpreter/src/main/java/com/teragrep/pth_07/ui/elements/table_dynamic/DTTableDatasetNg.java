@@ -73,18 +73,9 @@ public final class DTTableDatasetNg extends AbstractUserInterfaceElement {
 
     private final AngularObject<String> AJAXRequestAngularObject;
     private final AngularObject<String> AJAXResponseAngularObject;
-    private final AngularObject<Boolean> DTAnchorReadyAngularObject;
-    private final AngularObject<Boolean> pageRefreshAngularObject;
-    private final AngularObject<Integer> DTServerUpdateAngularObject;
 
     private List<String> datasetAsJSON = null;
     private String datasetAsJSONSchema = "";
-
-    private boolean tableAnchorPrinted = false;
-
-    private boolean dataAvailable = false;
-
-    private int serverUpdateCount = 0;
 
     /*
     currentAJAXLength is shared between all the clients when server refreshes
@@ -117,53 +108,15 @@ public final class DTTableDatasetNg extends AbstractUserInterfaceElement {
         );
 
         AJAXResponseAngularObject.addWatcher(new AJAXResponseWatcher(interpreterContext));
-
-        DTAnchorReadyAngularObject = getInterpreterContext().getAngularObjectRegistry().add(
-                "DTAnchorReady",
-                tableAnchorPrinted,
-                getInterpreterContext().getNoteId(),
-                getInterpreterContext().getParagraphId(),
-                true
-        );
-
-        DTAnchorReadyAngularObject.addWatcher(new DTAnchorWatcher(interpreterContext));
-
-        pageRefreshAngularObject = getInterpreterContext().getAngularObjectRegistry().add(
-                "pageRefresh",
-                false,
-                getInterpreterContext().getNoteId(),
-                getInterpreterContext().getParagraphId(),
-                true
-        );
-
-        pageRefreshAngularObject.addWatcher(new PageRefreshWatcher(interpreterContext, this));
-
-
-        DTServerUpdateAngularObject =
-                getInterpreterContext().getAngularObjectRegistry().add(
-                "DTServerUpdate",
-                0,
-                getInterpreterContext().getNoteId(),
-                getInterpreterContext().getParagraphId(),
-                true
-        );
-
-        DTServerUpdateAngularObject.addWatcher(new DTServerUpdateWatcher(interpreterContext));
     }
 
     void refreshPage() {
         try {
             lock.lock();
-            if (dataAvailable) {
                 Method updateAllResultMessagesMethod = InterpreterOutput.class.getDeclaredMethod("updateAllResultMessages");
                 updateAllResultMessagesMethod.setAccessible(true);
                 updateAllResultMessagesMethod.invoke(getInterpreterContext().out);
-                //if we want to use this way, we will need a second binded boolean for triggering table re-init.
-                tableAnchorPrinted = false;
-                DTAnchorReadyAngularObject.set(tableAnchorPrinted, true);
-
                 draw();
-            }
         }catch (NoSuchMethodException | IllegalAccessException | InvocationTargetException e){
             LOGGER.error(e.toString());
         } finally {
@@ -190,7 +143,6 @@ public final class DTTableDatasetNg extends AbstractUserInterfaceElement {
     public void draw() {
         try {
             lock.lock();
-            if (!tableAnchorPrinted && dataAvailable) {
                 try {
                     String outputContent = "%angular \n" +
                             "<table id=\"DT_table_" + getInterpreterContext().getParagraphId() + "\" class=\"table table-striped table-bordered\">" +
@@ -199,15 +151,9 @@ public final class DTTableDatasetNg extends AbstractUserInterfaceElement {
                     getInterpreterContext().out().clear();
                     getInterpreterContext().out().write(outputContent);
                     getInterpreterContext().out().flush();
-                    tableAnchorPrinted = true;
-                    DTAnchorReadyAngularObject.set(tableAnchorPrinted, true);
                 } catch (java.io.IOException e) {
                     LOGGER.error(e.toString());
                 }
-            }
-
-            serverUpdateCount++;
-            DTServerUpdateAngularObject.set(serverUpdateCount, true);
         } finally {
             lock.unlock();
         }
@@ -237,8 +183,6 @@ public final class DTTableDatasetNg extends AbstractUserInterfaceElement {
                 // needs to be here as sparkContext might disappear later
                 datasetAsJSONSchema = DTHeader.schemaToHeader(rowDataset.schema());
                 datasetAsJSON = rowDataset.toJSON().collectAsList();
-                dataAvailable = true;
-
                 this.draw();
             }
 
@@ -261,7 +205,7 @@ public final class DTTableDatasetNg extends AbstractUserInterfaceElement {
         List<Order> currentOrder = null;
 
         if (ajaxRequest != null) {
-            currentAJAXID = ajaxRequest.getDraw();
+            //currentAJAXID = ajaxRequest.getDraw(); // We don't want to assign a draw value from the frontend, so we ignore it here
             currentAJAXStart = ajaxRequest.getStart();
             currentAJAXLength = ajaxRequest.getLength();
             currentSearchString = ajaxRequest.getSearch().getValue();
@@ -281,7 +225,7 @@ public final class DTTableDatasetNg extends AbstractUserInterfaceElement {
 
         // ui formatting
         JsonArray formated = dataStreamParser(paginatedList);
-        JsonObject response = DTNetResponse(formated, currentAJAXID, orderedlist.size());
+        JsonObject response = DTNetResponse(formated,datasetAsJSONSchema.toString(), currentAJAXID, orderedlist.size());
         AJAXResponseAngularObject.set(response.toString(), true);
     }
 
@@ -304,9 +248,11 @@ public final class DTTableDatasetNg extends AbstractUserInterfaceElement {
         }
     }
 
-    static JsonObject DTNetResponse(JsonArray data, int ID, int length){
+    // Added headers to this object, should be contained in the AJAXResponse that UI receives.
+    static JsonObject DTNetResponse(JsonArray data, String datasetAsJSONSchema, int ID, int length){
         try{
             JsonObjectBuilder builder = Json.createObjectBuilder();
+            builder.add("headers",datasetAsJSONSchema);
             builder.add("data", data);
             builder.add("ID", ID);
             builder.add("datalength", length);
