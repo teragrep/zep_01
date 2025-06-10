@@ -51,6 +51,8 @@ import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import scala.collection.Iterator;
 
+import javax.json.Json;
+import javax.json.JsonObjectBuilder;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
@@ -99,5 +101,17 @@ public class DTHeader {
         transformer.transform(source, result);
 
         return writer.getBuffer().toString();
+    }
+
+    public static String schemaToJsonHeader(StructType schema) throws TransformerException, ParserConfigurationException {
+
+        JsonObjectBuilder builder = Json.createObjectBuilder();
+
+        Iterator<StructField> it = schema.iterator();
+        while(it.hasNext()) {
+            StructField column = it.next();
+            builder.add(column.name(),"");
+        }
+        return builder.build().toString();
     }
 }

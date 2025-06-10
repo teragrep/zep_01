@@ -76,6 +76,7 @@ public final class DTTableDatasetNg extends AbstractUserInterfaceElement {
 
     private List<String> datasetAsJSON = null;
     private String datasetAsJSONSchema = "";
+    private String datasetAsJSONFormattedSchema = "";
 
     /*
     currentAJAXLength is shared between all the clients when server refreshes
@@ -182,6 +183,7 @@ public final class DTTableDatasetNg extends AbstractUserInterfaceElement {
             if (rowDataset.schema().nonEmpty()) {
                 // needs to be here as sparkContext might disappear later
                 datasetAsJSONSchema = DTHeader.schemaToHeader(rowDataset.schema());
+                datasetAsJSONFormattedSchema = DTHeader.schemaToJsonHeader(rowDataset.schema());
                 datasetAsJSON = rowDataset.toJSON().collectAsList();
                 this.draw();
             }
@@ -225,7 +227,7 @@ public final class DTTableDatasetNg extends AbstractUserInterfaceElement {
 
         // ui formatting
         JsonArray formated = dataStreamParser(paginatedList);
-        JsonObject response = DTNetResponse(formated,datasetAsJSONSchema.toString(), currentAJAXID, orderedlist.size());
+        JsonObject response = DTNetResponse(formated,datasetAsJSONFormattedSchema, currentAJAXID, orderedlist.size());
         AJAXResponseAngularObject.set(response.toString(), true);
     }
 
