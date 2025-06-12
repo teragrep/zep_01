@@ -45,6 +45,7 @@
  */
 package com.teragrep.pth_07.ui.elements.table_dynamic;
 
+import com.google.gson.Gson;
 import com.google.gson.JsonSyntaxException;
 import com.teragrep.pth_07.ui.elements.table_dynamic.pojo.AJAXRequest;
 import com.teragrep.pth_07.ui.elements.table_dynamic.pojo.Order;
@@ -78,6 +79,8 @@ public final class DTTableDatasetNg extends AbstractUserInterfaceElement {
     private String datasetAsJSONSchema = "";
     private String datasetAsJSONFormattedSchema = "";
 
+    private final Gson gson;
+
     /*
     currentAJAXLength is shared between all the clients when server refreshes
     perhaps we could just let the clients know that there is an update and
@@ -90,10 +93,10 @@ public final class DTTableDatasetNg extends AbstractUserInterfaceElement {
         super(interpreterContext);
 
         AJAXRequestAngularObject = getInterpreterContext().getAngularObjectRegistry().add(
-                "AJAXRequest",
+                "AJAXRequest_"+getInterpreterContext().getParagraphId(),
                 "{}",
                 getInterpreterContext().getNoteId(),
-                getInterpreterContext().getParagraphId(),
+                getInterpreterContext().getParagraphId(), // tästä saa paragraphID:n
                 true
         );
 
@@ -101,7 +104,7 @@ public final class DTTableDatasetNg extends AbstractUserInterfaceElement {
 
 
         AJAXResponseAngularObject = getInterpreterContext().getAngularObjectRegistry().add(
-                "AJAXResponse",
+                "AJAXResponse_"+getInterpreterContext().getParagraphId(),
                 "{}",
                 getInterpreterContext().getNoteId(),
                 getInterpreterContext().getParagraphId(),
@@ -109,6 +112,7 @@ public final class DTTableDatasetNg extends AbstractUserInterfaceElement {
         );
 
         AJAXResponseAngularObject.addWatcher(new AJAXResponseWatcher(interpreterContext));
+        this.gson = new Gson();
     }
 
     void refreshPage() {
@@ -117,7 +121,6 @@ public final class DTTableDatasetNg extends AbstractUserInterfaceElement {
                 Method updateAllResultMessagesMethod = InterpreterOutput.class.getDeclaredMethod("updateAllResultMessages");
                 updateAllResultMessagesMethod.setAccessible(true);
                 updateAllResultMessagesMethod.invoke(getInterpreterContext().out);
-                draw();
         }catch (NoSuchMethodException | IllegalAccessException | InvocationTargetException e){
             LOGGER.error(e.toString());
         } finally {
@@ -142,22 +145,6 @@ public final class DTTableDatasetNg extends AbstractUserInterfaceElement {
 
     @Override
     public void draw() {
-        try {
-            lock.lock();
-                try {
-                    String outputContent = "%angular \n" +
-                            "<table id=\"DT_table_" + getInterpreterContext().getParagraphId() + "\" class=\"table table-striped table-bordered\">" +
-                            datasetAsJSONSchema +
-                            "</table>";
-                    getInterpreterContext().out().clear();
-                    getInterpreterContext().out().write(outputContent);
-                    getInterpreterContext().out().flush();
-                } catch (java.io.IOException e) {
-                    LOGGER.error(e.toString());
-                }
-        } finally {
-            lock.unlock();
-        }
     }
 
     @Override
@@ -185,7 +172,11 @@ public final class DTTableDatasetNg extends AbstractUserInterfaceElement {
                 datasetAsJSONSchema = DTHeader.schemaToHeader(rowDataset.schema());
                 datasetAsJSONFormattedSchema = DTHeader.schemaToJsonHeader(rowDataset.schema());
                 datasetAsJSON = rowDataset.toJSON().collectAsList();
-                this.draw();
+                //rowDataset.persist().limit(25); //nice
+
+                AJAXRequest ajaxRequest = gson.fromJson((String) AJAXRequestAngularObject.get(), AJAXRequest.class);
+                updatePage(ajaxRequest);
+                // will scream at UI a lot, make nicer later
             }
 
         } catch (ParserConfigurationException | TransformerException e) {
@@ -206,6 +197,7 @@ public final class DTTableDatasetNg extends AbstractUserInterfaceElement {
         String currentSearchString = "";
         List<Order> currentOrder = null;
 
+        //ATOMIC INT AJAXLength & AJAXStart
         if (ajaxRequest != null) {
             //currentAJAXID = ajaxRequest.getDraw(); // We don't want to assign a draw value from the frontend, so we ignore it here
             currentAJAXStart = ajaxRequest.getStart();

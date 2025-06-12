@@ -47,6 +47,11 @@ package com.teragrep.pth_07.ui.elements.table_dynamic;
 
 import com.google.gson.Gson;
 import com.teragrep.pth_07.ui.elements.table_dynamic.pojo.AJAXRequest;
+import com.teragrep.zep_01.display.AngularObject;
+import com.teragrep.zep_01.display.AngularObjectListener;
+import com.teragrep.zep_01.display.AngularObjectRegistry;
+import com.teragrep.zep_01.display.AngularObjectRegistryListener;
+import com.teragrep.zep_01.interpreter.InterpreterContext;
 import org.apache.spark.sql.Dataset;
 import org.apache.spark.sql.Row;
 import org.apache.spark.sql.RowFactory;
@@ -56,6 +61,7 @@ import org.apache.spark.sql.types.MetadataBuilder;
 import org.apache.spark.sql.types.StructField;
 import org.apache.spark.sql.types.StructType;
 import org.junit.Assert;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -224,6 +230,29 @@ public class DTTableDatasetNgTest {
                             "}"
                     , response.toString()
             );
+    }
+
+    @Test
+    public void AjaxRequestToJsonTest(){
+        Gson gson = new Gson();
+
+        String paragraphId = "testParag";
+        String noteId ="testNoteId";
+        String angularObjectName = "AJAXRequest_"+paragraphId;
+        String angularObjectContent = "{\"start\":0,\"length\":25,\"search\":{\"value\":\"\",\"regex\":\"false\"}}";
+        AngularObjectListener listener = new AngularObjectListener() {
+            @Override
+            public void updated(AngularObject updatedObject) {
+                // Do nothing
+            }
+        };
+        AngularObject<String> ao = new AngularObject<String>(angularObjectName,angularObjectContent,noteId,paragraphId,listener);
+
+        AJAXRequest ajaxRequest = gson.fromJson((String) ao.get(), AJAXRequest.class);
+        Assertions.assertEquals(0,ajaxRequest.getStart());
+        Assertions.assertEquals(25,ajaxRequest.getLength());
+        Assertions.assertEquals("",ajaxRequest.getSearch().getValue());
+        Assertions.assertEquals(false,ajaxRequest.getSearch().getRegex());
     }
 
     private List<Row> makeRowsList(long _time, Long id, String _raw, String index, String sourcetype, String host, String source, String partition, Long offset, String origin, long amount) {
