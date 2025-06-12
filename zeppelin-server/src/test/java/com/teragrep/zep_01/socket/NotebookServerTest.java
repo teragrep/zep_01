@@ -686,125 +686,129 @@ public class NotebookServerTest extends AbstractTestRestApi {
   }
 
   @Test
-  public void testCollaborativeModeStatus() throws IOException {
-    NotebookSocket sock1 = createWebSocket();
-    NotebookSocket sock2 = createWebSocket();
-    NotebookSocket sock3 = createWebSocket();
-    notebookServer.onOpen(sock1);
-    notebookServer.onOpen(sock2);
-    notebookServer.onOpen(sock3);
+  public void testCollaborativeModeStatus() {
+    Assertions.assertDoesNotThrow(()->{
+      NotebookSocket sock1 = createWebSocket();
+      NotebookSocket sock2 = createWebSocket();
+      NotebookSocket sock3 = createWebSocket();
+      notebookServer.onOpen(sock1);
+      notebookServer.onOpen(sock2);
+      notebookServer.onOpen(sock3);
 
-    String noteName = "Note with millis " + System.currentTimeMillis();
-    String defaultInterpreterId = "";
-    List<InterpreterSetting> settings = notebook.getInterpreterSettingManager().get();
-    if (settings.size() > 1) {
-      defaultInterpreterId = settings.get(0).getId();
-    }
-    // create note from sock1
-    notebookServer.onMessage(sock1,
-            new Message(OP.NEW_NOTE)
-                    .put("name", noteName)
-                    .put("defaultInterpreterId", defaultInterpreterId).toJson());
-
-    String noteId = "";
-    for (Note note : notebook.getAllNotes()) {
-      if (note.getName().equals(noteName)) {
-        noteId = note.getId();
-        break;
+      String noteName = "Note with millis " + System.currentTimeMillis();
+      String defaultInterpreterId = "";
+      List<InterpreterSetting> settings = notebook.getInterpreterSettingManager().get();
+      if (settings.size() > 1) {
+        defaultInterpreterId = settings.get(0).getId();
       }
-      else {
-        Assertions.fail();
+      // create note from sock1
+      notebookServer.onMessage(sock1,
+              new Message(OP.NEW_NOTE)
+                      .put("name", noteName)
+                      .put("defaultInterpreterId", defaultInterpreterId).toJson());
+
+      String noteId = "";
+      for (Note note : notebook.getAllNotes()) {
+        if (note.getName().equals(noteName)) {
+          noteId = note.getId();
+          break;
+        }
+        else {
+          Assertions.fail();
+        }
       }
-    }
 
-    // Expect correct number of COLLABORATIVE_MODE_STATUS messages when a number of users join the same notebook.
-    notebookServer.onMessage(sock1,new Message(OP.GET_NOTE)
-            .put("id",noteId).toJson());
+      // Expect correct number of COLLABORATIVE_MODE_STATUS messages when a number of users join the same notebook.
+      notebookServer.onMessage(sock1,new Message(OP.GET_NOTE)
+              .put("id",noteId).toJson());
 
-    // User 1 shouldn't get a COLLABORATIVE_MODE_STATUS message when they join as the first user
-    verify(sock1, times(0)).send(contains(OP.COLLABORATIVE_MODE_STATUS.toString()));
-    notebookServer.onMessage(sock2,new Message(OP.GET_NOTE)
-            .put("id",noteId).toJson());
+      // User 1 shouldn't get a COLLABORATIVE_MODE_STATUS message when they join as the first user
+      verify(sock1, times(0)).send(contains(OP.COLLABORATIVE_MODE_STATUS.toString()));
+      notebookServer.onMessage(sock2,new Message(OP.GET_NOTE)
+              .put("id",noteId).toJson());
 
-    // Both users 1 and 2 should receive a COLLABORATIVE_MODE_STATUS message when user 2 joins so that they both know about each other.
-    verify(sock1, times(1)).send(contains(OP.COLLABORATIVE_MODE_STATUS.toString()));
-    verify(sock2, times(1)).send(contains(OP.COLLABORATIVE_MODE_STATUS.toString()));
+      // Both users 1 and 2 should receive a COLLABORATIVE_MODE_STATUS message when user 2 joins so that they both know about each other.
+      verify(sock1, times(1)).send(contains(OP.COLLABORATIVE_MODE_STATUS.toString()));
+      verify(sock2, times(1)).send(contains(OP.COLLABORATIVE_MODE_STATUS.toString()));
 
-    notebookServer.onMessage(sock3,new Message(OP.GET_NOTE)
-            .put("id",noteId).toJson());
+      notebookServer.onMessage(sock3,new Message(OP.GET_NOTE)
+              .put("id",noteId).toJson());
 
-    // Both users 1 and 2 should receive a COLLABORATIVE_MODE_STATUS message when user 3 joins
-    verify(sock1, times(2)).send(contains(OP.COLLABORATIVE_MODE_STATUS.toString()));
-    verify(sock2, times(2)).send(contains(OP.COLLABORATIVE_MODE_STATUS.toString()));
-    // User 3 should be notified about the other users by a COLLABORATIVE_MODE_STATUS message upon joining
-    verify(sock3, times(1)).send(contains(OP.COLLABORATIVE_MODE_STATUS.toString()));
+      // Both users 1 and 2 should receive a COLLABORATIVE_MODE_STATUS message when user 3 joins
+      verify(sock1, times(2)).send(contains(OP.COLLABORATIVE_MODE_STATUS.toString()));
+      verify(sock2, times(2)).send(contains(OP.COLLABORATIVE_MODE_STATUS.toString()));
+      // User 3 should be notified about the other users by a COLLABORATIVE_MODE_STATUS message upon joining
+      verify(sock3, times(1)).send(contains(OP.COLLABORATIVE_MODE_STATUS.toString()));
+    });
   }
 
   @Test
-  public void testCollaborativeModeBetweenNotebooks() throws IOException {
-    NotebookSocket sock1 = createWebSocket();
-    NotebookSocket sock2 = createWebSocket();
-    NotebookSocket sock3 = createWebSocket();
-    notebookServer.onOpen(sock1);
-    notebookServer.onOpen(sock2);
-    notebookServer.onOpen(sock3);
+  public void testCollaborativeModeBetweenNotebooks() {
+    Assertions.assertDoesNotThrow(()->{
+      NotebookSocket sock1 = createWebSocket();
+      NotebookSocket sock2 = createWebSocket();
+      NotebookSocket sock3 = createWebSocket();
+      notebookServer.onOpen(sock1);
+      notebookServer.onOpen(sock2);
+      notebookServer.onOpen(sock3);
 
-    String noteName = "Note with millis " + System.currentTimeMillis();
-    String defaultInterpreterId = "";
-    List<InterpreterSetting> settings = notebook.getInterpreterSettingManager().get();
-    if (settings.size() > 1) {
-      defaultInterpreterId = settings.get(0).getId();
-    }
-    // create note from sock1
-    notebookServer.onMessage(sock1,
-            new Message(OP.NEW_NOTE)
-                    .put("name", noteName)
-                    .put("defaultInterpreterId", defaultInterpreterId).toJson());
-
-    String noteId = "";
-    for (Note note : notebook.getAllNotes()) {
-      if (note.getName().equals(noteName)) {
-        noteId = note.getId();
-        break;
+      String noteName = "Note with millis " + System.currentTimeMillis();
+      String defaultInterpreterId = "";
+      List<InterpreterSetting> settings = notebook.getInterpreterSettingManager().get();
+      if (settings.size() > 1) {
+        defaultInterpreterId = settings.get(0).getId();
       }
-    }
+      // create note from sock1
+      notebookServer.onMessage(sock1,
+              new Message(OP.NEW_NOTE)
+                      .put("name", noteName)
+                      .put("defaultInterpreterId", defaultInterpreterId).toJson());
 
-    // create another note from sock1
-    String note2Name = "Note with millis " + System.currentTimeMillis();
-    notebookServer.onMessage(sock1,
-            new Message(OP.NEW_NOTE)
-                    .put("name", note2Name)
-                    .put("defaultInterpreterId", defaultInterpreterId).toJson());
-
-    String note2Id = "";
-    for (Note note : notebook.getAllNotes()) {
-      if (note.getName().equals(note2Name)) {
-        note2Id = note.getId();
-        break;
+      String noteId = "";
+      for (Note note : notebook.getAllNotes()) {
+        if (note.getName().equals(noteName)) {
+          noteId = note.getId();
+          break;
+        }
       }
-    }
 
-    // Expect no COLLABORATIVE_MODE_STATUS messages when users join an unrelated notebook.
-    notebookServer.onMessage(sock1,new Message(OP.GET_NOTE)
-            .put("id",noteId).toJson());
+      // create another note from sock1
+      String note2Name = "Note with millis " + System.currentTimeMillis();
+      notebookServer.onMessage(sock1,
+              new Message(OP.NEW_NOTE)
+                      .put("name", note2Name)
+                      .put("defaultInterpreterId", defaultInterpreterId).toJson());
 
-    // User 1 shouldn't get a COLLABORATIVE_MODE_STATUS message when they join as the first user
-    verify(sock1, times(0)).send(contains(OP.COLLABORATIVE_MODE_STATUS.toString()));
-    notebookServer.onMessage(sock2,new Message(OP.GET_NOTE)
-            .put("id",noteId).toJson());
+      String note2Id = "";
+      for (Note note : notebook.getAllNotes()) {
+        if (note.getName().equals(note2Name)) {
+          note2Id = note.getId();
+          break;
+        }
+      }
 
-    // Both users 1 and 2 should receive a COLLABORATIVE_MODE_STATUS message when user 2 joins so that they both know about each other.
-    verify(sock1, times(1)).send(contains(OP.COLLABORATIVE_MODE_STATUS.toString()));
-    verify(sock2, times(1)).send(contains(OP.COLLABORATIVE_MODE_STATUS.toString()));
+      // Expect no COLLABORATIVE_MODE_STATUS messages when users join an unrelated notebook.
+      notebookServer.onMessage(sock1,new Message(OP.GET_NOTE)
+              .put("id",noteId).toJson());
 
-    notebookServer.onMessage(sock3,new Message(OP.GET_NOTE)
-            .put("id",note2Id).toJson());
+      // User 1 shouldn't get a COLLABORATIVE_MODE_STATUS message when they join as the first user
+      verify(sock1, times(0)).send(contains(OP.COLLABORATIVE_MODE_STATUS.toString()));
+      notebookServer.onMessage(sock2,new Message(OP.GET_NOTE)
+              .put("id",noteId).toJson());
 
-    // Both users 1 and 2 shouldn't receive a COLLABORATIVE_MODE_STATUS message when user 3 joins some other notebook
-    verify(sock1, times(1)).send(contains(OP.COLLABORATIVE_MODE_STATUS.toString()));
-    verify(sock2, times(1)).send(contains(OP.COLLABORATIVE_MODE_STATUS.toString()));
-    // User 3 should not get a COLLABORATIVE_MODE_STATUS message upon joining their own separate notebook
-    verify(sock3, times(0)).send(contains(OP.COLLABORATIVE_MODE_STATUS.toString()));
+      // Both users 1 and 2 should receive a COLLABORATIVE_MODE_STATUS message when user 2 joins so that they both know about each other.
+      verify(sock1, times(1)).send(contains(OP.COLLABORATIVE_MODE_STATUS.toString()));
+      verify(sock2, times(1)).send(contains(OP.COLLABORATIVE_MODE_STATUS.toString()));
+
+      notebookServer.onMessage(sock3,new Message(OP.GET_NOTE)
+              .put("id",note2Id).toJson());
+
+      // Both users 1 and 2 shouldn't receive a COLLABORATIVE_MODE_STATUS message when user 3 joins some other notebook
+      verify(sock1, times(1)).send(contains(OP.COLLABORATIVE_MODE_STATUS.toString()));
+      verify(sock2, times(1)).send(contains(OP.COLLABORATIVE_MODE_STATUS.toString()));
+      // User 3 should not get a COLLABORATIVE_MODE_STATUS message upon joining their own separate notebook
+      verify(sock3, times(0)).send(contains(OP.COLLABORATIVE_MODE_STATUS.toString()));
+    });
   }
 
   private NotebookSocket createWebSocket() {
