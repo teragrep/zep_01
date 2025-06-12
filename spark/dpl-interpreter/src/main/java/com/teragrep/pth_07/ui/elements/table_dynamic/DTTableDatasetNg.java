@@ -227,7 +227,17 @@ public final class DTTableDatasetNg extends AbstractUserInterfaceElement {
 
         // ui formatting
         JsonArray formated = dataStreamParser(paginatedList);
-        JsonObject response = DTNetResponse(formated,datasetAsJSONFormattedSchema, currentAJAXID, orderedlist.size());
+
+        JsonObject headers;
+        // header formatting
+        if(datasetAsJSONFormattedSchema != ""){
+            headers = Json.createReader(new StringReader(datasetAsJSONFormattedSchema)).readObject();
+        }
+        else {
+            headers = Json.createObjectBuilder().build();
+        }
+
+        JsonObject response = DTNetResponse(formated, headers, currentAJAXID, orderedlist.size());
         AJAXResponseAngularObject.set(response.toString(), true);
     }
 
@@ -251,7 +261,7 @@ public final class DTTableDatasetNg extends AbstractUserInterfaceElement {
     }
 
     // Added headers to this object, should be contained in the AJAXResponse that UI receives.
-    static JsonObject DTNetResponse(JsonArray data, String datasetAsJSONSchema, int ID, int length){
+    static JsonObject DTNetResponse(JsonArray data, JsonObject datasetAsJSONSchema, int ID, int length){
         try{
             JsonObjectBuilder builder = Json.createObjectBuilder();
             builder.add("headers",datasetAsJSONSchema);

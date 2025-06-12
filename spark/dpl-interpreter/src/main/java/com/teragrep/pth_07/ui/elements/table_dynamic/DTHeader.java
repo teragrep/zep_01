@@ -103,7 +103,7 @@ public class DTHeader {
         return writer.getBuffer().toString();
     }
 
-    public static String schemaToJsonHeader(StructType schema) throws TransformerException, ParserConfigurationException {
+    public static String schemaToJsonHeader(StructType schema) {
 
         JsonObjectBuilder builder = Json.createObjectBuilder();
 
