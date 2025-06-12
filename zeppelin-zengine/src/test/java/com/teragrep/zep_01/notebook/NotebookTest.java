@@ -46,6 +46,7 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
 import org.quartz.SchedulerException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -119,18 +120,6 @@ public class NotebookTest extends AbstractInterpreterTest implements ParagraphJo
     System.clearProperty(ConfVars.ZEPPELIN_NOTEBOOK_CRON_ENABLE.getVarName());
   }
 
-  @FunctionalInterface
-  public interface Executable {
-    void execute() throws Exception;
-  }
-  // This method is a custom JUnit4 implementation of Assertions.assertDoesNotThrow, since JUnit4 does not have a similar built-in method.
-  private void assertNoExceptionIsThrown(Executable executable) {
-    try {
-      executable.execute();
-    } catch (Exception e) {
-      Assert.fail(e.getClass().getSimpleName() + " was thrown");
-    }
-  }
   @Test
   public void testRevisionSupported() throws IOException {
     NotebookRepo notebookRepo;
@@ -1020,7 +1009,7 @@ public class NotebookTest extends AbstractInterpreterTest implements ParagraphJo
   }
   @Test
   public void testMultipleDefaultAdmins(){
-    assertNoExceptionIsThrown(() -> {
+    Assertions.assertDoesNotThrow(() -> {
       String nonAdminUser = "user1";
       HashSet<String> adminUser = new HashSet<>(Arrays.asList("adminUser"));
       HashSet<String> secondAdmin = new HashSet<>(Arrays.asList("secondAdmin"));
@@ -1029,12 +1018,12 @@ public class NotebookTest extends AbstractInterpreterTest implements ParagraphJo
       conf.setProperty("zeppelin.notebook.default.owner.username", "adminUser,secondAdmin");
 
       // User1 creates a note and sets writer, runner and reader permissions to only themselves.
-      Note note = notebook.createNote("note1",new AuthenticationInfo(nonAdminUser.toString()));
+      Note note = notebook.createNote("note1", new AuthenticationInfo(nonAdminUser.toString()));
 
       System.out.println(authorizationService.getOwners(note.getId()));
-      authorizationService.setReaders(note.getId(),new HashSet<>(Arrays.asList(nonAdminUser)));
-      authorizationService.setRunners(note.getId(),new HashSet<>(Arrays.asList(nonAdminUser)));
-      authorizationService.setWriters(note.getId(),new HashSet<>(Arrays.asList(nonAdminUser)));
+      authorizationService.setReaders(note.getId(), new HashSet<>(Arrays.asList(nonAdminUser)));
+      authorizationService.setRunners(note.getId(), new HashSet<>(Arrays.asList(nonAdminUser)));
+      authorizationService.setWriters(note.getId(), new HashSet<>(Arrays.asList(nonAdminUser)));
 
       // Verify that the original user has access to their own note.
       assertTrue(authorizationService.isOwner(note.getId(), new HashSet<>(Arrays.asList(nonAdminUser))));
@@ -1057,7 +1046,7 @@ public class NotebookTest extends AbstractInterpreterTest implements ParagraphJo
 
   @Test
   public void testNoDefaultAdmins(){
-    assertNoExceptionIsThrown(()->{
+    Assertions.assertDoesNotThrow(()->{
       String nonAdminUser = "user1";
       HashSet<String> adminUser = new HashSet<>(Arrays.asList("adminUser"));
       HashSet<String> secondAdmin = new HashSet<>(Arrays.asList("secondAdmin"));
