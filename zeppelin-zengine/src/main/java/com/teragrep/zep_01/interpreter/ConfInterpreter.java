@@ -64,21 +64,23 @@ public class ConfInterpreter extends Interpreter {
       throws InterpreterException {
 
     try {
-      Properties finalProperties = new Properties();
-      finalProperties.putAll(getProperties());
+      // Read user-given properties into a Properties object.
       Properties newProperties = new Properties();
       newProperties.load(new StringReader(st));
-      finalProperties.putAll(newProperties);
-      LOGGER.debug("Properties for InterpreterGroup: {} is {}", interpreterGroupId, finalProperties);
-      interpreterSetting.setInterpreterGroupProperties(interpreterGroupId, finalProperties);
-      String msg = "";
-      if(newProperties.entrySet().size() > 0){
-        msg = "New properties set! Properties for " + interpreterGroupId + " are now:\n";
-        for(Map.Entry property : finalProperties.entrySet()){
-          msg = msg + property.getKey() + " = " +property.getValue() + "\n";
-        }
+
+      // First put any existing properties into a new Properties object, then update it with new user-given properties, and apply the combined properties to the InterpreterSetting.
+      Properties combinedProperties = new Properties();
+      combinedProperties.putAll(getProperties());
+      combinedProperties.putAll(newProperties);
+      interpreterSetting.setInterpreterGroupProperties(interpreterGroupId, combinedProperties);
+
+      // Create a response message containing the updated list of properties.
+      StringBuilder message = new StringBuilder();
+      message.append("Properties set! Properties for " + interpreterGroupId + " are:\n");
+      for(Map.Entry property : combinedProperties.entrySet()){
+        message.append(property.getKey() + " = " +property.getValue() + "\n");
       }
-      return new InterpreterResult(InterpreterResult.Code.SUCCESS,msg);
+      return new InterpreterResult(InterpreterResult.Code.SUCCESS,message.toString());
     } catch (IOException e) {
       LOGGER.error("Fail to update interpreter setting", e);
       return new InterpreterResult(InterpreterResult.Code.ERROR, ExceptionUtils.getStackTrace(e));

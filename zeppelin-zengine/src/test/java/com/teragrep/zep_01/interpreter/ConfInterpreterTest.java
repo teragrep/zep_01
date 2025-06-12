@@ -110,9 +110,10 @@ public class ConfInterpreterTest extends AbstractInterpreterTest {
               .setParagraphId("paragraphId")
               .build();
 
+      // Assign a new value to one of the properties and create one new property, should result in a message listing out all existing properties properly updated as well as the new property.
       InterpreterResult result = confInterpreter.interpret("property_1\tnew_value\nnew_property\tdummy_value", context);
       assertEquals(InterpreterResult.Code.SUCCESS, result.code);
-      assertTrue(result.toString().contains("New properties set! Properties for "+confInterpreter.getInterpreterGroup().getId()+" are now:"));
+      assertTrue(result.toString().contains("Properties for "+confInterpreter.getInterpreterGroup().getId()+" are:"));
       assertTrue(result.toString().contains("new_property = dummy_value"));
       assertTrue(result.toString().contains("property_3 = value_3"));
       assertTrue(result.toString().contains("property_2 = new_value_2"));
