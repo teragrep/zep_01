@@ -687,7 +687,6 @@ public class NotebookServerTest extends AbstractTestRestApi {
 
   @Test
   public void testCollaborativeModeStatus() {
-    Assertions.assertDoesNotThrow(()->{
       NotebookSocket sock1 = createWebSocket();
       NotebookSocket sock2 = createWebSocket();
       NotebookSocket sock3 = createWebSocket();
@@ -707,16 +706,10 @@ public class NotebookServerTest extends AbstractTestRestApi {
                       .put("name", noteName)
                       .put("defaultInterpreterId", defaultInterpreterId).toJson());
 
-      String noteId = "";
-      for (Note note : notebook.getAllNotes()) {
-        if (note.getName().equals(noteName)) {
-          noteId = note.getId();
-          break;
-        }
-        else {
-          Assertions.fail();
-        }
-      }
+    Assertions.assertDoesNotThrow(()-> {
+      // Make sure there is only one created notebook, and get its' ID.
+      Assertions.assertEquals(1,notebook.getAllNotes().size());
+      String noteId = notebook.getAllNotes().get(0).getId();
 
       // Expect correct number of COLLABORATIVE_MODE_STATUS messages when a number of users join the same notebook.
       notebookServer.onMessage(sock1,new Message(OP.GET_NOTE)
@@ -724,15 +717,15 @@ public class NotebookServerTest extends AbstractTestRestApi {
 
       // User 1 shouldn't get a COLLABORATIVE_MODE_STATUS message when they join as the first user
       verify(sock1, times(0)).send(contains(OP.COLLABORATIVE_MODE_STATUS.toString()));
-      notebookServer.onMessage(sock2,new Message(OP.GET_NOTE)
-              .put("id",noteId).toJson());
+      notebookServer.onMessage(sock2, new Message(OP.GET_NOTE)
+              .put("id", noteId).toJson());
 
       // Both users 1 and 2 should receive a COLLABORATIVE_MODE_STATUS message when user 2 joins so that they both know about each other.
       verify(sock1, times(1)).send(contains(OP.COLLABORATIVE_MODE_STATUS.toString()));
       verify(sock2, times(1)).send(contains(OP.COLLABORATIVE_MODE_STATUS.toString()));
 
-      notebookServer.onMessage(sock3,new Message(OP.GET_NOTE)
-              .put("id",noteId).toJson());
+      notebookServer.onMessage(sock3, new Message(OP.GET_NOTE)
+              .put("id", noteId).toJson());
 
       // Both users 1 and 2 should receive a COLLABORATIVE_MODE_STATUS message when user 3 joins
       verify(sock1, times(2)).send(contains(OP.COLLABORATIVE_MODE_STATUS.toString()));
@@ -744,7 +737,6 @@ public class NotebookServerTest extends AbstractTestRestApi {
 
   @Test
   public void testCollaborativeModeBetweenNotebooks() {
-    Assertions.assertDoesNotThrow(()->{
       NotebookSocket sock1 = createWebSocket();
       NotebookSocket sock2 = createWebSocket();
       NotebookSocket sock3 = createWebSocket();
@@ -752,6 +744,7 @@ public class NotebookServerTest extends AbstractTestRestApi {
       notebookServer.onOpen(sock2);
       notebookServer.onOpen(sock3);
 
+    Assertions.assertDoesNotThrow(()->{
       String noteName = "Note with millis " + System.currentTimeMillis();
       String defaultInterpreterId = "";
       List<InterpreterSetting> settings = notebook.getInterpreterSettingManager().get();
@@ -764,13 +757,9 @@ public class NotebookServerTest extends AbstractTestRestApi {
                       .put("name", noteName)
                       .put("defaultInterpreterId", defaultInterpreterId).toJson());
 
-      String noteId = "";
-      for (Note note : notebook.getAllNotes()) {
-        if (note.getName().equals(noteName)) {
-          noteId = note.getId();
-          break;
-        }
-      }
+      // Make sure there is only one created notebook, and get its' ID.
+      Assertions.assertEquals(1,notebook.getAllNotes().size());
+      String noteId = notebook.getAllNotes().get(0).getId();
 
       // create another note from sock1
       String note2Name = "Note with millis " + System.currentTimeMillis();

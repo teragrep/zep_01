@@ -172,21 +172,21 @@ public class ConnectionManager {
     }
   }
 
+  // Sends a response message indicating whether or not the notebook in question has multiple users connected, and lists the usernames of the connected users
   private void checkCollaborativeStatus(String noteId, List<NotebookSocket> socketList) {
     if (!collaborativeModeEnable) {
       return;
     }
-    boolean collaborativeStatusNew = socketList.size() > 1;
-    if (collaborativeStatusNew) {
+    boolean collaborativeStatus = socketList.size() > 1;
+    if (collaborativeStatus) {
       Message message = new Message(Message.OP.COLLABORATIVE_MODE_STATUS);
-      message.put("status", collaborativeStatusNew);
-      if (collaborativeStatusNew) {
-        HashSet<String> userList = new HashSet<>();
-        for (NotebookSocket noteSocket : socketList) {
-          userList.add(noteSocket.getUser());
-        }
-        message.put("users", userList);
+      message.put("status", collaborativeStatus);
+      // Create a list of users for the response
+      HashSet<String> userList = new HashSet<>();
+      for (NotebookSocket noteSocket : socketList) {
+        userList.add(noteSocket.getUser());
       }
+      message.put("users", userList);
       broadcast(noteId, message);
     }
   }
