@@ -1009,7 +1009,6 @@ public class NotebookTest extends AbstractInterpreterTest implements ParagraphJo
   }
   @Test
   public void testMultipleDefaultAdmins(){
-    Assertions.assertDoesNotThrow(() -> {
       String nonAdminUser = "user1";
       HashSet<String> adminUser = new HashSet<>(Arrays.asList("adminUser"));
       HashSet<String> secondAdmin = new HashSet<>(Arrays.asList("secondAdmin"));
@@ -1017,13 +1016,12 @@ public class NotebookTest extends AbstractInterpreterTest implements ParagraphJo
       // Set multiple admins in configuration file
       conf.setProperty("zeppelin.notebook.default.owner.username", "adminUser,secondAdmin");
 
-      // User1 creates a note and sets writer, runner and reader permissions to only themselves.
-      Note note = notebook.createNote("note1", new AuthenticationInfo(nonAdminUser.toString()));
+    // User1 creates a note and sets writer, runner and reader permissions to only themselves.
+    Note note = Assertions.assertDoesNotThrow(() -> notebook.createNote("note1", new AuthenticationInfo(nonAdminUser.toString())));
 
-      System.out.println(authorizationService.getOwners(note.getId()));
-      authorizationService.setReaders(note.getId(), new HashSet<>(Arrays.asList(nonAdminUser)));
-      authorizationService.setRunners(note.getId(), new HashSet<>(Arrays.asList(nonAdminUser)));
-      authorizationService.setWriters(note.getId(), new HashSet<>(Arrays.asList(nonAdminUser)));
+    Assertions.assertDoesNotThrow(()->authorizationService.setReaders(note.getId(), new HashSet<>(Arrays.asList(nonAdminUser))));
+    Assertions.assertDoesNotThrow(()->authorizationService.setRunners(note.getId(), new HashSet<>(Arrays.asList(nonAdminUser))));
+    Assertions.assertDoesNotThrow(()->authorizationService.setWriters(note.getId(), new HashSet<>(Arrays.asList(nonAdminUser))));
 
       // Verify that the original user has access to their own note.
       assertTrue(authorizationService.isOwner(note.getId(), new HashSet<>(Arrays.asList(nonAdminUser))));
@@ -1041,12 +1039,10 @@ public class NotebookTest extends AbstractInterpreterTest implements ParagraphJo
       assertTrue(authorizationService.isReader(note.getId(), secondAdmin));
       assertTrue(authorizationService.isWriter(note.getId(), secondAdmin));
       assertTrue(authorizationService.isRunner(note.getId(), secondAdmin));
-    });
   }
 
   @Test
   public void testNoDefaultAdmins(){
-    Assertions.assertDoesNotThrow(()->{
       String nonAdminUser = "user1";
       HashSet<String> adminUser = new HashSet<>(Arrays.asList("adminUser"));
       HashSet<String> secondAdmin = new HashSet<>(Arrays.asList("secondAdmin"));
@@ -1055,10 +1051,10 @@ public class NotebookTest extends AbstractInterpreterTest implements ParagraphJo
       conf.setProperty("zeppelin.notebook.default.owner.username", "");
 
       // User1 creates a note and sets writer, runner and reader permissions to only themselves.
-      Note note = notebook.createNote("note1",new AuthenticationInfo(nonAdminUser));
-      authorizationService.setReaders(note.getId(),new HashSet<>(Arrays.asList(nonAdminUser)));
-      authorizationService.setRunners(note.getId(),new HashSet<>(Arrays.asList(nonAdminUser)));
-      authorizationService.setWriters(note.getId(),new HashSet<>(Arrays.asList(nonAdminUser)));
+      Note note = Assertions.assertDoesNotThrow(()->notebook.createNote("note1",new AuthenticationInfo(nonAdminUser)));
+      Assertions.assertDoesNotThrow(()->authorizationService.setReaders(note.getId(),new HashSet<>(Arrays.asList(nonAdminUser))));
+      Assertions.assertDoesNotThrow(()->authorizationService.setRunners(note.getId(),new HashSet<>(Arrays.asList(nonAdminUser))));
+      Assertions.assertDoesNotThrow(()->authorizationService.setWriters(note.getId(),new HashSet<>(Arrays.asList(nonAdminUser))));
 
 
       // Neither adminUser should have any access rights to created note
@@ -1071,7 +1067,6 @@ public class NotebookTest extends AbstractInterpreterTest implements ParagraphJo
       assertFalse(authorizationService.isReader(note.getId(), secondAdmin));
       assertFalse(authorizationService.isWriter(note.getId(), secondAdmin));
       assertFalse(authorizationService.isRunner(note.getId(), secondAdmin));
-    });
   }
 
   @Test
