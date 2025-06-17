@@ -91,12 +91,11 @@ public final class DTTableDatasetNg extends AbstractUserInterfaceElement {
 
     public DTTableDatasetNg(InterpreterContext interpreterContext) {
         super(interpreterContext);
-
         AJAXRequestAngularObject = getInterpreterContext().getAngularObjectRegistry().add(
                 "AJAXRequest_"+getInterpreterContext().getParagraphId(),
                 "{}",
                 getInterpreterContext().getNoteId(),
-                getInterpreterContext().getParagraphId(), // tästä saa paragraphID:n
+                getInterpreterContext().getParagraphId(),
                 true
         );
 
@@ -131,8 +130,11 @@ public final class DTTableDatasetNg extends AbstractUserInterfaceElement {
     void handeAJAXRequest(AJAXRequest ajaxRequest) {
         try {
             lock.lock();
-
-            updatePage(ajaxRequest);
+            // Apply defaults if parameters are not provided
+            int start = (ajaxRequest.getStart() == null) ? 0 : ajaxRequest.getStart();
+            int length = (ajaxRequest.getLength() == null) ? 25 : ajaxRequest.getLength();
+            String searchString = (ajaxRequest.getSearch().getValue() == null) ? "" : ajaxRequest.getSearch().getValue();
+            updatePage(start,length,searchString);
         }
         catch (JsonSyntaxException e) {
             LOGGER.error(e.toString());
@@ -172,11 +174,7 @@ public final class DTTableDatasetNg extends AbstractUserInterfaceElement {
                 datasetAsJSONSchema = DTHeader.schemaToHeader(rowDataset.schema());
                 datasetAsJSONFormattedSchema = DTHeader.schemaToJsonHeader(rowDataset.schema());
                 datasetAsJSON = rowDataset.toJSON().collectAsList();
-                //rowDataset.persist().limit(25); //nice
-
-                AJAXRequest ajaxRequest = gson.fromJson((String) AJAXRequestAngularObject.get(), AJAXRequest.class);
-                updatePage(ajaxRequest);
-                // will scream at UI a lot, make nicer later
+                updatePage(0,25,"");
             }
 
         } catch (ParserConfigurationException | TransformerException e) {
@@ -186,36 +184,24 @@ public final class DTTableDatasetNg extends AbstractUserInterfaceElement {
         }
     }
 
-    private void updatePage(AJAXRequest ajaxRequest){
+    private void updatePage(int start, int length, String searchString){
         if (datasetAsJSON == null) {
             LOGGER.warn("attempting to draw empty dataset");
             return;
         }
-
-        int currentAJAXID = 1;
-        int currentAJAXStart = 0;
-        String currentSearchString = "";
         List<Order> currentOrder = null;
 
-        //ATOMIC INT AJAXLength & AJAXStart
-        if (ajaxRequest != null) {
-            //currentAJAXID = ajaxRequest.getDraw(); // We don't want to assign a draw value from the frontend, so we ignore it here
-            currentAJAXStart = ajaxRequest.getStart();
-            currentAJAXLength = ajaxRequest.getLength();
-            currentSearchString = ajaxRequest.getSearch().getValue();
-            currentOrder = ajaxRequest.getOrder();
-        }
 
         // TODO these all decode the JSON, it refactor therefore to decode only once
         // searching
-        List<String> searchedList = DTSearch.search(datasetAsJSON, currentSearchString);
+        List<String> searchedList = DTSearch.search(datasetAsJSON, searchString);
 
         // TODO ordering
         //List<String> orderedlist = DTOrder.order(searchedList, currentOrder);
         List<String> orderedlist = searchedList;
 
         // pagination
-        List<String> paginatedList = DTPagination.paginate(orderedlist, currentAJAXLength, currentAJAXStart);
+        List<String> paginatedList = DTPagination.paginate(orderedlist, length, start);
 
         // ui formatting
         JsonArray formated = dataStreamParser(paginatedList);
@@ -229,7 +215,7 @@ public final class DTTableDatasetNg extends AbstractUserInterfaceElement {
             headers = Json.createObjectBuilder().build();
         }
 
-        JsonObject response = DTNetResponse(formated, headers, currentAJAXID, orderedlist.size());
+        JsonObject response = DTNetResponse(formated, headers, 1, orderedlist.size());
         AJAXResponseAngularObject.set(response.toString(), true);
     }
 
