@@ -161,7 +161,7 @@ public final class DTTableDatasetNg extends AbstractUserInterfaceElement {
                 datasetAsJSONSchema = DTHeader.schemaToHeader(rowDataset.schema());
                 datasetAsJSONFormattedSchema = DTHeader.schemaToJsonHeader(rowDataset.schema());
                 datasetAsJSON = rowDataset.toJSON().collectAsList();
-                updateData();
+                updatePage(0,currentAJAXLength,"");
             }
 
         } catch (ParserConfigurationException | TransformerException e) {
@@ -172,9 +172,13 @@ public final class DTTableDatasetNg extends AbstractUserInterfaceElement {
     }
 
     // Sends a PARAGRAPH_UPDATE_OUTPUT message to UI containing the paginated data
-    private void updateData(){
+    private void updatePage(int start, int length, String searchString){
+        if (datasetAsJSON == null) {
+            LOGGER.warn("attempting to draw empty dataset");
+            return;
+        }
         try {
-            JsonObject response = SearchAndPaginate(0,currentAJAXLength,"");
+            JsonObject response = SearchAndPaginate(start,length,searchString);
             String outputContent = "%angular\n" +
                     response.toString();
             getInterpreterContext().out().clear();
@@ -183,13 +187,6 @@ public final class DTTableDatasetNg extends AbstractUserInterfaceElement {
         } catch (java.io.IOException e) {
             LOGGER.error(e.toString());
         }
-    }
-    private void updatePage(int start, int length, String searchString){
-        if (datasetAsJSON == null) {
-            LOGGER.warn("attempting to draw empty dataset");
-            return;
-        }
-        JsonObject response = SearchAndPaginate(start,length,searchString);
     }
 
     private JsonObject SearchAndPaginate(int start, int length, String searchString){
