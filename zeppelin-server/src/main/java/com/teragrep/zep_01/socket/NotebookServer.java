@@ -376,6 +376,9 @@ public class NotebookServer extends WebSocketServlet
         case PARAGRAPH_CLEAR_ALL_OUTPUT:
           clearAllParagraphOutput(conn, context, receivedMessage);
           break;
+        case PARAGRAPH_UPDATE_RESULT:
+          updateParagraphResult(conn, context, receivedMessage);
+          break;
         case NOTE_UPDATE:
           updateNote(conn, context, receivedMessage);
           break;
@@ -1094,6 +1097,25 @@ public class NotebookServer extends WebSocketServlet
             broadcastNoteList(context.getAutheInfo(), context.getUserAndRoles());
           }
         });
+  }
+
+  private void updateParagraphResult(NotebookSocket conn,
+                                     ServiceContext context,
+                                     Message fromMessage) throws IOException {
+    final String noteId = (String) fromMessage.get("noteId");
+    final String paragraphId = (String) fromMessage.get("paragraphId");
+    final String interpreterGroupId = (String) fromMessage.get("interpreterGroupId");
+    final int start = (int) fromMessage.get("start");
+    final int length = (int) fromMessage.get("length");
+    final String search = (String) fromMessage.get("search");
+    getNotebookService().updateParagraphResult(noteId,paragraphId,interpreterGroupId,start,length,search,context,
+            new WebSocketServiceCallback<String>(conn){
+      @Override
+              public void onSuccess(String result, ServiceContext context) throws IOException {
+        super.onSuccess(result,context);
+        broadcast(new Message(OP.PING).put("msg","AJAXREQUEST success"));
+      }
+    });
   }
 
   private void clearAllParagraphOutput(NotebookSocket conn,
