@@ -77,7 +77,6 @@ public class ConnectionManager {
    */
   final Queue<NotebookSocket> watcherSockets = new ConcurrentLinkedQueue<>();
 
-  private final HashSet<String> collaborativeModeList = new HashSet<>();
   private final Boolean collaborativeModeEnable = ZeppelinConfiguration
       .create()
       .isZeppelinNotebookCollaborativeModeEnable();
@@ -121,10 +120,10 @@ public class ConnectionManager {
     LOGGER.debug("Remove connection {} from note: {}", socket, noteId);
     synchronized (noteSocketMap) {
       List<NotebookSocket> socketList = noteSocketMap.get(noteId);
-      if (socketList != null) {
+      if (socketList != null && socketList.contains(socket)) {
         socketList.remove(socket);
+        checkCollaborativeStatus(noteId, socketList);
       }
-      checkCollaborativeStatus(noteId, socketList);
     }
   }
 
@@ -168,43 +167,28 @@ public class ConnectionManager {
     synchronized (noteSocketMap) {
       Set<String> noteIds = noteSocketMap.keySet();
       for (String noteId : noteIds) {
-        removeConnectionFromNote(noteId, socket);
+        removeNoteConnection(noteId, socket);
       }
     }
   }
 
-  private void removeConnectionFromNote(String noteId, NotebookSocket socket) {
-    LOGGER.debug("Remove connection {} from note: {}", socket, noteId);
-    synchronized (noteSocketMap) {
-      List<NotebookSocket> socketList = noteSocketMap.get(noteId);
-      if (socketList != null) {
-        socketList.remove(socket);
-      }
-      checkCollaborativeStatus(noteId, socketList);
-    }
-  }
-
+  // Sends a response message indicating whether or not the notebook in question has multiple users connected, and lists the usernames of the connected users
   private void checkCollaborativeStatus(String noteId, List<NotebookSocket> socketList) {
     if (!collaborativeModeEnable) {
       return;
     }
-    boolean collaborativeStatusNew = socketList.size() > 1;
-    if (collaborativeStatusNew) {
-      collaborativeModeList.add(noteId);
-    } else {
-      collaborativeModeList.remove(noteId);
-    }
-
-    Message message = new Message(Message.OP.COLLABORATIVE_MODE_STATUS);
-    message.put("status", collaborativeStatusNew);
-    if (collaborativeStatusNew) {
+    boolean collaborativeStatus = socketList.size() > 1;
+    if (collaborativeStatus) {
+      Message message = new Message(Message.OP.COLLABORATIVE_MODE_STATUS);
+      message.put("status", collaborativeStatus);
+      // Create a list of users for the response
       HashSet<String> userList = new HashSet<>();
       for (NotebookSocket noteSocket : socketList) {
         userList.add(noteSocket.getUser());
       }
       message.put("users", userList);
+      broadcast(noteId, message);
     }
-    broadcast(noteId, message);
   }
 
 
