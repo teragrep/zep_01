@@ -174,7 +174,7 @@ public final class DTTableDatasetNg extends AbstractUserInterfaceElement {
                 datasetAsJSONSchema = DTHeader.schemaToHeader(rowDataset.schema());
                 datasetAsJSONFormattedSchema = DTHeader.schemaToJsonHeader(rowDataset.schema());
                 datasetAsJSON = rowDataset.toJSON().collectAsList();
-                updatePage(0,25,"");
+                updateData();
             }
 
         } catch (ParserConfigurationException | TransformerException e) {
@@ -184,13 +184,31 @@ public final class DTTableDatasetNg extends AbstractUserInterfaceElement {
         }
     }
 
+    // Sends a PARAGRAPH_UPDATE_OUTPUT message to UI containing the paginated data
+    private void updateData(){
+        try {
+            JsonObject response = SearchAndPaginate(0,currentAJAXLength,"");
+            String outputContent = "%angular\n" +
+                    response.toString();
+            getInterpreterContext().out().clear();
+            getInterpreterContext().out().write(outputContent);
+            getInterpreterContext().out().flush();
+        } catch (java.io.IOException e) {
+            LOGGER.error(e.toString());
+        }
+    }
     private void updatePage(int start, int length, String searchString){
         if (datasetAsJSON == null) {
             LOGGER.warn("attempting to draw empty dataset");
             return;
         }
-        List<Order> currentOrder = null;
+        JsonObject response = SearchAndPaginate(start,length,searchString);
+        AJAXResponseAngularObject.set(response.toString(), true);
+    }
 
+    private JsonObject SearchAndPaginate(int start, int length, String searchString){
+
+        List<Order> currentOrder = null;
 
         // TODO these all decode the JSON, it refactor therefore to decode only once
         // searching
@@ -215,8 +233,7 @@ public final class DTTableDatasetNg extends AbstractUserInterfaceElement {
             headers = Json.createObjectBuilder().build();
         }
 
-        JsonObject response = DTNetResponse(formated, headers, 1, orderedlist.size());
-        AJAXResponseAngularObject.set(response.toString(), true);
+        return DTNetResponse(formated, headers, 1, orderedlist.size());
     }
 
     static JsonArray dataStreamParser(List<String> data){
