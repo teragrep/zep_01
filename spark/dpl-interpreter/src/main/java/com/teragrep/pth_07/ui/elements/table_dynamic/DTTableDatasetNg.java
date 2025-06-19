@@ -179,7 +179,7 @@ public final class DTTableDatasetNg extends AbstractUserInterfaceElement {
         }
         try {
             JsonObject response = SearchAndPaginate(start,length,searchString);
-            String outputContent = "%angular\n" +
+            String outputContent = "%jsontable\n" +
                     response.toString();
             getInterpreterContext().out().clear();
             getInterpreterContext().out().write(outputContent);
