@@ -73,7 +73,6 @@ public final class DTTableDatasetNg extends AbstractUserInterfaceElement {
     private final Lock lock = new ReentrantLock();
 
     private final AngularObject<String> AJAXRequestAngularObject;
-    private final AngularObject<String> AJAXResponseAngularObject;
 
     private List<String> datasetAsJSON = null;
     private String datasetAsJSONSchema = "";
@@ -100,17 +99,6 @@ public final class DTTableDatasetNg extends AbstractUserInterfaceElement {
         );
 
         AJAXRequestAngularObject.addWatcher(new AJAXRequestWatcher(interpreterContext, this));
-
-
-        AJAXResponseAngularObject = getInterpreterContext().getAngularObjectRegistry().add(
-                "AJAXResponse_"+getInterpreterContext().getParagraphId(),
-                "{}",
-                getInterpreterContext().getNoteId(),
-                getInterpreterContext().getParagraphId(),
-                true
-        );
-
-        AJAXResponseAngularObject.addWatcher(new AJAXResponseWatcher(interpreterContext));
         this.gson = new Gson();
     }
 
@@ -153,7 +141,6 @@ public final class DTTableDatasetNg extends AbstractUserInterfaceElement {
     public void emit() {
         try {
             lock.lock();
-            AJAXResponseAngularObject.emit();
             AJAXRequestAngularObject.emit();
 
         } finally {
@@ -203,7 +190,6 @@ public final class DTTableDatasetNg extends AbstractUserInterfaceElement {
             return;
         }
         JsonObject response = SearchAndPaginate(start,length,searchString);
-        AJAXResponseAngularObject.set(response.toString(), true);
     }
 
     private JsonObject SearchAndPaginate(int start, int length, String searchString){
