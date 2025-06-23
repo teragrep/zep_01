@@ -101,6 +101,11 @@ public class DPLInterpreter extends AbstractInterpreter {
         LOGGER.info("DPL-interpreter Open(): {}", properties);
 
         sparkInterpreter = getInterpreterInTheSameSessionByClassName(SparkInterpreter.class, true);
+
+        if (sparkInterpreter == null) {
+            throw new InterpreterException("Could not find open SparkInterpreter in the same interpreter group from session by class name");
+        }
+
         sparkContext = sparkInterpreter.getSparkContext();
 
         // increase open counter
