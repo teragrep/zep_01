@@ -1040,6 +1040,33 @@ public class NotebookTest extends AbstractInterpreterTest implements ParagraphJo
       assertTrue(authorizationService.isWriter(note.getId(), secondAdmin));
       assertTrue(authorizationService.isRunner(note.getId(), secondAdmin));
   }
+  @Test
+  public void testSingleDefaultAdmin(){
+    String nonAdminUser = "user1";
+    HashSet<String> adminUser = new HashSet<>(Arrays.asList("adminUser"));
+
+    // Set a single admin in configuration file
+    conf.setProperty("zeppelin.notebook.default.owner.username", "adminUser");
+
+    // User1 creates a note and sets writer, runner and reader permissions to only themselves.
+    Note note = Assertions.assertDoesNotThrow(() -> notebook.createNote("note1", new AuthenticationInfo(nonAdminUser.toString())));
+
+    Assertions.assertDoesNotThrow(()->authorizationService.setReaders(note.getId(), new HashSet<>(Arrays.asList(nonAdminUser))));
+    Assertions.assertDoesNotThrow(()->authorizationService.setRunners(note.getId(), new HashSet<>(Arrays.asList(nonAdminUser))));
+    Assertions.assertDoesNotThrow(()->authorizationService.setWriters(note.getId(), new HashSet<>(Arrays.asList(nonAdminUser))));
+
+    // Verify that the original user has access to their own note.
+    assertTrue(authorizationService.isOwner(note.getId(), new HashSet<>(Arrays.asList(nonAdminUser))));
+    assertTrue(authorizationService.isReader(note.getId(), new HashSet<>(Arrays.asList(nonAdminUser))));
+    assertTrue(authorizationService.isWriter(note.getId(), new HashSet<>(Arrays.asList(nonAdminUser))));
+    assertTrue(authorizationService.isRunner(note.getId(), new HashSet<>(Arrays.asList(nonAdminUser))));
+
+    // Only the designated adminUser should have access rights to created note without explicitly giving them access.
+    assertTrue(authorizationService.isOwner(note.getId(), adminUser));
+    assertTrue(authorizationService.isReader(note.getId(), adminUser));
+    assertTrue(authorizationService.isWriter(note.getId(), adminUser));
+    assertTrue(authorizationService.isRunner(note.getId(), adminUser));
+  }
 
   @Test
   public void testNoDefaultAdmins(){
