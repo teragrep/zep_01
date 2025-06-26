@@ -1105,8 +1105,8 @@ public class NotebookServer extends WebSocketServlet
     final String noteId = (String) fromMessage.get("noteId");
     final String paragraphId = (String) fromMessage.get("paragraphId");
     final String interpreterGroupId = (String) fromMessage.get("interpreterGroupId");
-    final int start = (int) fromMessage.get("start");
-    final int length = (int) fromMessage.get("length");
+    final int start = (int) Double.parseDouble(fromMessage.get("start").toString());
+    final int length = (int) Double.parseDouble(fromMessage.get("length").toString());
     final String search = (String) fromMessage.get("search");
     getNotebookService().updateParagraphResult(noteId,paragraphId,interpreterGroupId,start,length,search,context,
             new WebSocketServiceCallback<String>(conn){
@@ -1123,13 +1123,13 @@ public class NotebookServer extends WebSocketServlet
                                        Message fromMessage) throws IOException {
     final String noteId = (String) fromMessage.get("id");
     getNotebookService().clearAllParagraphOutput(noteId, context,
-        new WebSocketServiceCallback<Note>(conn) {
-          @Override
-          public void onSuccess(Note note, ServiceContext context) throws IOException {
-            super.onSuccess(note, context);
-            broadcastNote(note);
-          }
-        });
+            new WebSocketServiceCallback<Note>(conn) {
+              @Override
+              public void onSuccess(Note note, ServiceContext context) throws IOException {
+                super.onSuccess(note, context);
+                broadcastNote(note);
+              }
+            });
   }
 
   protected Note importNote(NotebookSocket conn, ServiceContext context, Message fromMessage) throws IOException {
