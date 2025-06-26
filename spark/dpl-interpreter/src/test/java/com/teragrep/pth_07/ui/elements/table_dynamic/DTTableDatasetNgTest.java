@@ -226,7 +226,8 @@ public class DTTableDatasetNgTest {
                             "{\"_time\":\"1970-01-01T00:00:45.000Z\",\"id\":0,\"_raw\":\"data data\",\"index\":\"index_A\",\"sourcetype\":\"stream\",\"host\":\"host\",\"source\":\"input\",\"partition\":\"0\",\"offset\":0,\"origin\":\"test data\"}" +
                             "]," +
                             "\"ID\":0," +
-                            "\"datalength\":49" +
+                            "\"recordsTotal\":49," +
+                            "\"recordsFiltered\":5"+
                             "}"
                     , response.toString()
             );

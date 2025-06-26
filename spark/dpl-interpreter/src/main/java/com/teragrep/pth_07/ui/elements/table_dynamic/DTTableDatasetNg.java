@@ -245,7 +245,8 @@ public final class DTTableDatasetNg extends AbstractUserInterfaceElement {
             builder.add("headers",datasetAsJSONSchema);
             builder.add("data", data);
             builder.add("ID", ID);
-            builder.add("datalength", length);
+            builder.add("recordsTotal", length);
+            builder.add("recordsFiltered", data.size());
             return builder.build();
         }catch(JsonException|IllegalStateException e){
             LOGGER.error(e.toString());
