@@ -1113,7 +1113,6 @@ public class NotebookServer extends WebSocketServlet
       @Override
               public void onSuccess(String result, ServiceContext context) throws IOException {
         super.onSuccess(result,context);
-        broadcast(new Message(OP.PING).put("msg","AJAXREQUEST success"));
       }
     });
   }
