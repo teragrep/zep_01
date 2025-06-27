@@ -1107,7 +1107,7 @@ public class NotebookServer extends WebSocketServlet
     final String interpreterGroupId = (String) fromMessage.get("interpreterGroupId");
     final int start = (int) Double.parseDouble(fromMessage.get("start").toString());
     final int length = (int) Double.parseDouble(fromMessage.get("length").toString());
-    final String search = (String) fromMessage.get("search");
+    final String search = (String) ((Map) fromMessage.get("search")).get("value");
     getNotebookService().updateParagraphResult(noteId,paragraphId,interpreterGroupId,start,length,search,context,
             new WebSocketServiceCallback<String>(conn){
       @Override
