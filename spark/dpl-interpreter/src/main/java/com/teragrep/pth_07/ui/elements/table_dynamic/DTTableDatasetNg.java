@@ -121,8 +121,9 @@ public final class DTTableDatasetNg extends AbstractUserInterfaceElement {
             // Apply defaults if parameters are not provided
             int start = (ajaxRequest.getStart() == null) ? 0 : ajaxRequest.getStart();
             int length = (ajaxRequest.getLength() == null) ? 25 : ajaxRequest.getLength();
+            int draw = (ajaxRequest.getDraw() == null) ? 1 : ajaxRequest.getDraw();
             String searchString = (ajaxRequest.getSearch().getValue() == null) ? "" : ajaxRequest.getSearch().getValue();
-            updatePage(start,length,searchString);
+            updatePage(start,length,searchString, draw);
         }
         catch (JsonSyntaxException e) {
             LOGGER.error(e.toString());
@@ -161,7 +162,7 @@ public final class DTTableDatasetNg extends AbstractUserInterfaceElement {
                 datasetAsJSONSchema = DTHeader.schemaToHeader(rowDataset.schema());
                 datasetAsJSONFormattedSchema = DTHeader.schemaToJsonHeader(rowDataset.schema());
                 datasetAsJSON = rowDataset.toJSON().collectAsList();
-                updatePage(0,currentAJAXLength,"");
+                updatePage(0,currentAJAXLength,"",1);
             }
 
         } catch (ParserConfigurationException | TransformerException e) {
@@ -172,13 +173,13 @@ public final class DTTableDatasetNg extends AbstractUserInterfaceElement {
     }
 
     // Sends a PARAGRAPH_UPDATE_OUTPUT message to UI containing the paginated data
-    private void updatePage(int start, int length, String searchString){
+    private void updatePage(int start, int length, String searchString, int draw){
         if (datasetAsJSON == null) {
             LOGGER.warn("attempting to draw empty dataset");
             return;
         }
         try {
-            JsonObject response = SearchAndPaginate(start,length,searchString);
+            JsonObject response = SearchAndPaginate(draw, start,length,searchString);
             String outputContent = "%jsontable\n" +
                     response.toString();
             getInterpreterContext().out().clear();
@@ -189,7 +190,7 @@ public final class DTTableDatasetNg extends AbstractUserInterfaceElement {
         }
     }
 
-    private JsonObject SearchAndPaginate(int start, int length, String searchString){
+    private JsonObject SearchAndPaginate(int draw, int start, int length, String searchString){
 
         List<Order> currentOrder = null;
 
@@ -216,7 +217,7 @@ public final class DTTableDatasetNg extends AbstractUserInterfaceElement {
             headers = Json.createObjectBuilder().build();
         }
 
-        return DTNetResponse(formated, headers, 1, orderedlist.size());
+        return DTNetResponse(formated, headers, draw, orderedlist.size());
     }
 
     static JsonArray dataStreamParser(List<String> data){
@@ -239,12 +240,12 @@ public final class DTTableDatasetNg extends AbstractUserInterfaceElement {
     }
 
     // Added headers to this object, should be contained in the AJAXResponse that UI receives.
-    static JsonObject DTNetResponse(JsonArray data, JsonObject datasetAsJSONSchema, int ID, int length){
+    static JsonObject DTNetResponse(JsonArray data, JsonObject datasetAsJSONSchema, int draw, int length){
         try{
             JsonObjectBuilder builder = Json.createObjectBuilder();
             builder.add("headers",datasetAsJSONSchema);
             builder.add("data", data);
-            builder.add("ID", ID);
+            builder.add("draw", draw);
             builder.add("recordsTotal", length);
             builder.add("recordsFiltered", data.size());
             return builder.build();

@@ -1108,11 +1108,21 @@ public class NotebookServer extends WebSocketServlet
     final int start = (int) Double.parseDouble(fromMessage.get("start").toString());
     final int length = (int) Double.parseDouble(fromMessage.get("length").toString());
     final String search = (String) ((Map) fromMessage.get("search")).get("value");
-    getNotebookService().updateParagraphResult(noteId,paragraphId,interpreterGroupId,start,length,search,context,
-            new WebSocketServiceCallback<String>(conn){
+    final int draw = (int) Double.parseDouble(fromMessage.get("draw").toString());
+    getNotebookService().updateParagraphResult(noteId,paragraphId,interpreterGroupId,draw,start,length,search,context,
+            new WebSocketServiceCallback<AngularObject>(conn){
       @Override
-              public void onSuccess(String result, ServiceContext context) throws IOException {
+              public void onSuccess(AngularObject result, ServiceContext context) throws IOException {
         super.onSuccess(result,context);
+        //// Echoes back the given parameters for every connected user, as soon as the AJAXRequest angular object has been updated on the server-side.
+        //getConnectionManager().broadcast(new Message(OP.PARAGRAPH_UPDATE_RESULT)
+        //        .put("noteId",noteId)
+        //        .put("paragraphId",paragraphId)
+        //        .put("interpreterGroupId",interpreterGroupId)
+        //        .put("start",start)
+        //        .put("length",length)
+        //        .put("draw",draw)
+        //        .put("search",search));
       }
     });
   }

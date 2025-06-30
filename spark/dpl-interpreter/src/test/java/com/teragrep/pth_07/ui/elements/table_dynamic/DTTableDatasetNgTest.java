@@ -212,7 +212,7 @@ public class DTTableDatasetNgTest {
         JsonArray formated = DTTableDatasetNg.dataStreamParser(subList);
 
         JsonObject headers = Json.createReader(new StringReader(DTHeader.schemaToJsonHeader(testSchema))).readObject();;
-            JsonObject response = DTTableDatasetNg.DTNetResponse(formated, headers, 0, datasetAsJSON.size());
+            JsonObject response = DTTableDatasetNg.DTNetResponse(formated, headers, 1, datasetAsJSON.size());
 
             assertEquals("" +
                             "{" +
@@ -225,7 +225,7 @@ public class DTTableDatasetNgTest {
                             "{\"_time\":\"1970-01-01T00:00:46.000Z\",\"id\":0,\"_raw\":\"data data\",\"index\":\"index_A\",\"sourcetype\":\"stream\",\"host\":\"host\",\"source\":\"input\",\"partition\":\"0\",\"offset\":0,\"origin\":\"test data\"}," +
                             "{\"_time\":\"1970-01-01T00:00:45.000Z\",\"id\":0,\"_raw\":\"data data\",\"index\":\"index_A\",\"sourcetype\":\"stream\",\"host\":\"host\",\"source\":\"input\",\"partition\":\"0\",\"offset\":0,\"origin\":\"test data\"}" +
                             "]," +
-                            "\"ID\":0," +
+                            "\"draw\":1," +
                             "\"recordsTotal\":49," +
                             "\"recordsFiltered\":5"+
                             "}"
