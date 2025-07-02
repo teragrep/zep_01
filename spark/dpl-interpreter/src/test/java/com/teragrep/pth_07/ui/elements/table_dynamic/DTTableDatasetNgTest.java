@@ -212,7 +212,7 @@ public class DTTableDatasetNgTest {
         JsonArray formated = DTTableDatasetNg.dataStreamParser(subList);
 
         JsonObject headers = Json.createReader(new StringReader(DTHeader.schemaToJsonHeader(testSchema))).readObject();;
-            JsonObject response = DTTableDatasetNg.DTNetResponse(formated, headers, 1, datasetAsJSON.size());
+            JsonObject response = DTTableDatasetNg.DTNetResponse(formated, headers, 1, datasetAsJSON.size(),formated.size());
 
             assertEquals("" +
                             "{" +

@@ -216,8 +216,10 @@ public final class DTTableDatasetNg extends AbstractUserInterfaceElement {
         else {
             headers = Json.createObjectBuilder().build();
         }
+        int recordsTotal = datasetAsJSON.size();
+        int recordsFiltered = searchedList.size();
 
-        return DTNetResponse(formated, headers, draw, orderedlist.size());
+        return DTNetResponse(formated, headers, draw, recordsTotal,recordsFiltered);
     }
 
     static JsonArray dataStreamParser(List<String> data){
@@ -240,14 +242,14 @@ public final class DTTableDatasetNg extends AbstractUserInterfaceElement {
     }
 
     // Added headers to this object, should be contained in the AJAXResponse that UI receives.
-    static JsonObject DTNetResponse(JsonArray data, JsonObject datasetAsJSONSchema, int draw, int length){
+    static JsonObject DTNetResponse(JsonArray data, JsonObject datasetAsJSONSchema, int draw, int recordsTotal, int recordsFiltered){
         try{
             JsonObjectBuilder builder = Json.createObjectBuilder();
             builder.add("headers",datasetAsJSONSchema);
             builder.add("data", data);
             builder.add("draw", draw);
-            builder.add("recordsTotal", length);
-            builder.add("recordsFiltered", data.size());
+            builder.add("recordsTotal", recordsTotal);
+            builder.add("recordsFiltered", recordsFiltered);
             return builder.build();
         }catch(JsonException|IllegalStateException e){
             LOGGER.error(e.toString());
