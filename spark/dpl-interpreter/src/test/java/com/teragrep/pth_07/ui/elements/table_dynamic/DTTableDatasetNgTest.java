@@ -47,6 +47,11 @@ package com.teragrep.pth_07.ui.elements.table_dynamic;
 
 import com.google.gson.Gson;
 import com.teragrep.pth_07.ui.elements.table_dynamic.pojo.AJAXRequest;
+import com.teragrep.zep_01.display.AngularObject;
+import com.teragrep.zep_01.display.AngularObjectListener;
+import com.teragrep.zep_01.display.AngularObjectRegistry;
+import com.teragrep.zep_01.display.AngularObjectRegistryListener;
+import com.teragrep.zep_01.interpreter.InterpreterContext;
 import org.apache.spark.sql.Dataset;
 import org.apache.spark.sql.Row;
 import org.apache.spark.sql.RowFactory;
@@ -55,12 +60,16 @@ import org.apache.spark.sql.types.DataTypes;
 import org.apache.spark.sql.types.MetadataBuilder;
 import org.apache.spark.sql.types.StructField;
 import org.apache.spark.sql.types.StructType;
+import org.junit.Assert;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import javax.json.Json;
 import javax.json.JsonArray;
 import javax.json.JsonObject;
+import java.io.StringReader;
 import java.sql.Timestamp;
 import java.time.Instant;
 import java.util.ArrayList;
@@ -159,7 +168,6 @@ public class DTTableDatasetNgTest {
 
     @Test
     public void testAJAXResponse() {
-
        StructType testSchema = new StructType(
                 new StructField[] {
                         new StructField("_time", DataTypes.TimestampType, false, new MetadataBuilder().build()),
@@ -202,22 +210,50 @@ public class DTTableDatasetNgTest {
         List<String> subList = datasetAsJSON.subList(0, 5);
 
         JsonArray formated = DTTableDatasetNg.dataStreamParser(subList);
-        JsonObject response = DTTableDatasetNg.DTNetResponse(formated, 0, datasetAsJSON.size());
 
-        assertEquals("" +
-                        "{\"data\":" +
-                        "[" +
-                        "{\"_time\":\"1970-01-01T00:00:49.000Z\",\"id\":0,\"_raw\":\"data data\",\"index\":\"index_A\",\"sourcetype\":\"stream\",\"host\":\"host\",\"source\":\"input\",\"partition\":\"0\",\"offset\":0,\"origin\":\"test data\"}," +
-                        "{\"_time\":\"1970-01-01T00:00:48.000Z\",\"id\":0,\"_raw\":\"data data\",\"index\":\"index_A\",\"sourcetype\":\"stream\",\"host\":\"host\",\"source\":\"input\",\"partition\":\"0\",\"offset\":0,\"origin\":\"test data\"}," +
-                        "{\"_time\":\"1970-01-01T00:00:47.000Z\",\"id\":0,\"_raw\":\"data data\",\"index\":\"index_A\",\"sourcetype\":\"stream\",\"host\":\"host\",\"source\":\"input\",\"partition\":\"0\",\"offset\":0,\"origin\":\"test data\"}," +
-                        "{\"_time\":\"1970-01-01T00:00:46.000Z\",\"id\":0,\"_raw\":\"data data\",\"index\":\"index_A\",\"sourcetype\":\"stream\",\"host\":\"host\",\"source\":\"input\",\"partition\":\"0\",\"offset\":0,\"origin\":\"test data\"}," +
-                        "{\"_time\":\"1970-01-01T00:00:45.000Z\",\"id\":0,\"_raw\":\"data data\",\"index\":\"index_A\",\"sourcetype\":\"stream\",\"host\":\"host\",\"source\":\"input\",\"partition\":\"0\",\"offset\":0,\"origin\":\"test data\"}" +
-                        "]," +
-                        "\"ID\":0," +
-                        "\"datalength\":49" +
-                        "}"
-                , response.toString()
-        );
+        JsonObject headers = Json.createReader(new StringReader(DTHeader.schemaToJsonHeader(testSchema))).readObject();;
+            JsonObject response = DTTableDatasetNg.DTNetResponse(formated, headers, 1, datasetAsJSON.size(),formated.size());
+
+            assertEquals("" +
+                            "{" +
+                            "\"headers\":{\"_time\":\"\",\"id\":\"\",\"_raw\":\"\",\"index\":\"\",\"sourcetype\":\"\",\"host\":\"\",\"source\":\"\",\"partition\":\"\",\"offset\":\"\",\"origin\":\"\"}," +
+                            "\"data\":" +
+                            "[" +
+                            "{\"_time\":\"1970-01-01T00:00:49.000Z\",\"id\":0,\"_raw\":\"data data\",\"index\":\"index_A\",\"sourcetype\":\"stream\",\"host\":\"host\",\"source\":\"input\",\"partition\":\"0\",\"offset\":0,\"origin\":\"test data\"}," +
+                            "{\"_time\":\"1970-01-01T00:00:48.000Z\",\"id\":0,\"_raw\":\"data data\",\"index\":\"index_A\",\"sourcetype\":\"stream\",\"host\":\"host\",\"source\":\"input\",\"partition\":\"0\",\"offset\":0,\"origin\":\"test data\"}," +
+                            "{\"_time\":\"1970-01-01T00:00:47.000Z\",\"id\":0,\"_raw\":\"data data\",\"index\":\"index_A\",\"sourcetype\":\"stream\",\"host\":\"host\",\"source\":\"input\",\"partition\":\"0\",\"offset\":0,\"origin\":\"test data\"}," +
+                            "{\"_time\":\"1970-01-01T00:00:46.000Z\",\"id\":0,\"_raw\":\"data data\",\"index\":\"index_A\",\"sourcetype\":\"stream\",\"host\":\"host\",\"source\":\"input\",\"partition\":\"0\",\"offset\":0,\"origin\":\"test data\"}," +
+                            "{\"_time\":\"1970-01-01T00:00:45.000Z\",\"id\":0,\"_raw\":\"data data\",\"index\":\"index_A\",\"sourcetype\":\"stream\",\"host\":\"host\",\"source\":\"input\",\"partition\":\"0\",\"offset\":0,\"origin\":\"test data\"}" +
+                            "]," +
+                            "\"draw\":1," +
+                            "\"recordsTotal\":49," +
+                            "\"recordsFiltered\":5"+
+                            "}"
+                    , response.toString()
+            );
+    }
+
+    @Test
+    public void AjaxRequestToJsonTest(){
+        Gson gson = new Gson();
+
+        String paragraphId = "testParag";
+        String noteId ="testNoteId";
+        String angularObjectName = "AJAXRequest_"+paragraphId;
+        String angularObjectContent = "{\"start\":0,\"length\":25,\"search\":{\"value\":\"\",\"regex\":\"false\"}}";
+        AngularObjectListener listener = new AngularObjectListener() {
+            @Override
+            public void updated(AngularObject updatedObject) {
+                // Do nothing
+            }
+        };
+        AngularObject<String> ao = new AngularObject<String>(angularObjectName,angularObjectContent,noteId,paragraphId,listener);
+
+        AJAXRequest ajaxRequest = gson.fromJson((String) ao.get(), AJAXRequest.class);
+        Assertions.assertEquals(0,ajaxRequest.getStart());
+        Assertions.assertEquals(25,ajaxRequest.getLength());
+        Assertions.assertEquals("",ajaxRequest.getSearch().getValue());
+        Assertions.assertEquals(false,ajaxRequest.getSearch().getRegex());
     }
 
     private List<Row> makeRowsList(long _time, Long id, String _raw, String index, String sourcetype, String host, String source, String partition, Long offset, String origin, long amount) {

@@ -376,6 +376,9 @@ public class NotebookServer extends WebSocketServlet
         case PARAGRAPH_CLEAR_ALL_OUTPUT:
           clearAllParagraphOutput(conn, context, receivedMessage);
           break;
+        case PARAGRAPH_UPDATE_RESULT:
+          updateParagraphResult(conn, context, receivedMessage);
+          break;
         case NOTE_UPDATE:
           updateNote(conn, context, receivedMessage);
           break;
@@ -1096,18 +1099,49 @@ public class NotebookServer extends WebSocketServlet
         });
   }
 
+  // Handles a request for paginated or filtered DPL table data.
+  // Data is sent via a legacy system:
+  // updateParagraphResult() is called
+  // -> updateAngularObject() updates an AJAXRequest angular object associated with a specific paragraph
+  // -> AJAXRequestWatcher catches the updated angular object
+  // -> values are passed to DTTableDatasetNG that does searching and pagination
+  // -> searched and paginated data is written via InterpreterContext
+  // -> Generates a PARAGRAPH_UPDATE_OUTPUT websocket event to be sent to the UI
+
+  private void updateParagraphResult(NotebookSocket conn,
+                                     ServiceContext context,
+                                     Message fromMessage) throws IOException {
+    final String noteId = (String) fromMessage.get("noteId");
+    final String paragraphId = (String) fromMessage.get("paragraphId");
+
+    // Build an interpreterGroupId based on given user and note Id.
+    // InterpreterGroupId is used to find the correct AngularObjectRegistry instance containing the DTTableDatasetNG object we want to pass the search, length, start and draw values to.
+    final String interpreterGroupId = "spark-"+conn.getUser()+"-"+noteId;
+    final int start = (int) Double.parseDouble(fromMessage.get("start").toString());
+    final int length = (int) Double.parseDouble(fromMessage.get("length").toString());
+    final String search = (String) ((Map) fromMessage.get("search")).get("value");
+    final int draw = (int) Double.parseDouble(fromMessage.get("draw").toString());
+    getNotebookService().updateParagraphResult(noteId,paragraphId,interpreterGroupId,draw,start,length,search,context,
+            new WebSocketServiceCallback<AngularObject>(conn){
+      @Override
+              public void onSuccess(AngularObject result, ServiceContext context) throws IOException {
+        super.onSuccess(result,context);
+      }
+    });
+  }
+
   private void clearAllParagraphOutput(NotebookSocket conn,
                                        ServiceContext context,
                                        Message fromMessage) throws IOException {
     final String noteId = (String) fromMessage.get("id");
     getNotebookService().clearAllParagraphOutput(noteId, context,
-        new WebSocketServiceCallback<Note>(conn) {
-          @Override
-          public void onSuccess(Note note, ServiceContext context) throws IOException {
-            super.onSuccess(note, context);
-            broadcastNote(note);
-          }
-        });
+            new WebSocketServiceCallback<Note>(conn) {
+              @Override
+              public void onSuccess(Note note, ServiceContext context) throws IOException {
+                super.onSuccess(note, context);
+                broadcastNote(note);
+              }
+            });
   }
 
   protected Note importNote(NotebookSocket conn, ServiceContext context, Message fromMessage) throws IOException {

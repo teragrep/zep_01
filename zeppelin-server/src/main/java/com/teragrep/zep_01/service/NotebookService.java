@@ -662,6 +662,11 @@ public class NotebookService {
     callback.onSuccess(p, context);
   }
 
+  public void updateParagraphResult(String noteId, String paragraphId, String interpreterGroupId,int draw, int start, int length, String searchString,ServiceContext context, ServiceCallback<AngularObject> callback) throws IOException {
+    // Make an AJAXRequest based on given information
+    updateAngularObject(noteId,paragraphId,interpreterGroupId,"AJAXRequest_"+paragraphId,"{\"draw\":"+draw+",\"start\":"+start+",\"length\":"+length+",\"search\":{\"value\":\""+searchString+"\",\"regex\":false}}",context,callback);
+  }
+
   public Paragraph getNextSessionParagraph(String noteId,
                                         int maxParagraph,
                                         ServiceContext context,
