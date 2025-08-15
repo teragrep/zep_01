@@ -57,6 +57,7 @@ import org.apache.spark.sql.types.DataTypes;
 import org.apache.spark.sql.types.MetadataBuilder;
 import org.apache.spark.sql.types.StructField;
 import org.apache.spark.sql.types.StructType;
+import org.junit.Assert;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.slf4j.Logger;
@@ -234,6 +235,9 @@ public class DTTableDatasetNgTest {
             dataBuilder.add(rowJson);
         }
         JsonArray data = dataBuilder.build();
+
+        // Ensure that data field has the correct number of rows.
+        Assertions.assertEquals(5,data.size());
 
         JsonObject expectedJson = Json.createObjectBuilder()
                 .add("headers",headers)
