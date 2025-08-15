@@ -37,6 +37,8 @@ import java.util.Map;
 import java.util.Set;
 import javax.inject.Inject;
 
+import jakarta.json.Json;
+import jakarta.json.JsonObject;
 import org.apache.commons.lang3.StringUtils;
 import com.teragrep.zep_01.conf.ZeppelinConfiguration;
 import com.teragrep.zep_01.display.AngularObject;
@@ -664,7 +666,18 @@ public class NotebookService {
 
   public void updateParagraphResult(String noteId, String paragraphId, String interpreterGroupId,int draw, int start, int length, String searchString,ServiceContext context, ServiceCallback<AngularObject> callback) throws IOException {
     // Make an AJAXRequest based on given information
-    updateAngularObject(noteId,paragraphId,interpreterGroupId,"AJAXRequest_"+paragraphId,"{\"draw\":"+draw+",\"start\":"+start+",\"length\":"+length+",\"search\":{\"value\":\""+searchString+"\",\"regex\":false}}",context,callback);
+    JsonObject ajaxRequestValue = Json.createObjectBuilder()
+            .add("draw",draw)
+            .add("start",start)
+            .add("length",length)
+            .add("search",
+                    Json.createObjectBuilder()
+                            .add("value",searchString)
+                            .add("regex",false)
+                            .build())
+            .build();
+
+    updateAngularObject(noteId,paragraphId,interpreterGroupId,"AJAXRequest_"+paragraphId,ajaxRequestValue.toString(),context,callback);
   }
 
   public Paragraph getNextSessionParagraph(String noteId,
