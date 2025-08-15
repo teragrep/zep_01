@@ -159,8 +159,9 @@ public final class DTTableDatasetNg extends AbstractUserInterfaceElement {
             lock.lock();
             if (rowDataset.schema().nonEmpty()) {
                 // needs to be here as sparkContext might disappear later
-                datasetAsJSONSchema = DTHeader.schemaToHeader(rowDataset.schema());
-                datasetAsJSONFormattedSchema = DTHeader.schemaToJsonHeader(rowDataset.schema());
+                DTHeader dtHeader = new DTHeader(rowDataset.schema());
+                datasetAsJSONSchema = dtHeader.xml();
+                datasetAsJSONFormattedSchema = dtHeader.json();
                 datasetAsJSON = rowDataset.toJSON().collectAsList();
                 updatePage(0,currentAJAXLength,"",1);
             }

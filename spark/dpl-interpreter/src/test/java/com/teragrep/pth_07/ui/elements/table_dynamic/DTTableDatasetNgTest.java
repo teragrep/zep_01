@@ -49,9 +49,6 @@ import com.google.gson.Gson;
 import com.teragrep.pth_07.ui.elements.table_dynamic.pojo.AJAXRequest;
 import com.teragrep.zep_01.display.AngularObject;
 import com.teragrep.zep_01.display.AngularObjectListener;
-import com.teragrep.zep_01.display.AngularObjectRegistry;
-import com.teragrep.zep_01.display.AngularObjectRegistryListener;
-import com.teragrep.zep_01.interpreter.InterpreterContext;
 import org.apache.spark.sql.Dataset;
 import org.apache.spark.sql.Row;
 import org.apache.spark.sql.RowFactory;
@@ -60,7 +57,6 @@ import org.apache.spark.sql.types.DataTypes;
 import org.apache.spark.sql.types.MetadataBuilder;
 import org.apache.spark.sql.types.StructField;
 import org.apache.spark.sql.types.StructType;
-import org.junit.Assert;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.slf4j.Logger;
@@ -71,7 +67,6 @@ import java.io.StringReader;
 import java.sql.Timestamp;
 import java.time.Instant;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.UUID;
 
@@ -210,7 +205,8 @@ public class DTTableDatasetNgTest {
 
         JsonArray formated = DTTableDatasetNg.dataStreamParser(subList);
 
-        JsonObject headers = Json.createReader(new StringReader(DTHeader.schemaToJsonHeader(testSchema))).readObject();;
+        DTHeader dtHeader = new DTHeader(testSchema);
+        JsonObject headers = Json.createReader(new StringReader(dtHeader.json())).readObject();;
         JsonObject response = DTTableDatasetNg.DTNetResponse(formated, headers, 1, datasetAsJSON.size(),formated.size());
 
         ArrayList<String> timestamps = new ArrayList<>();

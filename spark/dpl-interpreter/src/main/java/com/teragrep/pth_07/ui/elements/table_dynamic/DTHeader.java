@@ -66,7 +66,12 @@ import java.io.StringWriter;
 
 public class DTHeader {
 
-    public static String schemaToHeader(StructType schema) throws TransformerException, ParserConfigurationException {
+    private final StructType schema;
+    public DTHeader(StructType schema){
+        this.schema = schema;
+    }
+
+    public String xml() throws TransformerException, ParserConfigurationException {
         DocumentBuilderFactory docFactory = DocumentBuilderFactory.newInstance();
         DocumentBuilder docBuilder = docFactory.newDocumentBuilder();
 
@@ -103,7 +108,7 @@ public class DTHeader {
         return writer.getBuffer().toString();
     }
 
-    public static String schemaToJsonHeader(StructType schema) {
+    public String json() {
 
         JsonObjectBuilder builder = Json.createObjectBuilder();
 

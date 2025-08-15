@@ -76,7 +76,8 @@ public class DTHeaderTest {
     @Test
     public void testDTHeader() throws ParserConfigurationException, TransformerException {
         String e = "<thead><tr><th>_time</th><th>_raw</th><th>index</th><th>sourcetype</th><th>host</th><th>source</th><th>partition</th><th>offset</th></tr></thead>";
-        assertEquals(e, DTHeader.schemaToHeader(Schema));
+        DTHeader dtHeader = new DTHeader(Schema);
+        assertEquals(e, dtHeader.xml());
     }
     @Test
     public void testJSONDTHeader() throws ParserConfigurationException, TransformerException {
@@ -91,7 +92,8 @@ public class DTHeaderTest {
                 .add("offset","")
                 .build();
         String e = json.toString();
-        assertEquals(e, DTHeader.schemaToJsonHeader(Schema));
+        DTHeader dtHeader = new DTHeader(Schema);
+        assertEquals(e, dtHeader.json());
     }
 
 }
