@@ -66,13 +66,12 @@ import org.junit.jupiter.api.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import javax.json.Json;
-import javax.json.JsonArray;
-import javax.json.JsonObject;
+import javax.json.*;
 import java.io.StringReader;
 import java.sql.Timestamp;
 import java.time.Instant;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.UUID;
 
@@ -212,25 +211,45 @@ public class DTTableDatasetNgTest {
         JsonArray formated = DTTableDatasetNg.dataStreamParser(subList);
 
         JsonObject headers = Json.createReader(new StringReader(DTHeader.schemaToJsonHeader(testSchema))).readObject();;
-            JsonObject response = DTTableDatasetNg.DTNetResponse(formated, headers, 1, datasetAsJSON.size(),formated.size());
+        JsonObject response = DTTableDatasetNg.DTNetResponse(formated, headers, 1, datasetAsJSON.size(),formated.size());
 
-            assertEquals("" +
-                            "{" +
-                            "\"headers\":{\"_time\":\"\",\"id\":\"\",\"_raw\":\"\",\"index\":\"\",\"sourcetype\":\"\",\"host\":\"\",\"source\":\"\",\"partition\":\"\",\"offset\":\"\",\"origin\":\"\"}," +
-                            "\"data\":" +
-                            "[" +
-                            "{\"_time\":\"1970-01-01T00:00:49.000Z\",\"id\":0,\"_raw\":\"data data\",\"index\":\"index_A\",\"sourcetype\":\"stream\",\"host\":\"host\",\"source\":\"input\",\"partition\":\"0\",\"offset\":0,\"origin\":\"test data\"}," +
-                            "{\"_time\":\"1970-01-01T00:00:48.000Z\",\"id\":0,\"_raw\":\"data data\",\"index\":\"index_A\",\"sourcetype\":\"stream\",\"host\":\"host\",\"source\":\"input\",\"partition\":\"0\",\"offset\":0,\"origin\":\"test data\"}," +
-                            "{\"_time\":\"1970-01-01T00:00:47.000Z\",\"id\":0,\"_raw\":\"data data\",\"index\":\"index_A\",\"sourcetype\":\"stream\",\"host\":\"host\",\"source\":\"input\",\"partition\":\"0\",\"offset\":0,\"origin\":\"test data\"}," +
-                            "{\"_time\":\"1970-01-01T00:00:46.000Z\",\"id\":0,\"_raw\":\"data data\",\"index\":\"index_A\",\"sourcetype\":\"stream\",\"host\":\"host\",\"source\":\"input\",\"partition\":\"0\",\"offset\":0,\"origin\":\"test data\"}," +
-                            "{\"_time\":\"1970-01-01T00:00:45.000Z\",\"id\":0,\"_raw\":\"data data\",\"index\":\"index_A\",\"sourcetype\":\"stream\",\"host\":\"host\",\"source\":\"input\",\"partition\":\"0\",\"offset\":0,\"origin\":\"test data\"}" +
-                            "]," +
-                            "\"draw\":1," +
-                            "\"recordsTotal\":49," +
-                            "\"recordsFiltered\":5"+
-                            "}"
-                    , response.toString()
-            );
+        ArrayList<String> timestamps = new ArrayList<>();
+        timestamps.add("1970-01-01T00:00:49.000Z");
+        timestamps.add("1970-01-01T00:00:48.000Z");
+        timestamps.add("1970-01-01T00:00:47.000Z");
+        timestamps.add("1970-01-01T00:00:46.000Z");
+        timestamps.add("1970-01-01T00:00:45.000Z");
+
+        JsonArrayBuilder dataBuilder = Json.createArrayBuilder();
+        for (String timestamp:timestamps
+             ) {
+            JsonObject rowJson = Json.createObjectBuilder()
+                    .add("_time",timestamp)
+                    .add("id",0)
+                    .add("_raw","data data")
+                    .add("index","index_A")
+                    .add("sourcetype","stream")
+                    .add("host","host")
+                    .add("source","input")
+                    .add("partition","0")
+                    .add("offset",0)
+                    .add("origin","test data")
+                    .build();
+            dataBuilder.add(rowJson);
+        }
+        JsonArray data = dataBuilder.build();
+
+        JsonObject expectedJson = Json.createObjectBuilder()
+                .add("headers",headers)
+                .add("data", data)
+                .add("draw",1)
+                .add("recordsTotal",49)
+                .add("recordsFiltered",5)
+                .build();
+
+        assertEquals(expectedJson.toString()
+                , response.toString()
+        );
     }
 
     @Test
@@ -270,6 +289,5 @@ public class DTTableDatasetNgTest {
 
         return rowArrayList;
     }
-
 
 }
