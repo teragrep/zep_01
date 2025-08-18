@@ -37,6 +37,8 @@ import java.util.concurrent.atomic.AtomicReference;
 import javax.inject.Inject;
 import javax.inject.Provider;
 import javax.servlet.http.HttpServletRequest;
+
+import com.teragrep.zep_01.rest.exception.BadRequestException;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.apache.thrift.TException;
@@ -1121,6 +1123,9 @@ public class NotebookServer extends WebSocketServlet
     final int length = (int) Double.parseDouble(fromMessage.get("length").toString());
     final String search = (String) ((Map) fromMessage.get("search")).get("value");
     final int draw = (int) Double.parseDouble(fromMessage.get("draw").toString());
+    if(noteId == null || paragraphId == null || search == null){
+      throw new BadRequestException("Request must contain \"noteId\", \"paragraphId\", \"start\", \"length\" and \"search\" parameters!");
+    }
     getNotebookService().updateParagraphResult(noteId,paragraphId,interpreterGroupId,draw,start,length,search,context,
             new WebSocketServiceCallback<AngularObject>(conn){
       @Override
