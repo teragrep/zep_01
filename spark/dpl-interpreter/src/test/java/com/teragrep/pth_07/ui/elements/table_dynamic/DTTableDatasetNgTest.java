@@ -259,7 +259,16 @@ public class DTTableDatasetNgTest {
         String paragraphId = "testParag";
         String noteId ="testNoteId";
         String angularObjectName = "AJAXRequest_"+paragraphId;
-        String angularObjectContent = "{\"start\":0,\"length\":25,\"search\":{\"value\":\"\",\"regex\":\"false\"}}";
+        JsonObject angularObject  = Json.createObjectBuilder()
+                .add("start",0)
+                .add("length",25)
+                .add("search",Json.createObjectBuilder()
+                        .add("value","")
+                        .add("regex",false)
+                        .build())
+                .build();
+
+        String angularObjectContent = angularObject.toString();
         AngularObjectListener listener = new AngularObjectListener() {
             @Override
             public void updated(AngularObject updatedObject) {
