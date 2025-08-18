@@ -48,7 +48,11 @@ package com.teragrep.pth_07.ui.elements.table_dynamic;
 import java.util.List;
 
 class DTPagination {
-    static List<String> paginate(List<String> rowList, int pageSize, int pageStart) {
+
+    public DTPagination(){
+
+    }
+    public List<String> paginate(List<String> rowList, int pageSize, int pageStart) {
         // ranges must be greater than 0
         int fromIndex = Math.max(pageStart, 0);
         int toIndex = Math.max(fromIndex + pageSize, 0);

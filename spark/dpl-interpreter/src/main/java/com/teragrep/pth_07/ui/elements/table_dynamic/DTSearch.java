@@ -56,7 +56,10 @@ import java.util.List;
 public class DTSearch {
     protected static final Logger LOGGER = LoggerFactory.getLogger(DTSearch.class);
 
-    static List<String> search(List<String> rowList, String searchString){
+    public DTSearch(){
+
+    }
+    public List<String> search(List<String> rowList, String searchString){
         List<String> searchedList = new ArrayList<>();
         if (!"".equals(searchString)) {
             try {

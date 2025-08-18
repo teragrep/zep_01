@@ -55,6 +55,7 @@ public class DTOrderTest {
 
     @Test
     public void timeOrderAll() {
+        DTOrder dtOrder = new DTOrder();
         List<String> listToOrder = new LinkedList<>();
 
         String zero1 = "{\"_time\":\"1970-01-01T00:00:01.000Z\",\"id\":0,\"_raw\":\"test abc data\",\"index\":\"index_A\",\"sourcetype\":\"stream\",\"host\":\"host\",\"source\":\"input\",\"partition\":\"0\",\"offset\":0,\"origin\":\"test test\"}";
@@ -68,7 +69,7 @@ public class DTOrderTest {
         String zero5 = "{\"_time\":\"1970-01-01T00:00:05.000Z\",\"id\":0,\"_raw\":\"test mno data\",\"index\":\"index_A\",\"sourcetype\":\"stream\",\"host\":\"host\",\"source\":\"input\",\"partition\":\"0\",\"offset\":0,\"origin\":\"test test\"}";
         listToOrder.add(zero5);
 
-        List<String> resultList = DTOrder.order(listToOrder, null);
+        List<String> resultList = dtOrder.order(listToOrder, null);
         Assertions.assertEquals(zero5, resultList.get(0));
         Assertions.assertEquals(zero4, resultList.get(1));
         Assertions.assertEquals(zero3, resultList.get(2));
@@ -79,6 +80,7 @@ public class DTOrderTest {
 
     @Test
     public void orderAllNoTime() {
+        DTOrder dtOrder = new DTOrder();
         List<String> listToOrder = new LinkedList<>();
 
         listToOrder.add("{\"id\":0,\"_raw\":\"test abc data\",\"index\":\"index_A\",\"sourcetype\":\"stream\",\"host\":\"host\",\"source\":\"input\",\"partition\":\"0\",\"offset\":0,\"origin\":\"test test\"}");
@@ -87,12 +89,13 @@ public class DTOrderTest {
         listToOrder.add("{\"id\":0,\"_raw\":\"test jkl data\",\"index\":\"index_A\",\"sourcetype\":\"stream\",\"host\":\"host\",\"source\":\"input\",\"partition\":\"0\",\"offset\":0,\"origin\":\"test test\"}");
         listToOrder.add("{\"id\":0,\"_raw\":\"test mno data\",\"index\":\"index_A\",\"sourcetype\":\"stream\",\"host\":\"host\",\"source\":\"input\",\"partition\":\"0\",\"offset\":0,\"origin\":\"test test\"}");
 
-        List<String> resultList = DTOrder.order(listToOrder, null);
+        List<String> resultList = dtOrder.order(listToOrder, null);
         Assertions.assertEquals(5, resultList.size());
     }
 
     @Test
     public void orderAllTimeSome() {
+        DTOrder dtOrder = new DTOrder();
         List<String> listToOrder = new LinkedList<>();
 
         listToOrder.add("{\"id\":0,\"_raw\":\"test abc data\",\"index\":\"index_A\",\"sourcetype\":\"stream\",\"host\":\"host\",\"source\":\"input\",\"partition\":\"0\",\"offset\":0,\"origin\":\"test test\"}");
@@ -101,7 +104,7 @@ public class DTOrderTest {
         listToOrder.add("{\"id\":0,\"_raw\":\"test jkl data\",\"index\":\"index_A\",\"sourcetype\":\"stream\",\"host\":\"host\",\"source\":\"input\",\"partition\":\"0\",\"offset\":0,\"origin\":\"test test\"}");
         listToOrder.add("{\"id\":0,\"_raw\":\"test mno data\",\"index\":\"index_A\",\"sourcetype\":\"stream\",\"host\":\"host\",\"source\":\"input\",\"partition\":\"0\",\"offset\":0,\"origin\":\"test test\"}");
 
-        List<String> resultList = DTOrder.order(listToOrder, null);
+        List<String> resultList = dtOrder.order(listToOrder, null);
         Assertions.assertEquals(5, resultList.size());
     }
 }
