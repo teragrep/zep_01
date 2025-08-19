@@ -49,10 +49,11 @@ import java.util.List;
 
 class DTPagination {
 
-    public DTPagination(){
-
+    private final List<String> rowList;
+    public DTPagination(List<String> rowList){
+        this.rowList = rowList;
     }
-    public List<String> paginate(List<String> rowList, int pageSize, int pageStart) {
+    public List<String> paginate(int pageSize, int pageStart) {
         // ranges must be greater than 0
         int fromIndex = Math.max(pageStart, 0);
         int toIndex = Math.max(fromIndex + pageSize, 0);

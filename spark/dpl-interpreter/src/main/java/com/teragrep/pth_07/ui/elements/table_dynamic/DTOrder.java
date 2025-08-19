@@ -75,11 +75,11 @@ import java.util.*;
 
 public class DTOrder {
     protected static final Logger LOGGER = LoggerFactory.getLogger(DTOrder.class);
-
-    public DTOrder(){
-
+    private final List<String> rowList;
+    public DTOrder(List<String> rowList){
+        this.rowList = rowList;
     }
-    public List<String> order(List<String> rowList, List<Order> currentOrder) {
+    public List<String> order(List<Order> currentOrder) {
 
         /*
         TODO currently only auto orders by _time@desc

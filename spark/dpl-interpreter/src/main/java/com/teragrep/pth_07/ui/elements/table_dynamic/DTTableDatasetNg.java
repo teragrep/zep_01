@@ -77,10 +77,6 @@ public final class DTTableDatasetNg extends AbstractUserInterfaceElement {
     private List<String> datasetAsJSON = null;
     private String datasetAsJSONSchema = "";
     private String datasetAsJSONFormattedSchema = "";
-    private final DTSearch dtSearch;
-    private final DTPagination dtPagination;
-    private final DTOrder dtOrder;
-
     private final Gson gson;
 
     /*
@@ -103,9 +99,6 @@ public final class DTTableDatasetNg extends AbstractUserInterfaceElement {
 
         AJAXRequestAngularObject.addWatcher(new AJAXRequestWatcher(interpreterContext, this));
         this.gson = new Gson();
-        this.dtSearch = new DTSearch();
-        this.dtPagination = new DTPagination();
-        this.dtOrder = new DTOrder();
     }
 
     void refreshPage() {
@@ -198,19 +191,21 @@ public final class DTTableDatasetNg extends AbstractUserInterfaceElement {
     }
 
     private JsonObject SearchAndPaginate(int draw, int start, int length, String searchString){
-
+        DTSearch dtSearch = new DTSearch(datasetAsJSON);
         List<Order> currentOrder = null;
 
         // TODO these all decode the JSON, it refactor therefore to decode only once
         // searching
-        List<String> searchedList = dtSearch.search(datasetAsJSON, searchString);
+        List<String> searchedList = dtSearch.search(searchString);
 
         // TODO ordering
+        //DTOrder dtOrder = new DTOrder(searchedList);
         //List<String> orderedlist = dtOrder.order(searchedList, currentOrder);
         List<String> orderedlist = searchedList;
 
         // pagination
-        List<String> paginatedList = dtPagination.paginate(orderedlist, length, start);
+        DTPagination dtPagination = new DTPagination(orderedlist);
+        List<String> paginatedList = dtPagination.paginate(length, start);
 
         // ui formatting
         JsonArray formated = dataStreamParser(paginatedList);
