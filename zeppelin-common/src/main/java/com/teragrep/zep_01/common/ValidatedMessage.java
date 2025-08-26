@@ -133,14 +133,12 @@ public class ValidatedMessage {
    */
   private void validateObject(JsonObject toValidate, JsonObject toCompare) throws JsonException{
     for (String requiredKey : toCompare.keySet()) {
-      JsonValue valueToValidate = toValidate.get(requiredKey);
-      JsonValue valueToCompare = toCompare.get(requiredKey);
-      if(valueToValidate == null){
+      if(!toValidate.containsKey(requiredKey)){
         throw new JsonException("Provided JSONObject does not contain a required key "+requiredKey);
       }
-      else {
-        validate(valueToValidate, valueToCompare);
-      }
+      JsonValue valueToValidate = toValidate.get(requiredKey);
+      JsonValue valueToCompare = toCompare.get(requiredKey);
+      validate(valueToValidate, valueToCompare);
     }
   }
 
