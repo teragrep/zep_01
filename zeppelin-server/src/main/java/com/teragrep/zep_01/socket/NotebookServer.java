@@ -40,9 +40,6 @@ import javax.servlet.http.HttpServletRequest;
 
 import com.teragrep.zep_01.common.ValidatedMessage;
 import com.teragrep.zep_01.rest.exception.BadRequestException;
-import jakarta.json.Json;
-import jakarta.json.JsonObject;
-import jakarta.json.JsonValue;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.apache.thrift.TException;
@@ -81,7 +78,6 @@ import com.teragrep.zep_01.service.SimpleServiceCallback;
 import com.teragrep.zep_01.ticket.TicketContainer;
 import com.teragrep.zep_01.types.InterpreterSettingsList;
 import com.teragrep.zep_01.user.AuthenticationInfo;
-import com.teragrep.zep_01.util.IdHashes;
 import com.teragrep.zep_01.utils.CorsUtils;
 import com.teragrep.zep_01.utils.TestUtils;
 import org.eclipse.jetty.util.annotation.ManagedAttribute;
@@ -1117,32 +1113,21 @@ public class NotebookServer extends WebSocketServlet
   private void updateParagraphResult(NotebookSocket conn,
                                      ServiceContext context,
                                      Message fromMessage) throws IOException {
-    JsonObject requiredKeys = Json.createObjectBuilder()
-            .add("op", "")
-            .add("data", Json.createObjectBuilder()
-                    .add("noteId","")
-                    .add("paragraphId","")
-                    .add("start","")
-                    .add("length","")
-                    .add("search",Json.createObjectBuilder()
-                            .add("value","")
-                            .build())
-                    .add("draw","")
-                    .build())
-            .build();
-    ValidatedMessage validatedMessage = new ValidatedMessage(fromMessage, requiredKeys);
-    if(validatedMessage.validate()){
-      final String noteId = (String) validatedMessage.get("noteId");
-      final String paragraphId = (String) validatedMessage.get("paragraphId");
+    ValidatedMessage validatedMessage = new ValidatedMessage(fromMessage);
+    if(validatedMessage.isValid()){
+      // Casting is required to get Message parameters in correct format, as GSON parses all numbers as Doubles, and Message.get() returns a generic Object.
+
+      final String noteId = (String) fromMessage.get("noteId");
+      final String paragraphId = (String) fromMessage.get("paragraphId");
 
       // Build an interpreterGroupId based on given user and note Id.
       // InterpreterGroupId is used to find the correct AngularObjectRegistry instance containing the DTTableDatasetNG object we want to pass the search, length, start and draw values to.
 
       final String interpreterGroupId = "spark-"+conn.getUser()+"-"+noteId;
-      final int start = (int) Double.parseDouble(validatedMessage.get("start").toString());
-      final int length = (int) Double.parseDouble(validatedMessage.get("length").toString());
-      final String search = (String) ((Map) validatedMessage.get("search")).get("value");
-      final int draw = (int) Double.parseDouble(validatedMessage.get("draw").toString());
+      final int start = (int) Double.parseDouble(fromMessage.get("start").toString());
+      final int length = (int) Double.parseDouble(fromMessage.get("length").toString());
+      final String search = (String) ((Map) fromMessage.get("search")).get("value");
+      final int draw = (int) Double.parseDouble(fromMessage.get("draw").toString());
       getNotebookService().updateParagraphResult(noteId,paragraphId,interpreterGroupId,draw,start,length,search,context,
               new WebSocketServiceCallback<AngularObject>(conn){
                 @Override
