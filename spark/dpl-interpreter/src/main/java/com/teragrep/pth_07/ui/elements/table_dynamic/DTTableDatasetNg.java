@@ -72,7 +72,7 @@ public final class DTTableDatasetNg extends AbstractUserInterfaceElement {
     private final AngularObject<String> AJAXRequestAngularObject;
 
     private List<String> datasetAsJSON = null;
-    private String schemaHeadersJson = "";
+    private JsonArray schemaHeadersJson;
 
     /*
     currentAJAXLength is shared between all the clients when server refreshes
@@ -91,7 +91,7 @@ public final class DTTableDatasetNg extends AbstractUserInterfaceElement {
                 getInterpreterContext().getParagraphId(),
                 true
         );
-
+        schemaHeadersJson = Json.createArrayBuilder().build();
         AJAXRequestAngularObject.addWatcher(new AJAXRequestWatcher(interpreterContext, this));
     }
 
@@ -150,7 +150,7 @@ public final class DTTableDatasetNg extends AbstractUserInterfaceElement {
             if (rowDataset.schema().nonEmpty()) {
                 // needs to be here as sparkContext might disappear later
                 DTHeader dtHeader = new DTHeader(rowDataset.schema());
-                schemaHeadersJson = dtHeader.json().toString();
+                schemaHeadersJson = dtHeader.json();
                 datasetAsJSON = rowDataset.toJSON().collectAsList();
                 updatePage(0,currentAJAXLength,"",1);
             }
@@ -197,18 +197,10 @@ public final class DTTableDatasetNg extends AbstractUserInterfaceElement {
         // ui formatting
         JsonArray formated = dataStreamParser(paginatedList);
 
-        JsonArray jsonHeaders;
-        // header formatting
-        if(schemaHeadersJson != ""){
-            jsonHeaders = Json.createReader(new StringReader(schemaHeadersJson)).readArray();
-        }
-        else {
-            jsonHeaders = Json.createArrayBuilder().build();
-        }
         int recordsTotal = datasetAsJSON.size();
         int recordsFiltered = searchedList.size();
 
-        return DTNetResponse(formated, jsonHeaders, draw, recordsTotal,recordsFiltered);
+        return DTNetResponse(formated, schemaHeadersJson, draw, recordsTotal,recordsFiltered);
     }
 
     static JsonArray dataStreamParser(List<String> data){
