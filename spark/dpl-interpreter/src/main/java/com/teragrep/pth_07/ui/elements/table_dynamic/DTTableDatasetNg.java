@@ -45,7 +45,6 @@
  */
 package com.teragrep.pth_07.ui.elements.table_dynamic;
 
-import com.teragrep.pth_07.ui.elements.table_dynamic.pojo.AJAXRequest;
 import com.teragrep.pth_07.ui.elements.table_dynamic.pojo.Order;
 import com.teragrep.pth_07.ui.elements.AbstractUserInterfaceElement;
 import org.apache.spark.sql.Dataset;
@@ -110,14 +109,14 @@ public final class DTTableDatasetNg extends AbstractUserInterfaceElement {
         }
     }
 
-    void handeAJAXRequest(AJAXRequest ajaxRequest) {
+    void handeAJAXRequest(JsonObject ajaxRequest) {
         try {
             lock.lock();
             // Apply defaults if parameters are not provided
-            int start = (ajaxRequest.getStart() == null) ? 0 : ajaxRequest.getStart();
-            int length = (ajaxRequest.getLength() == null) ? 25 : ajaxRequest.getLength();
-            int draw = (ajaxRequest.getDraw() == null) ? 1 : ajaxRequest.getDraw();
-            String searchString = (ajaxRequest.getSearch().getValue() == null) ? "" : ajaxRequest.getSearch().getValue();
+            int start = ajaxRequest.getJsonNumber("start").intValue();
+            int length = ajaxRequest.getJsonNumber("length").intValue();
+            int draw = ajaxRequest.getJsonNumber("draw").intValue();
+            String searchString = ajaxRequest.getJsonObject("search").getString("value");
             updatePage(start,length,searchString, draw);
         }
         finally {

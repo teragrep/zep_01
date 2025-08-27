@@ -45,33 +45,30 @@
  */
 package com.teragrep.pth_07.ui.elements.table_dynamic;
 
-import com.google.gson.Gson;
-import com.teragrep.pth_07.ui.elements.table_dynamic.pojo.AJAXRequest;
 import com.teragrep.zep_01.display.AngularObjectWatcher;
 import com.teragrep.zep_01.interpreter.InterpreterContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import javax.json.*;
+import java.io.StringReader;
+
 public class AJAXRequestWatcher extends AngularObjectWatcher {
     private static final Logger LOGGER = LoggerFactory.getLogger(AJAXRequestWatcher.class);
-
-    private final Gson gson;
 
     private DTTableDatasetNg dtTableDatasetNg;
 
     public AJAXRequestWatcher(InterpreterContext context) {
         super(context);
-        this.gson = new Gson();
     }
 
     public AJAXRequestWatcher(InterpreterContext context, DTTableDatasetNg dtTableDatasetNg) {
         super(context);
-        this.gson = new Gson();
         this.dtTableDatasetNg = dtTableDatasetNg;
     }
 
     @Override
-    public void watch(Object o, Object o1, InterpreterContext interpreterContext) {
+    public void watch(Object o, Object o1, InterpreterContext interpreterContext) throws JsonException {
         assert(dtTableDatasetNg != null);
 
         if(LOGGER.isTraceEnabled()) {
@@ -79,14 +76,19 @@ public class AJAXRequestWatcher extends AngularObjectWatcher {
             LOGGER.trace("AJAXRequest -> {}", o1.toString());
         }
 
-        AJAXRequest ajaxRequest = gson.fromJson((String) o1, AJAXRequest.class);
-
-        // validate request
-        if (ajaxRequest.getDraw() != null
-                && ajaxRequest.getStart() != null
-                && ajaxRequest.getLength() != null
-                && ajaxRequest.getSearch() != null
-                && ajaxRequest.getSearch().getValue() != null
+        String requestString = (String) o1;
+        JsonObject ajaxRequest = Json.createReader(new StringReader(requestString)).readObject();
+        // validate request by checking that every required key exists and that the type of the key is expected.
+        if (ajaxRequest.get("draw") != null
+                && ajaxRequest.get("draw").getValueType() == JsonValue.ValueType.NUMBER
+                && ajaxRequest.get("start") != null
+                && ajaxRequest.get("start").getValueType() == JsonValue.ValueType.NUMBER
+                && ajaxRequest.get("length") != null
+                && ajaxRequest.get("length").getValueType() == JsonValue.ValueType.NUMBER
+                && ajaxRequest.get("search") != null
+                && ajaxRequest.get("search").getValueType() == JsonValue.ValueType.OBJECT
+                && ajaxRequest.getJsonObject("search").get("value") != null
+                && ajaxRequest.getJsonObject("search").get("value").getValueType() == JsonValue.ValueType.STRING
         ) {
             dtTableDatasetNg.handeAJAXRequest(ajaxRequest);
         }

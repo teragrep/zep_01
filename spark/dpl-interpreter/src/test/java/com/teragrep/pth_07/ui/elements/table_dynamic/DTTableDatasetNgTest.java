@@ -254,8 +254,6 @@ public class DTTableDatasetNgTest {
 
     @Test
     public void AjaxRequestToJsonTest(){
-        Gson gson = new Gson();
-
         String paragraphId = "testParag";
         String noteId ="testNoteId";
         String angularObjectName = "AJAXRequest_"+paragraphId;
@@ -276,12 +274,11 @@ public class DTTableDatasetNgTest {
             }
         };
         AngularObject<String> ao = new AngularObject<String>(angularObjectName,angularObjectContent,noteId,paragraphId,listener);
-
-        AJAXRequest ajaxRequest = gson.fromJson((String) ao.get(), AJAXRequest.class);
-        Assertions.assertEquals(0,ajaxRequest.getStart());
-        Assertions.assertEquals(25,ajaxRequest.getLength());
-        Assertions.assertEquals("",ajaxRequest.getSearch().getValue());
-        Assertions.assertEquals(false,ajaxRequest.getSearch().getRegex());
+        JsonObject ajaxRequest = Json.createReader(new StringReader(ao.get().toString())).readObject();
+        Assertions.assertEquals(0,ajaxRequest.getJsonNumber("start").intValue());
+        Assertions.assertEquals(25,ajaxRequest.getJsonNumber("length").intValue());
+        Assertions.assertEquals("",ajaxRequest.getJsonObject("search").getString("value").toString());
+        Assertions.assertEquals(false,ajaxRequest.getJsonObject("search").getBoolean("regex"));
     }
 
     private List<Row> makeRowsList(long _time, Long id, String _raw, String index, String sourcetype, String host, String source, String partition, Long offset, String origin, long amount) {
