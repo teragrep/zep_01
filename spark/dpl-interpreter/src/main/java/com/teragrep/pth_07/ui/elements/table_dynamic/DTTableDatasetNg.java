@@ -45,8 +45,6 @@
  */
 package com.teragrep.pth_07.ui.elements.table_dynamic;
 
-import com.google.gson.Gson;
-import com.google.gson.JsonSyntaxException;
 import com.teragrep.pth_07.ui.elements.table_dynamic.pojo.AJAXRequest;
 import com.teragrep.pth_07.ui.elements.table_dynamic.pojo.Order;
 import com.teragrep.pth_07.ui.elements.AbstractUserInterfaceElement;
@@ -77,7 +75,6 @@ public final class DTTableDatasetNg extends AbstractUserInterfaceElement {
     private List<String> datasetAsJSON = null;
     private String datasetAsJSONSchema = "";
     private String datasetAsJSONFormattedSchema = "";
-    private final Gson gson;
 
     /*
     currentAJAXLength is shared between all the clients when server refreshes
@@ -98,7 +95,6 @@ public final class DTTableDatasetNg extends AbstractUserInterfaceElement {
         );
 
         AJAXRequestAngularObject.addWatcher(new AJAXRequestWatcher(interpreterContext, this));
-        this.gson = new Gson();
     }
 
     void refreshPage() {
@@ -123,9 +119,6 @@ public final class DTTableDatasetNg extends AbstractUserInterfaceElement {
             int draw = (ajaxRequest.getDraw() == null) ? 1 : ajaxRequest.getDraw();
             String searchString = (ajaxRequest.getSearch().getValue() == null) ? "" : ajaxRequest.getSearch().getValue();
             updatePage(start,length,searchString, draw);
-        }
-        catch (JsonSyntaxException e) {
-            LOGGER.error(e.toString());
         }
         finally {
             lock.unlock();
