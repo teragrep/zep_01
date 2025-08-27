@@ -72,7 +72,6 @@ public final class DTTableDatasetNg extends AbstractUserInterfaceElement {
     private final AngularObject<String> AJAXRequestAngularObject;
 
     private List<String> datasetAsJSON = null;
-    private String schemaHeadersXml = "";
     private String schemaHeadersJson = "";
 
     /*
@@ -151,14 +150,10 @@ public final class DTTableDatasetNg extends AbstractUserInterfaceElement {
             if (rowDataset.schema().nonEmpty()) {
                 // needs to be here as sparkContext might disappear later
                 DTHeader dtHeader = new DTHeader(rowDataset.schema());
-                schemaHeadersXml = dtHeader.xml();
                 schemaHeadersJson = dtHeader.json().toString();
                 datasetAsJSON = rowDataset.toJSON().collectAsList();
                 updatePage(0,currentAJAXLength,"",1);
             }
-
-        } catch (ParserConfigurationException | TransformerException e) {
-            LOGGER.error(e.toString());
         } finally {
             lock.unlock();
         }
