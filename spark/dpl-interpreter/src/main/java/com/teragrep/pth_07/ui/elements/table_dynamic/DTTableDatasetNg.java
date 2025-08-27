@@ -72,8 +72,8 @@ public final class DTTableDatasetNg extends AbstractUserInterfaceElement {
     private final AngularObject<String> AJAXRequestAngularObject;
 
     private List<String> datasetAsJSON = null;
-    private String datasetAsJSONSchema = "";
-    private String datasetAsJSONFormattedSchema = "";
+    private String schemaHeadersXml = "";
+    private String schemaHeadersJson = "";
 
     /*
     currentAJAXLength is shared between all the clients when server refreshes
@@ -151,8 +151,8 @@ public final class DTTableDatasetNg extends AbstractUserInterfaceElement {
             if (rowDataset.schema().nonEmpty()) {
                 // needs to be here as sparkContext might disappear later
                 DTHeader dtHeader = new DTHeader(rowDataset.schema());
-                datasetAsJSONSchema = dtHeader.xml();
-                datasetAsJSONFormattedSchema = dtHeader.json().toString();
+                schemaHeadersXml = dtHeader.xml();
+                schemaHeadersJson = dtHeader.json().toString();
                 datasetAsJSON = rowDataset.toJSON().collectAsList();
                 updatePage(0,currentAJAXLength,"",1);
             }
@@ -202,18 +202,18 @@ public final class DTTableDatasetNg extends AbstractUserInterfaceElement {
         // ui formatting
         JsonArray formated = dataStreamParser(paginatedList);
 
-        JsonArray headers;
+        JsonArray jsonHeaders;
         // header formatting
-        if(datasetAsJSONFormattedSchema != ""){
-            headers = Json.createReader(new StringReader(datasetAsJSONFormattedSchema)).readArray();
+        if(schemaHeadersJson != ""){
+            jsonHeaders = Json.createReader(new StringReader(schemaHeadersJson)).readArray();
         }
         else {
-            headers = Json.createArrayBuilder().build();
+            jsonHeaders = Json.createArrayBuilder().build();
         }
         int recordsTotal = datasetAsJSON.size();
         int recordsFiltered = searchedList.size();
 
-        return DTNetResponse(formated, headers, draw, recordsTotal,recordsFiltered);
+        return DTNetResponse(formated, jsonHeaders, draw, recordsTotal,recordsFiltered);
     }
 
     static JsonArray dataStreamParser(List<String> data){
@@ -235,11 +235,10 @@ public final class DTTableDatasetNg extends AbstractUserInterfaceElement {
         }
     }
 
-    // Added headers to this object, should be contained in the AJAXResponse that UI receives.
-    static JsonObject DTNetResponse(JsonArray data, JsonArray datasetAsJSONSchema, int draw, int recordsTotal, int recordsFiltered){
+    static JsonObject DTNetResponse(JsonArray data, JsonArray schemaHeadersJson, int draw, int recordsTotal, int recordsFiltered){
         try{
             JsonObjectBuilder builder = Json.createObjectBuilder();
-            builder.add("headers",datasetAsJSONSchema);
+            builder.add("headers",schemaHeadersJson);
             builder.add("data", data);
             builder.add("draw", draw);
             builder.add("recordsTotal", recordsTotal);
