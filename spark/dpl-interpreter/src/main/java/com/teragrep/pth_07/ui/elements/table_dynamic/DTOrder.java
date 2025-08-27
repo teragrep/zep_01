@@ -73,7 +73,7 @@ import java.util.*;
 "search":{"value":"","regex":false}}
  */
 
-public class DTOrder {
+public final class DTOrder {
     protected static final Logger LOGGER = LoggerFactory.getLogger(DTOrder.class);
     private final List<String> rowList;
     public DTOrder(List<String> rowList){
@@ -158,5 +158,18 @@ public class DTOrder {
             LOGGER.error(e.toString());
             return rowList;
         }
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        DTOrder dtOrder = (DTOrder) o;
+        return Objects.equals(rowList, dtOrder.rowList);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(rowList);
     }
 }

@@ -3,6 +3,7 @@ package com.teragrep.zep_01.common;
 import com.google.gson.Gson;
 import jakarta.json.Json;
 import jakarta.json.JsonObject;
+import nl.jqno.equalsverifier.EqualsVerifier;
 import org.junit.Test;
 import org.junit.jupiter.api.Assertions;
 
@@ -61,5 +62,9 @@ public class ValidatedMessageTest {
             ValidatedMessage validatedMessage = new ValidatedMessage(testMessage);
             Assertions.assertFalse(validatedMessage.isValid());
         });
+    }
+    @Test
+    public void testContract() {
+        EqualsVerifier.forClass(ValidatedMessage.class).verify();
     }
 }

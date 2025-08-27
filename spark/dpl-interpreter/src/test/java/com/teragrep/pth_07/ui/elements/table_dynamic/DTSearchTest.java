@@ -45,6 +45,7 @@
  */
 package com.teragrep.pth_07.ui.elements.table_dynamic;
 
+import nl.jqno.equalsverifier.EqualsVerifier;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
@@ -113,5 +114,9 @@ public class DTSearchTest {
         List<String> resultList = dtSearch.search("68b329da9893e34099c7d8ad5cb9c940");
         System.out.println(resultList);
         Assertions.assertEquals(0, resultList.size());
+    }
+    @Test
+    public void testContract() {
+        EqualsVerifier.forClass(DTSearch.class).verify();
     }
 }

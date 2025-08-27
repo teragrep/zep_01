@@ -45,6 +45,7 @@
  */
 package com.teragrep.pth_07.ui.elements.table_dynamic;
 
+import nl.jqno.equalsverifier.EqualsVerifier;
 import org.apache.spark.sql.types.DataTypes;
 import org.apache.spark.sql.types.MetadataBuilder;
 import org.apache.spark.sql.types.StructField;
@@ -96,4 +97,8 @@ public class DTHeaderTest {
         assertEquals(e, dtHeader.json());
     }
 
+    @Test
+    public void testContract() {
+        EqualsVerifier.forClass(DTHeader.class).verify();
+    }
 }

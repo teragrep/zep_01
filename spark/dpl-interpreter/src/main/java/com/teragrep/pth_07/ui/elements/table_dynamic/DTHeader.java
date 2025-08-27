@@ -63,8 +63,9 @@ import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
 import java.io.StringWriter;
+import java.util.Objects;
 
-public class DTHeader {
+public final class DTHeader {
 
     private final StructType schema;
     public DTHeader(StructType schema){
@@ -118,5 +119,18 @@ public class DTHeader {
             builder.add(column.name(),"");
         }
         return builder.build().toString();
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        DTHeader dtHeader = (DTHeader) o;
+        return Objects.equals(schema, dtHeader.schema);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(schema);
     }
 }

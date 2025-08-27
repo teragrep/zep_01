@@ -45,6 +45,7 @@
  */
 package com.teragrep.pth_07.ui.elements.table_dynamic;
 
+import nl.jqno.equalsverifier.EqualsVerifier;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
@@ -165,5 +166,9 @@ public class DTPaginationTest {
         List<String> expectedList = new LinkedList<>();
         expectedList.add("99");
         Assertions.assertEquals(expectedList, lastPage);
+    }
+    @Test
+    public void testContract() {
+        EqualsVerifier.forClass(DTPagination.class).verify();
     }
 }

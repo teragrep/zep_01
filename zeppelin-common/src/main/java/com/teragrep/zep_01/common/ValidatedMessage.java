@@ -20,8 +20,9 @@ package com.teragrep.zep_01.common;
 import com.google.gson.internal.LinkedTreeMap;
 import jakarta.json.*;
 
+import java.util.Objects;
 
-public class ValidatedMessage {
+public final class ValidatedMessage {
   private final Message messageToValidate;
 
   /**
@@ -64,5 +65,23 @@ public class ValidatedMessage {
         valid = false;
       }
     return valid;
+  }
+
+  // Objects are equal if they are applied to the same Message object
+  @Override
+  public boolean equals(Object o) {
+    if (this == o) {
+      return true;
+    }
+    if (o == null || getClass() != o.getClass()) {
+      return false;
+    }
+    ValidatedMessage that = (ValidatedMessage) o;
+    return Objects.equals(messageToValidate, that.messageToValidate);
+  }
+
+  @Override
+  public int hashCode() {
+    return Objects.hash(messageToValidate);
   }
 }

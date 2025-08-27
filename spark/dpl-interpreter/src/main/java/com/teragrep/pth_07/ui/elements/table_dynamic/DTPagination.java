@@ -46,8 +46,9 @@
 package com.teragrep.pth_07.ui.elements.table_dynamic;
 
 import java.util.List;
+import java.util.Objects;
 
-class DTPagination {
+final class DTPagination {
 
     private final List<String> rowList;
     public DTPagination(List<String> rowList){
@@ -69,5 +70,18 @@ class DTPagination {
         }
 
         return rowList.subList(fromIndex, toIndex);
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        DTPagination that = (DTPagination) o;
+        return Objects.equals(rowList, that.rowList);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(rowList);
     }
 }
