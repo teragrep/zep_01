@@ -18,7 +18,6 @@
 package com.teragrep.zep_01.common;
 
 import com.google.gson.internal.LinkedTreeMap;
-import jakarta.json.*;
 
 import java.util.Objects;
 
@@ -32,7 +31,7 @@ public final class ValidatedMessage {
   public ValidatedMessage(Message messageToValidate){
     this.messageToValidate = messageToValidate;
   }
-  public boolean isValid() throws JsonException {
+  public boolean isValid() {
     boolean valid = true;
     if(! messageToValidate.op.equals(Message.OP.PARAGRAPH_UPDATE_RESULT)){
       valid = false;
