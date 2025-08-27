@@ -53,6 +53,7 @@ import org.apache.spark.sql.types.StructType;
 import org.junit.jupiter.api.Test;
 
 import javax.json.Json;
+import javax.json.JsonArray;
 import javax.json.JsonObject;
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.transform.TransformerException;
@@ -82,19 +83,19 @@ public class DTHeaderTest {
     }
     @Test
     public void testJSONDTHeader() throws ParserConfigurationException, TransformerException {
-        JsonObject json = Json.createObjectBuilder()
-                .add("_time","")
-                .add("_raw","")
-                .add("index","")
-                .add("sourcetype","")
-                .add("host","")
-                .add("source","")
-                .add("partition","")
-                .add("offset","")
+        JsonArray json = Json.createArrayBuilder()
+                .add("_time")
+                .add("_raw")
+                .add("index")
+                .add("sourcetype")
+                .add("host")
+                .add("source")
+                .add("partition")
+                .add("offset")
                 .build();
         String e = json.toString();
         DTHeader dtHeader = new DTHeader(Schema);
-        assertEquals(e, dtHeader.json());
+        assertEquals(e, dtHeader.json().toString());
     }
 
     @Test

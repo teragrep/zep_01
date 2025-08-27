@@ -52,7 +52,8 @@ import org.w3c.dom.Element;
 import scala.collection.Iterator;
 
 import javax.json.Json;
-import javax.json.JsonObjectBuilder;
+import javax.json.JsonArray;
+import javax.json.JsonArrayBuilder;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
@@ -109,16 +110,15 @@ public final class DTHeader {
         return writer.getBuffer().toString();
     }
 
-    public String json() {
+    public JsonArray json() {
 
-        JsonObjectBuilder builder = Json.createObjectBuilder();
-
+        JsonArrayBuilder builder = Json.createArrayBuilder();
         Iterator<StructField> it = schema.iterator();
         while(it.hasNext()) {
             StructField column = it.next();
-            builder.add(column.name(),"");
+            builder.add(column.name());
         }
-        return builder.build().toString();
+        return builder.build();
     }
 
     @Override

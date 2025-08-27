@@ -207,7 +207,7 @@ public class DTTableDatasetNgTest {
         JsonArray formated = DTTableDatasetNg.dataStreamParser(subList);
 
         DTHeader dtHeader = new DTHeader(testSchema);
-        JsonObject headers = Json.createReader(new StringReader(dtHeader.json())).readObject();;
+        JsonArray headers = dtHeader.json();
         JsonObject response = DTTableDatasetNg.DTNetResponse(formated, headers, 1, datasetAsJSON.size(),formated.size());
 
         ArrayList<String> timestamps = new ArrayList<>();

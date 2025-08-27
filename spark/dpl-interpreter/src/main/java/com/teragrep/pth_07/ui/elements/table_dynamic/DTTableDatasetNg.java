@@ -160,7 +160,7 @@ public final class DTTableDatasetNg extends AbstractUserInterfaceElement {
                 // needs to be here as sparkContext might disappear later
                 DTHeader dtHeader = new DTHeader(rowDataset.schema());
                 datasetAsJSONSchema = dtHeader.xml();
-                datasetAsJSONFormattedSchema = dtHeader.json();
+                datasetAsJSONFormattedSchema = dtHeader.json().toString();
                 datasetAsJSON = rowDataset.toJSON().collectAsList();
                 updatePage(0,currentAJAXLength,"",1);
             }
@@ -210,13 +210,13 @@ public final class DTTableDatasetNg extends AbstractUserInterfaceElement {
         // ui formatting
         JsonArray formated = dataStreamParser(paginatedList);
 
-        JsonObject headers;
+        JsonArray headers;
         // header formatting
         if(datasetAsJSONFormattedSchema != ""){
-            headers = Json.createReader(new StringReader(datasetAsJSONFormattedSchema)).readObject();
+            headers = Json.createReader(new StringReader(datasetAsJSONFormattedSchema)).readArray();
         }
         else {
-            headers = Json.createObjectBuilder().build();
+            headers = Json.createArrayBuilder().build();
         }
         int recordsTotal = datasetAsJSON.size();
         int recordsFiltered = searchedList.size();
@@ -244,7 +244,7 @@ public final class DTTableDatasetNg extends AbstractUserInterfaceElement {
     }
 
     // Added headers to this object, should be contained in the AJAXResponse that UI receives.
-    static JsonObject DTNetResponse(JsonArray data, JsonObject datasetAsJSONSchema, int draw, int recordsTotal, int recordsFiltered){
+    static JsonObject DTNetResponse(JsonArray data, JsonArray datasetAsJSONSchema, int draw, int recordsTotal, int recordsFiltered){
         try{
             JsonObjectBuilder builder = Json.createObjectBuilder();
             builder.add("headers",datasetAsJSONSchema);
