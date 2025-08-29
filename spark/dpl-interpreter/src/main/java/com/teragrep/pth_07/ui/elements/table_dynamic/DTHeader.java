@@ -47,23 +47,11 @@ package com.teragrep.pth_07.ui.elements.table_dynamic;
 
 import org.apache.spark.sql.types.StructField;
 import org.apache.spark.sql.types.StructType;
-import org.w3c.dom.Document;
-import org.w3c.dom.Element;
 import scala.collection.Iterator;
 
 import javax.json.Json;
 import javax.json.JsonArray;
 import javax.json.JsonArrayBuilder;
-import javax.xml.parsers.DocumentBuilder;
-import javax.xml.parsers.DocumentBuilderFactory;
-import javax.xml.parsers.ParserConfigurationException;
-import javax.xml.transform.OutputKeys;
-import javax.xml.transform.Transformer;
-import javax.xml.transform.TransformerException;
-import javax.xml.transform.TransformerFactory;
-import javax.xml.transform.dom.DOMSource;
-import javax.xml.transform.stream.StreamResult;
-import java.io.StringWriter;
 import java.util.Objects;
 
 public final class DTHeader {
@@ -71,43 +59,6 @@ public final class DTHeader {
     private final StructType schema;
     public DTHeader(StructType schema){
         this.schema = schema;
-    }
-
-    public String xml() throws TransformerException, ParserConfigurationException {
-        DocumentBuilderFactory docFactory = DocumentBuilderFactory.newInstance();
-        DocumentBuilder docBuilder = docFactory.newDocumentBuilder();
-
-
-        // root elements
-        Document doc = docBuilder.newDocument();
-
-
-        Element rootElement = doc.createElement("thead");
-        doc.appendChild(rootElement);
-
-        Element tableRow = doc.createElement("tr");
-        rootElement.appendChild(tableRow);
-
-        Iterator<StructField> it = schema.iterator();
-        while(it.hasNext()) {
-            StructField column = it.next();
-            Element columnHeader = doc.createElement("th");
-            columnHeader.setTextContent(column.name());
-            tableRow.appendChild(columnHeader);
-        }
-
-        TransformerFactory transformerFactory = TransformerFactory.newInstance();
-        Transformer transformer = transformerFactory.newTransformer();
-        DOMSource source = new DOMSource(doc);
-
-        StringWriter writer = new StringWriter();
-
-        StreamResult result = new StreamResult(writer);
-
-        transformer.setOutputProperty(OutputKeys.OMIT_XML_DECLARATION, "yes");
-        transformer.transform(source, result);
-
-        return writer.getBuffer().toString();
     }
 
     public JsonArray json() {
