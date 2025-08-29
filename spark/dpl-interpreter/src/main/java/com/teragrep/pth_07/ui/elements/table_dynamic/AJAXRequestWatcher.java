@@ -68,30 +68,36 @@ public class AJAXRequestWatcher extends AngularObjectWatcher {
     }
 
     @Override
-    public void watch(Object o, Object o1, InterpreterContext interpreterContext) throws JsonException {
+    public void watch(Object o, Object o1, InterpreterContext interpreterContext) {
         assert(dtTableDatasetNg != null);
 
         if(LOGGER.isTraceEnabled()) {
             LOGGER.trace("AJAXRequest <- {}", o.toString());
             LOGGER.trace("AJAXRequest -> {}", o1.toString());
         }
-
         String requestString = (String) o1;
-        JsonObject ajaxRequest = Json.createReader(new StringReader(requestString)).readObject();
-        // validate request by checking that every required key exists and that the type of the key is expected.
-        if (ajaxRequest.get("draw") != null
-                && ajaxRequest.get("draw").getValueType() == JsonValue.ValueType.NUMBER
-                && ajaxRequest.get("start") != null
-                && ajaxRequest.get("start").getValueType() == JsonValue.ValueType.NUMBER
-                && ajaxRequest.get("length") != null
-                && ajaxRequest.get("length").getValueType() == JsonValue.ValueType.NUMBER
-                && ajaxRequest.get("search") != null
-                && ajaxRequest.get("search").getValueType() == JsonValue.ValueType.OBJECT
-                && ajaxRequest.getJsonObject("search").get("value") != null
-                && ajaxRequest.getJsonObject("search").get("value").getValueType() == JsonValue.ValueType.STRING
-        ) {
-            dtTableDatasetNg.handeAJAXRequest(ajaxRequest);
+        try{
+            JsonObject ajaxRequest = Json.createReader(new StringReader(requestString)).readObject();
+            // validate request by checking that every required key exists and that the type of the key is expected.
+            if (ajaxRequest.get("draw") != null
+                    && ajaxRequest.get("draw").getValueType() == JsonValue.ValueType.NUMBER
+                    && ajaxRequest.get("start") != null
+                    && ajaxRequest.get("start").getValueType() == JsonValue.ValueType.NUMBER
+                    && ajaxRequest.get("length") != null
+                    && ajaxRequest.get("length").getValueType() == JsonValue.ValueType.NUMBER
+                    && ajaxRequest.get("search") != null
+                    && ajaxRequest.get("search").getValueType() == JsonValue.ValueType.OBJECT
+                    && ajaxRequest.getJsonObject("search").get("value") != null
+                    && ajaxRequest.getJsonObject("search").get("value").getValueType() == JsonValue.ValueType.STRING
+            ) {
+                dtTableDatasetNg.handeAJAXRequest(ajaxRequest);
+            }
+            else {
+                LOGGER.error("AJAXRequestWatcher received invalid JSON data: " + ajaxRequest);
+            }
         }
-
+        catch (JsonException jsonException){
+            LOGGER.error("AJAXRequestWatcher received unparseable JSON data: " + requestString);
+        }
     }
 }
