@@ -39,6 +39,7 @@ import javax.inject.Provider;
 import javax.servlet.http.HttpServletRequest;
 
 import com.teragrep.zep_01.common.ValidatedMessage;
+import com.teragrep.zep_01.interpreter.*;
 import com.teragrep.zep_01.rest.exception.BadRequestException;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.exception.ExceptionUtils;
@@ -49,9 +50,6 @@ import com.teragrep.zep_01.display.AngularObjectRegistry;
 import com.teragrep.zep_01.display.AngularObjectRegistryListener;
 import com.teragrep.zep_01.display.GUI;
 import com.teragrep.zep_01.display.Input;
-import com.teragrep.zep_01.interpreter.InterpreterGroup;
-import com.teragrep.zep_01.interpreter.InterpreterResult;
-import com.teragrep.zep_01.interpreter.InterpreterSetting;
 import com.teragrep.zep_01.interpreter.remote.RemoteAngularObjectRegistry;
 import com.teragrep.zep_01.interpreter.remote.RemoteInterpreterProcessListener;
 import com.teragrep.zep_01.interpreter.thrift.InterpreterCompletion;
@@ -1112,7 +1110,7 @@ public class NotebookServer extends WebSocketServlet
 
   private void updateParagraphResult(NotebookSocket conn,
                                      ServiceContext context,
-                                     Message fromMessage) throws IOException {
+                                     Message fromMessage) throws IOException, InterpreterNotFoundException {
     ValidatedMessage validatedMessage = new ValidatedMessage(fromMessage);
     if(validatedMessage.isValid()){
       // Casting is required to get Message parameters in correct format, as GSON parses all numbers as Doubles, and Message.get() returns a generic Object.
@@ -1123,7 +1121,24 @@ public class NotebookServer extends WebSocketServlet
       // Build an interpreterGroupId based on given user and note Id.
       // InterpreterGroupId is used to find the correct AngularObjectRegistry instance containing the DTTableDatasetNG object we want to pass the search, length, start and draw values to.
 
-      final String interpreterGroupId = "spark-"+conn.getUser()+"-"+noteId;
+      Note note = getNotebook().getNote(noteId);
+      if(note == null){
+        throw new BadRequestException("No such note!");
+      }
+      Paragraph paragraph = note.getParagraph(paragraphId);
+      if(paragraph == null){
+        throw new BadRequestException("No such paragraph!");
+      }
+      Interpreter interpreter = paragraph.getBindedInterpreter();
+      if(interpreter == null){
+        throw new BadRequestException("Paragraph has no binded interpreter!");
+      }
+      InterpreterGroup interpreterGroup = interpreter.getInterpreterGroup();
+      if(interpreterGroup == null){
+        throw new BadRequestException("Paragraph's interpreter has no InterpreterGroup assigned!");
+      }
+      final String interpreterGroupId = interpreterGroup.getId();
+
       final int start = (int) Double.parseDouble(fromMessage.get("start").toString());
       final int length = (int) Double.parseDouble(fromMessage.get("length").toString());
       final String search = (String) ((Map) fromMessage.get("search")).get("value");
