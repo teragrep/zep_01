@@ -45,6 +45,7 @@
  */
 package com.teragrep.pth_07.ui.elements.table_dynamic;
 
+import nl.jqno.equalsverifier.EqualsVerifier;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
@@ -63,7 +64,8 @@ public class DTSearchTest {
         listToSearch.add("{\"_time\":\"1970-01-01T00:00:00.000Z\",\"id\":0,\"_raw\":\"test jkl data\",\"index\":\"index_A\",\"sourcetype\":\"stream\",\"host\":\"host\",\"source\":\"input\",\"partition\":\"0\",\"offset\":0,\"origin\":\"test test\"},");
         listToSearch.add("{\"_time\":\"1970-01-01T00:00:00.000Z\",\"id\":0,\"_raw\":\"test mno data\",\"index\":\"index_A\",\"sourcetype\":\"stream\",\"host\":\"host\",\"source\":\"input\",\"partition\":\"0\",\"offset\":0,\"origin\":\"test test\"}");
 
-        List<String> resultList = DTSearch.search(listToSearch, "test");
+        DTSearch dtSearch = new DTSearch(listToSearch);
+        List<String> resultList = dtSearch.search("test");
         Assertions.assertEquals(5, resultList.size());
     }
 
@@ -77,7 +79,8 @@ public class DTSearchTest {
         listToSearch.add("{\"_time\":\"1970-01-01T00:00:00.000Z\",\"id\":0,\"_raw\":\"test jkl data\",\"index\":\"index_A\",\"sourcetype\":\"stream\",\"host\":\"host\",\"source\":\"input\",\"partition\":\"0\",\"offset\":0,\"origin\":\"test test\"},");
         listToSearch.add("{\"_time\":\"1970-01-01T00:00:00.000Z\",\"id\":0,\"_raw\":\"test mno data\",\"index\":\"index_A\",\"sourcetype\":\"stream\",\"host\":\"host\",\"source\":\"input\",\"partition\":\"0\",\"offset\":0,\"origin\":\"test test\"}");
 
-        List<String> resultList = DTSearch.search(listToSearch, "test abc data");
+        DTSearch dtSearch = new DTSearch(listToSearch);
+        List<String> resultList = dtSearch.search("test abc data");
         System.out.println(resultList);
         Assertions.assertEquals(1, resultList.size());
     }
@@ -92,7 +95,8 @@ public class DTSearchTest {
         listToSearch.add("{\"_time\":\"1970-01-01T00:00:00.000Z\",\"id\":0,\"index\":\"index_A\",\"sourcetype\":\"stream\",\"host\":\"host\",\"source\":\"input\",\"partition\":\"0\",\"offset\":0,\"origin\":\"test test\"},");
         listToSearch.add("{\"_time\":\"1970-01-01T00:00:00.000Z\",\"id\":0,\"index\":\"index_A\",\"sourcetype\":\"stream\",\"host\":\"host\",\"source\":\"input\",\"partition\":\"0\",\"offset\":0,\"origin\":\"test test\"}");
 
-        List<String> resultList = DTSearch.search(listToSearch, "test");
+        DTSearch dtSearch = new DTSearch(listToSearch);
+        List<String> resultList = dtSearch.search("test");
         Assertions.assertTrue(resultList.isEmpty());
     }
 
@@ -106,8 +110,13 @@ public class DTSearchTest {
         listToSearch.add("{\"_time\":\"1970-01-01T00:00:00.000Z\",\"id\":0,\"_raw\":\"test jkl data\",\"index\":\"index_A\",\"sourcetype\":\"stream\",\"host\":\"host\",\"source\":\"input\",\"partition\":\"0\",\"offset\":0,\"origin\":\"test test\"},");
         listToSearch.add("{\"_time\":\"1970-01-01T00:00:00.000Z\",\"id\":0,\"_raw\":\"test mno data\",\"index\":\"index_A\",\"sourcetype\":\"stream\",\"host\":\"host\",\"source\":\"input\",\"partition\":\"0\",\"offset\":0,\"origin\":\"test test\"}");
 
-        List<String> resultList = DTSearch.search(listToSearch, "68b329da9893e34099c7d8ad5cb9c940");
+        DTSearch dtSearch = new DTSearch(listToSearch);
+        List<String> resultList = dtSearch.search("68b329da9893e34099c7d8ad5cb9c940");
         System.out.println(resultList);
         Assertions.assertEquals(0, resultList.size());
+    }
+    @Test
+    public void testContract() {
+        EqualsVerifier.forClass(DTSearch.class).verify();
     }
 }

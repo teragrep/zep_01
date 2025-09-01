@@ -45,12 +45,16 @@
  */
 package com.teragrep.pth_07.ui.elements.table_dynamic;
 
+import nl.jqno.equalsverifier.EqualsVerifier;
 import org.apache.spark.sql.types.DataTypes;
 import org.apache.spark.sql.types.MetadataBuilder;
 import org.apache.spark.sql.types.StructField;
 import org.apache.spark.sql.types.StructType;
 import org.junit.jupiter.api.Test;
 
+import javax.json.Json;
+import javax.json.JsonArray;
+import javax.json.JsonObject;
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.transform.TransformerException;
 
@@ -72,9 +76,24 @@ public class DTHeaderTest {
     );
 
     @Test
-    public void testDTHeader() throws ParserConfigurationException, TransformerException {
-        String e = "<thead><tr><th>_time</th><th>_raw</th><th>index</th><th>sourcetype</th><th>host</th><th>source</th><th>partition</th><th>offset</th></tr></thead>";
-        assertEquals(e, DTHeader.schemaToHeader(Schema));
+    public void testJSONDTHeader() throws ParserConfigurationException, TransformerException {
+        JsonArray json = Json.createArrayBuilder()
+                .add("_time")
+                .add("_raw")
+                .add("index")
+                .add("sourcetype")
+                .add("host")
+                .add("source")
+                .add("partition")
+                .add("offset")
+                .build();
+        String e = json.toString();
+        DTHeader dtHeader = new DTHeader(Schema);
+        assertEquals(e, dtHeader.json().toString());
     }
 
+    @Test
+    public void testContract() {
+        EqualsVerifier.forClass(DTHeader.class).verify();
+    }
 }

@@ -37,6 +37,10 @@ import java.util.concurrent.atomic.AtomicReference;
 import javax.inject.Inject;
 import javax.inject.Provider;
 import javax.servlet.http.HttpServletRequest;
+
+import com.teragrep.zep_01.common.ValidatedMessage;
+import com.teragrep.zep_01.interpreter.*;
+import com.teragrep.zep_01.rest.exception.BadRequestException;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.apache.thrift.TException;
@@ -46,9 +50,6 @@ import com.teragrep.zep_01.display.AngularObjectRegistry;
 import com.teragrep.zep_01.display.AngularObjectRegistryListener;
 import com.teragrep.zep_01.display.GUI;
 import com.teragrep.zep_01.display.Input;
-import com.teragrep.zep_01.interpreter.InterpreterGroup;
-import com.teragrep.zep_01.interpreter.InterpreterResult;
-import com.teragrep.zep_01.interpreter.InterpreterSetting;
 import com.teragrep.zep_01.interpreter.remote.RemoteAngularObjectRegistry;
 import com.teragrep.zep_01.interpreter.remote.RemoteInterpreterProcessListener;
 import com.teragrep.zep_01.interpreter.thrift.InterpreterCompletion;
@@ -75,7 +76,6 @@ import com.teragrep.zep_01.service.SimpleServiceCallback;
 import com.teragrep.zep_01.ticket.TicketContainer;
 import com.teragrep.zep_01.types.InterpreterSettingsList;
 import com.teragrep.zep_01.user.AuthenticationInfo;
-import com.teragrep.zep_01.util.IdHashes;
 import com.teragrep.zep_01.utils.CorsUtils;
 import com.teragrep.zep_01.utils.TestUtils;
 import org.eclipse.jetty.util.annotation.ManagedAttribute;
@@ -375,6 +375,9 @@ public class NotebookServer extends WebSocketServlet
           break;
         case PARAGRAPH_CLEAR_ALL_OUTPUT:
           clearAllParagraphOutput(conn, context, receivedMessage);
+          break;
+        case PARAGRAPH_UPDATE_RESULT:
+          updateParagraphResult(conn, context, receivedMessage);
           break;
         case NOTE_UPDATE:
           updateNote(conn, context, receivedMessage);
@@ -1096,18 +1099,75 @@ public class NotebookServer extends WebSocketServlet
         });
   }
 
+  // Handles a request for paginated or filtered DPL table data.
+  // Data is sent via a legacy system:
+  // updateParagraphResult() is called
+  // -> updateAngularObject() updates an AJAXRequest angular object associated with a specific paragraph
+  // -> AJAXRequestWatcher catches the updated angular object
+  // -> values are passed to DTTableDatasetNG that does searching and pagination
+  // -> searched and paginated data is written via InterpreterContext
+  // -> Generates a PARAGRAPH_UPDATE_OUTPUT websocket event to be sent to the UI
+
+  private void updateParagraphResult(NotebookSocket conn,
+                                     ServiceContext context,
+                                     Message fromMessage) throws IOException, InterpreterNotFoundException {
+    ValidatedMessage validatedMessage = new ValidatedMessage(fromMessage);
+    if(validatedMessage.isValid()){
+      // Casting is required to get Message parameters in correct format, as GSON parses all numbers as Doubles, and Message.get() returns a generic Object.
+
+      final String noteId = (String) fromMessage.get("noteId");
+      final String paragraphId = (String) fromMessage.get("paragraphId");
+
+      // Build an interpreterGroupId based on given user and note Id.
+      // InterpreterGroupId is used to find the correct AngularObjectRegistry instance containing the DTTableDatasetNG object we want to pass the search, length, start and draw values to.
+
+      Note note = getNotebook().getNote(noteId);
+      if(note == null){
+        throw new BadRequestException("No such note!");
+      }
+      Paragraph paragraph = note.getParagraph(paragraphId);
+      if(paragraph == null){
+        throw new BadRequestException("No such paragraph!");
+      }
+      Interpreter interpreter = paragraph.getBindedInterpreter();
+      if(interpreter == null){
+        throw new BadRequestException("Paragraph has no binded interpreter!");
+      }
+      InterpreterGroup interpreterGroup = interpreter.getInterpreterGroup();
+      if(interpreterGroup == null){
+        throw new BadRequestException("Paragraph's interpreter has no InterpreterGroup assigned!");
+      }
+      final String interpreterGroupId = interpreterGroup.getId();
+
+      final int start = (int) Double.parseDouble(fromMessage.get("start").toString());
+      final int length = (int) Double.parseDouble(fromMessage.get("length").toString());
+      final String search = (String) ((Map) fromMessage.get("search")).get("value");
+      final int draw = (int) Double.parseDouble(fromMessage.get("draw").toString());
+      getNotebookService().updateParagraphResult(noteId,paragraphId,interpreterGroupId,draw,start,length,search,context,
+              new WebSocketServiceCallback<AngularObject>(conn){
+                @Override
+                public void onSuccess(AngularObject result, ServiceContext context) throws IOException {
+                  super.onSuccess(result,context);
+                }
+              });
+    }
+    else {
+      throw new BadRequestException("Request must contain \"noteId\", \"paragraphId\", \"start\", \"length\", \"draw\" and \"search.value\" parameters!");
+    }
+  }
+
   private void clearAllParagraphOutput(NotebookSocket conn,
                                        ServiceContext context,
                                        Message fromMessage) throws IOException {
     final String noteId = (String) fromMessage.get("id");
     getNotebookService().clearAllParagraphOutput(noteId, context,
-        new WebSocketServiceCallback<Note>(conn) {
-          @Override
-          public void onSuccess(Note note, ServiceContext context) throws IOException {
-            super.onSuccess(note, context);
-            broadcastNote(note);
-          }
-        });
+            new WebSocketServiceCallback<Note>(conn) {
+              @Override
+              public void onSuccess(Note note, ServiceContext context) throws IOException {
+                super.onSuccess(note, context);
+                broadcastNote(note);
+              }
+            });
   }
 
   protected Note importNote(NotebookSocket conn, ServiceContext context, Message fromMessage) throws IOException {
