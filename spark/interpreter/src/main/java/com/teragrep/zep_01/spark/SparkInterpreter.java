@@ -120,6 +120,8 @@ public class SparkInterpreter extends AbstractInterpreter {
                   masterEnv == null ? SparkStringConstants.DEFAULT_MASTER_VALUE : masterEnv);
         }
       }
+      // Set Sparks JSON generation setting to include null values to satisfy UI's DataTables.js requirements for drawing tables.
+      conf.set("spark.sql.jsonGenerator.ignoreNullFields","false");
       this.innerInterpreter = loadSparkScalaInterpreter(conf);
       this.innerInterpreter.open();
 
