@@ -143,6 +143,13 @@
         "defaultValue": true,
         "description": "Whether show the spark deprecated message, spark 2.2 and before are deprecated. Zeppelin will display warning message by default",
         "type": "checkbox"
+      },
+      "spark.sql.jsonGenerator.ignoreNullFields": {
+        "envName": null,
+        "propertyName": "spark.sql.jsonGenerator.ignoreNullFields",
+        "defaultValue": false,
+        "description": " Whether to discard null values when generating JSON from a Spark Dataset. Warning: toggling this to 'true' may cause issues with displaying data in paragraphs!",
+        "type": "checkbox"
       }
     },
     "editor": {
