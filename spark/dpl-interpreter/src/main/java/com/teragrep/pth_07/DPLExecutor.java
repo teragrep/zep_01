@@ -45,10 +45,10 @@
  */
 package com.teragrep.pth_07;
 
-import com.teragrep.pth10.ast.DPLAuditInformation;
-import com.teragrep.pth10.ast.DPLParserCatalystContext;
-import com.teragrep.pth10.ast.DPLParserCatalystVisitor;
-import com.teragrep.pth10.ast.bo.TranslationResultNode;
+import com.teragrep.pth_10.ast.DPLAuditInformation;
+import com.teragrep.pth_10.ast.DPLParserCatalystContext;
+import com.teragrep.pth_10.ast.DPLParserCatalystVisitor;
+import com.teragrep.pth_10.ast.bo.TranslationResultNode;
 import com.teragrep.pth_07.stream.DPLStreamingQueryListener;
 import com.teragrep.pth_07.stream.BatchHandler;
 import com.typesafe.config.Config;

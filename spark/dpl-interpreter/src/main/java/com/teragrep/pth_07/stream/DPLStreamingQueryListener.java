@@ -45,7 +45,7 @@
  */
 package com.teragrep.pth_07.stream;
 
-import com.teragrep.pth10.ast.DPLParserCatalystContext;
+import com.teragrep.pth_10.ast.DPLParserCatalystContext;
 import com.typesafe.config.Config;
 import com.teragrep.pth_07.ui.UserInterfaceManager;
 import org.apache.spark.sql.streaming.StreamingQuery;
