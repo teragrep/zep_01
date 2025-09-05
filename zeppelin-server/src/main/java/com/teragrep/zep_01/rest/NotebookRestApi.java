@@ -60,7 +60,6 @@ import com.teragrep.zep_01.rest.message.ParagraphJobStatus;
 import com.teragrep.zep_01.rest.message.RenameNoteRequest;
 import com.teragrep.zep_01.rest.message.ParametersRequest;
 import com.teragrep.zep_01.rest.message.UpdateParagraphRequest;
-import com.teragrep.zep_01.search.SearchService;
 import com.teragrep.zep_01.server.JsonResponse;
 import com.teragrep.zep_01.service.AuthenticationService;
 import com.teragrep.zep_01.service.JobManagerService;
@@ -87,7 +86,6 @@ public class NotebookRestApi extends AbstractRestApi {
   private final ZeppelinConfiguration zConf;
   private final Notebook notebook;
   private final NotebookServer notebookServer;
-  private final SearchService noteSearchService;
   private final AuthorizationService authorizationService;
   private final NotebookService notebookService;
   private final JobManagerService jobManagerService;
@@ -99,7 +97,6 @@ public class NotebookRestApi extends AbstractRestApi {
       Notebook notebook,
       NotebookServer notebookServer,
       NotebookService notebookService,
-      SearchService search,
       AuthorizationService authorizationService,
       ZeppelinConfiguration zConf,
       AuthenticationService authenticationService,
@@ -110,7 +107,6 @@ public class NotebookRestApi extends AbstractRestApi {
     this.notebookServer = notebookServer;
     this.notebookService = notebookService;
     this.jobManagerService = jobManagerService;
-    this.noteSearchService = search;
     this.authorizationService = authorizationService;
     this.zConf = zConf;
     this.authenticationService = authenticationService;
@@ -1056,34 +1052,6 @@ public class NotebookRestApi extends AbstractRestApi {
     return new JsonResponse<>(Status.OK, response).build();
   }
 
-  /**
-   * Search for a Notes with permissions.
-   */
-  @GET
-  @Path("search")
-  @ZeppelinApi
-  public Response search(@QueryParam("q") String queryTerm) {
-    LOGGER.info("Searching notes for: {}", queryTerm);
-    String principal = authenticationService.getPrincipal();
-    Set<String> roles = authenticationService.getAssociatedRoles();
-    HashSet<String> userAndRoles = new HashSet<>();
-    userAndRoles.add(principal);
-    userAndRoles.addAll(roles);
-    List<Map<String, String>> notesFound = noteSearchService.query(queryTerm);
-    for (int i = 0; i < notesFound.size(); i++) {
-      String[] ids = notesFound.get(i).get("id").split("/", 2);
-      String noteId = ids[0];
-      if (!authorizationService.isOwner(noteId, userAndRoles) &&
-              !authorizationService.isReader(noteId, userAndRoles) &&
-              !authorizationService.isWriter(noteId, userAndRoles) &&
-              !authorizationService.isRunner(noteId, userAndRoles)) {
-        notesFound.remove(i);
-        i--;
-      }
-    }
-    LOGGER.info("{} notes found", notesFound.size());
-    return new JsonResponse<>(Status.OK, notesFound).build();
-  }
 
 
   private void handleParagraphParams(String message, Note note, Paragraph paragraph)

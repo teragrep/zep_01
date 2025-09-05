@@ -52,7 +52,6 @@ import com.teragrep.zep_01.notebook.repo.NotebookRepoSync;
 import com.teragrep.zep_01.notebook.repo.NotebookRepoWithVersionControl;
 import com.teragrep.zep_01.notebook.repo.NotebookRepoWithVersionControl.Revision;
 import com.teragrep.zep_01.scheduler.Job;
-import com.teragrep.zep_01.search.SearchService;
 import com.teragrep.zep_01.user.AuthenticationInfo;
 import com.teragrep.zep_01.user.Credentials;
 import org.quartz.SchedulerException;
@@ -75,7 +74,6 @@ public class Notebook {
   private ZeppelinConfiguration conf;
   private ParagraphJobListener paragraphJobListener;
   private NotebookRepo notebookRepo;
-  private SearchService noteSearchService;
   private List<NoteEventListener> noteEventListeners = new ArrayList<>();
   private Credentials credentials;
 
@@ -92,7 +90,6 @@ public class Notebook {
       NoteManager noteManager,
       InterpreterFactory replFactory,
       InterpreterSettingManager interpreterSettingManager,
-      SearchService noteSearchService,
       Credentials credentials)
       throws IOException {
     this.conf = conf;
@@ -103,14 +100,8 @@ public class Notebook {
     this.interpreterSettingManager = interpreterSettingManager;
     // TODO(zjffdu) cycle refer, not a good solution
     this.interpreterSettingManager.setNotebook(this);
-    this.noteSearchService = noteSearchService;
     this.credentials = credentials;
-    this.noteEventListeners.add(this.noteSearchService);
     this.noteEventListeners.add(this.interpreterSettingManager);
-
-    if (conf.isIndexRebuild()) {
-      noteSearchService.startRebuildIndex(getNoteStream());
-    }
   }
 
   public void recoveryIfNecessary() {
@@ -158,7 +149,6 @@ public class Notebook {
       NoteManager noteManager,
       InterpreterFactory replFactory,
       InterpreterSettingManager interpreterSettingManager,
-      SearchService noteSearchService,
       Credentials credentials,
       NoteEventListener noteEventListener)
       throws IOException {
@@ -169,7 +159,6 @@ public class Notebook {
         noteManager,
         replFactory,
         interpreterSettingManager,
-        noteSearchService,
         credentials);
     if (null != noteEventListener) {
       this.noteEventListeners.add(noteEventListener);
@@ -714,7 +703,6 @@ public class Notebook {
 
   public void close() {
     this.notebookRepo.close();
-    this.noteSearchService.close();
   }
 
   public void addNotebookEventListener(NoteEventListener listener) {
