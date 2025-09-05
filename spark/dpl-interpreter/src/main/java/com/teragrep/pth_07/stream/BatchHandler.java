@@ -45,7 +45,7 @@
  */
 package com.teragrep.pth_07.stream;
 
-import com.teragrep.pth10.ast.DPLParserCatalystVisitor;
+import com.teragrep.pth_10.ast.DPLParserCatalystVisitor;
 import com.teragrep.pth_07.ui.UserInterfaceManager;
 import org.apache.spark.sql.Dataset;
 import org.apache.spark.sql.Row;
