@@ -48,10 +48,12 @@ package com.teragrep.pth_07;
 
 import com.teragrep.pth_07.stream.BatchHandler;
 import com.teragrep.pth_07.ui.UserInterfaceManager;
+import com.teragrep.pth_15.DPLExecutor;
+import com.teragrep.pth_15.DPLExecutorFactory;
+import com.teragrep.pth_15.DPLExecutorResult;
 import com.typesafe.config.Config;
 import com.typesafe.config.ConfigFactory;
 import org.apache.spark.SparkContext;
-import org.apache.spark.sql.SparkSession;
 import com.teragrep.zep_01.interpreter.*;
 import com.teragrep.zep_01.interpreter.InterpreterResult.Code;
 import com.teragrep.zep_01.interpreter.thrift.InterpreterCompletion;
@@ -61,6 +63,7 @@ import com.teragrep.zep_01.spark.SparkInterpreter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.lang.reflect.InvocationTargetException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Properties;
@@ -90,7 +93,12 @@ public class DPLInterpreter extends AbstractInterpreter {
     public DPLInterpreter(Properties properties) {
         super(properties);
         config = ConfigFactory.parseProperties(properties);
-        dplExecutor = new DPLExecutor(config);
+        try {
+            dplExecutor = new DPLExecutorFactory("com.teragrep.pth_10.executor.DPLExecutorImpl", config).create();
+        } catch (ClassNotFoundException | NoSuchMethodException | InvocationTargetException | InstantiationException |
+                 IllegalAccessException e) {
+            throw new RuntimeException("Error initializing DPLExecutor implementation", e);
+        }
         dplKryo = new DPLKryo();
         LOGGER.info("DPL-interpreter initialize properties: {}", properties);
         notebookParagraphUserInterfaceManager = new HashMap<>();
@@ -194,14 +202,31 @@ public class DPLInterpreter extends AbstractInterpreter {
         // execute query
         final InterpreterResult output;
         try {
-            output = dplExecutor.interpret(
-                    userInterfaceManager,
-                    sparkInterpreter.getSparkSession(),
+            final DPLExecutorResult executorResult = dplExecutor.interpret(
                     batchHandler,
+                    (queryProgress) -> {
+                        userInterfaceManager.getPerformanceIndicator().setPerformanceData(
+                                queryProgress.progress().numInputRows(),
+                                queryProgress.progress().batchId(),
+                                queryProgress.progress().processedRowsPerSecond()
+                        );
+                    },
+                    sparkInterpreter.getSparkSession(),
                     interpreterContext.getNoteId(),
                     interpreterContext.getParagraphId(),
                     lines
             );
+            final InterpreterResult.Code code;
+            if (executorResult.code().equals(DPLExecutorResult.Code.SUCCESS)) {
+                code = Code.SUCCESS;
+            } else if (executorResult.code().equals(DPLExecutorResult.Code.INCOMPLETE)) {
+                code = Code.INCOMPLETE;
+            } else if (executorResult.code().equals(DPLExecutorResult.Code.KEEP_PREVIOUS_RESULT)) {
+                code = Code.KEEP_PREVIOUS_RESULT;
+            } else {
+                code = Code.ERROR;
+            }
+            output = new InterpreterResult(code, executorResult.message());
             LOGGER.info("Query done, return code: {}", output.code());
         } catch (TimeoutException e) {
             throw new RuntimeException(e);
