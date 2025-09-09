@@ -148,7 +148,7 @@
         "envName": null,
         "propertyName": "spark.sql.jsonGenerator.ignoreNullFields",
         "defaultValue": false,
-        "description": " Whether to discard null values when generating JSON from a Spark Dataset. Warning: toggling this to 'true' may cause issues with displaying data in paragraphs!",
+        "description": "Whether to discard null values when generating JSON from a Spark Dataset. Warning: toggling this to 'true' may cause issues with displaying data in paragraphs!",
         "type": "checkbox"
       }
     },
