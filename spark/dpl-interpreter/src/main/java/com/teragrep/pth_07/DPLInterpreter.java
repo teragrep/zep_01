@@ -226,6 +226,11 @@ public class DPLInterpreter extends AbstractInterpreter {
             } else {
                 code = Code.ERROR;
             }
+
+            final String resultOutput = "Application ID: " + executorResult.metrics().get("applicationId")
+                    +  " , Query ID: " + executorResult.metrics().get("queryId");
+            userInterfaceManager.getMessageLog().addMessage(resultOutput);
+
             output = new InterpreterResult(code, executorResult.message());
             LOGGER.info("Query done, return code: {}", output.code());
         } catch (TimeoutException e) {
