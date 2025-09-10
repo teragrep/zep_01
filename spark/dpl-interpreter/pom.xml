@@ -68,7 +68,7 @@
     <changelist>-SNAPSHOT</changelist>
     <sha1/>
     <interpreter.name>dpl</interpreter.name>
-    <teragrep.pth_15.version>1.0.0</teragrep.pth_15.version>
+    <teragrep.pth_15.version>2.0.0</teragrep.pth_15.version>
   </properties>
   <scm>
     <connection>scm:git:https://github.com/teragrep/pth_07.git</connection>

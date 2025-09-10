@@ -60,6 +60,7 @@ import com.teragrep.zep_01.interpreter.thrift.InterpreterCompletion;
 import com.teragrep.zep_01.scheduler.Scheduler;
 import com.teragrep.zep_01.scheduler.SchedulerFactory;
 import com.teragrep.zep_01.spark.SparkInterpreter;
+import org.apache.spark.sql.SparkSession;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -76,6 +77,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 public class DPLInterpreter extends AbstractInterpreter {
     private static final Logger LOGGER = LoggerFactory.getLogger(DPLInterpreter.class);
 
+    private static long runIncrement = 0L;
     private static final AtomicInteger SESSION_NUM = new AtomicInteger(0);
     private SparkInterpreter sparkInterpreter;
     private SparkContext sparkContext;
@@ -201,17 +203,15 @@ public class DPLInterpreter extends AbstractInterpreter {
 
         // execute query
         final InterpreterResult output;
+        final SparkSession sparkSession = sparkInterpreter.getSparkSession();
+        final String appId = sparkSession.sparkContext().applicationId();
+        final String queryId = appId + "-" + runIncrement++;
+        sparkSession.streams().addListener(new DPLMetricsListener(sparkSession, userInterfaceManager, queryId));
         try {
             final DPLExecutorResult executorResult = dplExecutor.interpret(
                     batchHandler,
-                    (queryProgress) -> {
-                        userInterfaceManager.getPerformanceIndicator().setPerformanceData(
-                                queryProgress.progress().numInputRows(),
-                                queryProgress.progress().batchId(),
-                                queryProgress.progress().processedRowsPerSecond()
-                        );
-                    },
-                    sparkInterpreter.getSparkSession(),
+                    sparkSession,
+                    queryId,
                     interpreterContext.getNoteId(),
                     interpreterContext.getParagraphId(),
                     lines
@@ -227,8 +227,7 @@ public class DPLInterpreter extends AbstractInterpreter {
                 code = Code.ERROR;
             }
 
-            final String resultOutput = "Application ID: " + executorResult.metrics().get("applicationId")
-                    +  " , Query ID: " + executorResult.metrics().get("queryId");
+            final String resultOutput = "Application ID: " + appId +  " , Query ID: " + queryId;
             userInterfaceManager.getMessageLog().addMessage(resultOutput);
 
             output = new InterpreterResult(code, executorResult.message());
