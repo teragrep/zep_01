@@ -45,8 +45,6 @@
  */
 package com.teragrep.pth_07.ui.elements.table_dynamic;
 
-import com.google.gson.Gson;
-import com.teragrep.pth_07.ui.elements.table_dynamic.pojo.AJAXRequest;
 import com.teragrep.zep_01.display.AngularObject;
 import com.teragrep.zep_01.display.AngularObjectListener;
 import org.apache.spark.sql.Dataset;
@@ -75,91 +73,6 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class DTTableDatasetNgTest {
     private static final Logger LOGGER = LoggerFactory.getLogger(DTTableDatasetNgTest.class);
-
-    @Test
-    public void parseAsPojo() {
-        Gson gson = new Gson();
-
-        String ajaxRequestString = "{\"draw\":1,\"columns\":[{\"data\":0,\"name\":\"\",\"searchable\":true,\"orderable\":true,\"search\":{\"value\":\"\",\"regex\":false}},{\"data\":1,\"name\":\"\",\"searchable\":true,\"orderable\":true,\"search\":{\"value\":\"\",\"regex\":false}},{\"data\":2,\"name\":\"\",\"searchable\":true,\"orderable\":true,\"search\":{\"value\":\"\",\"regex\":false}},{\"data\":3,\"name\":\"\",\"searchable\":true,\"orderable\":true,\"search\":{\"value\":\"\",\"regex\":false}},{\"data\":4,\"name\":\"\",\"searchable\":true,\"orderable\":true,\"search\":{\"value\":\"\",\"regex\":false}},{\"data\":5,\"name\":\"\",\"searchable\":true,\"orderable\":true,\"search\":{\"value\":\"\",\"regex\":false}},{\"data\":6,\"name\":\"\",\"searchable\":true,\"orderable\":true,\"search\":{\"value\":\"\",\"regex\":false}},{\"data\":7,\"name\":\"\",\"searchable\":true,\"orderable\":true,\"search\":{\"value\":\"\",\"regex\":false}}],\"order\":[{\"column\":0,\"dir\":\"desc\"},{\"column\":0,\"dir\":\"asc\"}],\"start\":0,\"length\":5,\"search\":{\"value\":\"\",\"regex\":false}}";
-
-        AJAXRequest ajaxRequest = gson.fromJson(ajaxRequestString, AJAXRequest.class);
-
-        // main
-        assertEquals(1, ajaxRequest.getDraw());
-        assertEquals(0, ajaxRequest.getStart());
-        assertEquals(5, ajaxRequest.getLength());
-
-        // search
-        assertEquals(false, ajaxRequest.getSearch().getRegex());
-        assertEquals("", ajaxRequest.getSearch().getValue());
-        assertEquals(1, ajaxRequest.getDraw());
-
-        // order
-        assertEquals(0, ajaxRequest.getOrder().get(0).getColumn());
-        assertEquals("desc", ajaxRequest.getOrder().get(0).getDir());
-
-        assertEquals(0, ajaxRequest.getOrder().get(1).getColumn());
-        assertEquals("asc", ajaxRequest.getOrder().get(1).getDir());
-
-        // columns
-        // column 0
-        assertEquals(0, ajaxRequest.getColumns().get(0).getData());
-        assertEquals("", ajaxRequest.getColumns().get(0).getName());
-        assertEquals(true, ajaxRequest.getColumns().get(0).getSearchable());
-        assertEquals(true, ajaxRequest.getColumns().get(0).getOrderable());
-        assertEquals("", ajaxRequest.getColumns().get(0).getSearch().getValue());
-        assertEquals(false, ajaxRequest.getColumns().get(0).getSearch().getRegex());
-        // column 1
-        assertEquals(1, ajaxRequest.getColumns().get(1).getData());
-        assertEquals("", ajaxRequest.getColumns().get(1).getName());
-        assertEquals(true, ajaxRequest.getColumns().get(1).getSearchable());
-        assertEquals(true, ajaxRequest.getColumns().get(1).getOrderable());
-        assertEquals("", ajaxRequest.getColumns().get(1).getSearch().getValue());
-        assertEquals(false, ajaxRequest.getColumns().get(1).getSearch().getRegex());
-        // column 2
-        assertEquals(2, ajaxRequest.getColumns().get(2).getData());
-        assertEquals("", ajaxRequest.getColumns().get(2).getName());
-        assertEquals(true, ajaxRequest.getColumns().get(2).getSearchable());
-        assertEquals(true, ajaxRequest.getColumns().get(2).getOrderable());
-        assertEquals("", ajaxRequest.getColumns().get(2).getSearch().getValue());
-        assertEquals(false, ajaxRequest.getColumns().get(2).getSearch().getRegex());
-        // column 3
-        assertEquals(3, ajaxRequest.getColumns().get(3).getData());
-        assertEquals("", ajaxRequest.getColumns().get(3).getName());
-        assertEquals(true, ajaxRequest.getColumns().get(3).getSearchable());
-        assertEquals(true, ajaxRequest.getColumns().get(3).getOrderable());
-        assertEquals("", ajaxRequest.getColumns().get(3).getSearch().getValue());
-        assertEquals(false, ajaxRequest.getColumns().get(3).getSearch().getRegex());
-        // column 4
-        assertEquals(4, ajaxRequest.getColumns().get(4).getData());
-        assertEquals("", ajaxRequest.getColumns().get(4).getName());
-        assertEquals(true, ajaxRequest.getColumns().get(4).getSearchable());
-        assertEquals(true, ajaxRequest.getColumns().get(4).getOrderable());
-        assertEquals("", ajaxRequest.getColumns().get(4).getSearch().getValue());
-        assertEquals(false, ajaxRequest.getColumns().get(4).getSearch().getRegex());
-        // column 5
-        assertEquals(5, ajaxRequest.getColumns().get(5).getData());
-        assertEquals("", ajaxRequest.getColumns().get(5).getName());
-        assertEquals(true, ajaxRequest.getColumns().get(5).getSearchable());
-        assertEquals(true, ajaxRequest.getColumns().get(5).getOrderable());
-        assertEquals("", ajaxRequest.getColumns().get(5).getSearch().getValue());
-        assertEquals(false, ajaxRequest.getColumns().get(5).getSearch().getRegex());
-        // column 6
-        assertEquals(6, ajaxRequest.getColumns().get(6).getData());
-        assertEquals("", ajaxRequest.getColumns().get(6).getName());
-        assertEquals(true, ajaxRequest.getColumns().get(6).getSearchable());
-        assertEquals(true, ajaxRequest.getColumns().get(6).getOrderable());
-        assertEquals("", ajaxRequest.getColumns().get(6).getSearch().getValue());
-        assertEquals(false, ajaxRequest.getColumns().get(6).getSearch().getRegex());
-        // column 7
-        assertEquals(7, ajaxRequest.getColumns().get(7).getData());
-        assertEquals("", ajaxRequest.getColumns().get(7).getName());
-        assertEquals(true, ajaxRequest.getColumns().get(7).getSearchable());
-        assertEquals(true, ajaxRequest.getColumns().get(7).getOrderable());
-        assertEquals("", ajaxRequest.getColumns().get(7).getSearch().getValue());
-        assertEquals(false, ajaxRequest.getColumns().get(7).getSearch().getRegex());
-        
-    }
 
     @Test
     public void testAJAXResponse() {
