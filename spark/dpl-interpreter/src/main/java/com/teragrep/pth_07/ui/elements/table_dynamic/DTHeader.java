@@ -45,13 +45,13 @@
  */
 package com.teragrep.pth_07.ui.elements.table_dynamic;
 
+import jakarta.json.Json;
+import jakarta.json.JsonArray;
+import jakarta.json.JsonArrayBuilder;
 import org.apache.spark.sql.types.StructField;
 import org.apache.spark.sql.types.StructType;
 import scala.collection.Iterator;
 
-import javax.json.Json;
-import javax.json.JsonArray;
-import javax.json.JsonArrayBuilder;
 import java.util.Objects;
 
 public final class DTHeader {

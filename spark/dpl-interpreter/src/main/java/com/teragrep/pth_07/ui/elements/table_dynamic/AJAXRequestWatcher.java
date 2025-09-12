@@ -47,10 +47,13 @@ package com.teragrep.pth_07.ui.elements.table_dynamic;
 
 import com.teragrep.zep_01.display.AngularObjectWatcher;
 import com.teragrep.zep_01.interpreter.InterpreterContext;
+import jakarta.json.Json;
+import jakarta.json.JsonException;
+import jakarta.json.JsonObject;
+import jakarta.json.JsonValue;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import javax.json.*;
 import java.io.StringReader;
 
 public class AJAXRequestWatcher extends AngularObjectWatcher {
