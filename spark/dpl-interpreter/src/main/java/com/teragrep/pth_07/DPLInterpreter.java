@@ -206,6 +206,10 @@ public class DPLInterpreter extends AbstractInterpreter {
         final SparkSession sparkSession = sparkInterpreter.getSparkSession();
         final String appId = sparkSession.sparkContext().applicationId();
         final String queryId = appId + "-" + runIncrement++;
+
+        final String resultOutput = "Application ID: " + appId +  " , Query ID: " + queryId;
+        userInterfaceManager.getMessageLog().addMessage(resultOutput);
+
         sparkSession.streams().addListener(new DPLMetricsListener(sparkSession, userInterfaceManager, queryId));
         try {
             final DPLExecutorResult executorResult = dplExecutor.interpret(
@@ -226,9 +230,6 @@ public class DPLInterpreter extends AbstractInterpreter {
             } else {
                 code = Code.ERROR;
             }
-
-            final String resultOutput = "Application ID: " + appId +  " , Query ID: " + queryId;
-            userInterfaceManager.getMessageLog().addMessage(resultOutput);
 
             output = new InterpreterResult(code, executorResult.message());
             LOGGER.info("Query done, return code: {}", output.code());
