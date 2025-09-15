@@ -43,48 +43,44 @@
  * Teragrep, the applicable Commercial License may apply to this file if you as
  * a licensee so wish it.
  */
-package com.teragrep.pth_07.stream;
+package com.teragrep.pth_07;
 
-import com.teragrep.pth_06.ArchiveMicroStreamReader;
-import com.typesafe.config.Config;
-import org.apache.logging.log4j.spi.LoggerContextFactory;
-import org.apache.spark.sql.streaming.StreamingQuery;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import com.teragrep.pth_07.ui.UserInterfaceManager;
+import org.apache.spark.sql.SparkSession;
+import org.apache.spark.sql.streaming.StreamingQueryListener;
 
-public final class SourceStatus {
-    private static final Logger LOGGER = LoggerFactory.getLogger(SourceStatus.class);
+public final class DPLMetricsListener extends StreamingQueryListener {
+    private final SparkSession sparkSession;
+    private final UserInterfaceManager uiManager;
+    private final String queryId;
 
-    public static boolean isQueryDone(Config config, StreamingQuery outQ) {
-        if (config.getBoolean("dpl.pth_06.archive.enabled") || config.getBoolean("dpl.pth_06.kafka.enabled")) {
-            boolean queryDone = true;
-            for (int i = 0; i < outQ.lastProgress().sources().length; i++) {
-                String startOffset = outQ.lastProgress().sources()[i].startOffset();
-                String endOffset = outQ.lastProgress().sources()[i].endOffset();
-                String description = outQ.lastProgress().sources()[i].description();
+    public DPLMetricsListener(
+            final SparkSession sparkSession,
+            final UserInterfaceManager uiManager,
+            final String queryId) {
+        this.sparkSession = sparkSession;
+        this.uiManager = uiManager;
+        this.queryId = queryId;
+    }
 
-                if (description != null && !description.startsWith(ArchiveMicroStreamReader.class.getName().concat("@"))) {
-                    LOGGER.debug("Ignoring description: {}", description);
-                    // ignore others than archive
-                    continue;
-                }
+    @Override
+    public void onQueryStarted(final QueryStartedEvent event) {
+        // no-op
+    }
 
-                if (startOffset != null) {
-                    if (!startOffset.equalsIgnoreCase(endOffset)) {
-                        LOGGER.debug("Startoffset equals endoffset, setting queryDone to false");
-                        queryDone = false;
-                    }
-                } else {
-                    LOGGER.debug("Startoffset was null, setting queryDone to false");
-                    queryDone = false;
-                }
-            }
-            LOGGER.debug("Returning queryDone: {}", queryDone);
-            return queryDone;
+    @Override
+    public void onQueryProgress(final QueryProgressEvent event) {
+        if (event.progress().name().equals(queryId)) {
+            uiManager.getPerformanceIndicator().setPerformanceData(
+                    event.progress().numInputRows(),
+                    event.progress().batchId(),
+                    event.progress().processedRowsPerSecond()
+            );
         }
-        else {
-            LOGGER.debug("Returning true as kafka/archive are not enabled");
-            return true;
-        }
+    }
+
+    @Override
+    public void onQueryTerminated(final QueryTerminatedEvent event) {
+        sparkSession.streams().removeListener(this);
     }
 }

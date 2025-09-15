@@ -45,6 +45,8 @@
  */
 package com.teragrep.pth_07.ui.elements.table_dynamic;
 
+import jakarta.json.Json;
+import jakarta.json.JsonArray;
 import nl.jqno.equalsverifier.EqualsVerifier;
 import org.apache.spark.sql.types.DataTypes;
 import org.apache.spark.sql.types.MetadataBuilder;
@@ -52,9 +54,6 @@ import org.apache.spark.sql.types.StructField;
 import org.apache.spark.sql.types.StructType;
 import org.junit.jupiter.api.Test;
 
-import javax.json.Json;
-import javax.json.JsonArray;
-import javax.json.JsonObject;
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.transform.TransformerException;
 
