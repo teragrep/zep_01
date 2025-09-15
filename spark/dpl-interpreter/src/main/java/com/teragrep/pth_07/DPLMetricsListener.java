@@ -50,9 +50,11 @@ import org.apache.spark.sql.SparkSession;
 import org.apache.spark.sql.execution.ui.SQLExecutionUIData;
 import org.apache.spark.sql.execution.ui.SQLPlanMetric;
 import org.apache.spark.sql.streaming.StreamingQueryListener;
+import scala.collection.Iterator;
 import scala.collection.JavaConverters;
 import scala.collection.Seq;
 
+import java.util.HashMap;
 import java.util.Map;
 
 public final class DPLMetricsListener extends StreamingQueryListener {
@@ -83,19 +85,25 @@ public final class DPLMetricsListener extends StreamingQueryListener {
                     event.progress().processedRowsPerSecond()
             );
 
+            final Map<String, String> currentMetrics = new HashMap<>();
             final Seq<SQLExecutionUIData> executionsList = sparkSession.sharedState().statusStore().executionsList();
             if (!executionsList.isEmpty()) {
-                final SQLExecutionUIData latestExecutionData = sparkSession.sharedState().statusStore().executionsList().last();
-                if (latestExecutionData != null) {
-                    final Map<Object, String> metricValues = JavaConverters.mapAsJavaMap(latestExecutionData.metricValues());
-                    for (final SQLPlanMetric metric : JavaConverters.asJavaIterable(latestExecutionData.metrics())) {
+                final Iterator<SQLExecutionUIData> executionDataIterator = sparkSession.sharedState().statusStore().executionsList().iterator();
+                while (executionDataIterator.hasNext()) {
+                    final SQLExecutionUIData executionData = executionDataIterator.next();
+                    final Map<Object, String> metricValues = JavaConverters.mapAsJavaMap(executionData.metricValues());
+                    for (final SQLPlanMetric metric : JavaConverters.asJavaIterable(executionData.metrics())) {
                         final long id = metric.accumulatorId();
                         final Object value = metricValues.get(id);
-                        if (metric.metricType().startsWith("v2Custom_") && value != null) {
-                            uiManager.getMessageLog().addMessage(metric.name() + " -> " + value);
+                        if (value != null) {
+                            currentMetrics.put(metric.name(), value.toString());
                         }
                     }
                 }
+
+                currentMetrics.forEach((key, value) -> {
+                    uiManager.getMessageLog().addMessage(key + ": " + value);
+                });
             }
         }
     }
