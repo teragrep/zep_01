@@ -47,7 +47,13 @@ package com.teragrep.pth_07;
 
 import com.teragrep.pth_07.ui.UserInterfaceManager;
 import org.apache.spark.sql.SparkSession;
+import org.apache.spark.sql.execution.ui.SQLExecutionUIData;
+import org.apache.spark.sql.execution.ui.SQLPlanMetric;
 import org.apache.spark.sql.streaming.StreamingQueryListener;
+import scala.collection.JavaConverters;
+import scala.collection.Seq;
+
+import java.util.Map;
 
 public final class DPLMetricsListener extends StreamingQueryListener {
     private final SparkSession sparkSession;
@@ -76,6 +82,21 @@ public final class DPLMetricsListener extends StreamingQueryListener {
                     event.progress().batchId(),
                     event.progress().processedRowsPerSecond()
             );
+
+            final Seq<SQLExecutionUIData> executionsList = sparkSession.sharedState().statusStore().executionsList();
+            if (!executionsList.isEmpty()) {
+                final SQLExecutionUIData latestExecutionData = sparkSession.sharedState().statusStore().executionsList().last();
+                if (latestExecutionData != null) {
+                    final Map<Object, String> metricValues = JavaConverters.mapAsJavaMap(latestExecutionData.metricValues());
+                    for (final SQLPlanMetric metric : JavaConverters.asJavaIterable(latestExecutionData.metrics())) {
+                        final long id = metric.accumulatorId();
+                        final Object value = metricValues.get(id);
+                        if (metric.metricType().startsWith("v2Custom_") && value != null) {
+                            uiManager.getMessageLog().addMessage(metric.name() + " -> " + value);
+                        }
+                    }
+                }
+            }
         }
     }
 
