@@ -1143,7 +1143,12 @@ public class NotebookServer extends WebSocketServlet
       final int length = (int) Double.parseDouble(fromMessage.get("length").toString());
       final String search = (String) ((Map) fromMessage.get("search")).get("value");
       final int draw = (int) Double.parseDouble(fromMessage.get("draw").toString());
-      getNotebookService().updateParagraphResult(noteId,paragraphId,interpreterGroupId,draw,start,length,search,context,
+      // Dirty hack to use the correct AngularObjectRegistry
+      final AuthenticationInfo authInfo = context.getAutheInfo();
+      String user = paragraph.getUser();
+      authInfo.setUser(user);
+      final ServiceContext serviceContext = new ServiceContext(authInfo, (Set<String>) authInfo.getUsersAndRoles());
+      getNotebookService().updateParagraphResult(noteId,paragraphId,interpreterGroupId,draw,start,length,search,serviceContext,
               new WebSocketServiceCallback<AngularObject>(conn){
                 @Override
                 public void onSuccess(AngularObject result, ServiceContext context) throws IOException {
