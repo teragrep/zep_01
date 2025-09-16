@@ -1116,7 +1116,7 @@ public class NotebookServer extends WebSocketServlet
     ValidatedMessage validatedMessage = new ValidatedMessage(fromMessage);
     if(validatedMessage.isValid()){
       // Casting is required to get Message parameters in correct format, as GSON parses all numbers as Doubles, and Message.get() returns a generic Object.
-
+      final String msgId = fromMessage.msgId;
       final String noteId = (String) fromMessage.get("noteId");
       final String paragraphId = (String) fromMessage.get("paragraphId");
 
@@ -1161,8 +1161,7 @@ public class NotebookServer extends WebSocketServlet
                   if(result == null){
                     // We didn't find the AJAXRequest angularObject we were looking for, so we generate a similar message to what UI is expecting, but with data about the error
                     JsonArray errorMessage = Json.createArrayBuilder().add("Request failed: Interpreter session is not running, please rerun the paragraph!").build();
-                    Message msg = new Message(OP.PARAGRAPH_UPDATE_OUTPUT).put("noteId", noteId)
-                            .put("paragraphId", paragraphId).put("type", InterpreterResult.Type.JSONTABLE).put("data", errorMessage.toString());
+                    Message msg = new Message(OP.ERROR_INFO).withMsgId(msgId).put("noteId", noteId).put("paragraphId", paragraphId).put("info", errorMessage.toString());
                     conn.send(serializeMessage(msg));
                   }
                   else {
