@@ -42,7 +42,7 @@ import com.teragrep.zep_01.common.ValidatedMessage;
 import com.teragrep.zep_01.interpreter.*;
 import com.teragrep.zep_01.rest.exception.BadRequestException;
 import jakarta.json.Json;
-import jakarta.json.JsonArray;
+import jakarta.json.JsonObject;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.apache.thrift.TException;
@@ -1160,8 +1160,8 @@ public class NotebookServer extends WebSocketServlet
 
                   if(result == null){
                     // We didn't find the AJAXRequest angularObject we were looking for, so we generate a similar message to what UI is expecting, but with data about the error
-                    JsonArray errorMessage = Json.createArrayBuilder().add("Request failed: Interpreter session is not running, please rerun the paragraph!").build();
-                    Message msg = new Message(OP.ERROR_INFO).withMsgId(msgId).put("noteId", noteId).put("paragraphId", paragraphId).put("info", errorMessage.toString());
+                    JsonObject errorMessage = Json.createObjectBuilder().add("data","Request failed: Interpreter session is not running, please rerun the paragraph!").build();
+                    Message msg = new Message(Message.OP.PARAGRAPH_UPDATE_OUTPUT).withMsgId(msgId).put("noteId", noteId).put("paragraphId", paragraphId).put("data", errorMessage.toString());
                     conn.send(serializeMessage(msg));
                   }
                   else {
