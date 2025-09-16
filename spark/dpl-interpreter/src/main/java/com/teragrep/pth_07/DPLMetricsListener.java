@@ -79,12 +79,6 @@ public final class DPLMetricsListener extends StreamingQueryListener {
     @Override
     public void onQueryProgress(final QueryProgressEvent event) {
         if (event.progress().name().equals(queryId)) {
-            uiManager.getPerformanceIndicator().setPerformanceData(
-                    event.progress().numInputRows(),
-                    event.progress().batchId(),
-                    event.progress().processedRowsPerSecond()
-            );
-
             final Map<String, String> currentMetrics = new HashMap<>();
             final Seq<SQLExecutionUIData> executionsList = sparkSession.sharedState().statusStore().executionsList();
             if (!executionsList.isEmpty()) {
@@ -100,11 +94,14 @@ public final class DPLMetricsListener extends StreamingQueryListener {
                         }
                     }
                 }
-
-                currentMetrics.forEach((key, value) -> {
-                    uiManager.getMessageLog().addMessage(key + ": " + value);
-                });
             }
+
+            uiManager.getPerformanceIndicator().setPerformanceData(
+                    event.progress().numInputRows(),
+                    event.progress().batchId(),
+                    event.progress().processedRowsPerSecond(),
+                    currentMetrics
+            );
         }
     }
 
