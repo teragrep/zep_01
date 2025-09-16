@@ -41,6 +41,8 @@ import javax.servlet.http.HttpServletRequest;
 import com.teragrep.zep_01.common.ValidatedMessage;
 import com.teragrep.zep_01.interpreter.*;
 import com.teragrep.zep_01.rest.exception.BadRequestException;
+import jakarta.json.Json;
+import jakarta.json.JsonArray;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.apache.thrift.TException;
@@ -1152,7 +1154,21 @@ public class NotebookServer extends WebSocketServlet
               new WebSocketServiceCallback<AngularObject>(conn){
                 @Override
                 public void onSuccess(AngularObject result, ServiceContext context) throws IOException {
-                  super.onSuccess(result,context);
+                  // Wow this is cursed
+                  // NotebookService().angularObjectUpdate() doesn't have a call to callback.onFailure() in case it doesn't find the AngularObject we are looking for, instead returning null
+                  // Changing angularObjectUpdate to include an onFailure() call likely has many breaking side-effects
+
+                  if(result == null){
+                    // We didn't find the AJAXRequest angularObject we were looking for, so we generate a similar message to what UI is expecting, but with data about the error
+                    JsonArray errorMessage = Json.createArrayBuilder().add("Request failed: Interpreter session is not running, please rerun the paragraph!").build();
+                    Message msg = new Message(OP.PARAGRAPH_UPDATE_OUTPUT).put("noteId", noteId)
+                            .put("paragraphId", paragraphId).put("type", InterpreterResult.Type.JSONTABLE).put("data", errorMessage.toString());
+                    conn.send(serializeMessage(msg));
+                  }
+                  else {
+                    // If the AJAXRequest was found, the response is generated in DTTableDatasetNG.updatePage()
+                    super.onSuccess(result,context);
+                  }
                 }
               });
     }
