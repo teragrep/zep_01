@@ -48,6 +48,8 @@ package com.teragrep.pth_07.ui.elements;
 import com.teragrep.zep_01.display.AngularObject;
 import com.teragrep.zep_01.display.AngularObjectWatcher;
 import com.teragrep.zep_01.interpreter.InterpreterContext;
+import jakarta.json.Json;
+import jakarta.json.JsonObject;
 
 import java.util.Map;
 
@@ -91,17 +93,15 @@ public class PerformanceIndicator extends AbstractUserInterfaceElement {
     }
 
     public void setPerformanceData(long numInputRows, long batchId, double processedRowsPerSecond, Map<String, String> currentMetrics) {
-        final StringBuilder newMessage = new StringBuilder();
+        final JsonObject performanceData = Json
+                .createObjectBuilder()
+                .add("batchId", batchId)
+                .add("processedRowsPerSecond", processedRowsPerSecond)
+                .add("numInputRows", numInputRows)
+                .add("customMetrics", Json.createObjectBuilder(currentMetrics).build())
+                .build();
 
-        newMessage.append("<p>Full table input rows read from archive: ").append(numInputRows);
-        newMessage.append(" during batchId: ").append(batchId);
-        newMessage.append(" with avg EPS: ").append(processedRowsPerSecond).append("</p>");
-        newMessage.append("<p>Metrics:");
-        for (final Map.Entry<String, String> metric : currentMetrics.entrySet()) {
-            newMessage.append(metric.getKey()).append(": ").append(metric.getValue()).append("<br>");
-        }
-        newMessage.append("</p>");
-        message = newMessage.toString();
+        message = performanceData.toString();
 
         draw();
     }
