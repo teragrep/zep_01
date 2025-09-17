@@ -93,24 +93,14 @@ public class PerformanceIndicator extends AbstractUserInterfaceElement {
     }
 
     public void setPerformanceData(long numInputRows, long batchId, double processedRowsPerSecond, Map<String, String> currentMetrics) {
-        /*final JsonObject performanceData = Json
-                .createObjectBuilder()
-                .add("batchId", batchId)
-                .add("processedRowsPerSecond", processedRowsPerSecond)
-                .add("numInputRows", numInputRows)
-                .add("customMetrics", Json.createObjectBuilder(currentMetrics).build())
-                .build();
-
-        message = performanceData.toString();*/
-
         final StringBuilder newMessage = new StringBuilder();
 
-        newMessage.append("Full table input rows read from archive: ").append(numInputRows);
-        newMessage.append(" during batchId: ").append(batchId);
-        newMessage.append(" with avg EPS: ").append(processedRowsPerSecond).append("\\n");
-        newMessage.append("Metrics:\\n");
+        newMessage.append("Full table input rows read from archive: ").append(numInputRows).append(" ");
+        newMessage.append("during batchId: ").append(batchId).append(" ");
+        newMessage.append("with avg EPS: ").append(processedRowsPerSecond).append("\n");
+        newMessage.append("Metrics:\n");
         for (final Map.Entry<String, String> metric : currentMetrics.entrySet()) {
-            newMessage.append(metric.getKey()).append(": ").append(metric.getValue()).append("\\n");
+            newMessage.append(metric.getKey()).append(": ").append(metric.getValue()).append("\n");
         }
         message = newMessage.toString();
 
