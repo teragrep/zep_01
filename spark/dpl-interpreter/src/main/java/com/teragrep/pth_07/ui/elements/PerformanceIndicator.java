@@ -98,10 +98,14 @@ public class PerformanceIndicator extends AbstractUserInterfaceElement {
         newMessage.append("Full table input rows read from archive: ").append(numInputRows).append(" ");
         newMessage.append("during batchId: ").append(batchId).append(" ");
         newMessage.append("with avg EPS: ").append(processedRowsPerSecond).append("\n");
-        newMessage.append("Metrics:\n");
-        for (final Map.Entry<String, String> metric : currentMetrics.entrySet()) {
-            newMessage.append(metric.getKey()).append(": ").append(metric.getValue()).append("\n");
+
+        if (!currentMetrics.isEmpty()) {
+            newMessage.append("Metrics:\n");
+            for (final Map.Entry<String, String> metric : currentMetrics.entrySet()) {
+                newMessage.append(metric.getKey()).append(": ").append(metric.getValue()).append("\n");
+            }
         }
+
         message = newMessage.toString();
 
         draw();
