@@ -57,6 +57,7 @@ public class InterpreterResult implements Serializable, JsonSerializable {
     NULL,
     NETWORK,
     JSONTABLE,
+    RESULT_ERROR
   }
 
   Code code;
