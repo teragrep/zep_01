@@ -665,7 +665,7 @@ public class NotebookService {
   }
 
   public void updateParagraphResult(String noteId, String paragraphId, String interpreterGroupId,int draw, int start, int length, String searchString,ServiceContext context, ServiceCallback<AngularObject> callback) throws IOException {
-    // Make an AJAXRequest based on given information
+    // Make a JSON representation of the AJAXRequest based on given information
     JsonObject ajaxRequestValue = Json.createObjectBuilder()
             .add("draw",draw)
             .add("start",start)
@@ -676,7 +676,6 @@ public class NotebookService {
                             .add("regex",false)
                             .build())
             .build();
-
     updateAngularObject(noteId,paragraphId,interpreterGroupId,"AJAXRequest_"+paragraphId,ajaxRequestValue.toString(),context,callback);
   }
 

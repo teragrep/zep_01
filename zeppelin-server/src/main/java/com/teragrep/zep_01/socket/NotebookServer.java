@@ -23,14 +23,7 @@ import java.io.IOException;
 import java.lang.reflect.Type;
 import java.net.URISyntaxException;
 import java.net.UnknownHostException;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.atomic.AtomicReference;
@@ -41,6 +34,8 @@ import javax.servlet.http.HttpServletRequest;
 import com.teragrep.zep_01.common.ValidatedMessage;
 import com.teragrep.zep_01.interpreter.*;
 import com.teragrep.zep_01.rest.exception.BadRequestException;
+import jakarta.json.Json;
+import jakarta.json.JsonObject;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.apache.thrift.TException;
@@ -1114,7 +1109,7 @@ public class NotebookServer extends WebSocketServlet
     ValidatedMessage validatedMessage = new ValidatedMessage(fromMessage);
     if(validatedMessage.isValid()){
       // Casting is required to get Message parameters in correct format, as GSON parses all numbers as Doubles, and Message.get() returns a generic Object.
-
+      final String msgId = fromMessage.msgId;
       final String noteId = (String) fromMessage.get("noteId");
       final String paragraphId = (String) fromMessage.get("paragraphId");
 
@@ -1143,11 +1138,48 @@ public class NotebookServer extends WebSocketServlet
       final int length = (int) Double.parseDouble(fromMessage.get("length").toString());
       final String search = (String) ((Map) fromMessage.get("search")).get("value");
       final int draw = (int) Double.parseDouble(fromMessage.get("draw").toString());
-      getNotebookService().updateParagraphResult(noteId,paragraphId,interpreterGroupId,draw,start,length,search,context,
+
+      // The AJAXRequest AngularObject we are looking for is in the AngularObjectRegistry of the user who last ran the paragraph.
+      // In order to access it, we must change the username in ServiceContext to match, otherwise only the last runner can make pagination or search requests.
+      final AuthenticationInfo authInfo = context.getAutheInfo();
+      String user = paragraph.getUser();
+      authInfo.setUser(user);
+      Set<String> userAndRoles = new HashSet<>();
+      userAndRoles.add(authInfo.getUser());
+      userAndRoles.addAll(authInfo.getRoles());
+      final ServiceContext serviceContext = new ServiceContext(authInfo, userAndRoles);
+
+      getNotebookService().updateParagraphResult(noteId,paragraphId,interpreterGroupId,draw,start,length,search,serviceContext,
               new WebSocketServiceCallback<AngularObject>(conn){
                 @Override
                 public void onSuccess(AngularObject result, ServiceContext context) throws IOException {
-                  super.onSuccess(result,context);
+                  // NotebookService().angularObjectUpdate() doesn't have a call to callback.onFailure() in case it doesn't find the AngularObject we are looking for, instead returning null
+                  // That's why we must do a check here whether updating the AngularObject was successful or not.
+                  // Changing angularObjectUpdate to include an onFailure() call likely has many breaking side-effects.
+
+                  if(result == null){
+                    // We didn't find the AJAXRequest angularObject we were looking for, so we generate a similar message to what UI is expecting, but with data about the error, based on which UI can generate an error popup
+                    LinkedHashMap data = new LinkedHashMap();
+                    data.put("error",true);
+                    data.put("message","Request failed: Interpreter session is not running, please rerun the paragraph!");
+                    data.put("draw",draw);
+                    data.put("recordsTotal",0);
+                    data.put("recordsFiltered",0);
+                    Message msg = new Message(Message.OP.PARAGRAPH_UPDATE_OUTPUT)
+                            .withMsgId(msgId)
+                            .put("data",data)
+                            .put("draw",0)
+                            .put("type",InterpreterResult.Type.JSONTABLE.toString())
+                            .put("index",0)
+                            .put("noteId", noteId)
+                            .put("paragraphId", paragraphId);
+                    conn.send(serializeMessage(msg));
+                  }
+                  else {
+                    // If onSuccess() returns an AngularObject, it means the object was found and set.
+                    // We don't send any message to the UI here, because the response is generated in DTTableDatasetNG.updatePage();
+                    super.onSuccess(result,context);
+                  }
                 }
               });
     }
