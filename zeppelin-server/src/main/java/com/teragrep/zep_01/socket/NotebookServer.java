@@ -1138,9 +1138,8 @@ public class NotebookServer extends WebSocketServlet
       final int length = (int) Double.parseDouble(fromMessage.get("length").toString());
       final String search = (String) ((Map) fromMessage.get("search")).get("value");
       final int draw = (int) Double.parseDouble(fromMessage.get("draw").toString());
+      // Dirty hack to use the correct AngularObjectRegistry
 
-      // The AJAXRequest AngularObject we are looking for is in the AngularObjectRegistry of the user who last ran the paragraph.
-      // In order to access it, we must change the username in ServiceContext to match, otherwise only the last runner can make pagination or search requests.
       final AuthenticationInfo authInfo = context.getAutheInfo();
       String user = paragraph.getUser();
       authInfo.setUser(user);
@@ -1148,17 +1147,16 @@ public class NotebookServer extends WebSocketServlet
       userAndRoles.add(authInfo.getUser());
       userAndRoles.addAll(authInfo.getRoles());
       final ServiceContext serviceContext = new ServiceContext(authInfo, userAndRoles);
-
       getNotebookService().updateParagraphResult(noteId,paragraphId,interpreterGroupId,draw,start,length,search,serviceContext,
               new WebSocketServiceCallback<AngularObject>(conn){
                 @Override
                 public void onSuccess(AngularObject result, ServiceContext context) throws IOException {
+                  // Wow this is cursed
                   // NotebookService().angularObjectUpdate() doesn't have a call to callback.onFailure() in case it doesn't find the AngularObject we are looking for, instead returning null
-                  // That's why we must do a check here whether updating the AngularObject was successful or not.
-                  // Changing angularObjectUpdate to include an onFailure() call likely has many breaking side-effects.
+                  // Changing angularObjectUpdate to include an onFailure() call likely has many breaking side-effects
 
                   if(result == null){
-                    // We didn't find the AJAXRequest angularObject we were looking for, so we generate a similar message to what UI is expecting, but with data about the error, based on which UI can generate an error popup
+                    // We didn't find the AJAXRequest angularObject we were looking for, so we generate a similar message to what UI is expecting, but with data about the error
                     LinkedHashMap data = new LinkedHashMap();
                     data.put("error",true);
                     data.put("message","Request failed: Interpreter session is not running, please rerun the paragraph!");
@@ -1176,8 +1174,7 @@ public class NotebookServer extends WebSocketServlet
                     conn.send(serializeMessage(msg));
                   }
                   else {
-                    // If onSuccess() returns an AngularObject, it means the object was found and set.
-                    // We don't send any message to the UI here, because the response is generated in DTTableDatasetNG.updatePage();
+                    // If the AJAXRequest was found, the response is generated in DTTableDatasetNG.updatePage()
                     super.onSuccess(result,context);
                   }
                 }
