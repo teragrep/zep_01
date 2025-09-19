@@ -23,7 +23,14 @@ import java.io.IOException;
 import java.lang.reflect.Type;
 import java.net.URISyntaxException;
 import java.net.UnknownHostException;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.atomic.AtomicReference;
@@ -1153,16 +1160,10 @@ public class NotebookServer extends WebSocketServlet
 
                   if(result == null){
                     // We didn't find the AJAXRequest angularObject we were looking for, so we generate a similar message to what UI is expecting, but with data about the error
-                    LinkedHashMap data = new LinkedHashMap();
-                    data.put("error",true);
-                    data.put("message","Request failed: Interpreter session is not running, please rerun the paragraph!");
-                    data.put("draw",draw);
-                    data.put("recordsTotal",0);
-                    data.put("recordsFiltered",0);
+                    String errorMessage = "Request failed: Interpreter session is not running, please rerun the paragraph!";
                     Message msg = new Message(Message.OP.PARAGRAPH_UPDATE_OUTPUT)
                             .withMsgId(msgId)
-                            .put("data",data)
-                            .put("draw",0)
+                            .put("data",errorMessage)
                             .put("type",InterpreterResult.Type.JSONTABLE.toString())
                             .put("index",0)
                             .put("noteId", noteId)
