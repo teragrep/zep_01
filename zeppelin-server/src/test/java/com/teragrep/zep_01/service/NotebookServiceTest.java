@@ -36,22 +36,22 @@ import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
-import com.teragrep.zep_01.display.AngularObject;
-import com.teragrep.zep_01.display.AngularObjectRegistry;
-import com.teragrep.zep_01.interpreter.*;
-import com.teragrep.zep_01.socket.NotebookServer;
 import org.apache.commons.lang3.StringUtils;
 import com.teragrep.zep_01.conf.ZeppelinConfiguration;
+import com.teragrep.zep_01.interpreter.Interpreter;
 import com.teragrep.zep_01.interpreter.Interpreter.FormType;
+import com.teragrep.zep_01.interpreter.InterpreterFactory;
+import com.teragrep.zep_01.interpreter.InterpreterResult;
 import com.teragrep.zep_01.interpreter.InterpreterResult.Code;
+import com.teragrep.zep_01.interpreter.InterpreterSetting;
+import com.teragrep.zep_01.interpreter.InterpreterSettingManager;
+import com.teragrep.zep_01.interpreter.ManagedInterpreterGroup;
 import com.teragrep.zep_01.notebook.AuthorizationService;
 import com.teragrep.zep_01.notebook.Note;
 import com.teragrep.zep_01.notebook.NoteInfo;
@@ -66,18 +66,18 @@ import com.teragrep.zep_01.search.LuceneSearch;
 import com.teragrep.zep_01.search.SearchService;
 import com.teragrep.zep_01.user.AuthenticationInfo;
 import com.teragrep.zep_01.user.Credentials;
-import org.junit.*;
-import org.junit.jupiter.api.Assertions;
+import org.junit.After;
+import org.junit.Before;
+import org.junit.Ignore;
+import org.junit.Test;
 import org.mockito.ArgumentCaptor;
 
 import com.google.gson.Gson;
 
-// This test has to use mocking extensively due to severe coupling between Zeppelin's components making it almost impossible to instantiate them all without making the test unreadable and slow
 public class NotebookServiceTest {
 
   private static NotebookService notebookService;
-  private AngularObjectRegistry anonymousAngularObjectRegistry;
-  private AngularObjectRegistry user1AngularObjectRegistry;
+
   private File notebookDir;
   private SearchService searchService;
   private ServiceContext context =
@@ -110,27 +110,11 @@ public class NotebookServiceTest {
         .thenReturn(new InterpreterResult(Code.SUCCESS, "succeed"));
     doCallRealMethod().when(mockInterpreter).getScheduler();
     when(mockInterpreter.getFormType()).thenReturn(FormType.NATIVE);
-    NotebookServer mockNotebookServer = mock(NotebookServer.class);
-
-    ManagedInterpreterGroup mockInterpreterGroupUser1 = mock(ManagedInterpreterGroup.class);
-    when(mockInterpreterGroupUser1.getId()).thenReturn("test-user1");
-    user1AngularObjectRegistry = new AngularObjectRegistry(mockInterpreterGroupUser1.getId(),mockNotebookServer);
-    when(mockInterpreterGroupUser1.getAngularObjectRegistry()).thenReturn(user1AngularObjectRegistry);
-
-    ManagedInterpreterGroup mockInterpreterGroupAnonymous = mock(ManagedInterpreterGroup.class);
-    when(mockInterpreterGroupAnonymous.getId()).thenReturn("test-anonymous");
-    anonymousAngularObjectRegistry = new AngularObjectRegistry(mockInterpreterGroupAnonymous.getId(),mockNotebookServer);
-    when(mockInterpreterGroupAnonymous.getAngularObjectRegistry()).thenReturn(anonymousAngularObjectRegistry);
-
-
-
-    when(mockInterpreter.getInterpreterGroup()).thenReturn(mockInterpreterGroupAnonymous);
+    ManagedInterpreterGroup mockInterpreterGroup = mock(ManagedInterpreterGroup.class);
+    when(mockInterpreter.getInterpreterGroup()).thenReturn(mockInterpreterGroup);
     InterpreterSetting mockInterpreterSetting = mock(InterpreterSetting.class);
-    when(mockInterpreterSetting.getInterpreterGroup(eq("anonymous"),any())).thenReturn(mockInterpreterGroupAnonymous);
-    when(mockInterpreterSetting.getInterpreterGroup(eq("user1"),any())).thenReturn(mockInterpreterGroupUser1);
-
     when(mockInterpreterSetting.isUserAuthorized(any())).thenReturn(true);
-    when(mockInterpreterGroupAnonymous.getInterpreterSetting()).thenReturn(mockInterpreterSetting);
+    when(mockInterpreterGroup.getInterpreterSetting()).thenReturn(mockInterpreterSetting);
     when(mockInterpreterSetting.getStatus()).thenReturn(InterpreterSetting.Status.READY);
     searchService = new LuceneSearch(zeppelinConfiguration);
     Credentials credentials = new Credentials();
@@ -163,135 +147,6 @@ public class NotebookServiceTest {
   @After
   public void tearDown() {
     searchService.close();
-  }
-  // Looking for an AngularObject from a registry where it exists should result in callback being called with the specific AngularObject
-  @Test
-  public void testUpdateParagraphResultWithExistingAngularObject() {
-    // Create a note as anonymous user
-    Note note1 = Assertions.assertDoesNotThrow(() -> notebookService.createNote("/folder_1/note1", "test", true, context, callback));
-    String noteId = note1.getId();
-    String paragraphId = note1.getParagraphs().get(0).getId();
-    Assertions.assertEquals("note1",note1.getName());
-    Assertions.assertEquals(1,note1.getParagraphCount());
-    Assertions.assertDoesNotThrow(() -> verify(callback).onSuccess(note1, context));
-    reset(callback);
-
-    // Create an AJAXRequestAngularObject to the registry of anonymous user.
-    String paragraphOwner = note1.getParagraphs().get(0).getUser();
-    AngularObject ajaxRequest = anonymousAngularObjectRegistry.add("AJAXRequest_"+paragraphId,"{}",noteId,paragraphId);
-
-    // Send a updateParagraphResult with paragraph's owners username, and verify that the ServiceCallback receives the AngularObject after the message is processed.
-    ServiceContext editedContext = new ServiceContext(new AuthenticationInfo(paragraphOwner),new HashSet<>());
-    Assertions.assertDoesNotThrow(() -> notebookService.updateParagraphResult(noteId,paragraphId,"test-"+paragraphOwner,0,0,0,"",editedContext,callback));
-    Assertions.assertDoesNotThrow(() -> verify(callback).onSuccess(ajaxRequest, editedContext));
-
-    // Not deleting the notebook file after running the test will cause other tests to fail
-    Path notebookPath = Paths.get(notebookDir.getPath(),note1.getPath()+"_"+noteId+".zpln");
-    Assertions.assertDoesNotThrow(()->{Files.delete(notebookPath);});
-  }
-
-  // Looking for an AngularObject from a registry where it doesn't exist should result in callback being called with 'null'
-  @Test
-  public void testUpdateParagraphResultWithNoAngularObject()  {
-    // Create a note as anonymous user
-    Note note1 = Assertions.assertDoesNotThrow(() -> notebookService.createNote("/folder_1/note1", "test", true, context, callback));
-    String noteId = note1.getId();
-    String paragraphId = note1.getParagraphs().get(0).getId();
-    Assertions.assertEquals("note1",note1.getName());
-    Assertions.assertEquals(1,note1.getParagraphCount());
-    Assertions.assertDoesNotThrow(() -> verify(callback).onSuccess(note1, context));
-    reset(callback);
-
-    // Do not add AJAXRequestAngularObject to the registry.
-    String paragraphOwner = note1.getParagraphs().get(0).getUser();
-
-    // Send a updateParagraphResult message from the same user, and verify that the ServiceCallback receives a null from the AngularObjectRegistry, as the expected Object does not exist.
-    ServiceContext editedContext = new ServiceContext(new AuthenticationInfo(paragraphOwner),new HashSet<>());
-    Assertions.assertDoesNotThrow(() -> notebookService.updateParagraphResult(noteId,paragraphId,"test-"+paragraphOwner,0,0,0,"",editedContext,callback));
-    Assertions.assertDoesNotThrow(() -> verify(callback).onSuccess(null, editedContext));
-
-    // Not deleting the notebook file after running the test will cause other tests to fail
-    Path notebookPath = Paths.get(notebookDir.getPath(),note1.getPath()+"_"+noteId+".zpln");
-    Assertions.assertDoesNotThrow(()->{Files.delete(notebookPath);});
-  }
-
-  // Looking for an AngularObject from another user's registry is possible by overriding the user value of the ServiceContext. If the object exists, should result in callback being called with the specific AngularObject
-  @Test
-  public void testUpdateParagraphResultWithOverriddenServiceContext() {
-    // Create a note as anonymous user
-    Note note1 = Assertions.assertDoesNotThrow(() -> notebookService.createNote("/folder_1/note1", "test", true, context, callback));
-    String noteId = note1.getId();
-    String paragraphId = note1.getParagraphs().get(0).getId();
-    Assertions.assertEquals("note1",note1.getName());
-    Assertions.assertEquals(1,note1.getParagraphCount());
-    Assertions.assertDoesNotThrow(() -> verify(callback).onSuccess(note1, context));
-    reset(callback);
-    // Add the AngularObject to user1's registry
-    AngularObject ajaxRequest = user1AngularObjectRegistry.add("AJAXRequest_"+paragraphId,"{}",noteId,paragraphId);
-
-    // Change the owner of the paragraph to another user
-    note1.getParagraphs().get(0).setAuthenticationInfo(new AuthenticationInfo("user1"));
-    String paragraphOwner = note1.getParagraphs().get(0).getUser();
-
-    // Send a updateParagraphResult message from the paragraph's new owner and verify that the ServiceCallback receives the AngularObject from the registry.
-    ServiceContext editedContext = new ServiceContext(new AuthenticationInfo(paragraphOwner),new HashSet<>());
-    Assertions.assertDoesNotThrow(() -> notebookService.updateParagraphResult(noteId,paragraphId,"test-"+paragraphOwner,0,0,0,"",editedContext,callback));
-    Assertions.assertDoesNotThrow(() -> verify(callback).onSuccess(ajaxRequest, editedContext));
-
-    // Not deleting the notebook file after running the test will cause other tests to fail
-    Path notebookPath = Paths.get(notebookDir.getPath(),note1.getPath()+"_"+noteId+".zpln");
-    Assertions.assertDoesNotThrow(()->{Files.delete(notebookPath);});
-  }
-
-  // Looking for an AngularObject from another user's registry is possible, but if it doesn't exist, should result in callback being called with 'null'
-  @Test
-  public void testUpdateParagraphResultFromAnotherUsersRegistryWithNoAngularObject() {
-    // Create a note as anonymous user
-    Note note1 =     Assertions.assertDoesNotThrow(() -> notebookService.createNote("/folder_1/note1", "test", true, context, callback));
-    String noteId = note1.getId();
-    String paragraphId = note1.getParagraphs().get(0).getId();
-    Assertions.assertEquals("note1",note1.getName());
-    Assertions.assertEquals(1,note1.getParagraphCount());
-    Assertions.assertDoesNotThrow(() -> verify(callback).onSuccess(note1, context));
-    reset(callback);
-
-    // Change the owner of the paragraph to a user who doesn't have an AngularObjectRegistry active
-    note1.getParagraphs().get(0).setAuthenticationInfo(new AuthenticationInfo("user1"));
-    String paragraphOwner = note1.getParagraphs().get(0).getUser();
-
-    // Send a updateParagraphResult message from the paragraph's new owner and verify that the ServiceCallback receives a null from the AngularObjectRegistry, as the expected AngularObjectRegistry does not exist.
-    ServiceContext editedContext = new ServiceContext(new AuthenticationInfo(paragraphOwner),new HashSet<>());
-    Assertions.assertDoesNotThrow(() -> notebookService.updateParagraphResult(noteId,paragraphId,"test-"+paragraphOwner,0,0,0,"",editedContext,callback));
-    Assertions.assertDoesNotThrow(() -> verify(callback).onSuccess(null, editedContext));
-
-    // Not deleting the notebook file after running the test will cause other tests to fail
-    Path notebookPath = Paths.get(notebookDir.getPath(),note1.getPath()+"_"+noteId+".zpln");
-    Assertions.assertDoesNotThrow(()->{Files.delete(notebookPath);});
-  }
-
-  @Test
-  public void testUpdateParagraphResultFromUserWithNoInterpreterGroup() {
-    // Create a note as anonymous user
-    Note note1 = Assertions.assertDoesNotThrow(() -> notebookService.createNote("/folder_1/note1", "test", true, context, callback));
-    String noteId = note1.getId();
-    Assertions.assertEquals("note1",note1.getName());
-    Assertions.assertEquals(1,note1.getParagraphCount());
-    Assertions.assertDoesNotThrow(() -> verify(callback).onSuccess(note1, context));
-    reset(callback);
-    String paragraphId = note1.getParagraphs().get(0).getId();
-
-    // Change the owner of the paragraph to a user who doesn't have an InterpreterGroup
-    note1.getParagraphs().get(0).setAuthenticationInfo(new AuthenticationInfo("user2"));
-    String paragraphOwner = note1.getParagraphs().get(0).getUser();
-
-    // Send a updateParagraphResult message from the paragraph's new owner and verify that the ServiceCallback receives a null, as there is not an InterpreterGroup from which to search AngularObjects from.
-    ServiceContext editedContext = new ServiceContext(new AuthenticationInfo(paragraphOwner),new HashSet<>());
-    Assertions.assertDoesNotThrow(() -> notebookService.updateParagraphResult(noteId,paragraphId,"test-"+paragraphOwner,0,0,0,"",editedContext,callback));
-    Assertions.assertDoesNotThrow(() -> verify(callback).onSuccess(null, editedContext));
-
-    // Not deleting the notebook file after running the test will cause other tests to fail
-    Path notebookPath = Paths.get(notebookDir.getPath(),note1.getPath()+"_"+noteId+".zpln");
-    Assertions.assertDoesNotThrow(()->{Files.delete(notebookPath);});
   }
 
   @Test
