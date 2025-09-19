@@ -48,10 +48,6 @@ package com.teragrep.pth_07.ui.elements;
 import com.teragrep.zep_01.display.AngularObject;
 import com.teragrep.zep_01.display.AngularObjectWatcher;
 import com.teragrep.zep_01.interpreter.InterpreterContext;
-import jakarta.json.Json;
-import jakarta.json.JsonObject;
-
-import java.util.Map;
 
 public class PerformanceIndicator extends AbstractUserInterfaceElement {
 
@@ -92,22 +88,10 @@ public class PerformanceIndicator extends AbstractUserInterfaceElement {
         batchMsg.emit();
     }
 
-    public void setPerformanceData(long numInputRows, long batchId, double processedRowsPerSecond, Map<String, String> currentMetrics) {
-        final StringBuilder newMessage = new StringBuilder();
-
-        newMessage.append("Full table input rows read from archive: ").append(numInputRows).append(" ");
-        newMessage.append("during batchId: ").append(batchId).append(" ");
-        newMessage.append("with avg EPS: ").append(processedRowsPerSecond).append("\n");
-
-        if (!currentMetrics.isEmpty()) {
-            newMessage.append("Metrics:\n");
-            for (final Map.Entry<String, String> metric : currentMetrics.entrySet()) {
-                newMessage.append(metric.getKey()).append(": ").append(metric.getValue()).append("\n");
-            }
-        }
-
-        message = newMessage.toString();
-
+    public void setPerformanceData(long numInputRows, long batchId, double processedRowsPerSecond) {
+        message = "Full table input rows read from archive: " + numInputRows
+                + " during batchId: " + batchId
+                + ", with avg EPS: " + processedRowsPerSecond;
         draw();
     }
 }
