@@ -84,6 +84,41 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class DTTableDatasetNgTest {
     private static final Logger LOGGER = LoggerFactory.getLogger(DTTableDatasetNgTest.class);
+    private final SparkSession sparkSession = SparkSession.builder()
+            .master("local[*]")
+            .config("spark.cleaner.referenceTracking.cleanCheckpoints", "true")
+            .config("checkpointLocation","/tmp/pth_10/test/StackTest/checkpoints/" + UUID.randomUUID() + "/")
+            .config("spark.sql.session.timeZone", "UTC")
+            .getOrCreate();
+    private final StructType testSchema = new StructType(
+            new StructField[] {
+                    new StructField("_time", DataTypes.TimestampType, false, new MetadataBuilder().build()),
+                    new StructField("id", DataTypes.LongType, false, new MetadataBuilder().build()),
+                    new StructField("_raw", DataTypes.StringType, false, new MetadataBuilder().build()),
+                    new StructField("index", DataTypes.StringType, false, new MetadataBuilder().build()),
+                    new StructField("sourcetype", DataTypes.StringType, false, new MetadataBuilder().build()),
+                    new StructField("host", DataTypes.StringType, false, new MetadataBuilder().build()),
+                    new StructField("source", DataTypes.StringType, false, new MetadataBuilder().build()),
+                    new StructField("partition", DataTypes.StringType, false, new MetadataBuilder().build()),
+                    new StructField("offset", DataTypes.LongType, false, new MetadataBuilder().build()),
+                    new StructField("origin", DataTypes.StringType, false, new MetadataBuilder().build())
+            }
+    );
+    private final List<Row> rows = makeRowsList(
+            0L, 				// _time
+            0L, 					// id
+            "data data", 			// _raw
+            "index_A", 				// index
+            "stream", 				// sourcetype
+            "host", 				// host
+            "input", 				// source
+            String.valueOf(0), 	    // partition
+            0L, 				    // offset
+            "test data",            // origin
+            49                     // make n amount of rows
+    );
+
+    Dataset<Row> testDs = sparkSession.createDataFrame(rows, testSchema);
 
     @Test
     public void parseAsPojo() {
@@ -172,43 +207,6 @@ public class DTTableDatasetNgTest {
 
     @Test
     public void testAJAXResponse() {
-       StructType testSchema = new StructType(
-                new StructField[] {
-                        new StructField("_time", DataTypes.TimestampType, false, new MetadataBuilder().build()),
-                        new StructField("id", DataTypes.LongType, false, new MetadataBuilder().build()),
-                        new StructField("_raw", DataTypes.StringType, false, new MetadataBuilder().build()),
-                        new StructField("index", DataTypes.StringType, false, new MetadataBuilder().build()),
-                        new StructField("sourcetype", DataTypes.StringType, false, new MetadataBuilder().build()),
-                        new StructField("host", DataTypes.StringType, false, new MetadataBuilder().build()),
-                        new StructField("source", DataTypes.StringType, false, new MetadataBuilder().build()),
-                        new StructField("partition", DataTypes.StringType, false, new MetadataBuilder().build()),
-                        new StructField("offset", DataTypes.LongType, false, new MetadataBuilder().build()),
-                        new StructField("origin", DataTypes.StringType, false, new MetadataBuilder().build())
-                }
-        );
-
-        SparkSession sparkSession = SparkSession.builder()
-                .master("local[*]")
-                .config("spark.cleaner.referenceTracking.cleanCheckpoints", "true")
-                .config("checkpointLocation","/tmp/pth_10/test/StackTest/checkpoints/" + UUID.randomUUID() + "/")
-                .config("spark.sql.session.timeZone", "UTC")
-                .getOrCreate();
-
-        List<Row> rows = makeRowsList(
-                0L, 				// _time
-                0L, 					// id
-                "data data", 			// _raw
-                "index_A", 				// index
-                "stream", 				// sourcetype
-                "host", 				// host
-                "input", 				// source
-                String.valueOf(0), 	    // partition
-                0L, 				    // offset
-                "test data",            // origin
-                49                     // make n amount of rows
-        );
-
-        Dataset<Row> testDs = sparkSession.createDataFrame(rows, testSchema);
         List<String> datasetAsJSON = testDs.toJSON().collectAsList();
 
         List<String> subList = datasetAsJSON.subList(0, 5);
@@ -317,43 +315,6 @@ public class DTTableDatasetNgTest {
         InterpreterContext context = InterpreterContext.builder().setInterpreterOut(testOutput).setAngularObjectRegistry(testRegistry).build();
         DTTableDatasetNg dtTableDatasetNg = new DTTableDatasetNg(context);
 
-        StructType testSchema = new StructType(
-                new StructField[] {
-                        new StructField("_time", DataTypes.TimestampType, false, new MetadataBuilder().build()),
-                        new StructField("id", DataTypes.LongType, false, new MetadataBuilder().build()),
-                        new StructField("_raw", DataTypes.StringType, false, new MetadataBuilder().build()),
-                        new StructField("index", DataTypes.StringType, false, new MetadataBuilder().build()),
-                        new StructField("sourcetype", DataTypes.StringType, false, new MetadataBuilder().build()),
-                        new StructField("host", DataTypes.StringType, false, new MetadataBuilder().build()),
-                        new StructField("source", DataTypes.StringType, false, new MetadataBuilder().build()),
-                        new StructField("partition", DataTypes.StringType, false, new MetadataBuilder().build()),
-                        new StructField("offset", DataTypes.LongType, false, new MetadataBuilder().build()),
-                        new StructField("origin", DataTypes.StringType, false, new MetadataBuilder().build())
-                }
-        );
-
-        SparkSession sparkSession = SparkSession.builder()
-                .master("local[*]")
-                .config("spark.cleaner.referenceTracking.cleanCheckpoints", "true")
-                .config("checkpointLocation","/tmp/pth_10/test/StackTest/checkpoints/" + UUID.randomUUID() + "/")
-                .config("spark.sql.session.timeZone", "UTC")
-                .getOrCreate();
-        List<Row> rows = makeRowsList(
-                0L, 				// _time
-                0L, 					// id
-                "data data", 			// _raw
-                "index_A", 				// index
-                "stream", 				// sourcetype
-                "host", 				// host
-                "input", 				// source
-                String.valueOf(0), 	    // partition
-                0L, 				    // offset
-                "test data",            // origin
-                49                     // make n amount of rows
-        );
-
-        Dataset<Row> testDs = sparkSession.createDataFrame(rows, testSchema);
-
         // Simulate DPL receiving new data.
         Assertions.assertDoesNotThrow(()->{
             dtTableDatasetNg.setParagraphDataset(testDs);
@@ -367,52 +328,16 @@ public class DTTableDatasetNgTest {
     // Does not include a concrete implementation of InterpreterOutputListener as it's an anonymous class within RemoteInterpreterServer, and instantiating it would require too many dependencies.
     @Test
     public void testNoClearParagraphResultsOnPaginationRequest(){
-        StructType testSchema = new StructType(
-                new StructField[] {
-                        new StructField("_time", DataTypes.TimestampType, false, new MetadataBuilder().build()),
-                        new StructField("id", DataTypes.LongType, false, new MetadataBuilder().build()),
-                        new StructField("_raw", DataTypes.StringType, false, new MetadataBuilder().build()),
-                        new StructField("index", DataTypes.StringType, false, new MetadataBuilder().build()),
-                        new StructField("sourcetype", DataTypes.StringType, false, new MetadataBuilder().build()),
-                        new StructField("host", DataTypes.StringType, false, new MetadataBuilder().build()),
-                        new StructField("source", DataTypes.StringType, false, new MetadataBuilder().build()),
-                        new StructField("partition", DataTypes.StringType, false, new MetadataBuilder().build()),
-                        new StructField("offset", DataTypes.LongType, false, new MetadataBuilder().build()),
-                        new StructField("origin", DataTypes.StringType, false, new MetadataBuilder().build())
-                }
-        );
 
-        SparkSession sparkSession = SparkSession.builder()
-                .master("local[*]")
-                .config("spark.cleaner.referenceTracking.cleanCheckpoints", "true")
-                .config("checkpointLocation","/tmp/pth_10/test/StackTest/checkpoints/" + UUID.randomUUID() + "/")
-                .config("spark.sql.session.timeZone", "UTC")
-                .getOrCreate();
-        List<Row> rows = makeRowsList(
-                0L, 				// _time
-                0L, 					// id
-                "data data", 			// _raw
-                "index_A", 				// index
-                "stream", 				// sourcetype
-                "host", 				// host
-                "input", 				// source
-                String.valueOf(0), 	    // partition
-                0L, 				    // offset
-                "test data",            // origin
-                49                     // make n amount of rows
-        );
-
-        Dataset<Row> testDs = sparkSession.createDataFrame(rows, testSchema);
         TestInterpreterOutputListener listener = new TestInterpreterOutputListener();
         InterpreterOutput testOutput =  new InterpreterOutput(listener);
 
         AngularObjectRegistry testRegistry = new AngularObjectRegistry("test", null);
-
-        testRegistry.add("testAO","baseValue","testNote","testParagraph");
         InterpreterContext context = InterpreterContext.builder().setInterpreterOut(testOutput).setAngularObjectRegistry(testRegistry).setNoteId("testNote").setParagraphId("testParagraph").build();
         DTTableDatasetNg dtTableDatasetNg = new DTTableDatasetNg(context);
-        dtTableDatasetNg.setParagraphDataset(testDs);
-
+        Assertions.assertDoesNotThrow(()->{
+            dtTableDatasetNg.setParagraphDataset(testDs);
+        });
         AngularObject testAo = context.getAngularObjectRegistry().get("AJAXRequest_testParagraph","testNote","testParagraph");
         String ajaxRequestString = "{\"draw\":1,\"columns\":[{\"data\":0,\"name\":\"\",\"searchable\":true,\"orderable\":true,\"search\":{\"value\":\"\",\"regex\":false}},{\"data\":1,\"name\":\"\",\"searchable\":true,\"orderable\":true,\"search\":{\"value\":\"\",\"regex\":false}},{\"data\":2,\"name\":\"\",\"searchable\":true,\"orderable\":true,\"search\":{\"value\":\"\",\"regex\":false}},{\"data\":3,\"name\":\"\",\"searchable\":true,\"orderable\":true,\"search\":{\"value\":\"\",\"regex\":false}},{\"data\":4,\"name\":\"\",\"searchable\":true,\"orderable\":true,\"search\":{\"value\":\"\",\"regex\":false}},{\"data\":5,\"name\":\"\",\"searchable\":true,\"orderable\":true,\"search\":{\"value\":\"\",\"regex\":false}},{\"data\":6,\"name\":\"\",\"searchable\":true,\"orderable\":true,\"search\":{\"value\":\"\",\"regex\":false}},{\"data\":7,\"name\":\"\",\"searchable\":true,\"orderable\":true,\"search\":{\"value\":\"\",\"regex\":false}}],\"order\":[{\"column\":0,\"dir\":\"desc\"},{\"column\":0,\"dir\":\"asc\"}],\"start\":0,\"length\":5,\"search\":{\"value\":\"\",\"regex\":false}}";
         // Simulate DPL receiving new data.
