@@ -32,6 +32,7 @@ import javax.inject.Provider;
 import javax.servlet.http.HttpServletRequest;
 
 import com.teragrep.zep_01.common.ValidatedMessage;
+import com.teragrep.zep_01.display.*;
 import com.teragrep.zep_01.interpreter.*;
 import com.teragrep.zep_01.rest.exception.BadRequestException;
 import jakarta.json.Json;
@@ -40,11 +41,6 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.apache.thrift.TException;
 import com.teragrep.zep_01.conf.ZeppelinConfiguration;
-import com.teragrep.zep_01.display.AngularObject;
-import com.teragrep.zep_01.display.AngularObjectRegistry;
-import com.teragrep.zep_01.display.AngularObjectRegistryListener;
-import com.teragrep.zep_01.display.GUI;
-import com.teragrep.zep_01.display.Input;
 import com.teragrep.zep_01.interpreter.remote.RemoteAngularObjectRegistry;
 import com.teragrep.zep_01.interpreter.remote.RemoteInterpreterProcessListener;
 import com.teragrep.zep_01.interpreter.thrift.InterpreterCompletion;
@@ -1179,10 +1175,18 @@ public class NotebookServer extends WebSocketServlet
                     // If onSuccess() returns an AngularObject, it means the object was found and set.
                     // We don't send any message to the UI here, because the response is generated in DTTableDatasetNG.updatePage();
                     // Debug message
+
+                    // probably missing watcher is causing errors. should create a way to get watchers and see if it has an AJAXRequestWatcher, and react accordingly
+
+                    StringBuilder sb = new StringBuilder();
+                    sb.append("Found angular object: ").append(result);
+                    List watchers = result.watchers();
+                    for (Object watcher: watchers) {
+                      sb.append(" | Has watcher: ").append(watcher.toString());
+                    }
                     Message msg = new Message(OP.ERROR_INFO)
                             .withMsgId(msgId)
-                            .put("info",
-                            "Found angular object: "+result+" should get a separate message about it");
+                            .put("info", sb.toString());
                     conn.send(serializeMessage(msg));
                     super.onSuccess(result,context);
                   }

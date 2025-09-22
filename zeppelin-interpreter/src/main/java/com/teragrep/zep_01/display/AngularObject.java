@@ -23,6 +23,7 @@ import com.teragrep.zep_01.scheduler.ExecutorFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Objects;
@@ -215,6 +216,12 @@ public class AngularObject<T> implements JsonSerializable {
     return listener;
   }
 
+
+  public List<AngularObjectWatcher> watchers() {
+    ArrayList<AngularObjectWatcher> watcherList = new ArrayList<AngularObjectWatcher>();
+    watcherList.addAll(watchers);
+    return watcherList;
+  }
   /**
    * Add a watcher for this object.
    * Multiple watcher can be registered.
