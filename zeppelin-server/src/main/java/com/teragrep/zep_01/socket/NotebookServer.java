@@ -1178,6 +1178,12 @@ public class NotebookServer extends WebSocketServlet
                   else {
                     // If onSuccess() returns an AngularObject, it means the object was found and set.
                     // We don't send any message to the UI here, because the response is generated in DTTableDatasetNG.updatePage();
+                    // Debug message
+                    Message msg = new Message(OP.ERROR_INFO)
+                            .withMsgId(msgId)
+                            .put("info",
+                            "Found angular object: "+result+" should get a separate message about it");
+                    conn.send(serializeMessage(msg));
                     super.onSuccess(result,context);
                   }
                 }
