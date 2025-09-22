@@ -49,6 +49,12 @@ import com.google.gson.Gson;
 import com.teragrep.pth_07.ui.elements.table_dynamic.pojo.AJAXRequest;
 import com.teragrep.zep_01.display.AngularObject;
 import com.teragrep.zep_01.display.AngularObjectListener;
+import com.teragrep.zep_01.display.AngularObjectRegistry;
+import com.teragrep.zep_01.display.AngularObjectRegistryListener;
+import com.teragrep.zep_01.interpreter.InterpreterContext;
+import com.teragrep.zep_01.interpreter.InterpreterOutput;
+import com.teragrep.zep_01.interpreter.InterpreterOutputListener;
+import com.teragrep.zep_01.interpreter.InterpreterResultMessageOutput;
 import jakarta.json.Json;
 import jakarta.json.JsonArray;
 import jakarta.json.JsonArrayBuilder;
@@ -61,6 +67,7 @@ import org.apache.spark.sql.types.DataTypes;
 import org.apache.spark.sql.types.MetadataBuilder;
 import org.apache.spark.sql.types.StructField;
 import org.apache.spark.sql.types.StructType;
+import org.junit.Assert;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.slf4j.Logger;
@@ -298,4 +305,151 @@ public class DTTableDatasetNgTest {
         return rowArrayList;
     }
 
+    // DTTableDatasetNG should clear the output of a Paragraph related to an InterpreterOutput when new data is received from DPL.
+    // Does not include a concrete implementation of InterpreterOutputListener as it's an anonymous class within RemoteInterpreterServer, and instantiating it would require too many dependencies.
+    @Test
+    public void testClearParagraphResultsOnNewDataset(){
+
+        TestInterpreterOutputListener listener = new TestInterpreterOutputListener();
+        InterpreterOutput testOutput =  new InterpreterOutput(listener);
+
+        AngularObjectRegistry testRegistry = new AngularObjectRegistry("test", null);
+        InterpreterContext context = InterpreterContext.builder().setInterpreterOut(testOutput).setAngularObjectRegistry(testRegistry).build();
+        DTTableDatasetNg dtTableDatasetNg = new DTTableDatasetNg(context);
+
+        StructType testSchema = new StructType(
+                new StructField[] {
+                        new StructField("_time", DataTypes.TimestampType, false, new MetadataBuilder().build()),
+                        new StructField("id", DataTypes.LongType, false, new MetadataBuilder().build()),
+                        new StructField("_raw", DataTypes.StringType, false, new MetadataBuilder().build()),
+                        new StructField("index", DataTypes.StringType, false, new MetadataBuilder().build()),
+                        new StructField("sourcetype", DataTypes.StringType, false, new MetadataBuilder().build()),
+                        new StructField("host", DataTypes.StringType, false, new MetadataBuilder().build()),
+                        new StructField("source", DataTypes.StringType, false, new MetadataBuilder().build()),
+                        new StructField("partition", DataTypes.StringType, false, new MetadataBuilder().build()),
+                        new StructField("offset", DataTypes.LongType, false, new MetadataBuilder().build()),
+                        new StructField("origin", DataTypes.StringType, false, new MetadataBuilder().build())
+                }
+        );
+
+        SparkSession sparkSession = SparkSession.builder()
+                .master("local[*]")
+                .config("spark.cleaner.referenceTracking.cleanCheckpoints", "true")
+                .config("checkpointLocation","/tmp/pth_10/test/StackTest/checkpoints/" + UUID.randomUUID() + "/")
+                .config("spark.sql.session.timeZone", "UTC")
+                .getOrCreate();
+        List<Row> rows = makeRowsList(
+                0L, 				// _time
+                0L, 					// id
+                "data data", 			// _raw
+                "index_A", 				// index
+                "stream", 				// sourcetype
+                "host", 				// host
+                "input", 				// source
+                String.valueOf(0), 	    // partition
+                0L, 				    // offset
+                "test data",            // origin
+                49                     // make n amount of rows
+        );
+
+        Dataset<Row> testDs = sparkSession.createDataFrame(rows, testSchema);
+
+        // Simulate DPL receiving new data.
+        Assertions.assertDoesNotThrow(()->{
+            dtTableDatasetNg.setParagraphDataset(testDs);
+        });
+        Assertions.assertEquals(1,listener.numberOfUpdateCalls());
+        Assertions.assertEquals(1,listener.numberOfResetCalls());
+    }
+
+
+    // DTTableDatasetNG should not clear the output of a Paragraph related to an InterpreterOutput when a pagination request is made.
+    // Does not include a concrete implementation of InterpreterOutputListener as it's an anonymous class within RemoteInterpreterServer, and instantiating it would require too many dependencies.
+    @Test
+    public void testNoClearParagraphResultsOnPaginationRequest(){
+        StructType testSchema = new StructType(
+                new StructField[] {
+                        new StructField("_time", DataTypes.TimestampType, false, new MetadataBuilder().build()),
+                        new StructField("id", DataTypes.LongType, false, new MetadataBuilder().build()),
+                        new StructField("_raw", DataTypes.StringType, false, new MetadataBuilder().build()),
+                        new StructField("index", DataTypes.StringType, false, new MetadataBuilder().build()),
+                        new StructField("sourcetype", DataTypes.StringType, false, new MetadataBuilder().build()),
+                        new StructField("host", DataTypes.StringType, false, new MetadataBuilder().build()),
+                        new StructField("source", DataTypes.StringType, false, new MetadataBuilder().build()),
+                        new StructField("partition", DataTypes.StringType, false, new MetadataBuilder().build()),
+                        new StructField("offset", DataTypes.LongType, false, new MetadataBuilder().build()),
+                        new StructField("origin", DataTypes.StringType, false, new MetadataBuilder().build())
+                }
+        );
+
+        SparkSession sparkSession = SparkSession.builder()
+                .master("local[*]")
+                .config("spark.cleaner.referenceTracking.cleanCheckpoints", "true")
+                .config("checkpointLocation","/tmp/pth_10/test/StackTest/checkpoints/" + UUID.randomUUID() + "/")
+                .config("spark.sql.session.timeZone", "UTC")
+                .getOrCreate();
+        List<Row> rows = makeRowsList(
+                0L, 				// _time
+                0L, 					// id
+                "data data", 			// _raw
+                "index_A", 				// index
+                "stream", 				// sourcetype
+                "host", 				// host
+                "input", 				// source
+                String.valueOf(0), 	    // partition
+                0L, 				    // offset
+                "test data",            // origin
+                49                     // make n amount of rows
+        );
+
+        Dataset<Row> testDs = sparkSession.createDataFrame(rows, testSchema);
+        TestInterpreterOutputListener listener = new TestInterpreterOutputListener();
+        InterpreterOutput testOutput =  new InterpreterOutput(listener);
+
+        AngularObjectRegistry testRegistry = new AngularObjectRegistry("test", null);
+
+        testRegistry.add("testAO","baseValue","testNote","testParagraph");
+        InterpreterContext context = InterpreterContext.builder().setInterpreterOut(testOutput).setAngularObjectRegistry(testRegistry).setNoteId("testNote").setParagraphId("testParagraph").build();
+        DTTableDatasetNg dtTableDatasetNg = new DTTableDatasetNg(context);
+        dtTableDatasetNg.setParagraphDataset(testDs);
+
+        AngularObject testAo = context.getAngularObjectRegistry().get("AJAXRequest_testParagraph","testNote","testParagraph");
+        String ajaxRequestString = "{\"draw\":1,\"columns\":[{\"data\":0,\"name\":\"\",\"searchable\":true,\"orderable\":true,\"search\":{\"value\":\"\",\"regex\":false}},{\"data\":1,\"name\":\"\",\"searchable\":true,\"orderable\":true,\"search\":{\"value\":\"\",\"regex\":false}},{\"data\":2,\"name\":\"\",\"searchable\":true,\"orderable\":true,\"search\":{\"value\":\"\",\"regex\":false}},{\"data\":3,\"name\":\"\",\"searchable\":true,\"orderable\":true,\"search\":{\"value\":\"\",\"regex\":false}},{\"data\":4,\"name\":\"\",\"searchable\":true,\"orderable\":true,\"search\":{\"value\":\"\",\"regex\":false}},{\"data\":5,\"name\":\"\",\"searchable\":true,\"orderable\":true,\"search\":{\"value\":\"\",\"regex\":false}},{\"data\":6,\"name\":\"\",\"searchable\":true,\"orderable\":true,\"search\":{\"value\":\"\",\"regex\":false}},{\"data\":7,\"name\":\"\",\"searchable\":true,\"orderable\":true,\"search\":{\"value\":\"\",\"regex\":false}}],\"order\":[{\"column\":0,\"dir\":\"desc\"},{\"column\":0,\"dir\":\"asc\"}],\"start\":0,\"length\":5,\"search\":{\"value\":\"\",\"regex\":false}}";
+        // Simulate DPL receiving new data.
+        Assertions.assertDoesNotThrow(()->{
+            testAo.set(ajaxRequestString);
+            Thread.sleep(200);  // Must wait here for a while for the Listener to process the calls.
+            // Removing Thread.sleep causes assertions to fail due to number of update calls being queried before the AJAXrequest is counted.
+        });
+
+        // One call to both update and reset should happen due to inserting the initial dataset. Another update should happen on pagination request. Pagination request should not increment reset counter.
+        Assertions.assertEquals(2,listener.numberOfUpdateCalls());
+        Assertions.assertEquals(1,listener.numberOfResetCalls());
+    }
+
+    private class TestInterpreterOutputListener implements InterpreterOutputListener{
+        private int numberOfResetCalls = 0;
+        private int numberOfUpdateCalls = 0;
+        @Override
+        public void onUpdateAll(InterpreterOutput out) {
+            numberOfResetCalls++;
+            // Calling this clears the paragraph's results. It will be called when we update the dataset, but should not be called upon pagination request.
+        }
+        @Override
+        public void onAppend(int index, InterpreterResultMessageOutput out, byte[] line) {
+            // Calling this does not clear the paragraph's results.
+        }
+        @Override
+        public void onUpdate(int index, InterpreterResultMessageOutput out) {
+            // Calling this does not clear the paragraph's results.
+            numberOfUpdateCalls++;
+        }
+
+        public int numberOfUpdateCalls(){
+            return numberOfUpdateCalls;
+        }
+        public int numberOfResetCalls(){
+            return numberOfResetCalls;
+        }
+    }
 }
