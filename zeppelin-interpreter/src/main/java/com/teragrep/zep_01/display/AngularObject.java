@@ -216,10 +216,6 @@ public class AngularObject<T> implements JsonSerializable {
     return listener;
   }
 
-
-  public List<AngularObjectWatcher> watchers() {
-    return watchers;
-  }
   /**
    * Add a watcher for this object.
    * Multiple watcher can be registered.

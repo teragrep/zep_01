@@ -34,6 +34,7 @@ import javax.servlet.http.HttpServletRequest;
 import com.teragrep.zep_01.common.ValidatedMessage;
 import com.teragrep.zep_01.display.*;
 import com.teragrep.zep_01.interpreter.*;
+import com.teragrep.zep_01.interpreter.remote.RemoteInterpreter;
 import com.teragrep.zep_01.rest.exception.BadRequestException;
 import jakarta.json.Json;
 import jakarta.json.JsonObject;
@@ -1135,6 +1136,32 @@ public class NotebookServer extends WebSocketServlet
       final String search = (String) ((Map) fromMessage.get("search")).get("value");
       final int draw = (int) Double.parseDouble(fromMessage.get("draw").toString());
 
+      StringBuilder sb = new StringBuilder();
+      sb.append("Found interpreter is of type ").append(interpreter.getClassName());
+      Message debugMsg = new Message(OP.ERROR_INFO)
+              .withMsgId(msgId)
+              .put("info", sb.toString());
+      conn.send(serializeMessage(debugMsg));
+
+      if(!((RemoteInterpreter)interpreter).isOpened()){
+        LinkedHashMap data = new LinkedHashMap();
+        data.put("error",true);
+        data.put("message","Request failed: Interpreter session is not running, please rerun the paragraph!");
+        data.put("draw",draw);
+        data.put("recordsTotal",0);
+        data.put("recordsFiltered",0);
+        Message msg = new Message(Message.OP.PARAGRAPH_UPDATE_OUTPUT)
+                .withMsgId(msgId)
+                .put("data",data)
+                .put("draw",0)
+                .put("type",InterpreterResult.Type.JSONTABLE.toString())
+                .put("index",0)
+                .put("noteId", noteId)
+                .put("paragraphId", paragraphId);
+        conn.send(serializeMessage(msg));
+        return;
+      }
+
       // The AJAXRequest AngularObject we are looking for is in the AngularObjectRegistry of the user who last ran the paragraph.
       // In order to access it, we must change the username in ServiceContext to match, otherwise only the last runner can make pagination or search requests.
       final AuthenticationInfo authInfo = context.getAutheInfo();
@@ -1174,21 +1201,6 @@ public class NotebookServer extends WebSocketServlet
                   else {
                     // If onSuccess() returns an AngularObject, it means the object was found and set.
                     // We don't send any message to the UI here, because the response is generated in DTTableDatasetNG.updatePage();
-                    // Debug message
-
-                    // probably missing watcher is causing errors. should create a way to get watchers and see if it has an AJAXRequestWatcher, and react accordingly
-
-                    StringBuilder sb = new StringBuilder();
-                    List<?> watchers = result.watchers();
-                    sb.append("Found angular object: ").append(result);
-                    sb.append(" with ").append(watchers.size()).append(" watchers");
-                    for (Object watcher: watchers) {
-                      sb.append(" | Has watcher: ").append(watcher.toString());
-                    }
-                    Message msg = new Message(OP.ERROR_INFO)
-                            .withMsgId(msgId)
-                            .put("info", sb.toString());
-                    conn.send(serializeMessage(msg));
                     super.onSuccess(result,context);
                   }
                 }
