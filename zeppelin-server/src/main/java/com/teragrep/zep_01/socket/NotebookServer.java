@@ -1179,8 +1179,9 @@ public class NotebookServer extends WebSocketServlet
                     // probably missing watcher is causing errors. should create a way to get watchers and see if it has an AJAXRequestWatcher, and react accordingly
 
                     StringBuilder sb = new StringBuilder();
+                    List<?> watchers = result.watchers();
                     sb.append("Found angular object: ").append(result);
-                    List watchers = result.watchers();
+                    sb.append(" with ").append(watchers.size()).append(" watchers");
                     for (Object watcher: watchers) {
                       sb.append(" | Has watcher: ").append(watcher.toString());
                     }
