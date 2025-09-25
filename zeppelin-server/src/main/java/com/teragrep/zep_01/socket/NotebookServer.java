@@ -1138,12 +1138,24 @@ public class NotebookServer extends WebSocketServlet
         }
         sb.append("Session size: "+sessions.size());
       }
-
-      Message debugMsg = new Message(OP.ERROR_INFO)
-              .withMsgId(msgId)
-              .put("info",sb.toString());
-      conn.send(serializeMessage(debugMsg));
-
+      if(sessions == null || sessions.size() == 0){
+        LinkedHashMap data = new LinkedHashMap();
+        data.put("error",true);
+        data.put("message",sb.toString());
+        data.put("draw",0);
+        data.put("recordsTotal",0);
+        data.put("recordsFiltered",0);
+        Message msg = new Message(Message.OP.PARAGRAPH_UPDATE_OUTPUT)
+                .withMsgId(msgId)
+                .put("data",data)
+                .put("draw",0)
+                .put("type",InterpreterResult.Type.JSONTABLE.toString())
+                .put("index",0)
+                .put("noteId", noteId)
+                .put("paragraphId", paragraphId);
+        conn.send(serializeMessage(msg));
+        return;
+      }
       Interpreter interpreter = paragraph.getBindedInterpreter();
       if(interpreter == null){
         throw new BadRequestException("Paragraph has no binded interpreter!");
@@ -1159,25 +1171,6 @@ public class NotebookServer extends WebSocketServlet
       final String search = (String) ((Map) fromMessage.get("search")).get("value");
       final int draw = (int) Double.parseDouble(fromMessage.get("draw").toString());
 
-
-      if(sessions == null || sessions.size() == 0){
-        LinkedHashMap data = new LinkedHashMap();
-        data.put("error",true);
-        data.put("message","Request failed: Interpreter session is not running, please rerun the paragraph!");
-        data.put("draw",0);
-        data.put("recordsTotal",0);
-        data.put("recordsFiltered",0);
-        Message msg = new Message(Message.OP.PARAGRAPH_UPDATE_OUTPUT)
-                .withMsgId(msgId)
-                .put("data",data)
-                .put("draw",0)
-                .put("type",InterpreterResult.Type.JSONTABLE.toString())
-                .put("index",0)
-                .put("noteId", noteId)
-                .put("paragraphId", paragraphId);
-        conn.send(serializeMessage(msg));
-        return;
-      }
       // The AJAXRequest AngularObject we are looking for is in the AngularObjectRegistry of the user who last ran the paragraph.
       // In order to access it, we must change the username in ServiceContext to match, otherwise only the last runner can make pagination or search requests.
       final AuthenticationInfo authInfo = context.getAutheInfo();
