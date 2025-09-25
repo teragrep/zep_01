@@ -297,6 +297,7 @@ public class DPLInterpreter extends AbstractInterpreter {
     public List<InterpreterCompletion> completion(String buf, int cursor, InterpreterContext interpreterContext) {
         return null;
     }
+    @Override
     public HashMap<String,HashMap<String,UserInterfaceElementManager>>getUserInterfaceManagerForParagraph(){
         return notebookParagraphUserInterfaceManager;
     }

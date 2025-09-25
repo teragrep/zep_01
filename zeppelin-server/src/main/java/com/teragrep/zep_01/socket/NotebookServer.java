@@ -1137,19 +1137,19 @@ public class NotebookServer extends WebSocketServlet
       final int draw = (int) Double.parseDouble(fromMessage.get("draw").toString());
 
       HashMap<String,UserInterfaceElementManager> interfaceManagers = interpreter.getUserInterfaceManagerForParagraph().get(noteId);
-      StringBuilder interfaceNames = new StringBuilder();
-      interfaceNames.append("interfaceNames: ");
       if (interfaceManagers != null){
-        interfaceManagers.forEach((key,value) -> {interfaceNames.append(key);interfaceNames.append(" | ");interfaceNames.append(value);});
-        conn.send(serializeMessage(new Message(OP.ERROR_INFO).put("info", "UserInterfaceManager, size: "+interfaceManagers.size()+" content: "+interfaceNames.toString())));
-
+        LOG.info("InterfaceManager count :{}", interfaceManagers.size());
+        conn.send(serializeMessage(new Message(OP.ERROR_INFO).put("info", "InterfaceManager count :"+interfaceManagers.size())));
         UserInterfaceElementManager interfaceManager = interfaceManagers.get(paragraphId);
+
         if(interfaceManager != null){
           DataTableUserInterfaceElement datatableElement = interfaceManager.getDtTableDatasetNg();
           List<String> dataset = datatableElement.getDatasetAsJSON();
+
           if(dataset != null){
             conn.send(serializeMessage(new Message(OP.ERROR_INFO).put("info", "Data found! size: "+dataset.size()+" data: "+dataset.toString())));
           }
+
           else {
             LinkedHashMap data = new LinkedHashMap();
             data.put("error",true);
