@@ -89,7 +89,7 @@ public class DPLInterpreter extends AbstractInterpreter {
 
     private final DPLKryo dplKryo;
 
-    private final HashMap<String, HashMap<String, UserInterfaceManager>> notebookParagraphUserInterfaceManager;
+    private final HashMap<String, HashMap<String, UserInterfaceElementManager>> notebookParagraphUserInterfaceManager;
 
 
     public DPLInterpreter(Properties properties) {
@@ -163,7 +163,7 @@ public class DPLInterpreter extends AbstractInterpreter {
         // store UserInterfaceManager
         if (!notebookParagraphUserInterfaceManager.containsKey(interpreterContext.getNoteId())) {
             // notebookId does not exist
-            HashMap<String, UserInterfaceManager> paragraphUserInterfaceManager = new HashMap<>();
+            HashMap<String, UserInterfaceElementManager> paragraphUserInterfaceManager = new HashMap<>();
             notebookParagraphUserInterfaceManager.put(interpreterContext.getNoteId(), paragraphUserInterfaceManager);
         }
 
@@ -272,6 +272,11 @@ public class DPLInterpreter extends AbstractInterpreter {
         return FormType.NATIVE;
     }
 
+   //@Override
+   //public HashMap<String,HashMap<String,UserInterfaceManager>>getUserInterfaceManagerForParagraph(){
+   //    return notebookParagraphUserInterfaceManager;
+   //}
+
 
     @Override
     public int getProgress(InterpreterContext context) throws InterpreterException {
@@ -291,5 +296,8 @@ public class DPLInterpreter extends AbstractInterpreter {
     @Override
     public List<InterpreterCompletion> completion(String buf, int cursor, InterpreterContext interpreterContext) {
         return null;
+    }
+    public HashMap<String,HashMap<String,UserInterfaceElementManager>>getUserInterfaceManagerForParagraph(){
+        return notebookParagraphUserInterfaceManager;
     }
 }

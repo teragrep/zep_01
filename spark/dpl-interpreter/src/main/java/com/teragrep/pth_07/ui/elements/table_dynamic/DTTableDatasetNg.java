@@ -47,6 +47,7 @@ package com.teragrep.pth_07.ui.elements.table_dynamic;
 
 import com.teragrep.pth_07.ui.elements.table_dynamic.pojo.Order;
 import com.teragrep.pth_07.ui.elements.AbstractUserInterfaceElement;
+import com.teragrep.zep_01.interpreter.DataTableUserInterfaceElement;
 import jakarta.json.*;
 import org.apache.spark.sql.Dataset;
 import org.apache.spark.sql.Row;
@@ -62,7 +63,7 @@ import java.lang.reflect.Method;
 import java.lang.reflect.InvocationTargetException;
 import com.teragrep.zep_01.interpreter.InterpreterOutput;
 
-public final class DTTableDatasetNg extends AbstractUserInterfaceElement {
+public final class DTTableDatasetNg extends AbstractUserInterfaceElement implements DataTableUserInterfaceElement {
     // FIXME Exceptions should cause interpreter to stop
 
     private final Lock lock = new ReentrantLock();
@@ -235,4 +236,8 @@ public final class DTTableDatasetNg extends AbstractUserInterfaceElement {
         }
     }
 
+    @Override
+    public List<String> getDatasetAsJSON() {
+        return datasetAsJSON;
+    }
 }

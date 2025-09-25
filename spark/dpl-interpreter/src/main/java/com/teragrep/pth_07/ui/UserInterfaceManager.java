@@ -50,10 +50,12 @@ import com.teragrep.pth_07.ui.elements.OutputContent;
 import com.teragrep.pth_07.ui.elements.PerformanceIndicator;
 import com.teragrep.pth_07.ui.elements.table_dynamic.DTTableDatasetNg;
 import com.teragrep.zep_01.interpreter.InterpreterContext;
+import com.teragrep.zep_01.interpreter.DataTableUserInterfaceElement;
+import com.teragrep.zep_01.interpreter.UserInterfaceElementManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class UserInterfaceManager {
+public class UserInterfaceManager implements UserInterfaceElementManager {
     private static final Logger LOGGER = LoggerFactory.getLogger(UserInterfaceManager.class);
 
     private final DTTableDatasetNg dtTableDatasetNg;

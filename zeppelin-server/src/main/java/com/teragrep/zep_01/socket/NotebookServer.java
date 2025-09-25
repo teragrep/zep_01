@@ -1136,10 +1136,59 @@ public class NotebookServer extends WebSocketServlet
       final String search = (String) ((Map) fromMessage.get("search")).get("value");
       final int draw = (int) Double.parseDouble(fromMessage.get("draw").toString());
 
-      if(!((RemoteInterpreter)interpreter).isOpened()){
+      HashMap<String,UserInterfaceElementManager> interfaceManagers = interpreter.getUserInterfaceManagerForParagraph().get(noteId);
+      StringBuilder interfaceNames = new StringBuilder();
+      interfaceNames.append("interfaceNames: ");
+      if (interfaceManagers != null){
+        interfaceManagers.forEach((key,value) -> {interfaceNames.append(key);interfaceNames.append(" | ");interfaceNames.append(value);});
+        conn.send(serializeMessage(new Message(OP.ERROR_INFO).put("info", "UserInterfaceManager, size: "+interfaceManagers.size()+" content: "+interfaceNames.toString())));
+
+        UserInterfaceElementManager interfaceManager = interfaceManagers.get(paragraphId);
+        if(interfaceManager != null){
+          DataTableUserInterfaceElement datatableElement = interfaceManager.getDtTableDatasetNg();
+          List<String> dataset = datatableElement.getDatasetAsJSON();
+          if(dataset != null){
+            conn.send(serializeMessage(new Message(OP.ERROR_INFO).put("info", "Data found! size: "+dataset.size()+" data: "+dataset.toString())));
+          }
+          else {
+            LinkedHashMap data = new LinkedHashMap();
+            data.put("error",true);
+            data.put("message","Request failed: DTTableDatasetNG found but it contains no data!");
+            data.put("draw",draw);
+            data.put("recordsTotal",0);
+            data.put("recordsFiltered",0);
+            Message msg = new Message(Message.OP.PARAGRAPH_UPDATE_OUTPUT)
+                    .withMsgId(msgId)
+                    .put("data",data)
+                    .put("draw",0)
+                    .put("type",InterpreterResult.Type.JSONTABLE.toString())
+                    .put("index",0)
+                    .put("noteId", noteId)
+                    .put("paragraphId", paragraphId);
+            conn.send(serializeMessage(msg));
+          }
+        } else {
+          LinkedHashMap data = new LinkedHashMap();
+          data.put("error",true);
+          data.put("message","Request failed: UserInterfaceManager found but no DTTableDatasetNG!");
+          data.put("draw",draw);
+          data.put("recordsTotal",0);
+          data.put("recordsFiltered",0);
+          Message msg = new Message(Message.OP.PARAGRAPH_UPDATE_OUTPUT)
+                  .withMsgId(msgId)
+                  .put("data",data)
+                  .put("draw",0)
+                  .put("type",InterpreterResult.Type.JSONTABLE.toString())
+                  .put("index",0)
+                  .put("noteId", noteId)
+                  .put("paragraphId", paragraphId);
+          conn.send(serializeMessage(msg));
+        }
+      }
+      else {
         LinkedHashMap data = new LinkedHashMap();
         data.put("error",true);
-        data.put("message","Request failed: Interpreter session is not running, please rerun the paragraph!");
+        data.put("message","Request failed: Interpreter does not have a userInterfaceManager for notebook "+noteId);
         data.put("draw",draw);
         data.put("recordsTotal",0);
         data.put("recordsFiltered",0);
@@ -1152,7 +1201,6 @@ public class NotebookServer extends WebSocketServlet
                 .put("noteId", noteId)
                 .put("paragraphId", paragraphId);
         conn.send(serializeMessage(msg));
-        return;
       }
 
       // The AJAXRequest AngularObject we are looking for is in the AngularObjectRegistry of the user who last ran the paragraph.

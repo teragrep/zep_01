@@ -471,5 +471,7 @@ public abstract class Interpreter {
   public enum SchedulingMode {
     FIFO, PARALLEL
   }
-
+  public HashMap<String,HashMap<String,UserInterfaceElementManager>>getUserInterfaceManagerForParagraph(){
+    return new HashMap<>();
+  }
 }
