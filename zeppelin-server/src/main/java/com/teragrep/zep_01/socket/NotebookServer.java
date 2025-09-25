@@ -1136,13 +1136,6 @@ public class NotebookServer extends WebSocketServlet
       final String search = (String) ((Map) fromMessage.get("search")).get("value");
       final int draw = (int) Double.parseDouble(fromMessage.get("draw").toString());
 
-      StringBuilder sb = new StringBuilder();
-      sb.append("Found interpreter is of type ").append(interpreter.getClassName());
-      Message debugMsg = new Message(OP.ERROR_INFO)
-              .withMsgId(msgId)
-              .put("info", sb.toString());
-      conn.send(serializeMessage(debugMsg));
-
       if(!((RemoteInterpreter)interpreter).isOpened()){
         LinkedHashMap data = new LinkedHashMap();
         data.put("error",true);
