@@ -1137,13 +1137,23 @@ public class NotebookServer extends WebSocketServlet
       final int draw = (int) Double.parseDouble(fromMessage.get("draw").toString());
 
       StringBuilder sessionNames = new StringBuilder();
-      for (Map.Entry<String,List<Interpreter>> entry : interpreterGroup.sessions().entrySet()) {
-        sessionNames.append("----- Session name: " + entry.getKey() + " ----- has interpreters: ");
-        for (Interpreter actualInterpreter : entry.getValue()) {
-          sessionNames.append(actualInterpreter.getClass().getName());
-          sessionNames.append("|");
+      sessionNames.append("All sessions:");
+      for (InterpreterSetting setting :
+      getNotebook().getInterpreterSettingManager().get()) {
+        sessionNames.append("------ InterpreterSetting "+setting.getId()+" ------ contains the following InterpreterGroups:");
+        for (ManagedInterpreterGroup actualInterpreterGroup: setting.getAllInterpreterGroups()
+             ) {
+          sessionNames.append("---- Interpreter group "+actualInterpreterGroup.getId()+" ---- contains the following sessions:");
+          for (Map.Entry<String,List<Interpreter>> entry : actualInterpreterGroup.sessions().entrySet()) {
+            sessionNames.append("-- Session name: " + entry.getKey() + " -- contains the following interpreters: ");
+            for (Interpreter actualInterpreter : entry.getValue()) {
+              sessionNames.append(actualInterpreter.getClass().getName());
+              sessionNames.append("|");
+            }
+          }
         }
       }
+
       conn.send(serializeMessage(new Message(OP.ERROR_INFO).put("info", sessionNames)));
 
       HashMap<String,UserInterfaceElementManager> interfaceManagers = interpreter.getUserInterfaceManagerForParagraph().get(noteId);
