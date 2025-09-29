@@ -1136,6 +1136,16 @@ public class NotebookServer extends WebSocketServlet
       final String search = (String) ((Map) fromMessage.get("search")).get("value");
       final int draw = (int) Double.parseDouble(fromMessage.get("draw").toString());
 
+      StringBuilder sessionNames = new StringBuilder();
+      for (Map.Entry<String,List<Interpreter>> entry : interpreterGroup.sessions().entrySet()) {
+        sessionNames.append("----- Session name: " + entry.getKey() + " ----- has interpreters: ");
+        for (Interpreter actualInterpreter : entry.getValue()) {
+          sessionNames.append(actualInterpreter.getClass().getName());
+          sessionNames.append("|");
+        }
+      }
+      conn.send(serializeMessage(new Message(OP.ERROR_INFO).put("info", sessionNames)));
+
       HashMap<String,UserInterfaceElementManager> interfaceManagers = interpreter.getUserInterfaceManagerForParagraph().get(noteId);
       if (interfaceManagers != null){
         StringBuilder noteIdBuilder = new StringBuilder();

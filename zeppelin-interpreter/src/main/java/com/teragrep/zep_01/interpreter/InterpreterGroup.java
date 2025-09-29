@@ -112,6 +112,10 @@ public class InterpreterGroup {
     return sessions.values();
   }
 
+  public Map<String, List<Interpreter>> sessions() {
+    return sessions;
+  }
+
   public AngularObjectRegistry getAngularObjectRegistry() {
     return angularObjectRegistry;
   }
