@@ -1148,6 +1148,21 @@ public class NotebookServer extends WebSocketServlet
             sessionNames.append("-- Session name: " + entry.getKey() + " -- contains the following interpreters: ");
             for (Interpreter actualInterpreter : entry.getValue()) {
               sessionNames.append(actualInterpreter.getClass().getName());
+              boolean isRemote = actualInterpreter instanceof RemoteInterpreter;
+              sessionNames.append("Is the interpreter a remoteInterpreter? "+isRemote);
+              if(actualInterpreter instanceof RemoteInterpreter){
+                sessionNames.append("Which is a RemoteInterpreter and it contains the following InterpreterGroup: ");
+                ManagedInterpreterGroup remoteInterpreterGroup = ((RemoteInterpreter) actualInterpreter).getInterpreterGroup();
+                sessionNames.append("-"+remoteInterpreterGroup.getId()+"-");
+                for (Map.Entry<String,List<Interpreter>> remoteEntry : remoteInterpreterGroup.sessions().entrySet()
+                     ) {
+                    sessionNames.append("RemoteSession name: " + remoteEntry.getKey() + " -- contains the following interpreters: ");
+                  for (Interpreter remoteInterpreter : entry.getValue()) {
+                    sessionNames.append("RemoteInterpreter getClassName: "+remoteInterpreter.getClassName());
+                    sessionNames.append("RemoteInterpreter class name: "+remoteInterpreter.getClass().getName());
+                  }
+                }
+              }
               sessionNames.append("|");
             }
           }
