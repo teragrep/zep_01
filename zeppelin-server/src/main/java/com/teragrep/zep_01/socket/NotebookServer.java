@@ -1138,8 +1138,15 @@ public class NotebookServer extends WebSocketServlet
 
       HashMap<String,UserInterfaceElementManager> interfaceManagers = interpreter.getUserInterfaceManagerForParagraph().get(noteId);
       if (interfaceManagers != null){
-        LOG.info("InterfaceManager count :{}", interfaceManagers.size());
-        conn.send(serializeMessage(new Message(OP.ERROR_INFO).put("info", "InterfaceManager count :"+interfaceManagers.size())));
+        StringBuilder noteIdBuilder = new StringBuilder();
+        noteIdBuilder.append("AllInterfaceManagers keys: ");
+        for (String key:interfaceManagers.keySet()) {
+          noteIdBuilder.append(key);
+          noteIdBuilder.append("|");
+        }
+        conn.send(serializeMessage(new Message(OP.ERROR_INFO).put("info", noteIdBuilder)));
+
+
         UserInterfaceElementManager interfaceManager = interfaceManagers.get(paragraphId);
 
         if(interfaceManager != null){
@@ -1188,7 +1195,7 @@ public class NotebookServer extends WebSocketServlet
       else {
         LinkedHashMap data = new LinkedHashMap();
         data.put("error",true);
-        data.put("message","Request failed: Interpreter does not have a userInterfaceManager for notebook "+noteId);
+        data.put("message","Request failed: Interpreter with: ClassName:"+interpreter.getClassName()+" | GetClass: "+interpreter.getClass().getName()+" | GetUser: "+interpreter.getUserName()+" | UserInterfaceManagers: "+interpreter.getUserInterfaceManagerForParagraph()+" does not have a userInterfaceManager for notebook "+noteId);
         data.put("draw",draw);
         data.put("recordsTotal",0);
         data.put("recordsFiltered",0);
