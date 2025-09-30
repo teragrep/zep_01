@@ -306,26 +306,19 @@ public class DPLInterpreter extends AbstractInterpreter {
     // Ugly null-check pyramid, add Exceptions
     @Override
     public List<String> getDataset(String noteId, String paragraphId){
-        LOGGER.error("Called GetDataset!");
         if(notebookParagraphUserInterfaceManager != null){
-            LOGGER.error("notebookParagraphUserInterfaceManager exists! "+ notebookParagraphUserInterfaceManager);
             HashMap<String,UserInterfaceElementManager> userInterfaceElementManagers = notebookParagraphUserInterfaceManager.get(noteId);
             if(userInterfaceElementManagers != null){
-                LOGGER.error("InterfaceManager has a field for note ! "+noteId + " | "+ userInterfaceElementManagers);
                 UserInterfaceElementManager userInterfaceElementManager = userInterfaceElementManagers.get(paragraphId);
                 if(userInterfaceElementManager != null){
-                    LOGGER.error("InterfaceManager has a field for paragraph ! "+paragraphId + " | "+userInterfaceElementManager);
                     DataTableUserInterfaceElement dtTableDatasetNg = userInterfaceElementManager.getDtTableDatasetNg();
                     if(dtTableDatasetNg != null){
-                        LOGGER.error("InterfaceManager has a DTTableDatasetNG! "+dtTableDatasetNg);
                         List<String> dataset = dtTableDatasetNg.getDatasetAsJSON();
-                        LOGGER.error("InterfaceManager has a dataset, returning! "+dataset);
                         return dataset;
                     }
                 }
             }
         }
-        LOGGER.error("Returned empty array!");
         return new ArrayList<>();
     }
 }

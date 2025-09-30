@@ -210,4 +210,9 @@ public class LazyOpenInterpreter
   public String getUserName() {
     return this.intp.getUserName();
   }
+
+  @Override
+  public List<String> getDataset(String noteId, String paragraphId){
+    return this.intp.getDataset(noteId,paragraphId);
+  }
 }
