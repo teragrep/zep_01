@@ -1136,10 +1136,7 @@ public class NotebookServer extends WebSocketServlet
       final String search = (String) ((Map) fromMessage.get("search")).get("value");
       final int draw = (int) Double.parseDouble(fromMessage.get("draw").toString());
 
-      String sessionId = "";
-      if (interpreter instanceof RemoteInterpreter){
-        sessionId = ((RemoteInterpreter) interpreter).getSessionId();
-      }
+      String sessionId = paragraph.getUser()+":"+noteId;
       conn.send(serializeMessage(new Message(OP.ERROR_INFO).put("info", "sessionId: "+sessionId+" interpreterClassName: "+ interpreter.getClassName())));
       try{
         List<String> dataset1 = ((ManagedInterpreterGroup)interpreterGroup).getDataset(sessionId,interpreter.getClassName(),noteId,paragraphId);
