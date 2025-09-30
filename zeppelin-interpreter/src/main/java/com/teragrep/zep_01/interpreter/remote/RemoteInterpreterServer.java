@@ -368,8 +368,16 @@ public class RemoteInterpreterServer extends Thread
     }
     synchronized (interpreterGroup) {
       List<Interpreter> interpreters = interpreterGroup.get(sessionId);
+      StringBuilder sessions = new StringBuilder();
+      for (Map.Entry<String,List<Interpreter>> entry:interpreterGroup.sessions().entrySet()) {
+        sessions.append("Session id: " + entry.getKey());
+        List<Interpreter> sessionInterepreters = entry.getValue();
+        for (Interpreter interpreter:sessionInterepreters) {
+          sessions.append("interpreter: "+interpreter.getClassName());
+        }
+      }
       if (interpreters == null) {
-        throw new InterpreterRPCException("Interpreter " + className + " not initialized");
+        throw new InterpreterRPCException("Interpreter " + className + " not initialized"+sessions.toString());
       }
       for (Interpreter inp : interpreters) {
         if (inp.getClassName().equals(className)) {
@@ -383,6 +391,7 @@ public class RemoteInterpreterServer extends Thread
   public List<String> getDataset(String sessionId, String className, String noteId, String paragraphId) throws InterpreterRPCException, TException {
     LOGGER.error("Getting dataset!");
     Interpreter intp = getInterpreter(sessionId, className);
+    // Iterate over every Interpreter?
     LOGGER.error("Interpreter is of class"+intp.getClassName()+" | "+intp);
     return intp.getDataset(noteId,paragraphId);
   }
