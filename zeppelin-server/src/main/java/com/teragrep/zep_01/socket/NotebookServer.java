@@ -1136,32 +1136,13 @@ public class NotebookServer extends WebSocketServlet
       final String search = (String) ((Map) fromMessage.get("search")).get("value");
       final int draw = (int) Double.parseDouble(fromMessage.get("draw").toString());
 
-      // Get the dataset of a paragraph from the Interpreter. If there is no dataset, we cannot do a pagination or search on it, and we return an error message.
+      // Get the dataset of a paragraph from the Interpreter. If there is no dataset, we cannot do a pagination or search on it. getDataset() throws an Exception if there is no data available.
       String sessionId = "";
       if (interpreter instanceof RemoteInterpreter){
         // This id seems to always be "shared-session", but not certain.
         sessionId = ((RemoteInterpreter) interpreter).getSessionId();
       }
-
-      List<String> dataset = ((ManagedInterpreterGroup)interpreterGroup).getDataset(sessionId,interpreter.getClassName(),noteId,paragraphId);
-      //if(dataset.isEmpty()){
-      //  LinkedHashMap data = new LinkedHashMap();
-      //  data.put("error",true);
-      //  data.put("message","Request failed: Interpreter does not have a dataset for paragraph "+paragraphId+" in memory, please rerun the paragraph!");
-      //  data.put("draw",draw);
-      //  data.put("recordsTotal",0);
-      //  data.put("recordsFiltered",0);
-      //  Message msg = new Message(Message.OP.PARAGRAPH_UPDATE_OUTPUT)
-      //          .withMsgId(msgId)
-      //          .put("data",data)
-      //          .put("draw",0)
-      //          .put("type",InterpreterResult.Type.JSONTABLE.toString())
-      //          .put("index",0)
-      //          .put("noteId", noteId)
-      //          .put("paragraphId", paragraphId);
-      //  conn.send(serializeMessage(msg));
-      //  return;
-      //}
+      ((ManagedInterpreterGroup)interpreterGroup).getDataset(sessionId,interpreter.getClassName(),noteId,paragraphId);
 
       // The AJAXRequest AngularObject we are looking for is in the AngularObjectRegistry of the user who last ran the paragraph.
       // In order to access it, we must change the username in ServiceContext to match, otherwise only the last runner can make pagination or search requests.
