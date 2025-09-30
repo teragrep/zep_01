@@ -102,6 +102,7 @@ service RemoteInterpreterService {
   i32 getProgress(1: string sessionId, 2: string className, 3: RemoteInterpreterContext interpreterContext) throws (1: InterpreterRPCException ex);
   string getFormType(1: string sessionId, 2: string className) throws (1: InterpreterRPCException ex);
   list<InterpreterCompletion> completion(1: string sessionId, 2: string className, 3: string buf, 4: i32 cursor, 5: RemoteInterpreterContext interpreterContext) throws (1: InterpreterRPCException ex);
+  list<string> getDataset(1: string sessionId, 2: string className, 3: string noteId, 4: string paragraphId) throws (1: InterpreterRPCException ex);
   void shutdown();
 
   string getStatus(1: string sessionId, 2:string jobId) throws (1: InterpreterRPCException ex);

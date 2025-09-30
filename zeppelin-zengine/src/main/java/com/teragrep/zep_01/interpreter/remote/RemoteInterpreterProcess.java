@@ -30,6 +30,7 @@ import org.slf4j.LoggerFactory;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.List;
 
 /**
  * Abstract class for interpreter process
@@ -105,6 +106,13 @@ public abstract class RemoteInterpreterProcess implements InterpreterClient, Aut
       client.init(zConf.getCompleteConfiguration());
       return null;
     });
+  }
+
+  public List<String> getDataset(String sessionId, String className, String noteId, String paragraphId) {
+    List<String> dataset = callRemoteFunction(client -> {
+      return client.getDataset(sessionId, className, noteId, paragraphId);
+    });
+    return dataset;
   }
 
   @Override

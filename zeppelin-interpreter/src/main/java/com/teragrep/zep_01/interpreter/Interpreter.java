@@ -30,12 +30,7 @@ import org.slf4j.LoggerFactory;
 
 import java.lang.reflect.Field;
 import java.net.URL;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Properties;
+import java.util.*;
 
 /**
  * Interface for interpreters.
@@ -473,5 +468,9 @@ public abstract class Interpreter {
   }
   public HashMap<String,HashMap<String,UserInterfaceElementManager>>getUserInterfaceManagerForParagraph(){
     return new HashMap<>();
+  }
+
+  public List<String> getDataset(String noteId, String paragraphId){
+    return new ArrayList<String>();
   }
 }

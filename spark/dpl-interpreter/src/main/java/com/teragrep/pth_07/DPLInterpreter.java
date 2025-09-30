@@ -65,6 +65,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.lang.reflect.InvocationTargetException;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Properties;
@@ -300,5 +301,24 @@ public class DPLInterpreter extends AbstractInterpreter {
     @Override
     public HashMap<String,HashMap<String,UserInterfaceElementManager>>getUserInterfaceManagerForParagraph(){
         return notebookParagraphUserInterfaceManager;
+    }
+
+    // Ugly null-check pyramid, add Exceptions
+    @Override
+    public List<String> getDataset(String noteId, String paragraphId){
+        if(notebookParagraphUserInterfaceManager != null){
+            HashMap<String,UserInterfaceElementManager> userInterfaceElementManagers = notebookParagraphUserInterfaceManager.get(noteId);
+            if(userInterfaceElementManagers != null){
+                UserInterfaceElementManager userInterfaceElementManager = userInterfaceElementManagers.get(paragraphId);
+                if(userInterfaceElementManager != null){
+                    DataTableUserInterfaceElement dtTableDatasetNg = userInterfaceElementManager.getDtTableDatasetNg();
+                    if(dtTableDatasetNg != null){
+                        List<String> dataset = dtTableDatasetNg.getDatasetAsJSON();
+                        return dataset;
+                    }
+                }
+            }
+        }
+        return new ArrayList<>();
     }
 }

@@ -19,6 +19,7 @@ package com.teragrep.zep_01.interpreter.remote;
 
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
+import com.teragrep.zep_01.interpreter.*;
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.thrift.TException;
@@ -29,22 +30,8 @@ import com.teragrep.zep_01.conf.ZeppelinConfiguration;
 import com.teragrep.zep_01.display.AngularObject;
 import com.teragrep.zep_01.display.AngularObjectRegistry;
 import com.teragrep.zep_01.display.GUI;
-import com.teragrep.zep_01.interpreter.Constants;
-import com.teragrep.zep_01.interpreter.Interpreter;
-import com.teragrep.zep_01.interpreter.InterpreterContext;
-import com.teragrep.zep_01.interpreter.InterpreterException;
-import com.teragrep.zep_01.interpreter.InterpreterGroup;
-import com.teragrep.zep_01.interpreter.InterpreterHookListener;
-import com.teragrep.zep_01.interpreter.InterpreterHookRegistry;
 import com.teragrep.zep_01.interpreter.InterpreterHookRegistry.HookType;
-import com.teragrep.zep_01.interpreter.InterpreterOutput;
-import com.teragrep.zep_01.interpreter.InterpreterOutputListener;
-import com.teragrep.zep_01.interpreter.InterpreterResult;
 import com.teragrep.zep_01.interpreter.InterpreterResult.Code;
-import com.teragrep.zep_01.interpreter.InterpreterResultMessage;
-import com.teragrep.zep_01.interpreter.InterpreterResultMessageOutput;
-import com.teragrep.zep_01.interpreter.LazyOpenInterpreter;
-import com.teragrep.zep_01.interpreter.LifecycleManager;
 import com.teragrep.zep_01.interpreter.thrift.InterpreterCompletion;
 import com.teragrep.zep_01.interpreter.thrift.InterpreterRPCException;
 import com.teragrep.zep_01.interpreter.thrift.RegisterInfo;
@@ -391,6 +378,11 @@ public class RemoteInterpreterServer extends Thread
       }
     }
     throw new InterpreterRPCException("Interpreter instance " + className + " not found");
+  }
+
+  public List<String> getDataset(String sessionId, String className, String noteId, String paragraphId) throws InterpreterRPCException, TException {
+    Interpreter intp = getInterpreter(sessionId, className);
+    return intp.getDataset(noteId,paragraphId);
   }
 
   @Override

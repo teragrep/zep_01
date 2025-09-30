@@ -182,6 +182,9 @@ public class ManagedInterpreterGroup extends InterpreterGroup {
     }
   }
 
+  public List<String> getDataset(String sessionId, String className, String noteId, String paragraphId){
+    return remoteInterpreterProcess.getDataset(sessionId,className,noteId,paragraphId);
+  }
   public boolean isEmpty() {
     return this.sessions.isEmpty();
   }

@@ -1136,40 +1136,13 @@ public class NotebookServer extends WebSocketServlet
       final String search = (String) ((Map) fromMessage.get("search")).get("value");
       final int draw = (int) Double.parseDouble(fromMessage.get("draw").toString());
 
-      StringBuilder sessionNames = new StringBuilder();
-      sessionNames.append("All sessions:");
-      for (InterpreterSetting setting :
-      getNotebook().getInterpreterSettingManager().get()) {
-        sessionNames.append("------ InterpreterSetting "+setting.getId()+" ------ contains the following InterpreterGroups:");
-        for (ManagedInterpreterGroup actualInterpreterGroup: setting.getAllInterpreterGroups()
-             ) {
-          sessionNames.append("---- Interpreter group "+actualInterpreterGroup.getId()+" ---- contains the following sessions:");
-          for (Map.Entry<String,List<Interpreter>> entry : actualInterpreterGroup.sessions().entrySet()) {
-            sessionNames.append("-- Session name: " + entry.getKey() + " -- contains the following interpreters: ");
-            for (Interpreter actualInterpreter : entry.getValue()) {
-              sessionNames.append(actualInterpreter.getClass().getName());
-              boolean isRemote = actualInterpreter instanceof RemoteInterpreter;
-              sessionNames.append("Is the interpreter a remoteInterpreter? "+isRemote);
-              if(actualInterpreter instanceof RemoteInterpreter){
-                sessionNames.append("Which is a RemoteInterpreter and it contains the following InterpreterGroup: ");
-                ManagedInterpreterGroup remoteInterpreterGroup = ((RemoteInterpreter) actualInterpreter).getInterpreterGroup();
-                sessionNames.append("-"+remoteInterpreterGroup.getId()+"-");
-                for (Map.Entry<String,List<Interpreter>> remoteEntry : remoteInterpreterGroup.sessions().entrySet()
-                     ) {
-                    sessionNames.append("RemoteSession name: " + remoteEntry.getKey() + " -- contains the following interpreters: ");
-                  for (Interpreter remoteInterpreter : entry.getValue()) {
-                    sessionNames.append("RemoteInterpreter getClassName: "+remoteInterpreter.getClassName());
-                    sessionNames.append("RemoteInterpreter class name: "+remoteInterpreter.getClass().getName());
-                  }
-                }
-              }
-              sessionNames.append("|");
-            }
-          }
-        }
+      String sessionId = "";
+      if (interpreter instanceof RemoteInterpreter){
+        sessionId = ((RemoteInterpreter) interpreter).getSessionId();
       }
-
-      conn.send(serializeMessage(new Message(OP.ERROR_INFO).put("info", sessionNames)));
+      conn.send(serializeMessage(new Message(OP.ERROR_INFO).put("info", "sessionId: "+sessionId+" interpreterClassName: "+ interpreter.getClassName())));
+      List<String> dataset1 = ((ManagedInterpreterGroup)interpreterGroup).getDataset(sessionId,interpreter.getClassName(),noteId,paragraphId);
+      conn.send(serializeMessage(new Message(OP.ERROR_INFO).put("info", "Dataset size: "+dataset1.size()+" data: "+String.join(":",dataset1))));
 
       HashMap<String,UserInterfaceElementManager> interfaceManagers = interpreter.getUserInterfaceManagerForParagraph().get(noteId);
       if (interfaceManagers != null){
