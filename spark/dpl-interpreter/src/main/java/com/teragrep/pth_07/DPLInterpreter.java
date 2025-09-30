@@ -303,22 +303,25 @@ public class DPLInterpreter extends AbstractInterpreter {
         return notebookParagraphUserInterfaceManager;
     }
 
-    // Ugly null-check pyramid, add Exceptions
     @Override
-    public List<String> getDataset(String noteId, String paragraphId){
-        if(notebookParagraphUserInterfaceManager != null){
-            HashMap<String,UserInterfaceElementManager> userInterfaceElementManagers = notebookParagraphUserInterfaceManager.get(noteId);
-            if(userInterfaceElementManagers != null){
-                UserInterfaceElementManager userInterfaceElementManager = userInterfaceElementManagers.get(paragraphId);
-                if(userInterfaceElementManager != null){
-                    DataTableUserInterfaceElement dtTableDatasetNg = userInterfaceElementManager.getDtTableDatasetNg();
-                    if(dtTableDatasetNg != null){
-                        List<String> dataset = dtTableDatasetNg.getDatasetAsJSON();
-                        return dataset;
-                    }
-                }
-            }
+    public List<String> getDataset(String noteId, String paragraphId) throws InterpreterException{
+        if(notebookParagraphUserInterfaceManager == null){
+            LOGGER.error("DPLInterpreter's notebookParagraphUserInterfaceManager map is not instantiated!");
+            throw new InterpreterException("Unexpected error while fetching dataset from DPLInterpreter! Check technical logs for details.");
         }
-        return new ArrayList<>();
+        if(!notebookParagraphUserInterfaceManager.containsKey(noteId)){
+            throw new InterpreterException("DPLInterpreter does not have a UserInterfaceManager for note id "+noteId);
+        }
+        if(!notebookParagraphUserInterfaceManager.get(noteId).containsKey(paragraphId)){
+            throw new InterpreterException("DPLInterpreter does not have a UserInterfaceManager for paragraph id "+paragraphId+" within note id "+noteId);
+        }
+        if(notebookParagraphUserInterfaceManager.get(noteId).get(paragraphId).getDtTableDatasetNg() == null){
+            LOGGER.error("UserInterfaceManager for paragraph id "+paragraphId+" does not have a DTTableDatasetNG object!");
+            throw new InterpreterException("Unexpected error while fetching dataset from DPLInterpreter! Check technical logs for details.");
+        }
+        if(notebookParagraphUserInterfaceManager.get(noteId).get(paragraphId).getDtTableDatasetNg().getDatasetAsJSON().isEmpty()){
+            throw new InterpreterException("Dataset of paragraph "+paragraphId+" within note "+noteId+" is empty!");
+        }
+        return notebookParagraphUserInterfaceManager.get(noteId).get(paragraphId).getDtTableDatasetNg().getDatasetAsJSON();
     }
 }

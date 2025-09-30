@@ -470,7 +470,7 @@ public abstract class Interpreter {
     return new HashMap<>();
   }
 
-  public List<String> getDataset(String noteId, String paragraphId){
-    return new ArrayList<String>();
+  public List<String> getDataset(String noteId, String paragraphId) throws InterpreterException{
+    throw new InterpreterException("Interpreter "+ getClassName() +" has no dataset!");
   }
 }

@@ -368,19 +368,8 @@ public class RemoteInterpreterServer extends Thread
     }
     synchronized (interpreterGroup) {
       List<Interpreter> interpreters = interpreterGroup.get(sessionId);
-      StringBuilder sessions = new StringBuilder();
-      for (Map.Entry<String,List<Interpreter>> entry:interpreterGroup.sessions().entrySet()) {
-        sessions.append("Session id: " + entry.getKey());
-        List<Interpreter> sessionInterepreters = entry.getValue();
-        for (Interpreter interpreter:sessionInterepreters) {
-          sessions.append(" interpreter: "+interpreter.getClassName()+ " equals "+className+"? "+interpreter.getClassName().equals(className));
-          if(interpreter.getClassName().equals(className)){
-            sessions.append("---------------- HERE IT IS ---------------"+interpreter.getClass().getName());
-          }
-        }
-      }
       if (interpreters == null) {
-        throw new InterpreterRPCException("Interpreter " + className + " not initialized"+sessions.toString());
+        throw new InterpreterRPCException("Interpreter " + className + " not initialized");
       }
       for (Interpreter inp : interpreters) {
         if (inp.getClassName().equals(className)) {
@@ -392,9 +381,12 @@ public class RemoteInterpreterServer extends Thread
   }
 
   public List<String> getDataset(String sessionId, String className, String noteId, String paragraphId) throws InterpreterRPCException, TException {
-    LOGGER.error("Getting dataset!");
-    Interpreter intp = getInterpreter(sessionId, className);
-    return intp.getDataset(noteId,paragraphId);
+    try{
+      Interpreter intp = getInterpreter(sessionId, className);
+      return intp.getDataset(noteId,paragraphId);
+    } catch (InterpreterException e){
+      throw new InterpreterRPCException(e.toString());
+    }
   }
 
   @Override

@@ -212,7 +212,7 @@ public class LazyOpenInterpreter
   }
 
   @Override
-  public List<String> getDataset(String noteId, String paragraphId){
+  public List<String> getDataset(String noteId, String paragraphId) throws InterpreterException{
     return this.intp.getDataset(noteId,paragraphId);
   }
 }

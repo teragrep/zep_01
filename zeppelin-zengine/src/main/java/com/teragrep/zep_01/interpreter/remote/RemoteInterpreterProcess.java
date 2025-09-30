@@ -17,6 +17,7 @@
 package com.teragrep.zep_01.interpreter.remote;
 
 import com.google.gson.Gson;
+import com.teragrep.zep_01.interpreter.InterpreterException;
 import org.apache.thrift.protocol.TBinaryProtocol;
 import org.apache.thrift.protocol.TProtocol;
 import org.apache.thrift.transport.TSocket;
@@ -108,13 +109,15 @@ public abstract class RemoteInterpreterProcess implements InterpreterClient, Aut
     });
   }
 
-  public List<String> getDataset(String sessionId, String className, String noteId, String paragraphId) {
-    LOGGER.error("getting dataset! "+sessionId+" Classname "+ className + " noteId "+ noteId + " paragraphId "+ paragraphId);
-    List<String> dataset = callRemoteFunction(client -> {
-      return client.getDataset(sessionId, className, noteId, paragraphId);
-    });
-    LOGGER.error("returning dataset "+dataset);
-    return dataset;
+  public List<String> getDataset(String sessionId, String className, String noteId, String paragraphId) throws InterpreterException {
+    try{
+      List<String> dataset = callRemoteFunction(client -> {
+        return client.getDataset(sessionId, className, noteId, paragraphId);
+      });
+      return dataset;
+    } catch (Exception e){
+      throw new InterpreterException("Failed to get dataset from RemoteInterpreter!",e);
+    }
   }
 
   @Override
