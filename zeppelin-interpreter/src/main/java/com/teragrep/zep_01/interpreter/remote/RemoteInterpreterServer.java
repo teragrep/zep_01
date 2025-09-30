@@ -381,7 +381,9 @@ public class RemoteInterpreterServer extends Thread
   }
 
   public List<String> getDataset(String sessionId, String className, String noteId, String paragraphId) throws InterpreterRPCException, TException {
+    LOGGER.error("Getting dataset!");
     Interpreter intp = getInterpreter(sessionId, className);
+    LOGGER.error("Interpreter is of class"+intp.getClassName()+" | "+intp);
     return intp.getDataset(noteId,paragraphId);
   }
 

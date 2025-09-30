@@ -109,6 +109,7 @@ public abstract class RemoteInterpreterProcess implements InterpreterClient, Aut
   }
 
   public List<String> getDataset(String sessionId, String className, String noteId, String paragraphId) {
+    LOGGER.error("getting dataset!");
     List<String> dataset = callRemoteFunction(client -> {
       return client.getDataset(sessionId, className, noteId, paragraphId);
     });

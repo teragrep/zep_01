@@ -1141,69 +1141,13 @@ public class NotebookServer extends WebSocketServlet
         sessionId = ((RemoteInterpreter) interpreter).getSessionId();
       }
       conn.send(serializeMessage(new Message(OP.ERROR_INFO).put("info", "sessionId: "+sessionId+" interpreterClassName: "+ interpreter.getClassName())));
-      List<String> dataset1 = ((ManagedInterpreterGroup)interpreterGroup).getDataset(sessionId,interpreter.getClassName(),noteId,paragraphId);
-      conn.send(serializeMessage(new Message(OP.ERROR_INFO).put("info", "Dataset size: "+dataset1.size()+" data: "+String.join(":",dataset1))));
-
-      HashMap<String,UserInterfaceElementManager> interfaceManagers = interpreter.getUserInterfaceManagerForParagraph().get(noteId);
-      if (interfaceManagers != null){
-        StringBuilder noteIdBuilder = new StringBuilder();
-        noteIdBuilder.append("AllInterfaceManagers keys: ");
-        for (String key:interfaceManagers.keySet()) {
-          noteIdBuilder.append(key);
-          noteIdBuilder.append("|");
-        }
-        conn.send(serializeMessage(new Message(OP.ERROR_INFO).put("info", noteIdBuilder)));
-
-
-        UserInterfaceElementManager interfaceManager = interfaceManagers.get(paragraphId);
-
-        if(interfaceManager != null){
-          DataTableUserInterfaceElement datatableElement = interfaceManager.getDtTableDatasetNg();
-          List<String> dataset = datatableElement.getDatasetAsJSON();
-
-          if(dataset != null){
-            conn.send(serializeMessage(new Message(OP.ERROR_INFO).put("info", "Data found! size: "+dataset.size()+" data: "+dataset.toString())));
-          }
-
-          else {
-            LinkedHashMap data = new LinkedHashMap();
-            data.put("error",true);
-            data.put("message","Request failed: DTTableDatasetNG found but it contains no data!");
-            data.put("draw",draw);
-            data.put("recordsTotal",0);
-            data.put("recordsFiltered",0);
-            Message msg = new Message(Message.OP.PARAGRAPH_UPDATE_OUTPUT)
-                    .withMsgId(msgId)
-                    .put("data",data)
-                    .put("draw",0)
-                    .put("type",InterpreterResult.Type.JSONTABLE.toString())
-                    .put("index",0)
-                    .put("noteId", noteId)
-                    .put("paragraphId", paragraphId);
-            conn.send(serializeMessage(msg));
-          }
-        } else {
-          LinkedHashMap data = new LinkedHashMap();
-          data.put("error",true);
-          data.put("message","Request failed: UserInterfaceManager found but no DTTableDatasetNG!");
-          data.put("draw",draw);
-          data.put("recordsTotal",0);
-          data.put("recordsFiltered",0);
-          Message msg = new Message(Message.OP.PARAGRAPH_UPDATE_OUTPUT)
-                  .withMsgId(msgId)
-                  .put("data",data)
-                  .put("draw",0)
-                  .put("type",InterpreterResult.Type.JSONTABLE.toString())
-                  .put("index",0)
-                  .put("noteId", noteId)
-                  .put("paragraphId", paragraphId);
-          conn.send(serializeMessage(msg));
-        }
-      }
-      else {
+      try{
+        List<String> dataset1 = ((ManagedInterpreterGroup)interpreterGroup).getDataset(sessionId,interpreter.getClassName(),noteId,paragraphId);
+        conn.send(serializeMessage(new Message(OP.ERROR_INFO).put("info", "Dataset size: "+dataset1.size()+" data: "+String.join(":",dataset1))));
+      } catch (InterpreterNotFoundException notFoundException){
         LinkedHashMap data = new LinkedHashMap();
         data.put("error",true);
-        data.put("message","Request failed: Interpreter with: ClassName:"+interpreter.getClassName()+" | GetClass: "+interpreter.getClass().getName()+" | GetUser: "+interpreter.getUserName()+" | UserInterfaceManagers: "+interpreter.getUserInterfaceManagerForParagraph()+" does not have a userInterfaceManager for notebook "+noteId);
+        data.put("message","Request failed: Interpreter session is not running, please rerun the paragraph!");
         data.put("draw",draw);
         data.put("recordsTotal",0);
         data.put("recordsFiltered",0);

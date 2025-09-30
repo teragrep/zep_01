@@ -182,7 +182,10 @@ public class ManagedInterpreterGroup extends InterpreterGroup {
     }
   }
 
-  public List<String> getDataset(String sessionId, String className, String noteId, String paragraphId){
+  public List<String> getDataset(String sessionId, String className, String noteId, String paragraphId) throws InterpreterNotFoundException {
+    if(remoteInterpreterProcess == null){
+      throw new InterpreterNotFoundException("InterpreterGroup "+id+" does not have a running Interpreter process!");
+    }
     return remoteInterpreterProcess.getDataset(sessionId,className,noteId,paragraphId);
   }
   public boolean isEmpty() {
