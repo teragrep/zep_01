@@ -116,7 +116,8 @@ public abstract class RemoteInterpreterProcess implements InterpreterClient, Aut
       });
       return dataset;
     } catch (Exception e){
-      throw new InterpreterException("Failed to get dataset from RemoteInterpreter!",e);
+      // Adding the cause of the Exception to message here to notify what went wrong as NotebookServer doesn't handle nested exceptions.
+      throw new InterpreterException("Failed to get dataset from RemoteInterpreter! Cause: " + e.getMessage(),e);
     }
   }
 
