@@ -373,7 +373,10 @@ public class RemoteInterpreterServer extends Thread
         sessions.append("Session id: " + entry.getKey());
         List<Interpreter> sessionInterepreters = entry.getValue();
         for (Interpreter interpreter:sessionInterepreters) {
-          sessions.append("interpreter: "+interpreter.getClassName());
+          sessions.append(" interpreter: "+interpreter.getClassName()+ " equals "+className+"? "+interpreter.getClassName().equals(className));
+          if(interpreter.getClassName().equals(className)){
+            sessions.append("---------------- HERE IT IS ---------------"+interpreter.getClass().getName());
+          }
         }
       }
       if (interpreters == null) {
