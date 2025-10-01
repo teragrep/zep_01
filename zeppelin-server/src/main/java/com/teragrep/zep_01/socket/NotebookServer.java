@@ -1092,13 +1092,6 @@ public class NotebookServer extends WebSocketServlet
   }
 
   // Handles a request for paginated or filtered DPL table data.
-  // Data is sent via a legacy system:
-  // updateParagraphResult() is called
-  // -> updateAngularObject() updates an AJAXRequest angular object associated with a specific paragraph
-  // -> AJAXRequestWatcher catches the updated angular object
-  // -> values are passed to DTTableDatasetNG that does searching and pagination
-  // -> searched and paginated data is written via InterpreterContext
-  // -> Generates a PARAGRAPH_UPDATE_OUTPUT websocket event to be sent to the UI
 
   private void updateParagraphResult(NotebookSocket conn,
                                      ServiceContext context,
@@ -1111,9 +1104,10 @@ public class NotebookServer extends WebSocketServlet
     final String msgId = fromMessage.msgId;
     final String noteId = (String) fromMessage.get("noteId");
     final String paragraphId = (String) fromMessage.get("paragraphId");
-
-    // Build an interpreterGroupId based on given user and note Id.
-    // InterpreterGroupId is used to find the correct AngularObjectRegistry instance containing the DTTableDatasetNG object we want to pass the search, length, start and draw values to.
+    final int start = (int) Double.parseDouble(fromMessage.get("start").toString());
+    final int length = (int) Double.parseDouble(fromMessage.get("length").toString());
+    final String search = (String) ((Map) fromMessage.get("search")).get("value");
+    final int draw = (int) Double.parseDouble(fromMessage.get("draw").toString());
 
     Note note = getNotebook().getNote(noteId);
     if(note == null){
@@ -1131,21 +1125,14 @@ public class NotebookServer extends WebSocketServlet
     if(interpreterGroup == null){
       throw new BadRequestException("Paragraph's interpreter has no InterpreterGroup assigned!");
     }
-    //final String interpreterGroupId = interpreterGroup.getId();
 
-    final int start = (int) Double.parseDouble(fromMessage.get("start").toString());
-    final int length = (int) Double.parseDouble(fromMessage.get("length").toString());
-    final String search = (String) ((Map) fromMessage.get("search")).get("value");
-    final int draw = (int) Double.parseDouble(fromMessage.get("draw").toString());
-
-    // Get the dataset of a paragraph from the Interpreter. If there is no dataset, we cannot do a pagination or search on it. getDataset() throws an Exception if there is no data available.
     String sessionId = "";
     if (interpreter instanceof RemoteInterpreter){
       sessionId = ((RemoteInterpreter) interpreter).getSessionId();
     }
 
-    // getDataset() Throws an InterpreterException if there is a problem with getting data. In that case, we send a PARAGRAPH_UPDATE_OUTPUT message as expected by UI.
-    // If any other type of Exception is thrown, it will be caught by NotebookServer.onMessage() and result in an ERROR_INFO message.
+    // getDataset() Throws an InterpreterException if there is a problem with getting or paginating data. In that case, we send a PARAGRAPH_UPDATE_OUTPUT message as expected by UI.
+    // If any other type of Exception is thrown (indicating some other problem), it will be caught by NotebookServer.onMessage() and result in an ERROR_INFO message.
     try{
       String dataset = ((ManagedInterpreterGroup)interpreterGroup).getDataset(sessionId,interpreter.getClassName(),noteId,paragraphId,start,length,search,draw);
       Message msg = new Message(Message.OP.PARAGRAPH_UPDATE_OUTPUT)
