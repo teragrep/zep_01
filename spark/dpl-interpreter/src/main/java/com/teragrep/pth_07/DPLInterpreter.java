@@ -273,12 +273,6 @@ public class DPLInterpreter extends AbstractInterpreter {
         return FormType.NATIVE;
     }
 
-   //@Override
-   //public HashMap<String,HashMap<String,UserInterfaceManager>>getUserInterfaceManagerForParagraph(){
-   //    return notebookParagraphUserInterfaceManager;
-   //}
-
-
     @Override
     public int getProgress(InterpreterContext context) throws InterpreterException {
         if (sparkInterpreter != null) {
