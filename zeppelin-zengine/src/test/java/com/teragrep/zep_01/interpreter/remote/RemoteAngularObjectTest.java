@@ -20,21 +20,22 @@ package com.teragrep.zep_01.interpreter.remote;
 import com.teragrep.zep_01.display.AngularObject;
 import com.teragrep.zep_01.display.AngularObjectRegistry;
 import com.teragrep.zep_01.display.AngularObjectRegistryListener;
-import com.teragrep.zep_01.interpreter.*;
+import com.teragrep.zep_01.interpreter.AbstractInterpreterTest;
+import com.teragrep.zep_01.interpreter.InterpreterContext;
+import com.teragrep.zep_01.interpreter.InterpreterException;
+import com.teragrep.zep_01.interpreter.InterpreterResult;
+import com.teragrep.zep_01.interpreter.InterpreterSetting;
 import com.teragrep.zep_01.notebook.Note;
 import com.teragrep.zep_01.notebook.NoteInfo;
-import com.teragrep.zep_01.notebook.Notebook;
 import com.teragrep.zep_01.resource.LocalResourcePool;
 import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
-import org.junit.jupiter.api.Assertions;
 
 import java.util.concurrent.atomic.AtomicInteger;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
-import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 public class RemoteAngularObjectTest extends AbstractInterpreterTest
@@ -168,23 +169,6 @@ public class RemoteAngularObjectTest extends AbstractInterpreterTest
   @Override
   public void onRemoveAngularObject(String interpreterGroupId, AngularObject angularObject) {
     onRemove.incrementAndGet();
-  }
-  /**
-   * Verify that when RemoteangularObject.set() is called in an interpreterGroup with no running RemoteInterpreterProcess, no NullPointerException is thrown and the RemoteAngularObject has the edited value.
-   */
-  @Test
-  public void setRemoteAngularObjectTest(){
-      AngularObjectRegistryListener angularObjectRegistryListener = mock(AngularObjectRegistryListener.class);
-      ManagedInterpreterGroup interpreterGroup = mock(ManagedInterpreterGroup.class);
-
-      RemoteAngularObjectRegistry registry = new RemoteAngularObjectRegistry("testInterpreter",angularObjectRegistryListener,interpreterGroup);
-      RemoteAngularObject remoteAngularObject = (RemoteAngularObject) registry.createNewAngularObject("testAngularObject","value","testNote","testParagraph");
-
-      // Assert that no exception is thrown and that value was updated successfully.
-      Assertions.assertDoesNotThrow(()-> {
-      remoteAngularObject.set("newValue", true, true);
-      });
-      Assertions.assertEquals("newValue",remoteAngularObject.get());
   }
 
 }

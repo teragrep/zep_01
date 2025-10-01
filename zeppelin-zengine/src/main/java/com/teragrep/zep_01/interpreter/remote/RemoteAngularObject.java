@@ -46,7 +46,7 @@ public class RemoteAngularObject extends AngularObject {
 
     if (emitRemoteProcess) {
       // send updated value to remote interpreter
-      final RemoteInterpreterProcess process = interpreterGroup.getRemoteInterpreterProcess();
+      RemoteInterpreterProcess process = interpreterGroup.getRemoteInterpreterProcess();
       if(process != null){
         process.updateRemoteAngularObject(
                 getName(), getNoteId(), getParagraphId(), o);
