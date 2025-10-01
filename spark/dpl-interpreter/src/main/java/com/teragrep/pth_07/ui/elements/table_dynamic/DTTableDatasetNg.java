@@ -47,7 +47,6 @@ package com.teragrep.pth_07.ui.elements.table_dynamic;
 
 import com.teragrep.pth_07.ui.elements.table_dynamic.pojo.Order;
 import com.teragrep.pth_07.ui.elements.AbstractUserInterfaceElement;
-import com.teragrep.zep_01.interpreter.DataTableUserInterfaceElement;
 import com.teragrep.zep_01.interpreter.InterpreterException;
 import jakarta.json.*;
 import org.apache.spark.sql.Dataset;
@@ -56,6 +55,8 @@ import com.teragrep.zep_01.display.AngularObject;
 import com.teragrep.zep_01.interpreter.InterpreterContext;
 
 import java.io.StringReader;
+import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
@@ -64,7 +65,7 @@ import java.lang.reflect.Method;
 import java.lang.reflect.InvocationTargetException;
 import com.teragrep.zep_01.interpreter.InterpreterOutput;
 
-public final class DTTableDatasetNg extends AbstractUserInterfaceElement implements DataTableUserInterfaceElement {
+public final class DTTableDatasetNg extends AbstractUserInterfaceElement {
     // FIXME Exceptions should cause interpreter to stop
 
     private final Lock lock = new ReentrantLock();
@@ -240,9 +241,10 @@ public final class DTTableDatasetNg extends AbstractUserInterfaceElement impleme
             return(Json.createObjectBuilder().build());
         }
     }
-
-    @Override
-    public List<String> getDatasetAsJSON() {
+    public List<String> getDatasetAsJSON(){
+        if(datasetAsJSON == null){
+            return new ArrayList<>();
+        }
         return datasetAsJSON;
     }
 }

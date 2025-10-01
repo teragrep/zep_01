@@ -66,7 +66,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.lang.reflect.InvocationTargetException;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Properties;
@@ -91,7 +90,7 @@ public class DPLInterpreter extends AbstractInterpreter {
 
     private final DPLKryo dplKryo;
 
-    private final HashMap<String, HashMap<String, UserInterfaceElementManager>> notebookParagraphUserInterfaceManager;
+    private final HashMap<String, HashMap<String, UserInterfaceManager>> notebookParagraphUserInterfaceManager;
 
 
     public DPLInterpreter(Properties properties) {
@@ -165,7 +164,7 @@ public class DPLInterpreter extends AbstractInterpreter {
         // store UserInterfaceManager
         if (!notebookParagraphUserInterfaceManager.containsKey(interpreterContext.getNoteId())) {
             // notebookId does not exist
-            HashMap<String, UserInterfaceElementManager> paragraphUserInterfaceManager = new HashMap<>();
+            HashMap<String, UserInterfaceManager> paragraphUserInterfaceManager = new HashMap<>();
             notebookParagraphUserInterfaceManager.put(interpreterContext.getNoteId(), paragraphUserInterfaceManager);
         }
 

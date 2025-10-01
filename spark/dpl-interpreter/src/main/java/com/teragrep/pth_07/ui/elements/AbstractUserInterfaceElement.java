@@ -46,7 +46,6 @@
 package com.teragrep.pth_07.ui.elements;
 
 import com.teragrep.zep_01.interpreter.InterpreterContext;
-import com.teragrep.zep_01.interpreter.DataTableUserInterfaceElement;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
