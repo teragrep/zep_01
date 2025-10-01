@@ -380,10 +380,10 @@ public class RemoteInterpreterServer extends Thread
     throw new InterpreterRPCException("Interpreter instance " + className + " not found");
   }
 
-  public List<String> getDataset(String sessionId, String className, String noteId, String paragraphId) throws InterpreterRPCException, TException {
+  public String getDataset(String sessionId, String className, String noteId, String paragraphId, int start, int length, String searchString, int draw) throws InterpreterRPCException, TException {
     try{
       Interpreter intp = getInterpreter(sessionId, className);
-      return intp.getDataset(noteId,paragraphId);
+      return intp.getDataset(noteId, paragraphId, start, length, searchString, draw);
     } catch (InterpreterException e){
       throw new InterpreterRPCException(e.toString());
     }

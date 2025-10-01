@@ -53,6 +53,7 @@ import com.teragrep.pth_15.DPLExecutorFactory;
 import com.teragrep.pth_15.DPLExecutorResult;
 import com.typesafe.config.Config;
 import com.typesafe.config.ConfigFactory;
+import jakarta.json.JsonObject;
 import org.apache.spark.SparkContext;
 import com.teragrep.zep_01.interpreter.*;
 import com.teragrep.zep_01.interpreter.InterpreterResult.Code;
@@ -298,13 +299,9 @@ public class DPLInterpreter extends AbstractInterpreter {
     public List<InterpreterCompletion> completion(String buf, int cursor, InterpreterContext interpreterContext) {
         return null;
     }
-    @Override
-    public HashMap<String,HashMap<String,UserInterfaceElementManager>>getUserInterfaceManagerForParagraph(){
-        return notebookParagraphUserInterfaceManager;
-    }
 
     @Override
-    public List<String> getDataset(String noteId, String paragraphId) throws InterpreterException{
+    public String getDataset(String noteId, String paragraphId, int start, int length, String searchString, int draw) throws InterpreterException{
         if(notebookParagraphUserInterfaceManager == null){
             LOGGER.error("DPLInterpreter's notebookParagraphUserInterfaceManager map is not instantiated!");
             throw new InterpreterException("Unexpected error while fetching dataset from DPLInterpreter! Check technical logs for details.");
@@ -322,6 +319,8 @@ public class DPLInterpreter extends AbstractInterpreter {
         if(notebookParagraphUserInterfaceManager.get(noteId).get(paragraphId).getDtTableDatasetNg().getDatasetAsJSON().isEmpty()){
             throw new InterpreterException("Dataset of paragraph "+paragraphId+" within note "+noteId+" is empty!");
         }
-        return notebookParagraphUserInterfaceManager.get(noteId).get(paragraphId).getDtTableDatasetNg().getDatasetAsJSON();
+        JsonObject json = notebookParagraphUserInterfaceManager.get(noteId).get(paragraphId).getDtTableDatasetNg().SearchAndPaginate(draw,start,length,searchString);
+        String dataset = json.toString();
+        return dataset;
     }
 }

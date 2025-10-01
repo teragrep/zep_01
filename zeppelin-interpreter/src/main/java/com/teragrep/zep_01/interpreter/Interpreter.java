@@ -466,11 +466,9 @@ public abstract class Interpreter {
   public enum SchedulingMode {
     FIFO, PARALLEL
   }
-  public HashMap<String,HashMap<String,UserInterfaceElementManager>>getUserInterfaceManagerForParagraph(){
-    return new HashMap<>();
-  }
 
-  public List<String> getDataset(String noteId, String paragraphId) throws InterpreterException{
+  // Default Interpreter does not have a Dataset available. Support is added by overriding this method.
+  public String getDataset(String noteId, String paragraphId, int start, int length, String searchString, int draw) throws InterpreterException{
     throw new InterpreterException("Interpreter "+ getClassName() +" has no dataset!");
   }
 }

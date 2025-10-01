@@ -109,10 +109,10 @@ public abstract class RemoteInterpreterProcess implements InterpreterClient, Aut
     });
   }
 
-  public List<String> getDataset(String sessionId, String className, String noteId, String paragraphId) throws InterpreterException {
+  public String getDataset(String sessionId, String className, String noteId, String paragraphId, int start, int length, String searchString, int draw) throws InterpreterException {
     try{
-      List<String> dataset = callRemoteFunction(client -> {
-        return client.getDataset(sessionId, className, noteId, paragraphId);
+      String dataset = callRemoteFunction(client -> {
+        return client.getDataset(sessionId, className, noteId, paragraphId, start, length, searchString, draw);
       });
       return dataset;
     } catch (Exception e){
