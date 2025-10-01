@@ -1139,58 +1139,17 @@ public class NotebookServer extends WebSocketServlet
       // Get the dataset of a paragraph from the Interpreter. If there is no dataset, we cannot do a pagination or search on it. getDataset() throws an Exception if there is no data available.
       String sessionId = "";
       if (interpreter instanceof RemoteInterpreter){
-        // This id seems to always be "shared-session", but not certain.
         sessionId = ((RemoteInterpreter) interpreter).getSessionId();
       }
       String dataset = ((ManagedInterpreterGroup)interpreterGroup).getDataset(sessionId,interpreter.getClassName(),noteId,paragraphId,start,length,search,draw);
       Message msg = new Message(Message.OP.PARAGRAPH_UPDATE_OUTPUT)
               .withMsgId(msgId)
-              .put("data",dataset);
+              .put("data",dataset)
+              .put("index",0)
+              .put("noteid",noteId)
+              .put("paragraphId",paragraphId)
+              .put("type",InterpreterResult.Type.JSONTABLE);
       conn.send(serializeMessage(msg));
-
-      //// The AJAXRequest AngularObject we are looking for is in the AngularObjectRegistry of the user who last ran the paragraph.
-      //// In order to access it, we must change the username in ServiceContext to match, otherwise only the last runner can make pagination or search requests.
-      //final AuthenticationInfo authInfo = context.getAutheInfo();
-      //String user = paragraph.getUser();
-      //authInfo.setUser(user);
-      //Set<String> userAndRoles = new HashSet<>();
-      //userAndRoles.add(authInfo.getUser());
-      //userAndRoles.addAll(authInfo.getRoles());
-      //final ServiceContext serviceContext = new ServiceContext(authInfo, userAndRoles);
-//
-      //getNotebookService().updateParagraphResult(noteId,paragraphId,interpreterGroupId,draw,start,length,search,serviceContext,
-      //        new WebSocketServiceCallback<AngularObject>(conn){
-      //          @Override
-      //          public void onSuccess(AngularObject result, ServiceContext context) throws IOException {
-      //            // NotebookService().angularObjectUpdate() doesn't have a call to callback.onFailure() in case it doesn't find the AngularObject we are looking for, instead returning null
-      //            // That's why we must do a check here whether updating the AngularObject was successful or not.
-      //            // Changing angularObjectUpdate to include an onFailure() call likely has many breaking side-effects.
-//
-      //            if(result == null){
-      //              // We didn't find the AJAXRequest angularObject we were looking for, so we generate a similar message to what UI is expecting, but with data about the error, based on which UI can generate an error popup
-      //              LinkedHashMap data = new LinkedHashMap();
-      //              data.put("error",true);
-      //              data.put("message","Request failed: Interpreter session is not running, please rerun the paragraph!");
-      //              data.put("draw",draw);
-      //              data.put("recordsTotal",0);
-      //              data.put("recordsFiltered",0);
-      //              Message msg = new Message(Message.OP.PARAGRAPH_UPDATE_OUTPUT)
-      //                      .withMsgId(msgId)
-      //                      .put("data",data)
-      //                      .put("draw",0)
-      //                      .put("type",InterpreterResult.Type.JSONTABLE.toString())
-      //                      .put("index",0)
-      //                      .put("noteId", noteId)
-      //                      .put("paragraphId", paragraphId);
-      //              conn.send(serializeMessage(msg));
-      //            }
-      //            else {
-      //              // If onSuccess() returns an AngularObject, it means the object was found and set.
-      //              // We don't send any message to the UI here, because the response is generated in DTTableDatasetNG.updatePage();
-      //              super.onSuccess(result,context);
-      //            }
-      //          }
-      //        });
     }
     else {
       throw new BadRequestException("Request must contain \"noteId\", \"paragraphId\", \"start\", \"length\", \"draw\" and \"search.value\" parameters!");
