@@ -48,6 +48,7 @@ package com.teragrep.pth_07;
 
 import com.teragrep.pth_07.stream.BatchHandler;
 import com.teragrep.pth_07.ui.UserInterfaceManager;
+import com.teragrep.pth_07.ui.elements.table_dynamic.DTTableDatasetNg;
 import com.teragrep.pth_15.DPLExecutor;
 import com.teragrep.pth_15.DPLExecutorFactory;
 import com.teragrep.pth_15.DPLExecutorResult;
@@ -68,6 +69,7 @@ import org.slf4j.LoggerFactory;
 import java.lang.reflect.InvocationTargetException;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Properties;
 import java.util.concurrent.TimeoutException;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -298,16 +300,19 @@ public class DPLInterpreter extends AbstractInterpreter {
         if(notebookParagraphUserInterfaceManager == null){
             throw new InterpreterException("DPLInterpreter's notebookParagraphUserInterfaceManager map is not instantiated!");
         }
-        if(!notebookParagraphUserInterfaceManager.containsKey(noteId)){
+        Map<String,UserInterfaceManager> notebookUserInterfaceManagers = notebookParagraphUserInterfaceManager.get(noteId);
+        if(notebookUserInterfaceManagers == null){
             throw new InterpreterException("DPLInterpreter does not have a UserInterfaceManager for note id "+noteId);
         }
-        if(!notebookParagraphUserInterfaceManager.get(noteId).containsKey(paragraphId)){
+        UserInterfaceManager userInterfaceManager = notebookUserInterfaceManagers.get(paragraphId);
+        if(userInterfaceManager == null){
             throw new InterpreterException("DPLInterpreter does not have a UserInterfaceManager for paragraph id "+paragraphId+" within note id "+noteId);
         }
-        if(notebookParagraphUserInterfaceManager.get(noteId).get(paragraphId).getDtTableDatasetNg() == null){
+        DTTableDatasetNg dtTableDatasetNg = userInterfaceManager.getDtTableDatasetNg();
+        if(dtTableDatasetNg == null){
             throw new InterpreterException("UserInterfaceManager for paragraph id "+paragraphId+" does not have a DTTableDatasetNG object!");
         }
-        if(notebookParagraphUserInterfaceManager.get(noteId).get(paragraphId).getDtTableDatasetNg().getDatasetAsJSON().isEmpty()){
+        if(dtTableDatasetNg.getDatasetAsJSON().isEmpty()){
             throw new InterpreterException("Dataset of paragraph "+paragraphId+" within note "+noteId+" is empty!");
         }
         JsonObject json = notebookParagraphUserInterfaceManager.get(noteId).get(paragraphId).getDtTableDatasetNg().SearchAndPaginate(draw,start,length,searchString);
