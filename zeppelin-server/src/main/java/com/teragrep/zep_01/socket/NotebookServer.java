@@ -1146,7 +1146,7 @@ public class NotebookServer extends WebSocketServlet
     }
     catch (InterpreterException exception){
       // Log the Exception to technical logs, only send a generic error message to UI.
-      LOG.error("Failed to access data from Interpreter process for note: " +noteId + " paragraph: " +paragraphId+ " cause: " + exception);
+      LOG.error("Failed to access data from Interpreter process for note: {} paragraph: {} cause: {}",noteId,paragraphId,exception);
       LinkedHashMap data = new LinkedHashMap();
       data.put("error",true);
       data.put("message","Failed to access data from Interpreter process. Please rerun the paragraph or see technical log for details!");
