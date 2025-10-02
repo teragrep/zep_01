@@ -111,7 +111,7 @@ public final class DTTableDatasetNg extends AbstractUserInterfaceElement {
         }
     }
 
-    // Sends a PARAGRAPH_UPDATE_OUTPUT message to UI containing the paginated data
+    // Sends a PARAGRAPH_UPDATE_OUTPUT message to UI containing the formatted data received from BatchHandler.
     private void updatePage(int start, int length, String searchString, int draw){
         try {
             JsonObject response = SearchAndPaginate(draw, start,length,searchString);
@@ -121,8 +121,9 @@ public final class DTTableDatasetNg extends AbstractUserInterfaceElement {
             getInterpreterContext().out().write(outputContent);
             getInterpreterContext().out().flush();
         }
+        // We catch and log Exceptions here instead of rethrowing because calls to this method come from DPLInterpreter's BatchHandler, which doesn't seem to have easy ways to propagate Exceptions.
         catch (InterpreterException ie){
-            LOGGER.error("Failed to update datatable!",ie);
+            LOGGER.error("Failed to format dataset to proper datatable format!",ie);
         }
         catch (java.io.IOException e) {
             LOGGER.error(e.toString());

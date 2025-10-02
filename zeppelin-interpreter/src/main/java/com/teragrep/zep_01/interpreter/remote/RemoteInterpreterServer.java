@@ -384,7 +384,10 @@ public class RemoteInterpreterServer extends Thread
     try{
       Interpreter intp = getInterpreter(sessionId, className);
       return intp.getDataset(noteId, paragraphId, start, length, searchString, draw);
+      // Thrift only declares InterpreterRPCException that has a single string as a paraemeter, so we have to wrap the underlying Exception as a String with an InterpreterRPCException to pass Exceptions through Thrift.
+      // RemoteInterpreterServers can have their own log files, so it's best to also log the Exception there before we stringify and send it further.
     } catch (InterpreterException e){
+      LOGGER.error("Failed to get dataset!",e);
       throw new InterpreterRPCException(e.toString());
     }
   }

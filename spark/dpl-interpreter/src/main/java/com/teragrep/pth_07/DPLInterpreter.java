@@ -296,8 +296,7 @@ public class DPLInterpreter extends AbstractInterpreter {
     @Override
     public String getDataset(String noteId, String paragraphId, int start, int length, String searchString, int draw) throws InterpreterException{
         if(notebookParagraphUserInterfaceManager == null){
-            LOGGER.error("DPLInterpreter's notebookParagraphUserInterfaceManager map is not instantiated!");
-            throw new InterpreterException("Unexpected error while fetching dataset from DPLInterpreter! Check technical logs for details.");
+            throw new InterpreterException("DPLInterpreter's notebookParagraphUserInterfaceManager map is not instantiated!");
         }
         if(!notebookParagraphUserInterfaceManager.containsKey(noteId)){
             throw new InterpreterException("DPLInterpreter does not have a UserInterfaceManager for note id "+noteId);
@@ -306,8 +305,7 @@ public class DPLInterpreter extends AbstractInterpreter {
             throw new InterpreterException("DPLInterpreter does not have a UserInterfaceManager for paragraph id "+paragraphId+" within note id "+noteId);
         }
         if(notebookParagraphUserInterfaceManager.get(noteId).get(paragraphId).getDtTableDatasetNg() == null){
-            LOGGER.error("UserInterfaceManager for paragraph id "+paragraphId+" does not have a DTTableDatasetNG object!");
-            throw new InterpreterException("Unexpected error while fetching dataset from DPLInterpreter! Check technical logs for details.");
+            throw new InterpreterException("UserInterfaceManager for paragraph id "+paragraphId+" does not have a DTTableDatasetNG object!");
         }
         if(notebookParagraphUserInterfaceManager.get(noteId).get(paragraphId).getDtTableDatasetNg().getDatasetAsJSON().isEmpty()){
             throw new InterpreterException("Dataset of paragraph "+paragraphId+" within note "+noteId+" is empty!");
