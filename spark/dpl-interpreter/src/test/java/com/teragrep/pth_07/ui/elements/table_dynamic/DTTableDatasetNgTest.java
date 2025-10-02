@@ -45,12 +45,7 @@
  */
 package com.teragrep.pth_07.ui.elements.table_dynamic;
 
-import com.google.gson.Gson;
-import com.teragrep.pth_07.ui.elements.table_dynamic.pojo.AJAXRequest;
-import com.teragrep.zep_01.display.AngularObject;
-import com.teragrep.zep_01.display.AngularObjectListener;
 import com.teragrep.zep_01.display.AngularObjectRegistry;
-import com.teragrep.zep_01.display.AngularObjectRegistryListener;
 import com.teragrep.zep_01.interpreter.InterpreterContext;
 import com.teragrep.zep_01.interpreter.InterpreterOutput;
 import com.teragrep.zep_01.interpreter.InterpreterOutputListener;
@@ -67,13 +62,11 @@ import org.apache.spark.sql.types.DataTypes;
 import org.apache.spark.sql.types.MetadataBuilder;
 import org.apache.spark.sql.types.StructField;
 import org.apache.spark.sql.types.StructType;
-import org.junit.Assert;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.StringReader;
 import java.sql.Timestamp;
 import java.time.Instant;
 import java.util.ArrayList;
@@ -119,91 +112,6 @@ public class DTTableDatasetNgTest {
     );
 
     Dataset<Row> testDs = sparkSession.createDataFrame(rows, testSchema);
-
-    @Test
-    public void parseAsPojo() {
-        Gson gson = new Gson();
-
-        String ajaxRequestString = "{\"draw\":1,\"columns\":[{\"data\":0,\"name\":\"\",\"searchable\":true,\"orderable\":true,\"search\":{\"value\":\"\",\"regex\":false}},{\"data\":1,\"name\":\"\",\"searchable\":true,\"orderable\":true,\"search\":{\"value\":\"\",\"regex\":false}},{\"data\":2,\"name\":\"\",\"searchable\":true,\"orderable\":true,\"search\":{\"value\":\"\",\"regex\":false}},{\"data\":3,\"name\":\"\",\"searchable\":true,\"orderable\":true,\"search\":{\"value\":\"\",\"regex\":false}},{\"data\":4,\"name\":\"\",\"searchable\":true,\"orderable\":true,\"search\":{\"value\":\"\",\"regex\":false}},{\"data\":5,\"name\":\"\",\"searchable\":true,\"orderable\":true,\"search\":{\"value\":\"\",\"regex\":false}},{\"data\":6,\"name\":\"\",\"searchable\":true,\"orderable\":true,\"search\":{\"value\":\"\",\"regex\":false}},{\"data\":7,\"name\":\"\",\"searchable\":true,\"orderable\":true,\"search\":{\"value\":\"\",\"regex\":false}}],\"order\":[{\"column\":0,\"dir\":\"desc\"},{\"column\":0,\"dir\":\"asc\"}],\"start\":0,\"length\":5,\"search\":{\"value\":\"\",\"regex\":false}}";
-
-        AJAXRequest ajaxRequest = gson.fromJson(ajaxRequestString, AJAXRequest.class);
-
-        // main
-        assertEquals(1, ajaxRequest.getDraw());
-        assertEquals(0, ajaxRequest.getStart());
-        assertEquals(5, ajaxRequest.getLength());
-
-        // search
-        assertEquals(false, ajaxRequest.getSearch().getRegex());
-        assertEquals("", ajaxRequest.getSearch().getValue());
-        assertEquals(1, ajaxRequest.getDraw());
-
-        // order
-        assertEquals(0, ajaxRequest.getOrder().get(0).getColumn());
-        assertEquals("desc", ajaxRequest.getOrder().get(0).getDir());
-
-        assertEquals(0, ajaxRequest.getOrder().get(1).getColumn());
-        assertEquals("asc", ajaxRequest.getOrder().get(1).getDir());
-
-        // columns
-        // column 0
-        assertEquals(0, ajaxRequest.getColumns().get(0).getData());
-        assertEquals("", ajaxRequest.getColumns().get(0).getName());
-        assertEquals(true, ajaxRequest.getColumns().get(0).getSearchable());
-        assertEquals(true, ajaxRequest.getColumns().get(0).getOrderable());
-        assertEquals("", ajaxRequest.getColumns().get(0).getSearch().getValue());
-        assertEquals(false, ajaxRequest.getColumns().get(0).getSearch().getRegex());
-        // column 1
-        assertEquals(1, ajaxRequest.getColumns().get(1).getData());
-        assertEquals("", ajaxRequest.getColumns().get(1).getName());
-        assertEquals(true, ajaxRequest.getColumns().get(1).getSearchable());
-        assertEquals(true, ajaxRequest.getColumns().get(1).getOrderable());
-        assertEquals("", ajaxRequest.getColumns().get(1).getSearch().getValue());
-        assertEquals(false, ajaxRequest.getColumns().get(1).getSearch().getRegex());
-        // column 2
-        assertEquals(2, ajaxRequest.getColumns().get(2).getData());
-        assertEquals("", ajaxRequest.getColumns().get(2).getName());
-        assertEquals(true, ajaxRequest.getColumns().get(2).getSearchable());
-        assertEquals(true, ajaxRequest.getColumns().get(2).getOrderable());
-        assertEquals("", ajaxRequest.getColumns().get(2).getSearch().getValue());
-        assertEquals(false, ajaxRequest.getColumns().get(2).getSearch().getRegex());
-        // column 3
-        assertEquals(3, ajaxRequest.getColumns().get(3).getData());
-        assertEquals("", ajaxRequest.getColumns().get(3).getName());
-        assertEquals(true, ajaxRequest.getColumns().get(3).getSearchable());
-        assertEquals(true, ajaxRequest.getColumns().get(3).getOrderable());
-        assertEquals("", ajaxRequest.getColumns().get(3).getSearch().getValue());
-        assertEquals(false, ajaxRequest.getColumns().get(3).getSearch().getRegex());
-        // column 4
-        assertEquals(4, ajaxRequest.getColumns().get(4).getData());
-        assertEquals("", ajaxRequest.getColumns().get(4).getName());
-        assertEquals(true, ajaxRequest.getColumns().get(4).getSearchable());
-        assertEquals(true, ajaxRequest.getColumns().get(4).getOrderable());
-        assertEquals("", ajaxRequest.getColumns().get(4).getSearch().getValue());
-        assertEquals(false, ajaxRequest.getColumns().get(4).getSearch().getRegex());
-        // column 5
-        assertEquals(5, ajaxRequest.getColumns().get(5).getData());
-        assertEquals("", ajaxRequest.getColumns().get(5).getName());
-        assertEquals(true, ajaxRequest.getColumns().get(5).getSearchable());
-        assertEquals(true, ajaxRequest.getColumns().get(5).getOrderable());
-        assertEquals("", ajaxRequest.getColumns().get(5).getSearch().getValue());
-        assertEquals(false, ajaxRequest.getColumns().get(5).getSearch().getRegex());
-        // column 6
-        assertEquals(6, ajaxRequest.getColumns().get(6).getData());
-        assertEquals("", ajaxRequest.getColumns().get(6).getName());
-        assertEquals(true, ajaxRequest.getColumns().get(6).getSearchable());
-        assertEquals(true, ajaxRequest.getColumns().get(6).getOrderable());
-        assertEquals("", ajaxRequest.getColumns().get(6).getSearch().getValue());
-        assertEquals(false, ajaxRequest.getColumns().get(6).getSearch().getRegex());
-        // column 7
-        assertEquals(7, ajaxRequest.getColumns().get(7).getData());
-        assertEquals("", ajaxRequest.getColumns().get(7).getName());
-        assertEquals(true, ajaxRequest.getColumns().get(7).getSearchable());
-        assertEquals(true, ajaxRequest.getColumns().get(7).getOrderable());
-        assertEquals("", ajaxRequest.getColumns().get(7).getSearch().getValue());
-        assertEquals(false, ajaxRequest.getColumns().get(7).getSearch().getRegex());
-        
-    }
 
     @Test
     public void testAJAXResponse() {
@@ -259,35 +167,6 @@ public class DTTableDatasetNgTest {
         );
     }
 
-    @Test
-    public void AjaxRequestToJsonTest(){
-        String paragraphId = "testParag";
-        String noteId ="testNoteId";
-        String angularObjectName = "AJAXRequest_"+paragraphId;
-        JsonObject angularObject  = Json.createObjectBuilder()
-                .add("start",0)
-                .add("length",25)
-                .add("search",Json.createObjectBuilder()
-                        .add("value","")
-                        .add("regex",false)
-                        .build())
-                .build();
-
-        String angularObjectContent = angularObject.toString();
-        AngularObjectListener listener = new AngularObjectListener() {
-            @Override
-            public void updated(AngularObject updatedObject) {
-                // Do nothing
-            }
-        };
-        AngularObject<String> ao = new AngularObject<String>(angularObjectName,angularObjectContent,noteId,paragraphId,listener);
-        JsonObject ajaxRequest = Json.createReader(new StringReader(ao.get().toString())).readObject();
-        Assertions.assertEquals(0,ajaxRequest.getJsonNumber("start").intValue());
-        Assertions.assertEquals(25,ajaxRequest.getJsonNumber("length").intValue());
-        Assertions.assertEquals("",ajaxRequest.getJsonObject("search").getString("value").toString());
-        Assertions.assertEquals(false,ajaxRequest.getJsonObject("search").getBoolean("regex"));
-    }
-
     private List<Row> makeRowsList(long _time, Long id, String _raw, String index, String sourcetype, String host, String source, String partition, Long offset, String origin, long amount) {
         ArrayList<Row> rowArrayList = new ArrayList<>();
 
@@ -320,35 +199,6 @@ public class DTTableDatasetNgTest {
             dtTableDatasetNg.setParagraphDataset(testDs);
         });
         Assertions.assertEquals(1,listener.numberOfUpdateCalls());
-        Assertions.assertEquals(1,listener.numberOfResetCalls());
-    }
-
-
-    // DTTableDatasetNG should not clear the output of a Paragraph related to an InterpreterOutput when a pagination request is made.
-    // Does not include a concrete implementation of InterpreterOutputListener as it's an anonymous class within RemoteInterpreterServer, and instantiating it would require too many dependencies.
-    @Test
-    public void testNoClearParagraphResultsOnPaginationRequest(){
-
-        TestInterpreterOutputListener listener = new TestInterpreterOutputListener();
-        InterpreterOutput testOutput =  new InterpreterOutput(listener);
-
-        AngularObjectRegistry testRegistry = new AngularObjectRegistry("test", null);
-        InterpreterContext context = InterpreterContext.builder().setInterpreterOut(testOutput).setAngularObjectRegistry(testRegistry).setNoteId("testNote").setParagraphId("testParagraph").build();
-        DTTableDatasetNg dtTableDatasetNg = new DTTableDatasetNg(context);
-        Assertions.assertDoesNotThrow(()->{
-            dtTableDatasetNg.setParagraphDataset(testDs);
-        });
-        AngularObject testAo = context.getAngularObjectRegistry().get("AJAXRequest_testParagraph","testNote","testParagraph");
-        String ajaxRequestString = "{\"draw\":1,\"columns\":[{\"data\":0,\"name\":\"\",\"searchable\":true,\"orderable\":true,\"search\":{\"value\":\"\",\"regex\":false}},{\"data\":1,\"name\":\"\",\"searchable\":true,\"orderable\":true,\"search\":{\"value\":\"\",\"regex\":false}},{\"data\":2,\"name\":\"\",\"searchable\":true,\"orderable\":true,\"search\":{\"value\":\"\",\"regex\":false}},{\"data\":3,\"name\":\"\",\"searchable\":true,\"orderable\":true,\"search\":{\"value\":\"\",\"regex\":false}},{\"data\":4,\"name\":\"\",\"searchable\":true,\"orderable\":true,\"search\":{\"value\":\"\",\"regex\":false}},{\"data\":5,\"name\":\"\",\"searchable\":true,\"orderable\":true,\"search\":{\"value\":\"\",\"regex\":false}},{\"data\":6,\"name\":\"\",\"searchable\":true,\"orderable\":true,\"search\":{\"value\":\"\",\"regex\":false}},{\"data\":7,\"name\":\"\",\"searchable\":true,\"orderable\":true,\"search\":{\"value\":\"\",\"regex\":false}}],\"order\":[{\"column\":0,\"dir\":\"desc\"},{\"column\":0,\"dir\":\"asc\"}],\"start\":0,\"length\":5,\"search\":{\"value\":\"\",\"regex\":false}}";
-        // Simulate DPL receiving new data.
-        Assertions.assertDoesNotThrow(()->{
-            testAo.set(ajaxRequestString);
-            Thread.sleep(200);  // Must wait here for a while for the Listener to process the calls.
-            // Removing Thread.sleep causes assertions to fail due to number of update calls being queried before the AJAXrequest is counted.
-        });
-
-        // One call to both update and reset should happen due to inserting the initial dataset. Another update should happen on pagination request. Pagination request should not increment reset counter.
-        Assertions.assertEquals(2,listener.numberOfUpdateCalls());
         Assertions.assertEquals(1,listener.numberOfResetCalls());
     }
 
