@@ -1111,19 +1111,19 @@ public class NotebookServer extends WebSocketServlet
 
     Note note = getNotebook().getNote(noteId);
     if(note == null){
-      throw new BadRequestException("No such note!");
+      throw new BadRequestException("No such note: "+noteId);
     }
     Paragraph paragraph = note.getParagraph(paragraphId);
     if(paragraph == null){
-      throw new BadRequestException("No such paragraph!");
+      throw new BadRequestException("No such paragraph: " + paragraphId);
     }
     Interpreter interpreter = paragraph.getBindedInterpreter();
     if(interpreter == null){
-      throw new BadRequestException("Paragraph has no binded interpreter!");
+      throw new BadRequestException("Paragraph "+paragraphId+" has no binded interpreter!");
     }
     InterpreterGroup interpreterGroup = interpreter.getInterpreterGroup();
     if(interpreterGroup == null){
-      throw new BadRequestException("Paragraph's interpreter has no InterpreterGroup assigned!");
+      throw new BadRequestException("Paragraph "+paragraphId+"'s interpreter has no InterpreterGroup assigned!");
     }
 
     String sessionId = "";
