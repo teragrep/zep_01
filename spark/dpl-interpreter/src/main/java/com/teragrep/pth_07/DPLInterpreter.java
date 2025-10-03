@@ -315,7 +315,7 @@ public class DPLInterpreter extends AbstractInterpreter {
         if(dtTableDatasetNg.getDatasetAsJSON().isEmpty()){
             throw new InterpreterException("Dataset of paragraph "+paragraphId+" within note "+noteId+" is empty!");
         }
-        JsonObject json = notebookParagraphUserInterfaceManager.get(noteId).get(paragraphId).getDtTableDatasetNg().SearchAndPaginate(draw,start,length,searchString);
+        JsonObject json = dtTableDatasetNg.SearchAndPaginate(draw,start,length,searchString);
         String dataset = json.toString();
         return dataset;
     }
