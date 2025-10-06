@@ -23,14 +23,7 @@ import java.io.IOException;
 import java.lang.reflect.Type;
 import java.net.URISyntaxException;
 import java.net.UnknownHostException;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.atomic.AtomicReference;
@@ -39,17 +32,16 @@ import javax.inject.Provider;
 import javax.servlet.http.HttpServletRequest;
 
 import com.teragrep.zep_01.common.ValidatedMessage;
+import com.teragrep.zep_01.display.*;
 import com.teragrep.zep_01.interpreter.*;
+import com.teragrep.zep_01.interpreter.remote.RemoteInterpreter;
 import com.teragrep.zep_01.rest.exception.BadRequestException;
+import jakarta.json.Json;
+import jakarta.json.JsonObject;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.apache.thrift.TException;
 import com.teragrep.zep_01.conf.ZeppelinConfiguration;
-import com.teragrep.zep_01.display.AngularObject;
-import com.teragrep.zep_01.display.AngularObjectRegistry;
-import com.teragrep.zep_01.display.AngularObjectRegistryListener;
-import com.teragrep.zep_01.display.GUI;
-import com.teragrep.zep_01.display.Input;
 import com.teragrep.zep_01.interpreter.remote.RemoteAngularObjectRegistry;
 import com.teragrep.zep_01.interpreter.remote.RemoteInterpreterProcessListener;
 import com.teragrep.zep_01.interpreter.thrift.InterpreterCompletion;
@@ -1100,59 +1092,76 @@ public class NotebookServer extends WebSocketServlet
   }
 
   // Handles a request for paginated or filtered DPL table data.
-  // Data is sent via a legacy system:
-  // updateParagraphResult() is called
-  // -> updateAngularObject() updates an AJAXRequest angular object associated with a specific paragraph
-  // -> AJAXRequestWatcher catches the updated angular object
-  // -> values are passed to DTTableDatasetNG that does searching and pagination
-  // -> searched and paginated data is written via InterpreterContext
-  // -> Generates a PARAGRAPH_UPDATE_OUTPUT websocket event to be sent to the UI
 
   private void updateParagraphResult(NotebookSocket conn,
                                      ServiceContext context,
-                                     Message fromMessage) throws IOException, InterpreterNotFoundException {
+                                     Message fromMessage) throws IOException, InterpreterException {
     ValidatedMessage validatedMessage = new ValidatedMessage(fromMessage);
-    if(validatedMessage.isValid()){
-      // Casting is required to get Message parameters in correct format, as GSON parses all numbers as Doubles, and Message.get() returns a generic Object.
-
-      final String noteId = (String) fromMessage.get("noteId");
-      final String paragraphId = (String) fromMessage.get("paragraphId");
-
-      // Build an interpreterGroupId based on given user and note Id.
-      // InterpreterGroupId is used to find the correct AngularObjectRegistry instance containing the DTTableDatasetNG object we want to pass the search, length, start and draw values to.
-
-      Note note = getNotebook().getNote(noteId);
-      if(note == null){
-        throw new BadRequestException("No such note!");
-      }
-      Paragraph paragraph = note.getParagraph(paragraphId);
-      if(paragraph == null){
-        throw new BadRequestException("No such paragraph!");
-      }
-      Interpreter interpreter = paragraph.getBindedInterpreter();
-      if(interpreter == null){
-        throw new BadRequestException("Paragraph has no binded interpreter!");
-      }
-      InterpreterGroup interpreterGroup = interpreter.getInterpreterGroup();
-      if(interpreterGroup == null){
-        throw new BadRequestException("Paragraph's interpreter has no InterpreterGroup assigned!");
-      }
-      final String interpreterGroupId = interpreterGroup.getId();
-
-      final int start = (int) Double.parseDouble(fromMessage.get("start").toString());
-      final int length = (int) Double.parseDouble(fromMessage.get("length").toString());
-      final String search = (String) ((Map) fromMessage.get("search")).get("value");
-      final int draw = (int) Double.parseDouble(fromMessage.get("draw").toString());
-      getNotebookService().updateParagraphResult(noteId,paragraphId,interpreterGroupId,draw,start,length,search,context,
-              new WebSocketServiceCallback<AngularObject>(conn){
-                @Override
-                public void onSuccess(AngularObject result, ServiceContext context) throws IOException {
-                  super.onSuccess(result,context);
-                }
-              });
-    }
-    else {
+    if(!validatedMessage.isValid()) {
       throw new BadRequestException("Request must contain \"noteId\", \"paragraphId\", \"start\", \"length\", \"draw\" and \"search.value\" parameters!");
+    }
+    // Casting is required to get Message parameters in correct format, as GSON parses all numbers as Doubles, and Message.get() returns a generic Object.
+    final String msgId = fromMessage.msgId;
+    final String noteId = (String) fromMessage.get("noteId");
+    final String paragraphId = (String) fromMessage.get("paragraphId");
+    final int start = (int) Double.parseDouble(fromMessage.get("start").toString());
+    final int length = (int) Double.parseDouble(fromMessage.get("length").toString());
+    final String search = (String) ((Map) fromMessage.get("search")).get("value");
+    final int draw = (int) Double.parseDouble(fromMessage.get("draw").toString());
+
+    Note note = getNotebook().getNote(noteId);
+    if(note == null){
+      throw new BadRequestException("No such note: "+noteId);
+    }
+    Paragraph paragraph = note.getParagraph(paragraphId);
+    if(paragraph == null){
+      throw new BadRequestException("No such paragraph: " + paragraphId);
+    }
+    Interpreter interpreter = paragraph.getBindedInterpreter();
+    if(interpreter == null){
+      throw new BadRequestException("Paragraph "+paragraphId+" has no binded interpreter!");
+    }
+    InterpreterGroup interpreterGroup = interpreter.getInterpreterGroup();
+    if(interpreterGroup == null){
+      throw new BadRequestException("Paragraph "+paragraphId+"'s interpreter has no InterpreterGroup assigned!");
+    }
+
+    String sessionId = "";
+    if (interpreter instanceof RemoteInterpreter){
+      sessionId = ((RemoteInterpreter) interpreter).getSessionId();
+    }
+
+    // getDataset() Throws an InterpreterException if there is a problem with getting or paginating data. In that case, we send a PARAGRAPH_UPDATE_OUTPUT message as expected by UI.
+    // If any other type of Exception is thrown (indicating some other problem), it will be caught by NotebookServer.onMessage() and result in an ERROR_INFO message.
+    try{
+      String dataset = ((ManagedInterpreterGroup)interpreterGroup).getDataset(sessionId,interpreter.getClassName(),noteId,paragraphId,start,length,search,draw);
+      Message msg = new Message(Message.OP.PARAGRAPH_UPDATE_OUTPUT)
+              .withMsgId(msgId)
+              .put("data",dataset)
+              .put("index",0)
+              .put("noteid",noteId)
+              .put("paragraphId",paragraphId)
+              .put("type",InterpreterResult.Type.JSONTABLE);
+      conn.send(serializeMessage(msg));
+    }
+    catch (InterpreterException exception){
+      // Log the Exception to technical logs, only send a generic error message to UI.
+      LOG.error("Failed to access data from Interpreter process for note: {} paragraph: {} cause: {}",noteId,paragraphId,exception);
+      LinkedHashMap data = new LinkedHashMap();
+      data.put("error",true);
+      data.put("message","Failed to access data from Interpreter process. Please rerun the paragraph or see technical log for details!");
+      data.put("draw",draw);
+      data.put("recordsTotal",0);
+      data.put("recordsFiltered",0);
+      Message msg = new Message(Message.OP.PARAGRAPH_UPDATE_OUTPUT)
+              .withMsgId(msgId)
+              .put("data",data)
+              .put("draw",0)
+              .put("type",InterpreterResult.Type.JSONTABLE.toString())
+              .put("index",0)
+              .put("noteId", noteId)
+              .put("paragraphId", paragraphId);
+      conn.send(serializeMessage(msg));
     }
   }
 

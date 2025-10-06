@@ -182,6 +182,12 @@ public class ManagedInterpreterGroup extends InterpreterGroup {
     }
   }
 
+  public String getDataset(String sessionId, String className, String noteId, String paragraphId, int start, int length, String searchString, int draw) throws InterpreterException {
+    if(remoteInterpreterProcess == null){
+      throw new InterpreterException("InterpreterGroup "+id+" does not have a running Interpreter process!");
+    }
+    return remoteInterpreterProcess.getDataset(sessionId,className,noteId,paragraphId,start,length,searchString,draw);
+  }
   public boolean isEmpty() {
     return this.sessions.isEmpty();
   }

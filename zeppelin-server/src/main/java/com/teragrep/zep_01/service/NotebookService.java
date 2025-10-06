@@ -664,22 +664,6 @@ public class NotebookService {
     callback.onSuccess(p, context);
   }
 
-  public void updateParagraphResult(String noteId, String paragraphId, String interpreterGroupId,int draw, int start, int length, String searchString,ServiceContext context, ServiceCallback<AngularObject> callback) throws IOException {
-    // Make an AJAXRequest based on given information
-    JsonObject ajaxRequestValue = Json.createObjectBuilder()
-            .add("draw",draw)
-            .add("start",start)
-            .add("length",length)
-            .add("search",
-                    Json.createObjectBuilder()
-                            .add("value",searchString)
-                            .add("regex",false)
-                            .build())
-            .build();
-
-    updateAngularObject(noteId,paragraphId,interpreterGroupId,"AJAXRequest_"+paragraphId,ajaxRequestValue.toString(),context,callback);
-  }
-
   public Paragraph getNextSessionParagraph(String noteId,
                                         int maxParagraph,
                                         ServiceContext context,

@@ -48,11 +48,13 @@ package com.teragrep.pth_07;
 
 import com.teragrep.pth_07.stream.BatchHandler;
 import com.teragrep.pth_07.ui.UserInterfaceManager;
+import com.teragrep.pth_07.ui.elements.table_dynamic.DTTableDatasetNg;
 import com.teragrep.pth_15.DPLExecutor;
 import com.teragrep.pth_15.DPLExecutorFactory;
 import com.teragrep.pth_15.DPLExecutorResult;
 import com.typesafe.config.Config;
 import com.typesafe.config.ConfigFactory;
+import jakarta.json.JsonObject;
 import org.apache.spark.SparkContext;
 import com.teragrep.zep_01.interpreter.*;
 import com.teragrep.zep_01.interpreter.InterpreterResult.Code;
@@ -67,6 +69,7 @@ import org.slf4j.LoggerFactory;
 import java.lang.reflect.InvocationTargetException;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Properties;
 import java.util.concurrent.TimeoutException;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -272,7 +275,6 @@ public class DPLInterpreter extends AbstractInterpreter {
         return FormType.NATIVE;
     }
 
-
     @Override
     public int getProgress(InterpreterContext context) throws InterpreterException {
         if (sparkInterpreter != null) {
@@ -291,5 +293,30 @@ public class DPLInterpreter extends AbstractInterpreter {
     @Override
     public List<InterpreterCompletion> completion(String buf, int cursor, InterpreterContext interpreterContext) {
         return null;
+    }
+
+    @Override
+    public String getDataset(String noteId, String paragraphId, int start, int length, String searchString, int draw) throws InterpreterException{
+        if(notebookParagraphUserInterfaceManager == null){
+            throw new InterpreterException("DPLInterpreter's notebookParagraphUserInterfaceManager map is not instantiated!");
+        }
+        Map<String,UserInterfaceManager> notebookUserInterfaceManagers = notebookParagraphUserInterfaceManager.get(noteId);
+        if(notebookUserInterfaceManagers == null){
+            throw new InterpreterException("DPLInterpreter does not have a UserInterfaceManager for note id "+noteId);
+        }
+        UserInterfaceManager userInterfaceManager = notebookUserInterfaceManagers.get(paragraphId);
+        if(userInterfaceManager == null){
+            throw new InterpreterException("DPLInterpreter does not have a UserInterfaceManager for paragraph id "+paragraphId+" within note id "+noteId);
+        }
+        DTTableDatasetNg dtTableDatasetNg = userInterfaceManager.getDtTableDatasetNg();
+        if(dtTableDatasetNg == null){
+            throw new InterpreterException("UserInterfaceManager for paragraph id "+paragraphId+" does not have a DTTableDatasetNG object!");
+        }
+        if(dtTableDatasetNg.getDatasetAsJSON().isEmpty()){
+            throw new InterpreterException("Dataset of paragraph "+paragraphId+" within note "+noteId+" is empty!");
+        }
+        JsonObject json = dtTableDatasetNg.SearchAndPaginate(draw,start,length,searchString);
+        String dataset = json.toString();
+        return dataset;
     }
 }

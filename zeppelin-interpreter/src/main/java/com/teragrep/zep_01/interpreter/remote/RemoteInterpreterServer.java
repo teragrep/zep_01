@@ -19,6 +19,7 @@ package com.teragrep.zep_01.interpreter.remote;
 
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
+import com.teragrep.zep_01.interpreter.*;
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.thrift.TException;
@@ -29,22 +30,8 @@ import com.teragrep.zep_01.conf.ZeppelinConfiguration;
 import com.teragrep.zep_01.display.AngularObject;
 import com.teragrep.zep_01.display.AngularObjectRegistry;
 import com.teragrep.zep_01.display.GUI;
-import com.teragrep.zep_01.interpreter.Constants;
-import com.teragrep.zep_01.interpreter.Interpreter;
-import com.teragrep.zep_01.interpreter.InterpreterContext;
-import com.teragrep.zep_01.interpreter.InterpreterException;
-import com.teragrep.zep_01.interpreter.InterpreterGroup;
-import com.teragrep.zep_01.interpreter.InterpreterHookListener;
-import com.teragrep.zep_01.interpreter.InterpreterHookRegistry;
 import com.teragrep.zep_01.interpreter.InterpreterHookRegistry.HookType;
-import com.teragrep.zep_01.interpreter.InterpreterOutput;
-import com.teragrep.zep_01.interpreter.InterpreterOutputListener;
-import com.teragrep.zep_01.interpreter.InterpreterResult;
 import com.teragrep.zep_01.interpreter.InterpreterResult.Code;
-import com.teragrep.zep_01.interpreter.InterpreterResultMessage;
-import com.teragrep.zep_01.interpreter.InterpreterResultMessageOutput;
-import com.teragrep.zep_01.interpreter.LazyOpenInterpreter;
-import com.teragrep.zep_01.interpreter.LifecycleManager;
 import com.teragrep.zep_01.interpreter.thrift.InterpreterCompletion;
 import com.teragrep.zep_01.interpreter.thrift.InterpreterRPCException;
 import com.teragrep.zep_01.interpreter.thrift.RegisterInfo;
@@ -391,6 +378,18 @@ public class RemoteInterpreterServer extends Thread
       }
     }
     throw new InterpreterRPCException("Interpreter instance " + className + " not found");
+  }
+
+  public String getDataset(String sessionId, String className, String noteId, String paragraphId, int start, int length, String searchString, int draw) throws InterpreterRPCException, TException {
+    try{
+      Interpreter intp = getInterpreter(sessionId, className);
+      return intp.getDataset(noteId, paragraphId, start, length, searchString, draw);
+      // Thrift only declares InterpreterRPCException that has a single string as a paraemeter, so we have to wrap the underlying Exception as a String with an InterpreterRPCException to pass Exceptions through Thrift.
+      // RemoteInterpreterServers can have their own log files, so it's best to also log the Exception there before we stringify and send it further.
+    } catch (InterpreterException e){
+      LOGGER.error("Failed to get dataset!",e);
+      throw new InterpreterRPCException(e.toString());
+    }
   }
 
   @Override

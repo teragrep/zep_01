@@ -47,13 +47,14 @@ package com.teragrep.pth_07.ui.elements.table_dynamic;
 
 import com.teragrep.pth_07.ui.elements.table_dynamic.pojo.Order;
 import com.teragrep.pth_07.ui.elements.AbstractUserInterfaceElement;
+import com.teragrep.zep_01.interpreter.InterpreterException;
 import jakarta.json.*;
 import org.apache.spark.sql.Dataset;
 import org.apache.spark.sql.Row;
-import com.teragrep.zep_01.display.AngularObject;
 import com.teragrep.zep_01.interpreter.InterpreterContext;
 
 import java.io.StringReader;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
@@ -66,8 +67,6 @@ public final class DTTableDatasetNg extends AbstractUserInterfaceElement {
     // FIXME Exceptions should cause interpreter to stop
 
     private final Lock lock = new ReentrantLock();
-
-    private final AngularObject<String> AJAXRequestAngularObject;
 
     private List<String> datasetAsJSON = null;
     private JsonArray schemaHeadersJson;
@@ -82,59 +81,14 @@ public final class DTTableDatasetNg extends AbstractUserInterfaceElement {
 
     public DTTableDatasetNg(InterpreterContext interpreterContext) {
         super(interpreterContext);
-        AJAXRequestAngularObject = getInterpreterContext().getAngularObjectRegistry().add(
-                "AJAXRequest_"+getInterpreterContext().getParagraphId(),
-                "{}",
-                getInterpreterContext().getNoteId(),
-                getInterpreterContext().getParagraphId(),
-                true
-        );
         schemaHeadersJson = Json.createArrayBuilder().build();
-        AJAXRequestAngularObject.addWatcher(new AJAXRequestWatcher(interpreterContext, this));
     }
-
-    void refreshPage() {
-        try {
-            lock.lock();
-                Method updateAllResultMessagesMethod = InterpreterOutput.class.getDeclaredMethod("updateAllResultMessages");
-                updateAllResultMessagesMethod.setAccessible(true);
-                updateAllResultMessagesMethod.invoke(getInterpreterContext().out);
-        }catch (NoSuchMethodException | IllegalAccessException | InvocationTargetException e){
-            LOGGER.error(e.toString());
-        } finally {
-            lock.unlock();
-        }
-    }
-
-    void handeAJAXRequest(JsonObject ajaxRequest) {
-        try {
-            lock.lock();
-            // Apply defaults if parameters are not provided
-            int start = ajaxRequest.getJsonNumber("start").intValue();
-            int length = ajaxRequest.getJsonNumber("length").intValue();
-            int draw = ajaxRequest.getJsonNumber("draw").intValue();
-            String searchString = ajaxRequest.getJsonObject("search").getString("value");
-            updatePage(start,length,searchString, draw);
-        }
-        finally {
-            lock.unlock();
-        }
-
-    }
-
     @Override
     public void draw() {
     }
 
     @Override
     public void emit() {
-        try {
-            lock.lock();
-            AJAXRequestAngularObject.emit();
-
-        } finally {
-            lock.unlock();
-        }
     }
 
     public void setParagraphDataset(Dataset<Row> rowDataset) {
@@ -157,12 +111,8 @@ public final class DTTableDatasetNg extends AbstractUserInterfaceElement {
         }
     }
 
-    // Sends a PARAGRAPH_UPDATE_OUTPUT message to UI containing the paginated data
+    // Sends a PARAGRAPH_UPDATE_OUTPUT message to UI containing the formatted data received from BatchHandler.
     private void updatePage(int start, int length, String searchString, int draw){
-        if (datasetAsJSON == null) {
-            LOGGER.warn("attempting to draw empty dataset");
-            return;
-        }
         try {
             JsonObject response = SearchAndPaginate(draw, start,length,searchString);
             String outputContent = "%jsontable\n" +
@@ -170,12 +120,20 @@ public final class DTTableDatasetNg extends AbstractUserInterfaceElement {
             getInterpreterContext().out().clear();
             getInterpreterContext().out().write(outputContent);
             getInterpreterContext().out().flush();
-        } catch (java.io.IOException e) {
+        }
+        // We catch and log Exceptions here instead of rethrowing because calls to this method come from DPLInterpreter's BatchHandler, which doesn't seem to have easy ways to propagate Exceptions.
+        catch (InterpreterException ie){
+            LOGGER.error("Failed to format dataset to proper datatable format!",ie);
+        }
+        catch (java.io.IOException e) {
             LOGGER.error(e.toString());
         }
     }
 
-    private JsonObject SearchAndPaginate(int draw, int start, int length, String searchString){
+    public JsonObject SearchAndPaginate(int draw, int start, int length, String searchString) throws InterpreterException {
+        if(datasetAsJSON == null){
+            throw new InterpreterException("Attempting to draw an empty dataset!");
+        }
         DTSearch dtSearch = new DTSearch(datasetAsJSON);
         List<Order> currentOrder = null;
 
@@ -234,5 +192,10 @@ public final class DTTableDatasetNg extends AbstractUserInterfaceElement {
             return(Json.createObjectBuilder().build());
         }
     }
-
+    public List<String> getDatasetAsJSON(){
+        if(datasetAsJSON == null){
+            return new ArrayList<>();
+        }
+        return datasetAsJSON;
+    }
 }
