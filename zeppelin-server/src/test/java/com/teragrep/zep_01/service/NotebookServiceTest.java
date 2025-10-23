@@ -62,8 +62,6 @@ import com.teragrep.zep_01.notebook.exception.NotePathAlreadyExistsException;
 import com.teragrep.zep_01.notebook.repo.NotebookRepo;
 import com.teragrep.zep_01.notebook.repo.VFSNotebookRepo;
 import com.teragrep.zep_01.notebook.scheduler.QuartzSchedulerService;
-import com.teragrep.zep_01.search.LuceneSearch;
-import com.teragrep.zep_01.search.SearchService;
 import com.teragrep.zep_01.user.AuthenticationInfo;
 import com.teragrep.zep_01.user.Credentials;
 import org.junit.After;
@@ -79,7 +77,6 @@ public class NotebookServiceTest {
   private static NotebookService notebookService;
 
   private File notebookDir;
-  private SearchService searchService;
   private ServiceContext context =
       new ServiceContext(AuthenticationInfo.ANONYMOUS, new HashSet<>());
 
@@ -116,7 +113,6 @@ public class NotebookServiceTest {
     when(mockInterpreterSetting.isUserAuthorized(any())).thenReturn(true);
     when(mockInterpreterGroup.getInterpreterSetting()).thenReturn(mockInterpreterSetting);
     when(mockInterpreterSetting.getStatus()).thenReturn(InterpreterSetting.Status.READY);
-    searchService = new LuceneSearch(zeppelinConfiguration);
     Credentials credentials = new Credentials();
     NoteManager noteManager = new NoteManager(notebookRepo);
     AuthorizationService authorizationService = new AuthorizationService(noteManager, zeppelinConfiguration);
@@ -128,7 +124,6 @@ public class NotebookServiceTest {
             noteManager,
             mockInterpreterFactory,
             mockInterpreterSettingManager,
-            searchService,
             credentials,
             null);
 
@@ -144,10 +139,6 @@ public class NotebookServiceTest {
         .thenReturn(mockInterpreterSetting);
   }
 
-  @After
-  public void tearDown() {
-    searchService.close();
-  }
 
   @Test
   public void testNoteOperations() throws IOException {
