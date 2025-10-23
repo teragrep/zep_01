@@ -37,6 +37,8 @@ import java.util.Map;
 import java.util.Set;
 import javax.inject.Inject;
 
+import jakarta.json.Json;
+import jakarta.json.JsonObject;
 import org.apache.commons.lang3.StringUtils;
 import com.teragrep.zep_01.conf.ZeppelinConfiguration;
 import com.teragrep.zep_01.display.AngularObject;

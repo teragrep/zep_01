@@ -45,7 +45,6 @@
  */
 package com.teragrep.pth_07.stream;
 
-import com.teragrep.pth10.ast.DPLParserCatalystVisitor;
 import com.teragrep.pth_07.ui.UserInterfaceManager;
 import org.apache.spark.sql.Dataset;
 import org.apache.spark.sql.Row;
@@ -53,14 +52,13 @@ import com.teragrep.zep_01.interpreter.ZeppelinContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.function.Consumer;
+import java.util.function.BiConsumer;
 
-public class BatchHandler implements Consumer<Dataset<Row>> {
+public class BatchHandler implements BiConsumer<Dataset<Row>, Boolean> {
     private static final Logger LOGGER = LoggerFactory.getLogger(BatchHandler.class);
 
     private final UserInterfaceManager userInterfaceManager;
     private final ZeppelinContext zeppelinContext;
-    private DPLParserCatalystVisitor catalystVisitor = null;
 
     public BatchHandler(UserInterfaceManager userInterfaceManager, ZeppelinContext zeppelinContext) {
         this.userInterfaceManager = userInterfaceManager;
@@ -68,12 +66,12 @@ public class BatchHandler implements Consumer<Dataset<Row>> {
     }
 
     @Override
-    public void accept(Dataset<Row> rowDataset) {
+    public void accept(final Dataset<Row> rowDataset, final Boolean aggsUsed) {
         LOGGER.error("BatchHandler accept called LOGGER");
-        if (catalystVisitor != null && catalystVisitor.getAggregatesUsed()) {
+        if (aggsUsed) {
             // need to check aggregatesUsed from visitor at this point, since it can be updated in sequential mode
             // after the parallel operations are performed
-            
+
             // use legacy table
             userInterfaceManager.getOutputContent().setOutputContent(zeppelinContext.showData(rowDataset));
         }
@@ -81,9 +79,5 @@ public class BatchHandler implements Consumer<Dataset<Row>> {
             // use DTTableNg
             userInterfaceManager.getDtTableDatasetNg().setParagraphDataset(rowDataset);
         }
-    }
-    
-    public void setCatalystVisitor(DPLParserCatalystVisitor catVisitor) {
-        this.catalystVisitor = catVisitor;
     }
 }

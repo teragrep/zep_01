@@ -45,59 +45,43 @@
  */
 package com.teragrep.pth_07.ui.elements.table_dynamic;
 
+import jakarta.json.Json;
+import jakarta.json.JsonArray;
+import jakarta.json.JsonArrayBuilder;
 import org.apache.spark.sql.types.StructField;
 import org.apache.spark.sql.types.StructType;
-import org.w3c.dom.Document;
-import org.w3c.dom.Element;
 import scala.collection.Iterator;
 
-import javax.xml.parsers.DocumentBuilder;
-import javax.xml.parsers.DocumentBuilderFactory;
-import javax.xml.parsers.ParserConfigurationException;
-import javax.xml.transform.OutputKeys;
-import javax.xml.transform.Transformer;
-import javax.xml.transform.TransformerException;
-import javax.xml.transform.TransformerFactory;
-import javax.xml.transform.dom.DOMSource;
-import javax.xml.transform.stream.StreamResult;
-import java.io.StringWriter;
+import java.util.Objects;
 
-public class DTHeader {
+public final class DTHeader {
 
-    public static String schemaToHeader(StructType schema) throws TransformerException, ParserConfigurationException {
-        DocumentBuilderFactory docFactory = DocumentBuilderFactory.newInstance();
-        DocumentBuilder docBuilder = docFactory.newDocumentBuilder();
+    private final StructType schema;
+    public DTHeader(StructType schema){
+        this.schema = schema;
+    }
 
+    public JsonArray json() {
 
-        // root elements
-        Document doc = docBuilder.newDocument();
-
-
-        Element rootElement = doc.createElement("thead");
-        doc.appendChild(rootElement);
-
-        Element tableRow = doc.createElement("tr");
-        rootElement.appendChild(tableRow);
-
+        JsonArrayBuilder builder = Json.createArrayBuilder();
         Iterator<StructField> it = schema.iterator();
         while(it.hasNext()) {
             StructField column = it.next();
-            Element columnHeader = doc.createElement("th");
-            columnHeader.setTextContent(column.name());
-            tableRow.appendChild(columnHeader);
+            builder.add(column.name());
         }
+        return builder.build();
+    }
 
-        TransformerFactory transformerFactory = TransformerFactory.newInstance();
-        Transformer transformer = transformerFactory.newTransformer();
-        DOMSource source = new DOMSource(doc);
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        DTHeader dtHeader = (DTHeader) o;
+        return Objects.equals(schema, dtHeader.schema);
+    }
 
-        StringWriter writer = new StringWriter();
-
-        StreamResult result = new StreamResult(writer);
-
-        transformer.setOutputProperty(OutputKeys.OMIT_XML_DECLARATION, "yes");
-        transformer.transform(source, result);
-
-        return writer.getBuffer().toString();
+    @Override
+    public int hashCode() {
+        return Objects.hash(schema);
     }
 }

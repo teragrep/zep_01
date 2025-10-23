@@ -45,18 +45,23 @@
  */
 package com.teragrep.pth_07.ui.elements.table_dynamic;
 
+import jakarta.json.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import javax.json.*;
 import java.io.StringReader;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
-public class DTSearch {
+public final class DTSearch {
     protected static final Logger LOGGER = LoggerFactory.getLogger(DTSearch.class);
+    private final List<String> rowList;
 
-    static List<String> search(List<String> rowList, String searchString){
+    public DTSearch(List<String> rowList){
+        this.rowList = rowList;
+    }
+    public List<String> search(String searchString){
         List<String> searchedList = new ArrayList<>();
         if (!"".equals(searchString)) {
             try {
@@ -87,5 +92,18 @@ public class DTSearch {
             searchedList = rowList;
         }
         return searchedList;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        DTSearch dtSearch = (DTSearch) o;
+        return Objects.equals(rowList, dtSearch.rowList);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(rowList);
     }
 }
