@@ -57,6 +57,9 @@ import java.util.Objects;
 public final class DTHeader {
 
     private final StructType schema;
+    public DTHeader(){
+        this(new StructType());
+    }
     public DTHeader(StructType schema){
         this.schema = schema;
     }
@@ -70,6 +73,10 @@ public final class DTHeader {
             builder.add(column.name());
         }
         return builder.build();
+    }
+
+    public StructType schema(){
+        return schema;
     }
 
     @Override

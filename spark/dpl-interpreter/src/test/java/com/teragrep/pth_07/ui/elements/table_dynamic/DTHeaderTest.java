@@ -92,6 +92,15 @@ public class DTHeaderTest {
     }
 
     @Test
+    public void testEmptyDTHeader() {
+        JsonArray json = Json.createArrayBuilder()
+                .build();
+        String e = json.toString();
+        DTHeader dtHeader = new DTHeader();
+        assertEquals(e, dtHeader.json().toString());
+    }
+
+    @Test
     public void testContract() {
         EqualsVerifier.forClass(DTHeader.class).verify();
     }

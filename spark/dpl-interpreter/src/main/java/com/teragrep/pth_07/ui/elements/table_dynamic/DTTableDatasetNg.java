@@ -62,6 +62,7 @@ import java.util.concurrent.locks.ReentrantLock;
 import java.lang.reflect.Method;
 import java.lang.reflect.InvocationTargetException;
 import com.teragrep.zep_01.interpreter.InterpreterOutput;
+import org.apache.spark.sql.types.StructType;
 
 public final class DTTableDatasetNg extends AbstractUserInterfaceElement {
     // FIXME Exceptions should cause interpreter to stop
@@ -69,7 +70,8 @@ public final class DTTableDatasetNg extends AbstractUserInterfaceElement {
     private final Lock lock = new ReentrantLock();
 
     private List<String> datasetAsJSON = null;
-    private JsonArray schemaHeadersJson;
+    private DTHeader schemaHeaders;
+    private int draw;
 
     /*
     currentAJAXLength is shared between all the clients when server refreshes
@@ -81,7 +83,8 @@ public final class DTTableDatasetNg extends AbstractUserInterfaceElement {
 
     public DTTableDatasetNg(InterpreterContext interpreterContext) {
         super(interpreterContext);
-        schemaHeadersJson = Json.createArrayBuilder().build();
+        schemaHeaders = new DTHeader();
+        draw = 1;
     }
     @Override
     public void draw() {
@@ -99,12 +102,19 @@ public final class DTTableDatasetNg extends AbstractUserInterfaceElement {
 
         try {
             lock.lock();
+            // Reset draw when schema changes
+            if(!schemaHeaders.schema().equals(rowDataset.schema())){
+                draw = 1;
+            }
+            // Increment draw when schema has not changed.
+            else {
+                draw++;
+            }
             if (rowDataset.schema().nonEmpty()) {
                 // needs to be here as sparkContext might disappear later
-                DTHeader dtHeader = new DTHeader(rowDataset.schema());
-                schemaHeadersJson = dtHeader.json();
+                schemaHeaders = new DTHeader(rowDataset.schema());
                 datasetAsJSON = rowDataset.toJSON().collectAsList();
-                updatePage(0,currentAJAXLength,"",1);
+                updatePage(0,currentAJAXLength,"",draw);
             }
         } finally {
             lock.unlock();
@@ -152,11 +162,11 @@ public final class DTTableDatasetNg extends AbstractUserInterfaceElement {
 
         // ui formatting
         JsonArray formated = dataStreamParser(paginatedList);
-
+        JsonArray schemaHeadersAsJSON = schemaHeaders.json();
         int recordsTotal = datasetAsJSON.size();
         int recordsFiltered = searchedList.size();
 
-        return DTNetResponse(formated, schemaHeadersJson, draw, recordsTotal,recordsFiltered);
+        return DTNetResponse(formated, schemaHeadersAsJSON, draw, recordsTotal,recordsFiltered);
     }
 
     static JsonArray dataStreamParser(List<String> data){
