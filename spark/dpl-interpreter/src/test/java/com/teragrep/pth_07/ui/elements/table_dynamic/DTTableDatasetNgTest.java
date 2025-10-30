@@ -211,10 +211,10 @@ public class DTTableDatasetNgTest {
         Assertions.assertEquals("1970-01-01T00:00:35.000Z",page2.getJsonArray("data").getJsonObject(9).getString("_time"));
     }
 
-    // DTTableDatasetNG should clear the output of a Paragraph related to an InterpreterOutput when new data is received from DPL.
+    // When new data is received, DTTableDatasetNg should not send an empty update to frontend every time InterpreterOutput.clear() is called.
     // Does not include a concrete implementation of InterpreterOutputListener as it's an anonymous class within RemoteInterpreterServer, and instantiating it would require too many dependencies.
     @Test
-    public void testClearParagraphResultsOnNewDataset(){
+    public void testNoOutputClearMessagesSentToUI(){
 
         TestInterpreterOutputListener listener = new TestInterpreterOutputListener();
         InterpreterOutput testOutput =  new InterpreterOutput(listener);
@@ -228,7 +228,15 @@ public class DTTableDatasetNgTest {
             dtTableDatasetNg.setParagraphDataset(testDs);
         });
         Assertions.assertEquals(1,listener.numberOfUpdateCalls());
-        Assertions.assertEquals(1,listener.numberOfResetCalls());
+        Assertions.assertEquals(0,listener.numberOfResetCalls());
+
+        // Simulate DPL receiving another batch of data.
+        Assertions.assertDoesNotThrow(()->{
+            dtTableDatasetNg.setParagraphDataset(testDs);
+        });
+        Assertions.assertEquals(2,listener.numberOfUpdateCalls());
+        Assertions.assertEquals(0,listener.numberOfResetCalls());
+
     }
 
     private class TestInterpreterOutputListener implements InterpreterOutputListener{
