@@ -38,7 +38,6 @@ import com.teragrep.zep_01.notebook.scheduler.QuartzSchedulerService;
 import com.teragrep.zep_01.resource.LocalResourcePool;
 import com.teragrep.zep_01.scheduler.Job;
 import com.teragrep.zep_01.scheduler.Job.Status;
-import com.teragrep.zep_01.search.SearchService;
 import com.teragrep.zep_01.user.AuthenticationInfo;
 import com.teragrep.zep_01.user.Credentials;
 import org.junit.After;
@@ -98,14 +97,13 @@ public class NotebookTest extends AbstractInterpreterTest implements ParagraphJo
     System.setProperty(ConfVars.ZEPPELIN_NOTEBOOK_CRON_ENABLE.getVarName(), "true");
     super.setUp();
 
-    SearchService search = mock(SearchService.class);
     notebookRepo = new VFSNotebookRepo();
     notebookRepo.init(conf);
     noteManager = new NoteManager(notebookRepo);
     authorizationService = new AuthorizationService(noteManager, conf);
 
     credentials = new Credentials(conf);
-    notebook = new Notebook(conf, authorizationService, notebookRepo, noteManager, interpreterFactory, interpreterSettingManager, search,
+    notebook = new Notebook(conf, authorizationService, notebookRepo, noteManager, interpreterFactory, interpreterSettingManager,
             credentials, null);
     notebook.setParagraphJobListener(this);
     schedulerService = new QuartzSchedulerService(conf, notebook);
@@ -127,13 +125,13 @@ public class NotebookTest extends AbstractInterpreterTest implements ParagraphJo
 
     notebookRepo = new DummyNotebookRepo();
     notebook = new Notebook(conf, mock(AuthorizationService.class), notebookRepo, new NoteManager(notebookRepo), interpreterFactory,
-        interpreterSettingManager, null,
+        interpreterSettingManager,
         credentials, null);
     assertFalse("Revision is not supported in DummyNotebookRepo", notebook.isRevisionSupported());
 
     notebookRepo = new DummyNotebookRepoWithVersionControl();
     notebook = new Notebook(conf, mock(AuthorizationService.class), notebookRepo, new NoteManager(notebookRepo), interpreterFactory,
-        interpreterSettingManager, null,
+        interpreterSettingManager,
         credentials, null);
     assertTrue("Revision is supported in DummyNotebookRepoWithVersionControl",
         notebook.isRevisionSupported());

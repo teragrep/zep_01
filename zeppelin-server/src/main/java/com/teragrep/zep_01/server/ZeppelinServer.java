@@ -81,9 +81,6 @@ import com.teragrep.zep_01.notebook.scheduler.QuartzSchedulerService;
 import com.teragrep.zep_01.notebook.scheduler.SchedulerService;
 import com.teragrep.zep_01.plugin.PluginManager;
 import com.teragrep.zep_01.rest.exception.WebApplicationExceptionMapper;
-import com.teragrep.zep_01.search.LuceneSearch;
-import com.teragrep.zep_01.search.NoSearchService;
-import com.teragrep.zep_01.search.SearchService;
 import com.teragrep.zep_01.service.*;
 import com.teragrep.zep_01.service.AuthenticationService;
 import com.teragrep.zep_01.socket.ConnectionManager;
@@ -204,11 +201,6 @@ public class ZeppelinServer extends ResourceConfig {
               bind(QuartzSchedulerService.class).to(SchedulerService.class).in(Singleton.class);
             } else {
               bind(NoSchedulerService.class).to(SchedulerService.class).in(Singleton.class);
-            }
-            if (conf.getBoolean(ConfVars.ZEPPELIN_SEARCH_ENABLE)) {
-              bind(LuceneSearch.class).to(SearchService.class).in(Singleton.class);
-            } else {
-              bind(NoSearchService.class).to(SearchService.class).in(Singleton.class);
             }
           }
         });
