@@ -64,6 +64,7 @@ import org.slf4j.LoggerFactory;
 import java.sql.Timestamp;
 import java.time.Instant;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.UUID;
 
@@ -91,53 +92,19 @@ public class DTTableDatasetNgTest {
                     new StructField("origin", DataTypes.StringType, false, new MetadataBuilder().build())
             }
     );
-    private final List<Row> rows = makeRowsList(
-            0L, 				// _time
-            0L, 					// id
-            "data data", 			// _raw
-            "index_A", 				// index
-            "stream", 				// sourcetype
-            "host", 				// host
-            "input", 				// source
-            String.valueOf(0), 	    // partition
-            0L, 				    // offset
-            "test data",            // origin
-            49                     // make n amount of rows
-    );
+    private final TestDPLData testDataset = new TestDPLData(sparkSession, testSchema);
+    private final Dataset<Row> testDs = testDataset.createDataset(49,Timestamp.from(Instant.ofEpochSecond(0)),0L,"data data","index_A","stream","host","input",String.valueOf(0),0L,"test data");
 
-    Dataset<Row> testDs = sparkSession.createDataFrame(rows, testSchema);
 
-    private final List<Row> rows2 = makeRowsList2(
-            0L, 				// _time
-            0L, 					// id
-            "data data", 			// _raw
-            "index_A", 				// index
-            "stream", 				// sourcetype
-            "host", 				// host
-            "input", 				// source
-            String.valueOf(0), 	    // partition
-            0L, 				    // offset
-            "test data",            // origin
-            "extra data",
-            49                     // make n amount of rows
-    );
-    private final StructType testSchema2 = new StructType(
+    private final StructType smallTestSchema = new StructType(
             new StructField[] {
                     new StructField("_time", DataTypes.TimestampType, false, new MetadataBuilder().build()),
                     new StructField("id", DataTypes.LongType, false, new MetadataBuilder().build()),
                     new StructField("_raw", DataTypes.StringType, false, new MetadataBuilder().build()),
-                    new StructField("index", DataTypes.StringType, false, new MetadataBuilder().build()),
-                    new StructField("sourcetype", DataTypes.StringType, false, new MetadataBuilder().build()),
-                    new StructField("host", DataTypes.StringType, false, new MetadataBuilder().build()),
-                    new StructField("source", DataTypes.StringType, false, new MetadataBuilder().build()),
-                    new StructField("partition", DataTypes.StringType, false, new MetadataBuilder().build()),
-                    new StructField("offset", DataTypes.LongType, false, new MetadataBuilder().build()),
-                    new StructField("origin", DataTypes.StringType, false, new MetadataBuilder().build()),
-                    new StructField("extraData",DataTypes.StringType, false, new MetadataBuilder().build())
             }
     );
-
-    Dataset<Row> testDs2 = sparkSession.createDataFrame(rows2, testSchema2);
+    private final TestDPLData smallTestDataset = new TestDPLData(sparkSession, smallTestSchema);
+    private final Dataset<Row> smallTestDs = smallTestDataset.createDataset(49,Timestamp.from(Instant.ofEpochSecond(0)),0L,"data data");
 
     @Test
     public void testAJAXResponse() {
@@ -191,36 +158,6 @@ public class DTTableDatasetNgTest {
         assertEquals(expectedJson.toString()
                 , response.toString()
         );
-    }
-
-    private List<Row> makeRowsList(long _time, Long id, String _raw, String index, String sourcetype, String host, String source, String partition, Long offset, String origin, long amount) {
-        ArrayList<Row> rowArrayList = new ArrayList<>();
-
-        while (amount > 0) {
-            // creates rows in inverse order
-            Timestamp timestamp = Timestamp.from(Instant.ofEpochSecond(_time+amount));
-            Row row = RowFactory.create(timestamp, id, _raw, index, sourcetype, host, source, partition, offset, origin);
-            rowArrayList.add(row);
-            amount--;
-        }
-
-
-        return rowArrayList;
-    }
-
-    private List<Row> makeRowsList2(long _time, Long id, String _raw, String index, String sourcetype, String host, String source, String partition, Long offset, String origin, String extraField, long amount) {
-        ArrayList<Row> rowArrayList = new ArrayList<>();
-
-        while (amount > 0) {
-            // creates rows in inverse order
-            Timestamp timestamp = Timestamp.from(Instant.ofEpochSecond(_time+amount));
-            Row row = RowFactory.create(timestamp, id, _raw, index, sourcetype, host, source, partition, offset, origin, extraField);
-            rowArrayList.add(row);
-            amount--;
-        }
-
-
-        return rowArrayList;
     }
 
     @Test
@@ -303,7 +240,7 @@ public class DTTableDatasetNgTest {
 
         // Simulate DPL receiving yet another batch of new data but with a changed schema.
         Assertions.assertDoesNotThrow(()->{
-            dtTableDatasetNg.setParagraphDataset(testDs2);
+            dtTableDatasetNg.setParagraphDataset(smallTestDs);
         });
         List<InterpreterResultMessage> messages3 = Assertions.assertDoesNotThrow(()->testOutput.toInterpreterResultMessage());
         // Third message's draw value should be reset to 1
@@ -333,6 +270,48 @@ public class DTTableDatasetNgTest {
         }
         public int numberOfResetCalls(){
             return numberOfResetCalls;
+        }
+    }
+
+    private class TestDPLData {
+        private final SparkSession sparkSession;
+        private final StructType schema;
+
+        public TestDPLData(SparkSession sparkSession, StructType schema){
+            this.sparkSession = sparkSession;
+            this.schema = schema;
+        }
+
+        /**
+         * Tries to generate a dataset of size 'amount' with default values corresponding to varargs 'values'
+         * @param amount - desired number of rows in the dataset
+         * @param values - varargs specifying the default values to fill into the dataset.
+         * @return
+         */
+
+        public Dataset<Row> createDataset(int amount, Object ... values){
+            List<Row> rows = rowList(amount,values);
+            return sparkSession.createDataFrame(rows, schema);
+        }
+
+        /**
+         * Generates a List of Rows based on given values.
+         * @param amount - Number of rows to generate
+         * @param values - Default values to add for each Row. If first value given is a Timestamp, it will be incremented by one for each Row.
+         * @return
+         */
+        private List<Row> rowList(int amount, Object ... values){
+            List<Object> valueList = Arrays.asList(values);
+            final ArrayList<Row> rowArrayList = new ArrayList<>();
+            while (amount > 0) {
+                if(valueList.get(0) instanceof Timestamp){
+                    valueList.set(0,Timestamp.from(Instant.ofEpochSecond(amount)));
+                }
+                Row row = RowFactory.create(valueList.toArray());
+                rowArrayList.add(row);
+                amount--;
+            }
+            return rowArrayList;
         }
     }
 }
