@@ -290,7 +290,7 @@ public class DTTableDatasetNgTest {
          */
 
         public Dataset<Row> createDataset(int amount, Object ... values){
-            List<Row> rows = rowList(amount,values);
+            final List<Row> rows = rowList(amount,values);
             return sparkSession.createDataFrame(rows, schema);
         }
 
@@ -301,13 +301,13 @@ public class DTTableDatasetNgTest {
          * @return
          */
         private List<Row> rowList(int amount, Object ... values){
-            List<Object> valueList = Arrays.asList(values);
+            final List<Object> valueList = Arrays.asList(values);
             final ArrayList<Row> rowArrayList = new ArrayList<>();
             while (amount > 0) {
                 if(valueList.get(0) instanceof Timestamp){
                     valueList.set(0,Timestamp.from(Instant.ofEpochSecond(amount)));
                 }
-                Row row = RowFactory.create(valueList.toArray());
+                final Row row = RowFactory.create(valueList.toArray());
                 rowArrayList.add(row);
                 amount--;
             }
