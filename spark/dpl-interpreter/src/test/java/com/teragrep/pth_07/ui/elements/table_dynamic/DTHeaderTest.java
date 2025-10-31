@@ -74,9 +74,10 @@ public class DTHeaderTest {
             }
     );
 
+    // If a DTHeader is given a Schema in its constructor, calling DTHeader.json() should return a JSON array containing all the fields present in the Schema.
     @Test
     public void testJSONDTHeader() throws ParserConfigurationException, TransformerException {
-        JsonArray json = Json.createArrayBuilder()
+        JsonArray expectedJsonArray = Json.createArrayBuilder()
                 .add("_time")
                 .add("_raw")
                 .add("index")
@@ -86,18 +87,17 @@ public class DTHeaderTest {
                 .add("partition")
                 .add("offset")
                 .build();
-        String e = json.toString();
         DTHeader dtHeader = new DTHeader(Schema);
-        assertEquals(e, dtHeader.json().toString());
+        assertEquals(expectedJsonArray.toString(), dtHeader.json().toString());
     }
 
+    // If DTHeader is given no Schema in its constructor, calling DTHeader.json() should return an empty JSON array.
     @Test
     public void testEmptyDTHeader() {
-        JsonArray json = Json.createArrayBuilder()
+        final JsonArray expectedJsonArray = Json.createArrayBuilder()
                 .build();
-        String e = json.toString();
-        DTHeader dtHeader = new DTHeader();
-        assertEquals(e, dtHeader.json().toString());
+        final DTHeader dtHeader = new DTHeader();
+        assertEquals(expectedJsonArray.toString(), dtHeader.json().toString());
     }
 
     @Test
