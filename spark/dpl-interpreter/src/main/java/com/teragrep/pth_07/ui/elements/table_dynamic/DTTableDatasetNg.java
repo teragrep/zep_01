@@ -117,7 +117,7 @@ public final class DTTableDatasetNg extends AbstractUserInterfaceElement {
             JsonObject response = SearchAndPaginate(draw, start,length,searchString);
             String outputContent = "%jsontable\n" +
                     response.toString();
-            getInterpreterContext().out().clear();
+            getInterpreterContext().out().clear(false);
             getInterpreterContext().out().write(outputContent);
             getInterpreterContext().out().flush();
         }
