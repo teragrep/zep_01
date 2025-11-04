@@ -45,6 +45,7 @@
  */
 package com.teragrep.pth_07.ui.elements.table_dynamic;
 
+import com.teragrep.pth_07.ui.elements.table_dynamic.testdata.TestDPLData;
 import com.teragrep.zep_01.display.AngularObjectRegistry;
 import com.teragrep.zep_01.interpreter.*;
 import jakarta.json.Json;
@@ -53,7 +54,6 @@ import jakarta.json.JsonArrayBuilder;
 import jakarta.json.JsonObject;
 import org.apache.spark.sql.Dataset;
 import org.apache.spark.sql.Row;
-import org.apache.spark.sql.RowFactory;
 import org.apache.spark.sql.SparkSession;
 import org.apache.spark.sql.types.*;
 import org.junit.jupiter.api.Assertions;
@@ -64,7 +64,6 @@ import org.slf4j.LoggerFactory;
 import java.sql.Timestamp;
 import java.time.Instant;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.UUID;
 
@@ -270,48 +269,6 @@ public class DTTableDatasetNgTest {
         }
         public int numberOfResetCalls(){
             return numberOfResetCalls;
-        }
-    }
-
-    private class TestDPLData {
-        private final SparkSession sparkSession;
-        private final StructType schema;
-
-        public TestDPLData(SparkSession sparkSession, StructType schema){
-            this.sparkSession = sparkSession;
-            this.schema = schema;
-        }
-
-        /**
-         * Tries to generate a dataset of size 'amount' with default values corresponding to varargs 'values'
-         * @param amount - desired number of rows in the dataset
-         * @param values - varargs specifying the default values to fill into the dataset.
-         * @return
-         */
-
-        public Dataset<Row> createDataset(int amount, Object ... values){
-            final List<Row> rows = rowList(amount,values);
-            return sparkSession.createDataFrame(rows, schema);
-        }
-
-        /**
-         * Generates a List of Rows based on given values.
-         * @param amount - Number of rows to generate
-         * @param values - Default values to add for each Row. If first value given is a Timestamp, it will be incremented by one for each Row.
-         * @return
-         */
-        private List<Row> rowList(int amount, Object ... values){
-            final List<Object> valueList = Arrays.asList(values);
-            final ArrayList<Row> rowArrayList = new ArrayList<>();
-            while (amount > 0) {
-                if(valueList.get(0) instanceof Timestamp){
-                    valueList.set(0,Timestamp.from(Instant.ofEpochSecond(amount)));
-                }
-                final Row row = RowFactory.create(valueList.toArray());
-                rowArrayList.add(row);
-                amount--;
-            }
-            return rowArrayList;
         }
     }
 }
