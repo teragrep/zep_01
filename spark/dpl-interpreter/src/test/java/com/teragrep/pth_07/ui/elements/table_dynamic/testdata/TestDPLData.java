@@ -57,11 +57,11 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-public class TestDPLData {
+public final class TestDPLData {
         private final SparkSession sparkSession;
         private final StructType schema;
 
-        public TestDPLData(SparkSession sparkSession, StructType schema){
+        public TestDPLData(final SparkSession sparkSession, final StructType schema){
             this.sparkSession = sparkSession;
             this.schema = schema;
         }
@@ -70,10 +70,10 @@ public class TestDPLData {
          * Tries to generate a dataset of size 'amount' with default values corresponding to varargs 'values'
          * @param amount - desired number of rows in the dataset
          * @param values - varargs specifying the default values to fill into the dataset.
-         * @return
+         * @return A Dataset containing 'amount' number of Rows, each pre-populated with default values
          */
 
-        public Dataset<Row> createDataset(int amount, Object ... values){
+        public Dataset<Row> createDataset(final int amount, final Object ... values){
             final List<Row> rows = rowList(amount,values);
             return sparkSession.createDataFrame(rows, schema);
         }
@@ -82,18 +82,17 @@ public class TestDPLData {
          * Generates a List of Rows based on given values.
          * @param amount - Number of rows to generate
          * @param values - Default values to add for each Row. If first value given is a Timestamp, it will be incremented by one for each Row.
-         * @return
+         * @return A list of Rows with an incrementing Timestamp and pre-populated with default values.
          */
-        private List<Row> rowList(int amount, Object ... values){
+        private List<Row> rowList(final int amount, final Object ... values){
             final List<Object> valueList = Arrays.asList(values);
             final ArrayList<Row> rowArrayList = new ArrayList<>();
-            while (amount > 0) {
+            for (int i = amount; i > 0; i--) {
                 if(valueList.get(0) instanceof Timestamp){
-                    valueList.set(0, Timestamp.from(Instant.ofEpochSecond(amount)));
+                    valueList.set(0, Timestamp.from(Instant.ofEpochSecond(i)));
                 }
                 final Row row = RowFactory.create(valueList.toArray());
                 rowArrayList.add(row);
-                amount--;
             }
             return rowArrayList;
         }
