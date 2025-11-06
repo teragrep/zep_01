@@ -45,23 +45,17 @@
  */
 package com.teragrep.pth_07.ui.elements.table_dynamic;
 
+import com.teragrep.pth_07.ui.elements.table_dynamic.testdata.TestDPLData;
 import com.teragrep.zep_01.display.AngularObjectRegistry;
-import com.teragrep.zep_01.interpreter.InterpreterContext;
-import com.teragrep.zep_01.interpreter.InterpreterOutput;
-import com.teragrep.zep_01.interpreter.InterpreterOutputListener;
-import com.teragrep.zep_01.interpreter.InterpreterResultMessageOutput;
+import com.teragrep.zep_01.interpreter.*;
 import jakarta.json.Json;
 import jakarta.json.JsonArray;
 import jakarta.json.JsonArrayBuilder;
 import jakarta.json.JsonObject;
 import org.apache.spark.sql.Dataset;
 import org.apache.spark.sql.Row;
-import org.apache.spark.sql.RowFactory;
 import org.apache.spark.sql.SparkSession;
-import org.apache.spark.sql.types.DataTypes;
-import org.apache.spark.sql.types.MetadataBuilder;
-import org.apache.spark.sql.types.StructField;
-import org.apache.spark.sql.types.StructType;
+import org.apache.spark.sql.types.*;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.slf4j.Logger;
@@ -97,21 +91,19 @@ public class DTTableDatasetNgTest {
                     new StructField("origin", DataTypes.StringType, false, new MetadataBuilder().build())
             }
     );
-    private final List<Row> rows = makeRowsList(
-            0L, 				// _time
-            0L, 					// id
-            "data data", 			// _raw
-            "index_A", 				// index
-            "stream", 				// sourcetype
-            "host", 				// host
-            "input", 				// source
-            String.valueOf(0), 	    // partition
-            0L, 				    // offset
-            "test data",            // origin
-            49                     // make n amount of rows
-    );
+    private final TestDPLData testDataset = new TestDPLData(sparkSession, testSchema);
+    private final Dataset<Row> testDs = testDataset.createDataset(49,Timestamp.from(Instant.ofEpochSecond(0)),0L,"data data","index_A","stream","host","input",String.valueOf(0),0L,"test data");
 
-    Dataset<Row> testDs = sparkSession.createDataFrame(rows, testSchema);
+
+    private final StructType smallTestSchema = new StructType(
+            new StructField[] {
+                    new StructField("_time", DataTypes.TimestampType, false, new MetadataBuilder().build()),
+                    new StructField("id", DataTypes.LongType, false, new MetadataBuilder().build()),
+                    new StructField("_raw", DataTypes.StringType, false, new MetadataBuilder().build()),
+            }
+    );
+    private final TestDPLData smallTestDataset = new TestDPLData(sparkSession, smallTestSchema);
+    private final Dataset<Row> smallTestDs = smallTestDataset.createDataset(49,Timestamp.from(Instant.ofEpochSecond(0)),0L,"data data");
 
     @Test
     public void testAJAXResponse() {
@@ -165,21 +157,6 @@ public class DTTableDatasetNgTest {
         assertEquals(expectedJson.toString()
                 , response.toString()
         );
-    }
-
-    private List<Row> makeRowsList(long _time, Long id, String _raw, String index, String sourcetype, String host, String source, String partition, Long offset, String origin, long amount) {
-        ArrayList<Row> rowArrayList = new ArrayList<>();
-
-        while (amount > 0) {
-            // creates rows in inverse order
-            Timestamp timestamp = Timestamp.from(Instant.ofEpochSecond(_time+amount));
-            Row row = RowFactory.create(timestamp, id, _raw, index, sourcetype, host, source, partition, offset, origin);
-            rowArrayList.add(row);
-            amount--;
-        }
-
-
-        return rowArrayList;
     }
 
     @Test
@@ -237,6 +214,44 @@ public class DTTableDatasetNgTest {
         Assertions.assertEquals(2,listener.numberOfUpdateCalls());
         Assertions.assertEquals(0,listener.numberOfResetCalls());
 
+    }
+
+    /**
+     * An incremented 'draw' value should be sent to the UI each time a new batch of data is received.
+     * The 'draw' value should be reset to 1 every time the schema of the data changes.
+     */
+    @Test
+    public void testIncrementDraw(){
+        TestInterpreterOutputListener listener = new TestInterpreterOutputListener();
+        InterpreterOutput testOutput =  new InterpreterOutput(listener);
+
+        AngularObjectRegistry testRegistry = new AngularObjectRegistry("test", null);
+        InterpreterContext context = InterpreterContext.builder().setInterpreterOut(testOutput).setAngularObjectRegistry(testRegistry).build();
+        DTTableDatasetNg dtTableDatasetNg = new DTTableDatasetNg(context);
+
+        // Simulate DPL receiving new data.
+        Assertions.assertDoesNotThrow(()->{
+            dtTableDatasetNg.setParagraphDataset(testDs);
+        });
+        List<InterpreterResultMessage> messages = Assertions.assertDoesNotThrow(()->testOutput.toInterpreterResultMessage());
+        // First message should have draw value of 1
+        Assertions.assertTrue(messages.get(0).getData().contains("\"draw\":1"));
+
+        // Simulate DPL receiving another batch of new data without changing schema.
+        Assertions.assertDoesNotThrow(()->{
+            dtTableDatasetNg.setParagraphDataset(testDs);
+        });
+        List<InterpreterResultMessage> messages2 = Assertions.assertDoesNotThrow(()->testOutput.toInterpreterResultMessage());
+        // Second message should have draw value of 2
+        Assertions.assertTrue(messages2.get(0).getData().contains("\"draw\":2"));
+
+        // Simulate DPL receiving yet another batch of new data but with a changed schema.
+        Assertions.assertDoesNotThrow(()->{
+            dtTableDatasetNg.setParagraphDataset(smallTestDs);
+        });
+        List<InterpreterResultMessage> messages3 = Assertions.assertDoesNotThrow(()->testOutput.toInterpreterResultMessage());
+        // Third message's draw value should be reset to 1
+        Assertions.assertTrue(messages3.get(0).getData().contains("\"draw\":1"));
     }
 
     private class TestInterpreterOutputListener implements InterpreterOutputListener{
