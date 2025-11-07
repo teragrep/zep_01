@@ -66,6 +66,13 @@ public class ZeppelinRestApi {
     return new JsonResponse<>(Response.Status.OK, "Zeppelin version", versionInfo).build();
   }
 
+  @GET
+  @Path("banner")
+  @ZeppelinApi
+  public Response getBanner() {
+    return new JsonResponse<>(Response.Status.OK, "Top banner text", "ZEPPELIN BANNER").build();
+  }
+
   /**
    * Set the log level for root logger.
    *
