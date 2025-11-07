@@ -74,7 +74,7 @@ public final class DTTableDatasetNg extends AbstractUserInterfaceElement {
     that they would each request their own copy and the request would contain
     the size?
      */
-    private int currentAJAXLength = 25;
+    private int currentAJAXLength = 50;
 
     public DTTableDatasetNg(final InterpreterContext interpreterContext) {
         this(interpreterContext, new DTHeader(), 1);
