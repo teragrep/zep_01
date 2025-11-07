@@ -59,17 +59,14 @@ import java.util.List;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
-import java.lang.reflect.Method;
-import java.lang.reflect.InvocationTargetException;
-import com.teragrep.zep_01.interpreter.InterpreterOutput;
-
 public final class DTTableDatasetNg extends AbstractUserInterfaceElement {
     // FIXME Exceptions should cause interpreter to stop
 
     private final Lock lock = new ReentrantLock();
 
     private List<String> datasetAsJSON = null;
-    private JsonArray schemaHeadersJson;
+    private DTHeader schemaHeaders;
+    private int drawCount;
 
     /*
     currentAJAXLength is shared between all the clients when server refreshes
@@ -79,9 +76,14 @@ public final class DTTableDatasetNg extends AbstractUserInterfaceElement {
      */
     private int currentAJAXLength = 50;
 
-    public DTTableDatasetNg(InterpreterContext interpreterContext) {
+    public DTTableDatasetNg(final InterpreterContext interpreterContext) {
+        this(interpreterContext, new DTHeader(), 1);
+    }
+
+    public DTTableDatasetNg(final InterpreterContext interpreterContext, final DTHeader schemaHeaders, final int drawCount){
         super(interpreterContext);
-        schemaHeadersJson = Json.createArrayBuilder().build();
+        this.schemaHeaders = schemaHeaders;
+        this.drawCount = drawCount;
     }
     @Override
     public void draw() {
@@ -99,12 +101,19 @@ public final class DTTableDatasetNg extends AbstractUserInterfaceElement {
 
         try {
             lock.lock();
+            // Reset draw when schema changes
+            if(!schemaHeaders.schema().equals(rowDataset.schema())){
+                drawCount = 1;
+            }
+            // Increment draw when schema has not changed.
+            else {
+                drawCount++;
+            }
             if (rowDataset.schema().nonEmpty()) {
                 // needs to be here as sparkContext might disappear later
-                DTHeader dtHeader = new DTHeader(rowDataset.schema());
-                schemaHeadersJson = dtHeader.json();
+                schemaHeaders = new DTHeader(rowDataset.schema());
                 datasetAsJSON = rowDataset.toJSON().collectAsList();
-                updatePage(0,currentAJAXLength,"",1);
+                updatePage(0,currentAJAXLength,"", drawCount);
             }
         } finally {
             lock.unlock();
@@ -117,7 +126,7 @@ public final class DTTableDatasetNg extends AbstractUserInterfaceElement {
             JsonObject response = SearchAndPaginate(draw, start,length,searchString);
             String outputContent = "%jsontable\n" +
                     response.toString();
-            getInterpreterContext().out().clear();
+            getInterpreterContext().out().clear(false);
             getInterpreterContext().out().write(outputContent);
             getInterpreterContext().out().flush();
         }
@@ -152,11 +161,11 @@ public final class DTTableDatasetNg extends AbstractUserInterfaceElement {
 
         // ui formatting
         JsonArray formated = dataStreamParser(paginatedList);
-
+        final JsonArray schemaHeadersAsJSON = schemaHeaders.json();
         int recordsTotal = datasetAsJSON.size();
         int recordsFiltered = searchedList.size();
 
-        return DTNetResponse(formated, schemaHeadersJson, draw, recordsTotal,recordsFiltered);
+        return DTNetResponse(formated, schemaHeadersAsJSON, draw, recordsTotal,recordsFiltered);
     }
 
     static JsonArray dataStreamParser(List<String> data){
