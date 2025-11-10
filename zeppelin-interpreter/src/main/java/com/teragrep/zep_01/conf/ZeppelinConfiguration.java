@@ -1025,7 +1025,8 @@ public class ZeppelinConfiguration {
     ZEPPELIN_SESSION_CHECK_INTERVAL("zeppelin.session.check_interval", 60 * 10 * 1000),
     ZEPPELIN_NOTE_FILE_EXCLUDE_FIELDS("zeppelin.note.file.exclude.fields", ""),
     ZEPPELIN_RESOURCEPOOL_MAX_OBJECT_SIZE("zeppelin.resourcepool.max.object.size", 10 * 1024),
-    ZEPPELIN_RESOURCEPOOL_MAX_OBJECT_COUNT("zeppelin.resourcepool.max.object.count", 1000);
+    ZEPPELIN_RESOURCEPOOL_MAX_OBJECT_COUNT("zeppelin.resourcepool.max.object.count", 1000),
+    ZEPPELIN_ANNOUNCEMENT("zeppelin.announcement","");
 
     private String varName;
     private Class<?> varClass;

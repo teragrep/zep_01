@@ -26,6 +26,7 @@ import static org.junit.Assert.fail;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 
+import com.teragrep.zep_01.conf.ZeppelinConfiguration;
 import jakarta.json.Json;
 import jakarta.json.JsonObject;
 import org.apache.commons.lang3.StringUtils;
@@ -89,20 +90,20 @@ public class ZeppelinRestApiTest extends AbstractTestRestApi {
     httpGetRoot.close();
   }
 
-  // Requires environment value "ZEPPELIN_ANNOUNCEMENT" to be set. Currently set in zeppelin-server/pom.xml
+  // A GET request to /api/announcement should return the currently set announcement configuration value.
   @Test
-  public void announcementTest() throws IOException {
-      CloseableHttpResponse get = httpGet("/announcement");
-      String getResponse = EntityUtils.toString(get.getEntity(), StandardCharsets.UTF_8);
-      get.close();
-      JsonObject expectedResponse = Json.createObjectBuilder()
-              .add("status","OK")
-              .add("body",Json.createObjectBuilder()
-                      .add("announcement",System.getenv("ZEPPELIN_ANNOUNCEMENT"))
-                      .build())
-              .build();
-      Assertions.assertEquals(expectedResponse.toString(),getResponse);
-    }
+  public void getAnnouncementTextTest() throws IOException {
+    CloseableHttpResponse get = httpGet("/announcement");
+    String getResponse = EntityUtils.toString(get.getEntity(), StandardCharsets.UTF_8);
+    get.close();
+    JsonObject expectedResponse = Json.createObjectBuilder()
+            .add("status","OK")
+            .add("body",Json.createObjectBuilder()
+                    .add("announcement",ZeppelinConfiguration.create().getString(ConfVars.ZEPPELIN_ANNOUNCEMENT))
+                    .build())
+            .build();
+    Assertions.assertEquals(expectedResponse.toString(),getResponse);
+  }
 
   @Test
   @Ignore(value="Flaky tests: HttpHostConnect Connect to localhost:8080 [localhost/127.0.0.1] failed: Connection refused (Connection refused) or Task com.teragrep.zep_01.notebook.NoteEventAsyncListener$EventHandling@1eea9d2d rejected from java.util.concurrent.ThreadPoolExecutor@29182679")

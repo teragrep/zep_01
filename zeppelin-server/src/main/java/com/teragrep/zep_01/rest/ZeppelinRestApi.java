@@ -17,6 +17,7 @@
 package com.teragrep.zep_01.rest;
 
 import javax.inject.Singleton;
+import com.teragrep.zep_01.conf.ZeppelinConfiguration;
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 
@@ -70,8 +71,9 @@ public class ZeppelinRestApi {
   @ZeppelinApi
   public Response getAnnouncement() {
     Map<String, String> json = new HashMap<>();
-    String envValue = System.getenv("ZEPPELIN_ANNOUNCEMENT");
-    json.put("announcement", envValue);
+    // Searches first from Environment variables, if a match is not found, searches from zeppelin-site.xml, if a match is not found, returns a default value.
+    String announcementText = ZeppelinConfiguration.create().getString(ZeppelinConfiguration.ConfVars.ZEPPELIN_ANNOUNCEMENT);
+    json.put("announcement", announcementText);
     return new JsonResponse<>(Response.Status.OK, json).build();
   }
 
