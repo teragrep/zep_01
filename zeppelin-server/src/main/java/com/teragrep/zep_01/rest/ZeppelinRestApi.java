@@ -21,6 +21,9 @@ import com.teragrep.zep_01.conf.ZeppelinConfiguration;
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -35,6 +38,7 @@ import javax.ws.rs.core.Response;
 import com.teragrep.zep_01.annotation.ZeppelinApi;
 import com.teragrep.zep_01.server.JsonResponse;
 import com.teragrep.zep_01.util.Util;
+import org.slf4j.LoggerFactory;
 
 /**
  * Zeppelin root rest api endpoint.
@@ -44,6 +48,8 @@ import com.teragrep.zep_01.util.Util;
 @Path("/")
 @Singleton
 public class ZeppelinRestApi {
+
+  org.slf4j.Logger LOGGER = LoggerFactory.getLogger(this.getClass());
 
   /**
    * Get the root endpoint Return always 200.
@@ -66,6 +72,11 @@ public class ZeppelinRestApi {
     return new JsonResponse<>(Response.Status.OK, "Zeppelin version", versionInfo).build();
   }
 
+  /**
+   * Gets the most recent announcement text.
+   *
+   * @return Most recent Announcement text, prioritizing values from Environment variables (set in zeppelin-env.sh), secondarily from System properties (set in zeppelin-site.xml)
+   */
   @GET
   @Path("announcement")
   @ZeppelinApi
@@ -75,6 +86,29 @@ public class ZeppelinRestApi {
     String announcementText = ZeppelinConfiguration.create().getString(ZeppelinConfiguration.ConfVars.ZEPPELIN_ANNOUNCEMENT);
     json.put("announcement", announcementText);
     return new JsonResponse<>(Response.Status.OK, json).build();
+  }
+
+  /**
+   * Set a new value for announcement text. Does not override announcement texts from Environment variables (set via zeppelin-env.sh)
+   *
+   * @param request
+   * @return
+   */
+  @PUT
+  @Path("announcement")
+  public Response setAnnouncement(@Context HttpServletRequest request) {
+    StringBuilder body = new StringBuilder();
+    try(BufferedReader reader = new BufferedReader(new InputStreamReader(request.getInputStream()))){
+      String line;
+      while ((line = reader.readLine()) != null){
+        body.append(line);
+      }
+      System.setProperty(ZeppelinConfiguration.ConfVars.ZEPPELIN_ANNOUNCEMENT.getVarName(),body.toString());
+    } catch (IOException e) {
+      LOGGER.error("Error while setting announcement text!",e);
+        return new JsonResponse<>(Response.Status.INTERNAL_SERVER_ERROR).build();
+    }
+    return new JsonResponse<>(Response.Status.OK,"Announcement text set successfully").build();
   }
 
   /**

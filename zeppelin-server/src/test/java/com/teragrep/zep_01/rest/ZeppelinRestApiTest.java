@@ -105,6 +105,26 @@ public class ZeppelinRestApiTest extends AbstractTestRestApi {
     Assertions.assertEquals(expectedResponse.toString(),getResponse);
   }
 
+  // A PUT request with a plain text body to /api/announcement should set the announcement configuration value.
+  @Test
+  public void setAnnouncementTextTest() throws IOException {
+    String editedAnnouncementText = "A new announcement just dropped!";
+    // Announcement variable should not be set to desired value at the start.
+    Assertions.assertNotEquals(editedAnnouncementText, ZeppelinConfiguration.create().getString(ConfVars.ZEPPELIN_ANNOUNCEMENT));
+    CloseableHttpResponse put = httpPut("/announcement", editedAnnouncementText);
+    String putResponse = EntityUtils.toString(put.getEntity(), StandardCharsets.UTF_8);
+    put.close();
+
+    // Request should receive the appropriate response
+    JsonObject expectedResponse = Json.createObjectBuilder()
+            .add("status","OK")
+            .add("message","Announcement text set successfully")
+            .build();
+    Assertions.assertEquals(expectedResponse.toString(),putResponse);
+    // Announcement variable should be set to desired value after successful request.
+    Assertions.assertEquals(editedAnnouncementText, ZeppelinConfiguration.create().getString(ConfVars.ZEPPELIN_ANNOUNCEMENT));
+  }
+
   @Test
   @Ignore(value="Flaky tests: HttpHostConnect Connect to localhost:8080 [localhost/127.0.0.1] failed: Connection refused (Connection refused) or Task com.teragrep.zep_01.notebook.NoteEventAsyncListener$EventHandling@1eea9d2d rejected from java.util.concurrent.ThreadPoolExecutor@29182679")
   public void testGetNoteInfo() throws IOException {
