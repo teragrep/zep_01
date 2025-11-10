@@ -483,6 +483,7 @@
           </excludes>
           <environmentVariables>
             <ZEPPELIN_FORCE_STOP>1</ZEPPELIN_FORCE_STOP>
+            <ZEPPELIN_ANNOUNCEMENT>This is a default text value for an announcement</ZEPPELIN_ANNOUNCEMENT>
           </environmentVariables>
         </configuration>
       </plugin>

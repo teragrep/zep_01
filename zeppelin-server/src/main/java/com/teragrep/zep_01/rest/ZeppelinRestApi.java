@@ -62,15 +62,17 @@ public class ZeppelinRestApi {
     versionInfo.put("version", Util.getVersion());
     versionInfo.put("git-commit-id", Util.getGitCommitId());
     versionInfo.put("git-timestamp", Util.getGitTimestamp());
-
     return new JsonResponse<>(Response.Status.OK, "Zeppelin version", versionInfo).build();
   }
 
   @GET
-  @Path("banner")
+  @Path("announcement")
   @ZeppelinApi
-  public Response getBanner() {
-    return new JsonResponse<>(Response.Status.OK, "Top banner text", "ZEPPELIN BANNER").build();
+  public Response getAnnouncement() {
+    Map<String, String> json = new HashMap<>();
+    String envValue = System.getenv("ZEPPELIN_ANNOUNCEMENT");
+    json.put("announcement", envValue);
+    return new JsonResponse<>(Response.Status.OK, json).build();
   }
 
   /**
