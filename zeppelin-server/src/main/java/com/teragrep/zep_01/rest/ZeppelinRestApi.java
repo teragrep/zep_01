@@ -97,18 +97,27 @@ public class ZeppelinRestApi {
   @PUT
   @Path("announcement")
   public Response setAnnouncement(@Context HttpServletRequest request) {
-    StringBuilder body = new StringBuilder();
+    Response response;
+    String envAnnouncement = System.getenv(ZeppelinConfiguration.ConfVars.ZEPPELIN_ANNOUNCEMENT.getVarName());
     try(BufferedReader reader = new BufferedReader(new InputStreamReader(request.getInputStream()))){
-      String line;
-      while ((line = reader.readLine()) != null){
-        body.append(line);
-      }
-      System.setProperty(ZeppelinConfiguration.ConfVars.ZEPPELIN_ANNOUNCEMENT.getVarName(),body.toString());
-    } catch (IOException e) {
-      LOGGER.error("Error while setting announcement text!",e);
-        return new JsonResponse<>(Response.Status.INTERNAL_SERVER_ERROR).build();
+      if(envAnnouncement == null){
+        StringBuilder body = new StringBuilder();
+          String line;
+          while ((line = reader.readLine()) != null){
+            body.append(line);
+          }
+          System.setProperty(ZeppelinConfiguration.ConfVars.ZEPPELIN_ANNOUNCEMENT.getVarName(),body.toString());
+          response = new JsonResponse<>(Response.Status.OK,"Announcement text set successfully").build();
+        }
+        else {
+          response = new JsonResponse<>(Response.Status.BAD_REQUEST,"Announcement already set via environment variable!").build();
+        }
     }
-    return new JsonResponse<>(Response.Status.OK,"Announcement text set successfully").build();
+    catch (IOException e) {
+      LOGGER.error("Error while setting announcement text!",e);
+      response = new JsonResponse<>(Response.Status.INTERNAL_SERVER_ERROR).build();
+    }
+    return response;
   }
 
   /**
