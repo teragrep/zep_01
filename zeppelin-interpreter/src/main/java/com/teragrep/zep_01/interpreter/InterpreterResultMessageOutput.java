@@ -40,7 +40,6 @@ public class InterpreterResultMessageOutput extends OutputStream {
   ByteArrayOutputStream buffer = new ByteArrayOutputStream();
 
   private final List<Object> outList = new LinkedList<>();
-  private InterpreterOutputChangeWatcher watcher;
   private final InterpreterResultMessageOutputListener flushListener;
   private InterpreterResult.Type type = InterpreterResult.Type.TEXT;
   private boolean firstWrite = true;
@@ -51,16 +50,6 @@ public class InterpreterResultMessageOutput extends OutputStream {
       InterpreterResultMessageOutputListener listener) {
     this.type = type;
     this.flushListener = listener;
-  }
-
-  public InterpreterResultMessageOutput(
-      InterpreterResult.Type type,
-      InterpreterResultMessageOutputListener flushListener,
-      InterpreterOutputChangeListener listener) throws IOException {
-    this.type = type;
-    this.flushListener = flushListener;
-    watcher = new InterpreterOutputChangeWatcher(listener);
-    watcher.start();
   }
 
   public void setEnableTableAppend(boolean enableTableAppend) {
@@ -90,9 +79,6 @@ public class InterpreterResultMessageOutput extends OutputStream {
     synchronized (outList) {
       buffer.reset();
       outList.clear();
-      if (watcher != null) {
-        watcher.clear();
-      }
 
       if (flushListener != null && sendUpdateToFrontend) {
         flushListener.onUpdate(this);
@@ -142,9 +128,6 @@ public class InterpreterResultMessageOutput extends OutputStream {
    */
   public void write(File file) throws IOException {
     outList.add(file);
-    if (watcher != null) {
-      watcher.watch(file);
-    }
   }
 
   public void write(String string) throws IOException {
@@ -265,10 +248,6 @@ public class InterpreterResultMessageOutput extends OutputStream {
   @Override
   public void close() throws IOException {
     flush();
-    if (watcher != null) {
-      watcher.clear();
-      watcher.shutdown();
-    }
   }
 
   public String toString() {

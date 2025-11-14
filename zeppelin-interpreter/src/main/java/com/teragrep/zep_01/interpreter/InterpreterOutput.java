@@ -53,7 +53,6 @@ public class InterpreterOutput extends OutputStream {
   ByteArrayOutputStream buffer = new ByteArrayOutputStream();
 
   private final List<InterpreterOutputListener> outputListeners = new ArrayList<>();
-  private final InterpreterOutputChangeListener changeListener;
 
   private int size = 0;
   private int lastCRIndex = -1;
@@ -65,19 +64,10 @@ public class InterpreterOutput extends OutputStream {
   private long lastWriteTimestamp = System.currentTimeMillis();
 
   public InterpreterOutput() {
-    changeListener = null;
   }
 
   public InterpreterOutput(InterpreterOutputListener flushListener) {
     this.outputListeners.add(flushListener);
-    changeListener = null;
-  }
-
-  public InterpreterOutput(InterpreterOutputListener flushListener,
-                           InterpreterOutputChangeListener listener)
-      throws IOException {
-    this.outputListeners.add(flushListener);
-    this.changeListener = listener;
   }
 
   public void setEnableTableAppend(boolean enableTableAppend) {
@@ -95,11 +85,7 @@ public class InterpreterOutput extends OutputStream {
       InterpreterResultMessageOutputListener listener =
           createInterpreterResultMessageOutputListener(index);
 
-      if (changeListener == null) {
-        out = new InterpreterResultMessageOutput(type, listener);
-      } else {
-        out = new InterpreterResultMessageOutput(type, listener, changeListener);
-      }
+      out = new InterpreterResultMessageOutput(type, listener);
       out.setEnableTableAppend(enableTableAppend);
       out.setResourceSearchPaths(resourceSearchPaths);
 
