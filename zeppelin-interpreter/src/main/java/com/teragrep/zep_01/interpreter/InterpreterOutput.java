@@ -77,7 +77,7 @@ public class InterpreterOutput extends OutputStream {
     }
   }
 
-  public void setType(InterpreterResult.Type type) throws IOException {
+  public void setType(InterpreterResult.Type type) {
     InterpreterResultMessageOutput out = null;
 
     synchronized (resultMessageOutputs) {
@@ -195,7 +195,7 @@ public class InterpreterOutput extends OutputStream {
   boolean truncated = false;
 
   @Override
-  public void write(int b) throws IOException {
+  public void write(int b) {
     InterpreterResultMessageOutput out;
     if (truncated) {
       return;
@@ -282,7 +282,7 @@ public class InterpreterOutput extends OutputStream {
     }
   }
 
-  private InterpreterResultMessageOutput getCurrentOutputForWriting() throws IOException {
+  private InterpreterResultMessageOutput getCurrentOutputForWriting() {
     synchronized (resultMessageOutputs) {
       InterpreterResultMessageOutput out = getCurrentOutput();
       if (out == null) {
@@ -295,12 +295,12 @@ public class InterpreterOutput extends OutputStream {
   }
 
   @Override
-  public void write(byte [] b) throws IOException {
+  public void write(byte [] b) {
     write(b, 0, b.length);
   }
 
   @Override
-  public void write(byte [] b, int off, int len) throws IOException {
+  public void write(byte [] b, int off, int len)  {
     for (int i = off; i < len; i++) {
       write(b[i]);
     }
