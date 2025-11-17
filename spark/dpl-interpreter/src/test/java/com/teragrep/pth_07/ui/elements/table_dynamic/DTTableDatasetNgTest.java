@@ -113,12 +113,7 @@ public class DTTableDatasetNgTest {
         List<String> datasetAsJSON = testDs.toJSON().collectAsList();
 
         List<String> subList = datasetAsJSON.subList(0, 5);
-
-        JsonArray formated = DTTableDatasetNg.dataStreamParser(subList);
-
-        DTHeader dtHeader = new DTHeader(testSchema);
-        JsonArray headers = dtHeader.json();
-        JsonObject response = DTTableDatasetNg.DTNetResponse(formated, headers, 1, datasetAsJSON.size(),formated.size());
+        JsonObject response = DTTableDatasetNg.DTNetResponse(subList, testSchema, 1, datasetAsJSON.size(),subList.size());
 
         ArrayList<String> timestamps = new ArrayList<>();
         timestamps.add("1970-01-01T00:00:49.000Z");
@@ -144,14 +139,17 @@ public class DTTableDatasetNgTest {
                     .build();
             dataBuilder.add(rowJson);
         }
-        JsonArray data = dataBuilder.build();
+        JsonArray expectedData = dataBuilder.build();
 
         // Ensure that data field has the correct number of rows.
-        Assertions.assertEquals(5,data.size());
+        Assertions.assertEquals(5,expectedData.size());
+
+        DTHeader dtHeader = new DTHeader(testSchema);
+        JsonArray expectedHeaders = dtHeader.json();
 
         JsonObject expectedJson = Json.createObjectBuilder()
-                .add("headers",headers)
-                .add("data", data)
+                .add("headers",expectedHeaders)
+                .add("data", expectedData)
                 .add("draw",1)
                 .add("recordsTotal",49)
                 .add("recordsFiltered",5)

@@ -45,14 +45,12 @@
  */
 package com.teragrep.pth_07.ui.elements.table_dynamic;
 
-import com.teragrep.pth_07.ui.elements.table_dynamic.pojo.Order;
 import jakarta.json.*;
 import org.apache.spark.sql.Dataset;
 import org.apache.spark.sql.Row;
+import org.apache.spark.sql.types.StructType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import java.io.StringReader;
 import java.util.List;
 
 
@@ -86,57 +84,24 @@ public final class DTTableDatasetNg implements DTTableDataset {
     // Return a JsonObject representing the dataset with given search string and pagination information.
     @Override
     public JsonObject searchAndPaginate(int draw, int start, int length, String searchString) {
+        // Data transformations
         List<String> datasetAsJson = dataset.toJSON().collectAsList();
+        List<String> searchedList = new DTSearch(searchString).apply(datasetAsJson);
+        List<String> paginatedList = new DTPagination(start, length).apply(searchedList);
 
-        DTSearch dtSearch = new DTSearch(datasetAsJson);
-        List<Order> currentOrder = null;
-
-        // TODO these all decode the JSON, it refactor therefore to decode only once
-        // searching
-        List<String> searchedList = dtSearch.search(searchString);
-
-        // TODO ordering
-        //DTOrder dtOrder = new DTOrder(searchedList);
-        //List<String> orderedlist = dtOrder.order(searchedList, currentOrder);
-        List<String> orderedlist = searchedList;
-
-        // pagination
-        DTPagination dtPagination = new DTPagination(orderedlist);
-        List<String> paginatedList = dtPagination.paginate(length, start);
-
-        // ui formatting
-        JsonArray formated = dataStreamParser(paginatedList);
-        DTHeader schemaHeaders = new DTHeader(dataset.schema());
-        final JsonArray schemaHeadersAsJSON = schemaHeaders.json();
+        // Metadata for UI
         int recordsTotal = (int) dataset.count();
         int recordsFiltered = searchedList.size();
 
-        return DTNetResponse(formated, schemaHeadersAsJSON, draw, recordsTotal,recordsFiltered);
+        return DTNetResponse(paginatedList, dataset.schema(), draw, recordsTotal,recordsFiltered);
     }
 
-    static JsonArray dataStreamParser(List<String> data){
-
-        try{
-            JsonArrayBuilder builder = Json.createArrayBuilder();
-
-
-            for (String S : data) {
-                JsonReader reader = Json.createReader(new StringReader(S));
-                JsonObject line = reader.readObject();
-                builder.add(line);
-                reader.close();
-            }
-            return builder.build();
-        }catch(JsonException|IllegalStateException e){
-            LOGGER.error(e.toString());
-            return(Json.createArrayBuilder().build());
-        }
-    }
-
-    static JsonObject DTNetResponse(JsonArray data, JsonArray schemaHeadersJson, int draw, int recordsTotal, int recordsFiltered){
+    static JsonObject DTNetResponse(List<String> rowList, StructType schema, int draw, int recordsTotal, int recordsFiltered){
         try{
             JsonObjectBuilder builder = Json.createObjectBuilder();
-            builder.add("headers",schemaHeadersJson);
+            JsonArray headers = new DTHeader(schema).json();
+            builder.add("headers",headers);
+            JsonArray data = new DTData(rowList).json();
             builder.add("data", data);
             builder.add("draw", draw);
             builder.add("recordsTotal", recordsTotal);
