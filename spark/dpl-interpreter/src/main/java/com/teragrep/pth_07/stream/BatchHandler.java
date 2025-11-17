@@ -46,12 +46,18 @@
 package com.teragrep.pth_07.stream;
 
 import com.teragrep.pth_07.ui.UserInterfaceManager;
+import com.teragrep.pth_07.ui.elements.table_dynamic.DTTableDatasetNg;
+import com.teragrep.zep_01.interpreter.InterpreterContext;
 import org.apache.spark.sql.Dataset;
 import org.apache.spark.sql.Row;
 import com.teragrep.zep_01.interpreter.ZeppelinContext;
+import org.apache.spark.sql.types.StructType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import javax.xml.crypto.Data;
+import java.io.IOException;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.BiConsumer;
 
 public class BatchHandler implements BiConsumer<Dataset<Row>, Boolean> {
@@ -59,10 +65,17 @@ public class BatchHandler implements BiConsumer<Dataset<Row>, Boolean> {
 
     private final UserInterfaceManager userInterfaceManager;
     private final ZeppelinContext zeppelinContext;
+    private final InterpreterContext interpreterContext;
+    private final AtomicInteger drawCount;
 
-    public BatchHandler(UserInterfaceManager userInterfaceManager, ZeppelinContext zeppelinContext) {
+    public BatchHandler(UserInterfaceManager userInterfaceManager, ZeppelinContext zeppelinContext, InterpreterContext interpreterContext) {
+        this(userInterfaceManager,zeppelinContext,interpreterContext,new AtomicInteger(1));
+    }
+    public BatchHandler(UserInterfaceManager userInterfaceManager, ZeppelinContext zeppelinContext, InterpreterContext interpreterContext, AtomicInteger drawCount) {
         this.userInterfaceManager = userInterfaceManager;
         this.zeppelinContext = zeppelinContext;
+        this.interpreterContext = interpreterContext;
+        this.drawCount = drawCount;
     }
 
     @Override
@@ -77,7 +90,26 @@ public class BatchHandler implements BiConsumer<Dataset<Row>, Boolean> {
         }
         else {
             // use DTTableNg
-            userInterfaceManager.getDtTableDatasetNg().setParagraphDataset(rowDataset);
+            // If it can be guaranteed that every batch received from a single call to DPLInterpreter.interpret() always has the same schema, we can move incrementing of drawCount to DTTableDatasetNG.drawDataset(), and resetting will occur when a new instance is created.
+            if(! userInterfaceManager.getDtTableDatasetNg().isStub()){
+                Dataset<Row> oldDataset = userInterfaceManager.getDtTableDatasetNg().getDataset();
+                if(oldDataset!=null && oldDataset.schema().equals(rowDataset.schema())){
+                    drawCount.incrementAndGet();
+                }
+                else {
+                    drawCount.set(1);
+                }
+            }
+            DTTableDatasetNg dtTableDatasetNg = new DTTableDatasetNg(rowDataset);
+            userInterfaceManager.setDtTableDatasetNg(dtTableDatasetNg);
+            String outputContent = dtTableDatasetNg.drawDataset(drawCount.get());
+            try{
+                interpreterContext.out().clear(false);
+                interpreterContext.out().write(outputContent);
+                interpreterContext.out().flush();
+            } catch (IOException ioException){
+                LOGGER.error("Failed to write received batch to UI!",ioException);
+            }
         }
     }
 }

@@ -46,104 +46,49 @@
 package com.teragrep.pth_07.ui.elements.table_dynamic;
 
 import com.teragrep.pth_07.ui.elements.table_dynamic.pojo.Order;
-import com.teragrep.pth_07.ui.elements.AbstractUserInterfaceElement;
-import com.teragrep.zep_01.interpreter.InterpreterException;
 import jakarta.json.*;
 import org.apache.spark.sql.Dataset;
 import org.apache.spark.sql.Row;
-import com.teragrep.zep_01.interpreter.InterpreterContext;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.StringReader;
-import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.locks.Lock;
-import java.util.concurrent.locks.ReentrantLock;
 
-public final class DTTableDatasetNg extends AbstractUserInterfaceElement {
+
+// Encapsulates a Spark Dataset and outputs a String representation of it in the format expected by UI.
+// Capable of searching and paginating the output when provided with a search string and/or pagination start index and length
+public final class DTTableDatasetNg implements DTTableDataset {
     // FIXME Exceptions should cause interpreter to stop
+    static Logger LOGGER = LoggerFactory.getLogger(DTTableDatasetNg.class);
+    private final Dataset<Row> dataset;
+    private int defaultLength = 50;
 
-    private final Lock lock = new ReentrantLock();
-
-    private List<String> datasetAsJSON = null;
-    private DTHeader schemaHeaders;
-    private int drawCount;
-
-    /*
-    currentAJAXLength is shared between all the clients when server refreshes
-    perhaps we could just let the clients know that there is an update and
-    that they would each request their own copy and the request would contain
-    the size?
-     */
-    private int currentAJAXLength = 50;
-
-    public DTTableDatasetNg(final InterpreterContext interpreterContext) {
-        this(interpreterContext, new DTHeader(), 1);
+    public DTTableDatasetNg(final Dataset<Row> dataset){
+        this.dataset = dataset;
     }
 
-    public DTTableDatasetNg(final InterpreterContext interpreterContext, final DTHeader schemaHeaders, final int drawCount){
-        super(interpreterContext);
-        this.schemaHeaders = schemaHeaders;
-        this.drawCount = drawCount;
-    }
-    @Override
-    public void draw() {
-    }
 
     @Override
-    public void emit() {
+    public String drawDataset(int drawCount){
+        return drawDataset(0, defaultLength,"",drawCount);
     }
 
-    public void setParagraphDataset(Dataset<Row> rowDataset) {
-        /*
-         TODO check if other presentation can be used than string, for order
-         i.e. rowDataset.collectAsList()
-         */
-
-        try {
-            lock.lock();
-            // Reset draw when schema changes
-            if(!schemaHeaders.schema().equals(rowDataset.schema())){
-                drawCount = 1;
-            }
-            // Increment draw when schema has not changed.
-            else {
-                drawCount++;
-            }
-            if (rowDataset.schema().nonEmpty()) {
-                // needs to be here as sparkContext might disappear later
-                schemaHeaders = new DTHeader(rowDataset.schema());
-                datasetAsJSON = rowDataset.toJSON().collectAsList();
-                updatePage(0,currentAJAXLength,"", drawCount);
-            }
-        } finally {
-            lock.unlock();
-        }
+    // When the dataset is passed through InterpreterOutput.write(), the data must be prepended with a type indicator (%jsontable in this case).
+    @Override
+    public String drawDataset(int start, int length, String searchString, int drawCount) {
+        JsonObject datasetAsJson = searchAndPaginate(drawCount, start,length,searchString);
+        String formattedDataset = "%jsontable\n" +
+                datasetAsJson.toString();
+        return formattedDataset;
     }
 
-    // Sends a PARAGRAPH_UPDATE_OUTPUT message to UI containing the formatted data received from BatchHandler.
-    private void updatePage(int start, int length, String searchString, int draw){
-        try {
-            JsonObject response = SearchAndPaginate(draw, start,length,searchString);
-            String outputContent = "%jsontable\n" +
-                    response.toString();
-            getInterpreterContext().out().clear(false);
-            getInterpreterContext().out().write(outputContent);
-            getInterpreterContext().out().flush();
-        }
-        // We catch and log Exceptions here instead of rethrowing because calls to this method come from DPLInterpreter's BatchHandler, which doesn't seem to have easy ways to propagate Exceptions.
-        catch (InterpreterException ie){
-            LOGGER.error("Failed to format dataset to proper datatable format!",ie);
-        }
-        catch (java.io.IOException e) {
-            LOGGER.error(e.toString());
-        }
-    }
+    // Return a JsonObject representing the dataset with given search string and pagination information.
+    @Override
+    public JsonObject searchAndPaginate(int draw, int start, int length, String searchString) {
+        List<String> datasetAsJson = dataset.toJSON().collectAsList();
 
-    public JsonObject SearchAndPaginate(int draw, int start, int length, String searchString) throws InterpreterException {
-        if(datasetAsJSON == null){
-            throw new InterpreterException("Attempting to draw an empty dataset!");
-        }
-        DTSearch dtSearch = new DTSearch(datasetAsJSON);
+        DTSearch dtSearch = new DTSearch(datasetAsJson);
         List<Order> currentOrder = null;
 
         // TODO these all decode the JSON, it refactor therefore to decode only once
@@ -161,8 +106,9 @@ public final class DTTableDatasetNg extends AbstractUserInterfaceElement {
 
         // ui formatting
         JsonArray formated = dataStreamParser(paginatedList);
+        DTHeader schemaHeaders = new DTHeader(dataset.schema());
         final JsonArray schemaHeadersAsJSON = schemaHeaders.json();
-        int recordsTotal = datasetAsJSON.size();
+        int recordsTotal = (int) dataset.count();
         int recordsFiltered = searchedList.size();
 
         return DTNetResponse(formated, schemaHeadersAsJSON, draw, recordsTotal,recordsFiltered);
@@ -201,10 +147,15 @@ public final class DTTableDatasetNg extends AbstractUserInterfaceElement {
             return(Json.createObjectBuilder().build());
         }
     }
-    public List<String> getDatasetAsJSON(){
-        if(datasetAsJSON == null){
-            return new ArrayList<>();
-        }
-        return datasetAsJSON;
+
+    // Return encapsulated dataset
+    @Override
+    public Dataset<Row> getDataset(){
+        return dataset;
+    }
+
+    @Override
+    public boolean isStub() {
+        return false;
     }
 }

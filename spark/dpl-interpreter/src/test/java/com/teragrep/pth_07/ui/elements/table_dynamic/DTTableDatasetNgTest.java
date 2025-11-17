@@ -45,6 +45,8 @@
  */
 package com.teragrep.pth_07.ui.elements.table_dynamic;
 
+import com.teragrep.pth_07.stream.BatchHandler;
+import com.teragrep.pth_07.ui.UserInterfaceManager;
 import com.teragrep.pth_07.ui.elements.table_dynamic.testdata.TestDPLData;
 import com.teragrep.zep_01.display.AngularObjectRegistry;
 import com.teragrep.zep_01.interpreter.*;
@@ -65,6 +67,7 @@ import java.sql.Timestamp;
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -166,23 +169,40 @@ public class DTTableDatasetNgTest {
         InterpreterOutput testOutput =  new InterpreterOutput(listener);
         AngularObjectRegistry testRegistry = new AngularObjectRegistry("test", null);
         InterpreterContext context = InterpreterContext.builder().setInterpreterOut(testOutput).setAngularObjectRegistry(testRegistry).build();
+        UserInterfaceManager userInterfaceManager = new UserInterfaceManager(context);
+        ZeppelinContext zeppelinContext = new ZeppelinContext(new InterpreterHookRegistry(),100) {
+            @Override
+            public Map<String, String> getInterpreterClassMap() {
+                return null; //TODO: Implement method
+            }
 
-        DTTableDatasetNg dtTableDatasetNg = new DTTableDatasetNg(context);
+            @Override
+            public List<Class> getSupportedClasses() {
+                return null; //TODO: Implement method
+            }
+
+            @Override
+            public String showData(Object obj, int maxResult) {
+                return null; //TODO: Implement method
+            }
+        };
+
+        BatchHandler batchHandler = new BatchHandler(userInterfaceManager,zeppelinContext,context);
 
         // Simulate DPL receiving new data.
         Assertions.assertDoesNotThrow(()->{
-            dtTableDatasetNg.setParagraphDataset(testDs);
+            batchHandler.accept(testDs,false);
         });
 
         // Get first 5 rows of the dataset, check values of first and last field
-        JsonObject page1 = Assertions.assertDoesNotThrow(()->dtTableDatasetNg.SearchAndPaginate(0,0,5,""));
+        JsonObject page1 = Assertions.assertDoesNotThrow(()->userInterfaceManager.getDtTableDatasetNg().searchAndPaginate(0,0,5,""));
         Assertions.assertEquals(5,page1.getJsonArray("data").size());
         Assertions.assertEquals("1970-01-01T00:00:49.000Z",page1.getJsonArray("data").getJsonObject(0).getString("_time"));
         Assertions.assertEquals("1970-01-01T00:00:45.000Z",page1.getJsonArray("data").getJsonObject(4).getString("_time"));
 
 
         // Get rows 6-15 of the dataset, check values of first and last field
-        JsonObject page2 = Assertions.assertDoesNotThrow(()->dtTableDatasetNg.SearchAndPaginate(0,5,10,""));
+        JsonObject page2 = Assertions.assertDoesNotThrow(()->userInterfaceManager.getDtTableDatasetNg().searchAndPaginate(0,5,10,""));
         Assertions.assertEquals(10,page2.getJsonArray("data").size());
         Assertions.assertEquals("1970-01-01T00:00:44.000Z",page2.getJsonArray("data").getJsonObject(0).getString("_time"));
         Assertions.assertEquals("1970-01-01T00:00:35.000Z",page2.getJsonArray("data").getJsonObject(9).getString("_time"));
@@ -198,18 +218,35 @@ public class DTTableDatasetNgTest {
 
         AngularObjectRegistry testRegistry = new AngularObjectRegistry("test", null);
         InterpreterContext context = InterpreterContext.builder().setInterpreterOut(testOutput).setAngularObjectRegistry(testRegistry).build();
-        DTTableDatasetNg dtTableDatasetNg = new DTTableDatasetNg(context);
+        UserInterfaceManager userInterfaceManager = new UserInterfaceManager(context);
+        ZeppelinContext zeppelinContext = new ZeppelinContext(new InterpreterHookRegistry(),100) {
+            @Override
+            public Map<String, String> getInterpreterClassMap() {
+                return null; //TODO: Implement method
+            }
 
+            @Override
+            public List<Class> getSupportedClasses() {
+                return null; //TODO: Implement method
+            }
+
+            @Override
+            public String showData(Object obj, int maxResult) {
+                return null; //TODO: Implement method
+            }
+        };
+
+        BatchHandler batchHandler = new BatchHandler(userInterfaceManager,zeppelinContext,context);
         // Simulate DPL receiving new data.
         Assertions.assertDoesNotThrow(()->{
-            dtTableDatasetNg.setParagraphDataset(testDs);
+            batchHandler.accept(testDs,false);
         });
         Assertions.assertEquals(1,listener.numberOfUpdateCalls());
         Assertions.assertEquals(0,listener.numberOfResetCalls());
 
         // Simulate DPL receiving another batch of data.
         Assertions.assertDoesNotThrow(()->{
-            dtTableDatasetNg.setParagraphDataset(testDs);
+            batchHandler.accept(testDs,false);
         });
         Assertions.assertEquals(2,listener.numberOfUpdateCalls());
         Assertions.assertEquals(0,listener.numberOfResetCalls());
@@ -227,11 +264,29 @@ public class DTTableDatasetNgTest {
 
         AngularObjectRegistry testRegistry = new AngularObjectRegistry("test", null);
         InterpreterContext context = InterpreterContext.builder().setInterpreterOut(testOutput).setAngularObjectRegistry(testRegistry).build();
-        DTTableDatasetNg dtTableDatasetNg = new DTTableDatasetNg(context);
+        UserInterfaceManager userInterfaceManager = new UserInterfaceManager(context);
+        ZeppelinContext zeppelinContext = new ZeppelinContext(new InterpreterHookRegistry(),100) {
+            @Override
+            public Map<String, String> getInterpreterClassMap() {
+                return null; //TODO: Implement method
+            }
+
+            @Override
+            public List<Class> getSupportedClasses() {
+                return null; //TODO: Implement method
+            }
+
+            @Override
+            public String showData(Object obj, int maxResult) {
+                return null; //TODO: Implement method
+            }
+        };
+
+        BatchHandler batchHandler = new BatchHandler(userInterfaceManager,zeppelinContext,context);
 
         // Simulate DPL receiving new data.
         Assertions.assertDoesNotThrow(()->{
-            dtTableDatasetNg.setParagraphDataset(testDs);
+            batchHandler.accept(testDs,false);
         });
         List<InterpreterResultMessage> messages = Assertions.assertDoesNotThrow(()->testOutput.toInterpreterResultMessage());
         // First message should have draw value of 1
@@ -239,7 +294,7 @@ public class DTTableDatasetNgTest {
 
         // Simulate DPL receiving another batch of new data without changing schema.
         Assertions.assertDoesNotThrow(()->{
-            dtTableDatasetNg.setParagraphDataset(testDs);
+            batchHandler.accept(testDs,false);
         });
         List<InterpreterResultMessage> messages2 = Assertions.assertDoesNotThrow(()->testOutput.toInterpreterResultMessage());
         // Second message should have draw value of 2
@@ -247,7 +302,7 @@ public class DTTableDatasetNgTest {
 
         // Simulate DPL receiving yet another batch of new data but with a changed schema.
         Assertions.assertDoesNotThrow(()->{
-            dtTableDatasetNg.setParagraphDataset(smallTestDs);
+            batchHandler.accept(smallTestDs,false);
         });
         List<InterpreterResultMessage> messages3 = Assertions.assertDoesNotThrow(()->testOutput.toInterpreterResultMessage());
         // Third message's draw value should be reset to 1
