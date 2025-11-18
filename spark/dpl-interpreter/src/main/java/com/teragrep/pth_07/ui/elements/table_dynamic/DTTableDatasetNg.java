@@ -96,7 +96,7 @@ public final class DTTableDatasetNg implements DTTableDataset {
         return DTNetResponse(paginatedList, dataset.schema(), draw, recordsTotal,recordsFiltered);
     }
 
-    static JsonObject DTNetResponse(List<String> rowList, StructType schema, int draw, int recordsTotal, int recordsFiltered){
+    private JsonObject DTNetResponse(List<String> rowList, StructType schema, int draw, int recordsTotal, int recordsFiltered){
         try{
             JsonObjectBuilder builder = Json.createObjectBuilder();
             JsonArray headers = new DTHeader(schema).json();

@@ -109,11 +109,11 @@ public class DTTableDatasetNgTest {
     private final Dataset<Row> smallTestDs = smallTestDataset.createDataset(49,Timestamp.from(Instant.ofEpochSecond(0)),0L,"data data");
 
     @Test
-    public void testAJAXResponse() {
-        List<String> datasetAsJSON = testDs.toJSON().collectAsList();
+    public void testResponseFormatting() {
 
-        List<String> subList = datasetAsJSON.subList(0, 5);
-        JsonObject response = DTTableDatasetNg.DTNetResponse(subList, testSchema, 1, datasetAsJSON.size(),subList.size());
+        DTTableDatasetNg dtTableDatasetNg = new DTTableDatasetNg(testDs);
+
+        JsonObject response = dtTableDatasetNg.searchAndPaginate(1,0,5,"");
 
         ArrayList<String> timestamps = new ArrayList<>();
         timestamps.add("1970-01-01T00:00:49.000Z");
@@ -152,7 +152,7 @@ public class DTTableDatasetNgTest {
                 .add("data", expectedData)
                 .add("draw",1)
                 .add("recordsTotal",49)
-                .add("recordsFiltered",5)
+                .add("recordsFiltered",49)
                 .build();
 
         assertEquals(expectedJson.toString()
