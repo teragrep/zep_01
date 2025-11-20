@@ -46,6 +46,7 @@
 package com.teragrep.pth_07.stream;
 
 import com.teragrep.pth_07.ui.UserInterfaceManager;
+import com.teragrep.pth_07.ui.elements.table_dynamic.CachedDataset;
 import com.teragrep.pth_07.ui.elements.table_dynamic.DTTableDatasetNg;
 import com.teragrep.zep_01.interpreter.InterpreterContext;
 import org.apache.spark.sql.Dataset;
@@ -100,7 +101,8 @@ public class BatchHandler implements BiConsumer<Dataset<Row>, Boolean> {
                     drawCount.set(1);
                 }
             }
-            DTTableDatasetNg dtTableDatasetNg = new DTTableDatasetNg(rowDataset);
+            CachedDataset cachedDataset = new CachedDataset(rowDataset);
+            DTTableDatasetNg dtTableDatasetNg = new DTTableDatasetNg(cachedDataset);
             userInterfaceManager.setDtTableDatasetNg(dtTableDatasetNg);
             String outputContent = dtTableDatasetNg.drawDataset(drawCount.get());
             try{

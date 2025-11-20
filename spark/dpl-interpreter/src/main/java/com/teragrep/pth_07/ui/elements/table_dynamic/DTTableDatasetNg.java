@@ -59,11 +59,15 @@ import java.util.List;
 public final class DTTableDatasetNg implements DTTableDataset {
     // FIXME Exceptions should cause interpreter to stop
     static Logger LOGGER = LoggerFactory.getLogger(DTTableDatasetNg.class);
-    private final Dataset<Row> dataset;
+    private final CachedDataset cachedDataset;
     private int defaultLength = 50;
 
     public DTTableDatasetNg(final Dataset<Row> dataset){
-        this.dataset = dataset;
+        this(new CachedDataset(dataset));
+    }
+
+    public DTTableDatasetNg(final CachedDataset cachedDataset){
+        this.cachedDataset = cachedDataset;
     }
 
 
@@ -85,15 +89,15 @@ public final class DTTableDatasetNg implements DTTableDataset {
     @Override
     public JsonObject searchAndPaginate(int draw, int start, int length, String searchString) {
         // Data transformations
-        List<String> datasetAsJson = dataset.toJSON().collectAsList();
+        List<String> datasetAsJson = cachedDataset.cache();
         List<String> searchedList = new DTSearch(searchString).apply(datasetAsJson);
         List<String> paginatedList = new DTPagination(start, length).apply(searchedList);
 
         // Metadata for UI
-        int recordsTotal = (int) dataset.count();
+        int recordsTotal = (int) cachedDataset.dataset().count();
         int recordsFiltered = searchedList.size();
 
-        return DTNetResponse(paginatedList, dataset.schema(), draw, recordsTotal,recordsFiltered);
+        return DTNetResponse(paginatedList, cachedDataset.dataset().schema(), draw, recordsTotal,recordsFiltered);
     }
 
     private JsonObject DTNetResponse(List<String> rowList, StructType schema, int draw, int recordsTotal, int recordsFiltered){
@@ -116,7 +120,7 @@ public final class DTTableDatasetNg implements DTTableDataset {
     // Return encapsulated dataset
     @Override
     public Dataset<Row> getDataset(){
-        return dataset;
+        return cachedDataset.dataset();
     }
 
     @Override

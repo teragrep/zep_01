@@ -111,7 +111,7 @@ public class DTTableDatasetNgTest {
     @Test
     public void testResponseFormatting() {
 
-        DTTableDatasetNg dtTableDatasetNg = new DTTableDatasetNg(testDs);
+        DTTableDatasetNg dtTableDatasetNg = new DTTableDatasetNg(new CachedDataset(testDs));
 
         JsonObject response = dtTableDatasetNg.searchAndPaginate(1,0,5,"");
 
@@ -197,7 +197,6 @@ public class DTTableDatasetNgTest {
         Assertions.assertEquals(5,page1.getJsonArray("data").size());
         Assertions.assertEquals("1970-01-01T00:00:49.000Z",page1.getJsonArray("data").getJsonObject(0).getString("_time"));
         Assertions.assertEquals("1970-01-01T00:00:45.000Z",page1.getJsonArray("data").getJsonObject(4).getString("_time"));
-
 
         // Get rows 6-15 of the dataset, check values of first and last field
         JsonObject page2 = Assertions.assertDoesNotThrow(()->userInterfaceManager.getDtTableDatasetNg().searchAndPaginate(0,5,10,""));
@@ -331,5 +330,21 @@ public class DTTableDatasetNgTest {
         public int numberOfResetCalls(){
             return numberOfResetCalls;
         }
+    }
+
+    @Test
+    public void persistPerfTest(){
+
+        Dataset<Row> cached = testDs.cache();
+
+        Instant start = Instant.now();
+        cached.toJSON().collectAsList();
+        Instant end = Instant.now();
+        System.out.println(end.toEpochMilli()-start.toEpochMilli());
+
+        Instant start2 = Instant.now();
+        testDs.toJSON().collectAsList();
+        Instant end2 = Instant.now();
+        System.out.println(end2.toEpochMilli()-start2.toEpochMilli());
     }
 }
