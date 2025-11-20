@@ -103,8 +103,8 @@ public class BatchHandler implements BiConsumer<Dataset<Row>, Boolean> {
             }
             CachedDataset cachedDataset = new CachedDataset(rowDataset);
             DTTableDatasetNg dtTableDatasetNg = new DTTableDatasetNg(cachedDataset);
-            userInterfaceManager.setDtTableDatasetNg(dtTableDatasetNg);
             String outputContent = dtTableDatasetNg.drawDataset(drawCount.get());
+            userInterfaceManager.setDtTableDatasetNg(dtTableDatasetNg);
             try{
                 interpreterContext.out().clear(false);
                 interpreterContext.out().write(outputContent);
