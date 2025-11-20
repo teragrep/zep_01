@@ -331,20 +331,4 @@ public class DTTableDatasetNgTest {
             return numberOfResetCalls;
         }
     }
-
-    @Test
-    public void persistPerfTest(){
-
-        Dataset<Row> cached = testDs.cache();
-
-        Instant start = Instant.now();
-        cached.toJSON().collectAsList();
-        Instant end = Instant.now();
-        System.out.println(end.toEpochMilli()-start.toEpochMilli());
-
-        Instant start2 = Instant.now();
-        testDs.toJSON().collectAsList();
-        Instant end2 = Instant.now();
-        System.out.println(end2.toEpochMilli()-start2.toEpochMilli());
-    }
 }
