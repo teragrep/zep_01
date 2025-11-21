@@ -65,19 +65,19 @@ public final class DTTableDatasetNg implements DTTableDataset {
     private final List<String> dataset;
     private final int defaultLength = 50;
 
-    public DTTableDatasetNg(final StructType schema, List<String> dataset){
+    public DTTableDatasetNg(final StructType schema, final List<String> dataset){
         this.schema = schema;
         this.dataset = dataset;
     }
 
     @Override
-    public String interpreterOutputFormat(int drawCount){
+    public String interpreterOutputFormat(final int drawCount){
         return interpreterOutputFormat(drawCount, 0, defaultLength,"");
     }
 
     // When the dataset is passed through InterpreterOutput.write(), the data must be prepended with a type indicator (%jsontable in this case).
     @Override
-    public String interpreterOutputFormat(int drawCount, int start, int length, String searchString) {
+    public String interpreterOutputFormat(final int drawCount, final int start, final int length, final String searchString) {
         JsonObject datasetAsJson = searchAndPaginate(drawCount, start,length,searchString);
         String formattedDataset = "%jsontable\n" +
                 datasetAsJson.toString();
