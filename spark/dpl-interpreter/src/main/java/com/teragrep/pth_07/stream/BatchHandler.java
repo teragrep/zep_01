@@ -47,6 +47,7 @@ package com.teragrep.pth_07.stream;
 
 import com.teragrep.pth_07.ui.UserInterfaceManager;
 import com.teragrep.pth_07.ui.elements.table_dynamic.CachedDataset;
+import com.teragrep.pth_07.ui.elements.table_dynamic.DTTableDataset;
 import com.teragrep.pth_07.ui.elements.table_dynamic.DTTableDatasetNg;
 import com.teragrep.zep_01.interpreter.InterpreterContext;
 import org.apache.spark.sql.Dataset;
@@ -58,6 +59,7 @@ import org.slf4j.LoggerFactory;
 
 import javax.xml.crypto.Data;
 import java.io.IOException;
+import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.BiConsumer;
 
@@ -93,16 +95,18 @@ public class BatchHandler implements BiConsumer<Dataset<Row>, Boolean> {
             // use DTTableNg
             // If it can be guaranteed that every batch received from a single call to DPLInterpreter.interpret() always has the same schema, we can move incrementing of drawCount to DTTableDatasetNG.drawDataset(), and resetting will occur when a new instance is created.
             if(! userInterfaceManager.getDtTableDatasetNg().isStub()){
-                Dataset<Row> oldDataset = userInterfaceManager.getDtTableDatasetNg().getDataset();
-                if(oldDataset!=null && oldDataset.schema().equals(rowDataset.schema())){
+                DTTableDataset dtTableDataset = userInterfaceManager.getDtTableDatasetNg();
+                List<String> oldDataset = dtTableDataset.getDataset();
+                StructType oldSchema = dtTableDataset.schema();
+                if(oldDataset!=null && oldSchema.equals(rowDataset.schema())){
                     drawCount.incrementAndGet();
                 }
                 else {
                     drawCount.set(1);
                 }
             }
-            CachedDataset cachedDataset = new CachedDataset(rowDataset);
-            DTTableDatasetNg dtTableDatasetNg = new DTTableDatasetNg(cachedDataset);
+            List<String> dataset = rowDataset.toJSON().collectAsList();
+            DTTableDatasetNg dtTableDatasetNg = new DTTableDatasetNg(rowDataset.schema(), dataset);
             String outputContent = dtTableDatasetNg.drawDataset(drawCount.get());
             userInterfaceManager.setDtTableDatasetNg(dtTableDatasetNg);
             try{

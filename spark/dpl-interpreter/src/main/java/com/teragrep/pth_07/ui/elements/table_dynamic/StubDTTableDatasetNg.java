@@ -49,6 +49,7 @@ import com.teragrep.pth_07.ui.elements.table_dynamic.pojo.Order;
 import jakarta.json.*;
 import org.apache.spark.sql.Dataset;
 import org.apache.spark.sql.Row;
+import org.apache.spark.sql.types.StructType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -73,7 +74,12 @@ public final class StubDTTableDatasetNg implements DTTableDataset{
     public JsonObject searchAndPaginate(int draw, int start, int length, String searchString) {
         throw new UnsupportedOperationException("DTTableDataset is a stub!");
     }
-    public Dataset<Row> getDataset(){
+    public List<String> getDataset(){
+        throw new UnsupportedOperationException("DTTableDataset is a stub!");
+    }
+
+    @Override
+    public StructType schema() {
         throw new UnsupportedOperationException("DTTableDataset is a stub!");
     }
 

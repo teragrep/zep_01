@@ -111,7 +111,7 @@ public class DTTableDatasetNgTest {
     @Test
     public void testResponseFormatting() {
 
-        DTTableDatasetNg dtTableDatasetNg = new DTTableDatasetNg(new CachedDataset(testDs));
+        DTTableDatasetNg dtTableDatasetNg = new DTTableDatasetNg(testDs.schema(), testDs.toJSON().collectAsList());
 
         JsonObject response = dtTableDatasetNg.searchAndPaginate(1,0,5,"");
 

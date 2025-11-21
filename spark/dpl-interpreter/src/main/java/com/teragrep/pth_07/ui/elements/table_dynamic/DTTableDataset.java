@@ -48,11 +48,15 @@ import com.teragrep.zep_01.common.Stubable;
 import jakarta.json.JsonObject;
 import org.apache.spark.sql.Dataset;
 import org.apache.spark.sql.Row;
+import org.apache.spark.sql.types.StructType;
+
+import java.util.List;
 
 
 public interface DTTableDataset extends Stubable {
     public abstract String drawDataset(int drawCount);
     public abstract String drawDataset(int start, int length, String searchString, int drawCount);
     public abstract JsonObject searchAndPaginate(int draw, int start, int length, String searchString);
-    public abstract Dataset<Row> getDataset();
+    public abstract List<String> getDataset();
+    public abstract StructType schema();
 }

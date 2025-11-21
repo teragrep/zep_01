@@ -59,15 +59,13 @@ import java.util.List;
 public final class DTTableDatasetNg implements DTTableDataset {
     // FIXME Exceptions should cause interpreter to stop
     static Logger LOGGER = LoggerFactory.getLogger(DTTableDatasetNg.class);
-    private final CachedDataset cachedDataset;
+    private final StructType schema;
+    private final List<String> dataset;
     private int defaultLength = 50;
 
-    public DTTableDatasetNg(final Dataset<Row> dataset){
-        this(new CachedDataset(dataset));
-    }
-
-    public DTTableDatasetNg(final CachedDataset cachedDataset){
-        this.cachedDataset = cachedDataset;
+    public DTTableDatasetNg(final StructType schema, List<String> dataset){
+        this.schema = schema;
+        this.dataset = dataset;
     }
 
 
@@ -89,15 +87,14 @@ public final class DTTableDatasetNg implements DTTableDataset {
     @Override
     public JsonObject searchAndPaginate(int draw, int start, int length, String searchString) {
         // Data transformations
-        List<String> datasetAsJson = cachedDataset.cache();
-        List<String> searchedList = new DTSearch(searchString).apply(datasetAsJson);
+        List<String> searchedList = new DTSearch(searchString).apply(dataset);
         List<String> paginatedList = new DTPagination(start, length).apply(searchedList);
 
         // Metadata for UI
-        int recordsTotal = (int) cachedDataset.dataset().count();
+        int recordsTotal = (int) dataset.size();
         int recordsFiltered = searchedList.size();
 
-        return DTNetResponse(paginatedList, cachedDataset.dataset().schema(), draw, recordsTotal,recordsFiltered);
+        return DTNetResponse(paginatedList, schema, draw, recordsTotal,recordsFiltered);
     }
 
     private JsonObject DTNetResponse(List<String> rowList, StructType schema, int draw, int recordsTotal, int recordsFiltered){
@@ -119,8 +116,12 @@ public final class DTTableDatasetNg implements DTTableDataset {
 
     // Return encapsulated dataset
     @Override
-    public Dataset<Row> getDataset(){
-        return cachedDataset.dataset();
+    public List<String> getDataset(){
+        return dataset;
+    }
+    @Override
+    public StructType schema(){
+        return schema;
     }
 
     @Override
