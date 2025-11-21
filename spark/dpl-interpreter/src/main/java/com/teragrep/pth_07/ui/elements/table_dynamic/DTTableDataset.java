@@ -46,17 +46,16 @@
 package com.teragrep.pth_07.ui.elements.table_dynamic;
 import com.teragrep.zep_01.common.Stubable;
 import jakarta.json.JsonObject;
-import org.apache.spark.sql.Dataset;
-import org.apache.spark.sql.Row;
 import org.apache.spark.sql.types.StructType;
 
 import java.util.List;
 
-
+// Interface fof DTTableDataset object, supporting Stubs.
 public interface DTTableDataset extends Stubable {
-    public abstract String drawDataset(int drawCount);
-    public abstract String drawDataset(int start, int length, String searchString, int drawCount);
-    public abstract JsonObject searchAndPaginate(int draw, int start, int length, String searchString);
-    public abstract List<String> getDataset();
+    public abstract String interpreterOutputFormat(int drawCount);
+    public abstract String interpreterOutputFormat(int drawCount, int start, int length, String searchString);
+    public abstract JsonObject datatablesFormat(int drawCount);
+    public abstract JsonObject datatablesFormat(int drawCount, int start, int length, String searchString);
+    public abstract List<String> dataset();
     public abstract StructType schema();
 }

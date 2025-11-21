@@ -46,77 +46,77 @@
 package com.teragrep.pth_07.ui.elements.table_dynamic;
 
 import jakarta.json.*;
-import org.apache.spark.sql.Dataset;
-import org.apache.spark.sql.Row;
 import org.apache.spark.sql.types.StructType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import java.util.List;
 
+/**
+ * Responsible for formatting data received from BatchHandler into two different formats:
+ * Formatting for Datatables so that it can be used as-is on the UI.
+ * Formatting for InterpreterOutput so that it has the proper type.
+ * Supports paginating and searching of the dataset based on user-supplied parameters.
+ */
 
-// Encapsulates a Spark Dataset and outputs a String representation of it in the format expected by UI.
-// Capable of searching and paginating the output when provided with a search string and/or pagination start index and length
 public final class DTTableDatasetNg implements DTTableDataset {
     // FIXME Exceptions should cause interpreter to stop
-    static Logger LOGGER = LoggerFactory.getLogger(DTTableDatasetNg.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(DTTableDatasetNg.class);
     private final StructType schema;
     private final List<String> dataset;
-    private int defaultLength = 50;
+    private final int defaultLength = 50;
 
     public DTTableDatasetNg(final StructType schema, List<String> dataset){
         this.schema = schema;
         this.dataset = dataset;
     }
 
-
     @Override
-    public String drawDataset(int drawCount){
-        return drawDataset(0, defaultLength,"",drawCount);
+    public String interpreterOutputFormat(int drawCount){
+        return interpreterOutputFormat(drawCount, 0, defaultLength,"");
     }
 
     // When the dataset is passed through InterpreterOutput.write(), the data must be prepended with a type indicator (%jsontable in this case).
     @Override
-    public String drawDataset(int start, int length, String searchString, int drawCount) {
+    public String interpreterOutputFormat(int drawCount, int start, int length, String searchString) {
         JsonObject datasetAsJson = searchAndPaginate(drawCount, start,length,searchString);
         String formattedDataset = "%jsontable\n" +
                 datasetAsJson.toString();
         return formattedDataset;
     }
 
-    // Return a JsonObject representing the dataset with given search string and pagination information.
     @Override
-    public JsonObject searchAndPaginate(int draw, int start, int length, String searchString) {
-        // Data transformations
+    public JsonObject datatablesFormat(int drawCount){
+        return searchAndPaginate(drawCount, 0, defaultLength, "");
+    }
+    @Override
+    public JsonObject datatablesFormat(int drawCount, int start, int length, String searchString){
+        return searchAndPaginate(drawCount, start, length, searchString);
+    }
+
+    private JsonObject searchAndPaginate(int drawCount, int start, int length, String searchString) {
+        // Data transformations based on user provided values
         List<String> searchedList = new DTSearch(searchString).apply(dataset);
         List<String> paginatedList = new DTPagination(start, length).apply(searchedList);
 
         // Metadata for UI
-        int recordsTotal = (int) dataset.size();
+        int recordsTotal = dataset.size();
         int recordsFiltered = searchedList.size();
 
-        return DTNetResponse(paginatedList, schema, draw, recordsTotal,recordsFiltered);
+        // Build a response object
+        JsonObjectBuilder builder = Json.createObjectBuilder();
+        JsonArray headers = new DTHeader(schema).json();
+        builder.add("headers",headers);
+        JsonArray data = new DTData(paginatedList).json();
+        builder.add("data", data);
+        builder.add("draw", drawCount);
+        builder.add("recordsTotal", recordsTotal);
+        builder.add("recordsFiltered", recordsFiltered);
+        JsonObject jsonResponse = builder.build();
+        return jsonResponse;
     }
 
-    private JsonObject DTNetResponse(List<String> rowList, StructType schema, int draw, int recordsTotal, int recordsFiltered){
-        try{
-            JsonObjectBuilder builder = Json.createObjectBuilder();
-            JsonArray headers = new DTHeader(schema).json();
-            builder.add("headers",headers);
-            JsonArray data = new DTData(rowList).json();
-            builder.add("data", data);
-            builder.add("draw", draw);
-            builder.add("recordsTotal", recordsTotal);
-            builder.add("recordsFiltered", recordsFiltered);
-            return builder.build();
-        }catch(JsonException|IllegalStateException e){
-            LOGGER.error(e.toString());
-            return(Json.createObjectBuilder().build());
-        }
-    }
-
-    // Return encapsulated dataset
     @Override
-    public List<String> getDataset(){
+    public List<String> dataset(){
         return dataset;
     }
     @Override

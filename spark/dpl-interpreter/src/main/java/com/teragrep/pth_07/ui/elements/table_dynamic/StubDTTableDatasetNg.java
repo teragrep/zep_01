@@ -45,15 +45,11 @@
  */
 package com.teragrep.pth_07.ui.elements.table_dynamic;
 
-import com.teragrep.pth_07.ui.elements.table_dynamic.pojo.Order;
 import jakarta.json.*;
-import org.apache.spark.sql.Dataset;
-import org.apache.spark.sql.Row;
 import org.apache.spark.sql.types.StructType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.StringReader;
 import java.util.List;
 
 public final class StubDTTableDatasetNg implements DTTableDataset{
@@ -63,18 +59,25 @@ public final class StubDTTableDatasetNg implements DTTableDataset{
 
     }
 
-    public String drawDataset(int drawCount){
+    @Override
+    public String interpreterOutputFormat(int drawCount){
         throw new UnsupportedOperationException("DTTableDataset is a stub!");
     }
 
-    public String drawDataset(int start, int length, String searchString, int drawCount) {
+    @Override
+    public String interpreterOutputFormat(int drawCount, int start, int length, String searchString) {
         throw new UnsupportedOperationException("DTTableDataset is a stub!");
     }
-
-    public JsonObject searchAndPaginate(int draw, int start, int length, String searchString) {
+    @Override
+    public JsonObject datatablesFormat(int drawCount) {
         throw new UnsupportedOperationException("DTTableDataset is a stub!");
     }
-    public List<String> getDataset(){
+    @Override
+    public JsonObject datatablesFormat(int drawCount, int start, int length, String searchString) {
+        throw new UnsupportedOperationException("DTTableDataset is a stub!");
+    }
+    @Override
+    public List<String> dataset(){
         throw new UnsupportedOperationException("DTTableDataset is a stub!");
     }
 

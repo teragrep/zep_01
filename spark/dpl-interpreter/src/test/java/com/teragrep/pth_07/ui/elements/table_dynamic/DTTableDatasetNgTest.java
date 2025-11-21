@@ -109,11 +109,11 @@ public class DTTableDatasetNgTest {
     private final Dataset<Row> smallTestDs = smallTestDataset.createDataset(49,Timestamp.from(Instant.ofEpochSecond(0)),0L,"data data");
 
     @Test
-    public void testResponseFormatting() {
+    public void testDatatableFormatting() {
 
         DTTableDatasetNg dtTableDatasetNg = new DTTableDatasetNg(testDs.schema(), testDs.toJSON().collectAsList());
 
-        JsonObject response = dtTableDatasetNg.searchAndPaginate(1,0,5,"");
+        JsonObject response = dtTableDatasetNg.datatablesFormat(1,0,5,"");
 
         ArrayList<String> timestamps = new ArrayList<>();
         timestamps.add("1970-01-01T00:00:49.000Z");
@@ -161,6 +161,58 @@ public class DTTableDatasetNgTest {
     }
 
     @Test
+    public void testInterpreterOutputFormatting() {
+
+        DTTableDatasetNg dtTableDatasetNg = new DTTableDatasetNg(testDs.schema(), testDs.toJSON().collectAsList());
+        String response = dtTableDatasetNg.interpreterOutputFormat(1,0,5,"");
+
+        ArrayList<String> timestamps = new ArrayList<>();
+        timestamps.add("1970-01-01T00:00:49.000Z");
+        timestamps.add("1970-01-01T00:00:48.000Z");
+        timestamps.add("1970-01-01T00:00:47.000Z");
+        timestamps.add("1970-01-01T00:00:46.000Z");
+        timestamps.add("1970-01-01T00:00:45.000Z");
+
+        JsonArrayBuilder dataBuilder = Json.createArrayBuilder();
+        for (String timestamp:timestamps
+        ) {
+            JsonObject rowJson = Json.createObjectBuilder()
+                    .add("_time",timestamp)
+                    .add("id",0)
+                    .add("_raw","data data")
+                    .add("index","index_A")
+                    .add("sourcetype","stream")
+                    .add("host","host")
+                    .add("source","input")
+                    .add("partition","0")
+                    .add("offset",0)
+                    .add("origin","test data")
+                    .build();
+            dataBuilder.add(rowJson);
+        }
+        JsonArray expectedData = dataBuilder.build();
+
+        // Ensure that data field has the correct number of rows.
+        Assertions.assertEquals(5,expectedData.size());
+
+        DTHeader dtHeader = new DTHeader(testSchema);
+        JsonArray expectedHeaders = dtHeader.json();
+
+        JsonObject expectedContent = Json.createObjectBuilder()
+                .add("headers",expectedHeaders)
+                .add("data", expectedData)
+                .add("draw",1)
+                .add("recordsTotal",49)
+                .add("recordsFiltered",49)
+                .build();
+
+        String expectedType = "%jsontable\n";
+        assertEquals(expectedType+expectedContent.toString()
+                , response.toString()
+        );
+    }
+
+    @Test
     public void testPagination(){
         // Boilerplate to create an InterpreterContext
         TestInterpreterOutputListener listener = new TestInterpreterOutputListener();
@@ -193,13 +245,13 @@ public class DTTableDatasetNgTest {
         });
 
         // Get first 5 rows of the dataset, check values of first and last field
-        JsonObject page1 = Assertions.assertDoesNotThrow(()->userInterfaceManager.getDtTableDatasetNg().searchAndPaginate(0,0,5,""));
+        JsonObject page1 = Assertions.assertDoesNotThrow(()->userInterfaceManager.getDtTableDatasetNg().datatablesFormat(0,0,5,""));
         Assertions.assertEquals(5,page1.getJsonArray("data").size());
         Assertions.assertEquals("1970-01-01T00:00:49.000Z",page1.getJsonArray("data").getJsonObject(0).getString("_time"));
         Assertions.assertEquals("1970-01-01T00:00:45.000Z",page1.getJsonArray("data").getJsonObject(4).getString("_time"));
 
         // Get rows 6-15 of the dataset, check values of first and last field
-        JsonObject page2 = Assertions.assertDoesNotThrow(()->userInterfaceManager.getDtTableDatasetNg().searchAndPaginate(0,5,10,""));
+        JsonObject page2 = Assertions.assertDoesNotThrow(()->userInterfaceManager.getDtTableDatasetNg().datatablesFormat(0,5,10,""));
         Assertions.assertEquals(10,page2.getJsonArray("data").size());
         Assertions.assertEquals("1970-01-01T00:00:44.000Z",page2.getJsonArray("data").getJsonObject(0).getString("_time"));
         Assertions.assertEquals("1970-01-01T00:00:35.000Z",page2.getJsonArray("data").getJsonObject(9).getString("_time"));

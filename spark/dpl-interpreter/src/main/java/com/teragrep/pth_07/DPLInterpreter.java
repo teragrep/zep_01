@@ -313,10 +313,10 @@ public class DPLInterpreter extends AbstractInterpreter {
         if(dtTableDatasetNg.isStub()){
             throw new InterpreterException("UserInterfaceManager for paragraph id "+paragraphId+" does not have a DTTableDatasetNG object!");
         }
-        if(dtTableDatasetNg.getDataset().isEmpty()){
+        if(dtTableDatasetNg.dataset().isEmpty()){
             throw new InterpreterException("Dataset of paragraph "+paragraphId+" within note "+noteId+" is empty!");
         }
-        JsonObject json = dtTableDatasetNg.searchAndPaginate(draw,start,length,searchString);
+        JsonObject json = dtTableDatasetNg.datatablesFormat(draw,start,length,searchString);
         String dataset = json.toString();
         return dataset;
     }
