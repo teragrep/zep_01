@@ -111,4 +111,9 @@ public class RemoteInterpreterRunningProcess extends RemoteInterpreterProcess {
   public String getErrorMessage() {
     return null;
   }
+
+  @Override
+  public boolean isStub() {
+    return false;
+  }
 }

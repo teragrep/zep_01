@@ -169,7 +169,7 @@ public class RemoteInterpreterEventServer implements RemoteInterpreterEventServi
     }
     RemoteInterpreterProcess interpreterProcess =
         ((ManagedInterpreterGroup) interpreterGroup).getInterpreterProcess();
-    if (interpreterProcess == null) {
+    if (interpreterProcess.isStub()) {
       LOGGER.warn("Unable to register interpreter process, because no interpreter process associated with " +
               "interpreterGroup: {}", registerInfo.getInterpreterGroupId());
       return;
@@ -434,7 +434,7 @@ public class RemoteInterpreterEventServer implements RemoteInterpreterEventServi
     }
 
     RemoteInterpreterProcess remoteInterpreterProcess = intpGroup.getRemoteInterpreterProcess();
-    if (remoteInterpreterProcess == null) {
+    if (remoteInterpreterProcess.isStub()) {
       ResourcePool localPool = intpGroup.getResourcePool();
       if (localPool != null) {
         Resource res = localPool.get(resourceId.getName());
@@ -505,7 +505,7 @@ public class RemoteInterpreterEventServer implements RemoteInterpreterEventServi
       }
 
       RemoteInterpreterProcess remoteInterpreterProcess = intpGroup.getRemoteInterpreterProcess();
-      if (remoteInterpreterProcess == null) {
+      if (remoteInterpreterProcess.isStub()) {
         ResourcePool localPool = intpGroup.getResourcePool();
         if (localPool != null) {
           resourceSet.addAll(localPool.getAll());
