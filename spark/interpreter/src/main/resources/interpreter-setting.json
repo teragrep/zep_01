@@ -675,7 +675,7 @@
         "type": "checkbox"
       },
       "dpl.pth_06.bloom.db.fields": {
-        "defaultValue": "[{expected: 100000, fpp: 0.01},{expected: 1000000, fpp: 0.03},{expected: 2500000, fpp: 0.05}]",
+        "defaultValue": "[{expected: 10, fpp: 0.01},{expected: 100, fpp: 0.01},{expected: 1000, fpp: 0.01},{expected: 10000, fpp: 0.01},{expected: 1000000, fpp: 0.01},{expected: 2500000, fpp: 0.01}]",
         "description": "Configure number of filter fields and expected num of items and fpp ",
         "envName": "",
         "propertyName": "dpl.pth_06.bloom.db.fields",
