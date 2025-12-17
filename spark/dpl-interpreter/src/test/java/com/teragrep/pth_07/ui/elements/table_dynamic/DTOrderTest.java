@@ -45,6 +45,7 @@
  */
 package com.teragrep.pth_07.ui.elements.table_dynamic;
 
+import nl.jqno.equalsverifier.EqualsVerifier;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
@@ -68,7 +69,8 @@ public class DTOrderTest {
         String zero5 = "{\"_time\":\"1970-01-01T00:00:05.000Z\",\"id\":0,\"_raw\":\"test mno data\",\"index\":\"index_A\",\"sourcetype\":\"stream\",\"host\":\"host\",\"source\":\"input\",\"partition\":\"0\",\"offset\":0,\"origin\":\"test test\"}";
         listToOrder.add(zero5);
 
-        List<String> resultList = DTOrder.order(listToOrder, null);
+        DTOrder dtOrder = new DTOrder(listToOrder);
+        List<String> resultList = dtOrder.order(null);
         Assertions.assertEquals(zero5, resultList.get(0));
         Assertions.assertEquals(zero4, resultList.get(1));
         Assertions.assertEquals(zero3, resultList.get(2));
@@ -87,7 +89,8 @@ public class DTOrderTest {
         listToOrder.add("{\"id\":0,\"_raw\":\"test jkl data\",\"index\":\"index_A\",\"sourcetype\":\"stream\",\"host\":\"host\",\"source\":\"input\",\"partition\":\"0\",\"offset\":0,\"origin\":\"test test\"}");
         listToOrder.add("{\"id\":0,\"_raw\":\"test mno data\",\"index\":\"index_A\",\"sourcetype\":\"stream\",\"host\":\"host\",\"source\":\"input\",\"partition\":\"0\",\"offset\":0,\"origin\":\"test test\"}");
 
-        List<String> resultList = DTOrder.order(listToOrder, null);
+        DTOrder dtOrder = new DTOrder(listToOrder);
+        List<String> resultList = dtOrder.order(null);
         Assertions.assertEquals(5, resultList.size());
     }
 
@@ -101,7 +104,12 @@ public class DTOrderTest {
         listToOrder.add("{\"id\":0,\"_raw\":\"test jkl data\",\"index\":\"index_A\",\"sourcetype\":\"stream\",\"host\":\"host\",\"source\":\"input\",\"partition\":\"0\",\"offset\":0,\"origin\":\"test test\"}");
         listToOrder.add("{\"id\":0,\"_raw\":\"test mno data\",\"index\":\"index_A\",\"sourcetype\":\"stream\",\"host\":\"host\",\"source\":\"input\",\"partition\":\"0\",\"offset\":0,\"origin\":\"test test\"}");
 
-        List<String> resultList = DTOrder.order(listToOrder, null);
+        DTOrder dtOrder = new DTOrder(listToOrder);
+        List<String> resultList = dtOrder.order(null);
         Assertions.assertEquals(5, resultList.size());
+    }
+    @Test
+    public void testContract() {
+        EqualsVerifier.forClass(DTOrder.class).verify();
     }
 }

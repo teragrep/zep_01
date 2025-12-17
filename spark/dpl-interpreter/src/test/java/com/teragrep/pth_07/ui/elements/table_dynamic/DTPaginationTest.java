@@ -45,6 +45,7 @@
  */
 package com.teragrep.pth_07.ui.elements.table_dynamic;
 
+import nl.jqno.equalsverifier.EqualsVerifier;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
@@ -61,7 +62,8 @@ public class DTPaginationTest {
         int pageSize = 5;
         int pageStart = 5;
 
-        List<String> secondPage = DTPagination.paginate(rowList, pageSize, pageStart);
+        DTPagination dtPagination = new DTPagination(rowList);
+        List<String> secondPage = dtPagination.paginate(pageSize, pageStart);
 
         List<String> expectedList = new LinkedList<>();
         expectedList.add("5");
@@ -81,7 +83,8 @@ public class DTPaginationTest {
         int pageSize = -1;
         int pageStart = 5;
 
-        List<String> page = DTPagination.paginate(rowList, pageSize, pageStart);
+        DTPagination dtPagination = new DTPagination(rowList);
+        List<String> page = dtPagination.paginate(pageSize, pageStart);
         Assertions.assertTrue(page.isEmpty());
     }
 
@@ -94,7 +97,8 @@ public class DTPaginationTest {
         int pageSize = 5;
         int pageStart = -1;
 
-        List<String> firstPage = DTPagination.paginate(rowList, pageSize, pageStart);
+        DTPagination dtPagination = new DTPagination(rowList);
+        List<String> firstPage = dtPagination.paginate( pageSize, pageStart);
         List<String> expectedList = new LinkedList<>();
         expectedList.add("0");
         expectedList.add("1");
@@ -113,7 +117,8 @@ public class DTPaginationTest {
         int pageSize = -70;
         int pageStart = -123;
 
-        List<String> page = DTPagination.paginate(rowList, pageSize, pageStart);
+        DTPagination dtPagination = new DTPagination(rowList);
+        List<String> page = dtPagination.paginate(pageSize, pageStart);
         Assertions.assertTrue(page.isEmpty());
     }
 
@@ -126,7 +131,8 @@ public class DTPaginationTest {
         int pageSize = 1;
         int pageStart = 100;
 
-        List<String> page = DTPagination.paginate(rowList, pageSize, pageStart);
+        DTPagination dtPagination = new DTPagination(rowList);
+        List<String> page = dtPagination.paginate(pageSize, pageStart);
         Assertions.assertTrue(page.isEmpty());
     }
 
@@ -139,7 +145,8 @@ public class DTPaginationTest {
         int pageSize = 1;
         int pageStart = 99;
 
-        List<String> lastPage = DTPagination.paginate(rowList, pageSize, pageStart);
+        DTPagination dtPagination = new DTPagination(rowList);
+        List<String> lastPage = dtPagination.paginate(pageSize, pageStart);
         List<String> expectedList = new LinkedList<>();
         expectedList.add("99");
         Assertions.assertEquals(expectedList, lastPage);
@@ -154,9 +161,14 @@ public class DTPaginationTest {
         int pageSize = 1000;
         int pageStart = 99;
 
-        List<String> lastPage = DTPagination.paginate(rowList, pageSize, pageStart);
+        DTPagination dtPagination = new DTPagination(rowList);
+        List<String> lastPage = dtPagination.paginate(pageSize, pageStart);
         List<String> expectedList = new LinkedList<>();
         expectedList.add("99");
         Assertions.assertEquals(expectedList, lastPage);
+    }
+    @Test
+    public void testContract() {
+        EqualsVerifier.forClass(DTPagination.class).verify();
     }
 }

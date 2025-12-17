@@ -30,12 +30,7 @@ import org.slf4j.LoggerFactory;
 
 import java.lang.reflect.Field;
 import java.net.URL;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Properties;
+import java.util.*;
 
 /**
  * Interface for interpreters.
@@ -472,4 +467,9 @@ public abstract class Interpreter {
     FIFO, PARALLEL
   }
 
+  // Default Interpreter does not have a Dataset available. Support is added by overriding this method.
+  // This would be nicer as an interface, but we've left this as an abstract class so that we don't have to implement this in 30+ inheritors
+  public String getDataset(String noteId, String paragraphId, int start, int length, String searchString, int draw) throws InterpreterException{
+    throw new InterpreterException("Interpreter "+ getClassName() +" has no dataset!");
+  }
 }

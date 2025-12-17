@@ -45,6 +45,9 @@
  */
 package com.teragrep.pth_07.ui.elements.table_dynamic;
 
+import jakarta.json.Json;
+import jakarta.json.JsonArray;
+import nl.jqno.equalsverifier.EqualsVerifier;
 import org.apache.spark.sql.types.DataTypes;
 import org.apache.spark.sql.types.MetadataBuilder;
 import org.apache.spark.sql.types.StructField;
@@ -71,10 +74,34 @@ public class DTHeaderTest {
             }
     );
 
+    // If a DTHeader is given a Schema in its constructor, calling DTHeader.json() should return a JSON array containing all the fields present in the Schema.
     @Test
-    public void testDTHeader() throws ParserConfigurationException, TransformerException {
-        String e = "<thead><tr><th>_time</th><th>_raw</th><th>index</th><th>sourcetype</th><th>host</th><th>source</th><th>partition</th><th>offset</th></tr></thead>";
-        assertEquals(e, DTHeader.schemaToHeader(Schema));
+    public void testJSONDTHeader() throws ParserConfigurationException, TransformerException {
+        JsonArray expectedJsonArray = Json.createArrayBuilder()
+                .add("_time")
+                .add("_raw")
+                .add("index")
+                .add("sourcetype")
+                .add("host")
+                .add("source")
+                .add("partition")
+                .add("offset")
+                .build();
+        DTHeader dtHeader = new DTHeader(Schema);
+        assertEquals(expectedJsonArray.toString(), dtHeader.json().toString());
     }
 
+    // If DTHeader is given no Schema in its constructor, calling DTHeader.json() should return an empty JSON array.
+    @Test
+    public void testEmptyDTHeader() {
+        final JsonArray expectedJsonArray = Json.createArrayBuilder()
+                .build();
+        final DTHeader dtHeader = new DTHeader();
+        assertEquals(expectedJsonArray.toString(), dtHeader.json().toString());
+    }
+
+    @Test
+    public void testContract() {
+        EqualsVerifier.forClass(DTHeader.class).verify();
+    }
 }

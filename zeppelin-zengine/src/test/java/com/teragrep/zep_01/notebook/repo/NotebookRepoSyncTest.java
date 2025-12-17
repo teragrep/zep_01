@@ -43,7 +43,6 @@ import com.teragrep.zep_01.notebook.NoteInfo;
 import com.teragrep.zep_01.notebook.NoteManager;
 import com.teragrep.zep_01.notebook.Notebook;
 import com.teragrep.zep_01.notebook.Paragraph;
-import com.teragrep.zep_01.search.SearchService;
 import com.teragrep.zep_01.storage.ConfigStorage;
 import com.teragrep.zep_01.user.AuthenticationInfo;
 import com.teragrep.zep_01.user.Credentials;
@@ -64,7 +63,6 @@ public class NotebookRepoSyncTest {
   private NotebookRepoSync notebookRepoSync;
   private InterpreterFactory factory;
   private InterpreterSettingManager interpreterSettingManager;
-  private SearchService search;
   private Credentials credentials;
   private AuthenticationInfo anonymous;
   private NoteManager noteManager;
@@ -100,12 +98,11 @@ public class NotebookRepoSyncTest {
         mock(AngularObjectRegistryListener.class), mock(RemoteInterpreterProcessListener.class));
     factory = new InterpreterFactory(interpreterSettingManager);
 
-    search = mock(SearchService.class);
     notebookRepoSync = new NotebookRepoSync(conf);
     noteManager = new NoteManager(notebookRepoSync);
     authorizationService = new AuthorizationService(noteManager, conf);
     credentials = new Credentials(conf);
-    notebook = new Notebook(conf, authorizationService, notebookRepoSync, noteManager, factory, interpreterSettingManager, search, credentials, null);
+    notebook = new Notebook(conf, authorizationService, notebookRepoSync, noteManager, factory, interpreterSettingManager, credentials, null);
     anonymous = new AuthenticationInfo("anonymous");
   }
 
@@ -244,7 +241,7 @@ public class NotebookRepoSyncTest {
     System.setProperty(ConfVars.ZEPPELIN_NOTEBOOK_ONE_WAY_SYNC.getVarName(), "true");
     conf = ZeppelinConfiguration.create();
     notebookRepoSync = new NotebookRepoSync(conf);
-    notebook = new Notebook(conf, mock(AuthorizationService.class), notebookRepoSync, new NoteManager(notebookRepoSync), factory, interpreterSettingManager, search, credentials, null);
+    notebook = new Notebook(conf, mock(AuthorizationService.class), notebookRepoSync, new NoteManager(notebookRepoSync), factory, interpreterSettingManager, credentials, null);
 
     // check that both storage repos are empty
     assertTrue(notebookRepoSync.getRepoCount() > 1);
@@ -291,7 +288,7 @@ public class NotebookRepoSyncTest {
     ZeppelinConfiguration vConf = ZeppelinConfiguration.create();
 
     NotebookRepoSync vRepoSync = new NotebookRepoSync(vConf);
-    Notebook vNotebookSync = new Notebook(vConf, mock(AuthorizationService.class), vRepoSync, new NoteManager(vRepoSync), factory, interpreterSettingManager, search, credentials, null);
+    Notebook vNotebookSync = new Notebook(vConf, mock(AuthorizationService.class), vRepoSync, new NoteManager(vRepoSync), factory, interpreterSettingManager, credentials, null);
 
     // one git versioned storage initialized
     assertThat(vRepoSync.getRepoCount()).isEqualTo(1);

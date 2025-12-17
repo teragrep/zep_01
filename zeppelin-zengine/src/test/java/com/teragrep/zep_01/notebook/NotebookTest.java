@@ -38,13 +38,14 @@ import com.teragrep.zep_01.notebook.scheduler.QuartzSchedulerService;
 import com.teragrep.zep_01.resource.LocalResourcePool;
 import com.teragrep.zep_01.scheduler.Job;
 import com.teragrep.zep_01.scheduler.Job.Status;
-import com.teragrep.zep_01.search.SearchService;
 import com.teragrep.zep_01.user.AuthenticationInfo;
 import com.teragrep.zep_01.user.Credentials;
 import org.junit.After;
+import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
 import org.quartz.SchedulerException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -96,14 +97,13 @@ public class NotebookTest extends AbstractInterpreterTest implements ParagraphJo
     System.setProperty(ConfVars.ZEPPELIN_NOTEBOOK_CRON_ENABLE.getVarName(), "true");
     super.setUp();
 
-    SearchService search = mock(SearchService.class);
     notebookRepo = new VFSNotebookRepo();
     notebookRepo.init(conf);
     noteManager = new NoteManager(notebookRepo);
     authorizationService = new AuthorizationService(noteManager, conf);
 
     credentials = new Credentials(conf);
-    notebook = new Notebook(conf, authorizationService, notebookRepo, noteManager, interpreterFactory, interpreterSettingManager, search,
+    notebook = new Notebook(conf, authorizationService, notebookRepo, noteManager, interpreterFactory, interpreterSettingManager,
             credentials, null);
     notebook.setParagraphJobListener(this);
     schedulerService = new QuartzSchedulerService(conf, notebook);
@@ -125,13 +125,13 @@ public class NotebookTest extends AbstractInterpreterTest implements ParagraphJo
 
     notebookRepo = new DummyNotebookRepo();
     notebook = new Notebook(conf, mock(AuthorizationService.class), notebookRepo, new NoteManager(notebookRepo), interpreterFactory,
-        interpreterSettingManager, null,
+        interpreterSettingManager,
         credentials, null);
     assertFalse("Revision is not supported in DummyNotebookRepo", notebook.isRevisionSupported());
 
     notebookRepo = new DummyNotebookRepoWithVersionControl();
     notebook = new Notebook(conf, mock(AuthorizationService.class), notebookRepo, new NoteManager(notebookRepo), interpreterFactory,
-        interpreterSettingManager, null,
+        interpreterSettingManager,
         credentials, null);
     assertTrue("Revision is supported in DummyNotebookRepoWithVersionControl",
         notebook.isRevisionSupported());
@@ -1004,6 +1004,94 @@ public class NotebookTest extends AbstractInterpreterTest implements ParagraphJo
     // New InterpreterGroup will be created and its AngularObjectRegistry will be created
     assertNull(registry.get("o1", note.getId(), null));
     assertNull(registry.get("o2", null, null));
+  }
+  @Test
+  public void testMultipleDefaultAdmins(){
+      String nonAdminUser = "user1";
+      HashSet<String> adminUser = new HashSet<>(Arrays.asList("adminUser"));
+      HashSet<String> secondAdmin = new HashSet<>(Arrays.asList("secondAdmin"));
+
+      // Set multiple admins in configuration file
+      conf.setProperty("zeppelin.notebook.default.owner.username", "adminUser,secondAdmin");
+
+    // User1 creates a note and sets writer, runner and reader permissions to only themselves.
+    Note note = Assertions.assertDoesNotThrow(() -> notebook.createNote("note1", new AuthenticationInfo(nonAdminUser.toString())));
+
+    Assertions.assertDoesNotThrow(()->authorizationService.setReaders(note.getId(), new HashSet<>(Arrays.asList(nonAdminUser))));
+    Assertions.assertDoesNotThrow(()->authorizationService.setRunners(note.getId(), new HashSet<>(Arrays.asList(nonAdminUser))));
+    Assertions.assertDoesNotThrow(()->authorizationService.setWriters(note.getId(), new HashSet<>(Arrays.asList(nonAdminUser))));
+
+      // Verify that the original user has access to their own note.
+      assertTrue(authorizationService.isOwner(note.getId(), new HashSet<>(Arrays.asList(nonAdminUser))));
+      assertTrue(authorizationService.isReader(note.getId(), new HashSet<>(Arrays.asList(nonAdminUser))));
+      assertTrue(authorizationService.isWriter(note.getId(), new HashSet<>(Arrays.asList(nonAdminUser))));
+      assertTrue(authorizationService.isRunner(note.getId(), new HashSet<>(Arrays.asList(nonAdminUser))));
+
+      // Both adminUsers should have access rights to created note without explicitly giving them access.
+      assertTrue(authorizationService.isOwner(note.getId(), adminUser));
+      assertTrue(authorizationService.isReader(note.getId(), adminUser));
+      assertTrue(authorizationService.isWriter(note.getId(), adminUser));
+      assertTrue(authorizationService.isRunner(note.getId(), adminUser));
+
+      assertTrue(authorizationService.isOwner(note.getId(), secondAdmin));
+      assertTrue(authorizationService.isReader(note.getId(), secondAdmin));
+      assertTrue(authorizationService.isWriter(note.getId(), secondAdmin));
+      assertTrue(authorizationService.isRunner(note.getId(), secondAdmin));
+  }
+  @Test
+  public void testSingleDefaultAdmin(){
+    String nonAdminUser = "user1";
+    HashSet<String> adminUser = new HashSet<>(Arrays.asList("adminUser"));
+
+    // Set a single admin in configuration file
+    conf.setProperty("zeppelin.notebook.default.owner.username", "adminUser");
+
+    // User1 creates a note and sets writer, runner and reader permissions to only themselves.
+    Note note = Assertions.assertDoesNotThrow(() -> notebook.createNote("note1", new AuthenticationInfo(nonAdminUser.toString())));
+
+    Assertions.assertDoesNotThrow(()->authorizationService.setReaders(note.getId(), new HashSet<>(Arrays.asList(nonAdminUser))));
+    Assertions.assertDoesNotThrow(()->authorizationService.setRunners(note.getId(), new HashSet<>(Arrays.asList(nonAdminUser))));
+    Assertions.assertDoesNotThrow(()->authorizationService.setWriters(note.getId(), new HashSet<>(Arrays.asList(nonAdminUser))));
+
+    // Verify that the original user has access to their own note.
+    assertTrue(authorizationService.isOwner(note.getId(), new HashSet<>(Arrays.asList(nonAdminUser))));
+    assertTrue(authorizationService.isReader(note.getId(), new HashSet<>(Arrays.asList(nonAdminUser))));
+    assertTrue(authorizationService.isWriter(note.getId(), new HashSet<>(Arrays.asList(nonAdminUser))));
+    assertTrue(authorizationService.isRunner(note.getId(), new HashSet<>(Arrays.asList(nonAdminUser))));
+
+    // Only the designated adminUser should have access rights to created note without explicitly giving them access.
+    assertTrue(authorizationService.isOwner(note.getId(), adminUser));
+    assertTrue(authorizationService.isReader(note.getId(), adminUser));
+    assertTrue(authorizationService.isWriter(note.getId(), adminUser));
+    assertTrue(authorizationService.isRunner(note.getId(), adminUser));
+  }
+
+  @Test
+  public void testNoDefaultAdmins(){
+      String nonAdminUser = "user1";
+      HashSet<String> adminUser = new HashSet<>(Arrays.asList("adminUser"));
+      HashSet<String> secondAdmin = new HashSet<>(Arrays.asList("secondAdmin"));
+
+      // Set no admins in configuration file
+      conf.setProperty("zeppelin.notebook.default.owner.username", "");
+
+      // User1 creates a note and sets writer, runner and reader permissions to only themselves.
+      Note note = Assertions.assertDoesNotThrow(()->notebook.createNote("note1",new AuthenticationInfo(nonAdminUser)));
+      Assertions.assertDoesNotThrow(()->authorizationService.setReaders(note.getId(),new HashSet<>(Arrays.asList(nonAdminUser))));
+      Assertions.assertDoesNotThrow(()->authorizationService.setRunners(note.getId(),new HashSet<>(Arrays.asList(nonAdminUser))));
+      Assertions.assertDoesNotThrow(()->authorizationService.setWriters(note.getId(),new HashSet<>(Arrays.asList(nonAdminUser))));
+
+
+      // Neither adminUser should have any access rights to created note
+      assertFalse(authorizationService.isOwner(note.getId(), adminUser));
+      assertFalse(authorizationService.isReader(note.getId(), adminUser));
+      assertFalse(authorizationService.isWriter(note.getId(), adminUser));
+      assertFalse(authorizationService.isRunner(note.getId(), adminUser));
+
+      assertFalse(authorizationService.isOwner(note.getId(), secondAdmin));
+      assertFalse(authorizationService.isReader(note.getId(), secondAdmin));
+      assertFalse(authorizationService.isWriter(note.getId(), secondAdmin));
+      assertFalse(authorizationService.isRunner(note.getId(), secondAdmin));
   }
 
   @Test

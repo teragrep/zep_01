@@ -143,6 +143,13 @@
         "defaultValue": true,
         "description": "Whether show the spark deprecated message, spark 2.2 and before are deprecated. Zeppelin will display warning message by default",
         "type": "checkbox"
+      },
+      "spark.sql.jsonGenerator.ignoreNullFields": {
+        "envName": null,
+        "propertyName": "spark.sql.jsonGenerator.ignoreNullFields",
+        "defaultValue": false,
+        "description": "Whether to discard null values when generating JSON from a Spark Dataset. Warning: toggling this to 'true' may cause issues with displaying data in paragraphs!",
+        "type": "checkbox"
       }
     },
     "editor": {
@@ -668,7 +675,7 @@
         "type": "checkbox"
       },
       "dpl.pth_06.bloom.db.fields": {
-        "defaultValue": "[{expected: 100000, fpp: 0.01},{expected: 1000000, fpp: 0.03},{expected: 2500000, fpp: 0.05}]",
+        "defaultValue": "[{expected: 10, fpp: 0.01},{expected: 100, fpp: 0.01},{expected: 1000, fpp: 0.01},{expected: 10000, fpp: 0.01},{expected: 1000000, fpp: 0.01},{expected: 2500000, fpp: 0.01}]",
         "description": "Configure number of filter fields and expected num of items and fpp ",
         "envName": "",
         "propertyName": "dpl.pth_06.bloom.db.fields",
