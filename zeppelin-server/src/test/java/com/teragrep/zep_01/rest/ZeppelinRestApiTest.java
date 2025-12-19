@@ -93,10 +93,10 @@ public class ZeppelinRestApiTest extends AbstractTestRestApi {
   // A GET request to /api/announcement should return the currently set announcement configuration value.
   @Test
   public void getAnnouncementTextTest() throws IOException {
-    CloseableHttpResponse get = httpGet("/announcement");
-    String getResponse = EntityUtils.toString(get.getEntity(), StandardCharsets.UTF_8);
+    final CloseableHttpResponse get = httpGet("/announcement");
+    final String getResponse = EntityUtils.toString(get.getEntity(), StandardCharsets.UTF_8);
     get.close();
-    JsonObject expectedResponse = Json.createObjectBuilder()
+    final JsonObject expectedResponse = Json.createObjectBuilder()
             .add("status","OK")
             .add("body",Json.createObjectBuilder()
                     .add("announcement",ZeppelinConfiguration.create().getString(ConfVars.ZEPPELIN_ANNOUNCEMENT))
@@ -108,15 +108,15 @@ public class ZeppelinRestApiTest extends AbstractTestRestApi {
   // A PUT request with a plain text body to /api/announcement should set the announcement configuration value.
   @Test
   public void setAnnouncementTextTest() throws IOException {
-    String editedAnnouncementText = "A new announcement just dropped!";
+    final String editedAnnouncementText = "A new announcement just dropped!";
     // Announcement variable should not be set to desired value at the start.
     Assertions.assertNotEquals(editedAnnouncementText, ZeppelinConfiguration.create().getString(ConfVars.ZEPPELIN_ANNOUNCEMENT));
-    CloseableHttpResponse put = httpPut("/announcement", editedAnnouncementText);
-    String putResponse = EntityUtils.toString(put.getEntity(), StandardCharsets.UTF_8);
+    final CloseableHttpResponse put = httpPut("/announcement", editedAnnouncementText);
+    final String putResponse = EntityUtils.toString(put.getEntity(), StandardCharsets.UTF_8);
     put.close();
 
     // Request should receive the appropriate response
-    JsonObject expectedResponse = Json.createObjectBuilder()
+    final JsonObject expectedResponse = Json.createObjectBuilder()
             .add("status","OK")
             .add("message","Announcement text set successfully")
             .build();

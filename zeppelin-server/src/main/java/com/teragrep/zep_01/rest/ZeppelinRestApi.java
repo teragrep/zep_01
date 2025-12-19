@@ -49,7 +49,7 @@ import org.slf4j.LoggerFactory;
 @Singleton
 public class ZeppelinRestApi {
 
-  org.slf4j.Logger LOGGER = LoggerFactory.getLogger(this.getClass());
+  private static final org.slf4j.Logger LOGGER = LoggerFactory.getLogger(ZeppelinRestApi.class);
 
   /**
    * Get the root endpoint Return always 200.
@@ -81,9 +81,10 @@ public class ZeppelinRestApi {
   @Path("announcement")
   @ZeppelinApi
   public Response getAnnouncement() {
-    Map<String, String> json = new HashMap<>();
+    final Map<String, String> json = new HashMap<>();
     // Searches first from Environment variables, if a match is not found, searches from zeppelin-site.xml, if a match is not found, returns a default value.
-    String announcementText = ZeppelinConfiguration.create().getString(ZeppelinConfiguration.ConfVars.ZEPPELIN_ANNOUNCEMENT);
+    final ZeppelinConfiguration conf = ZeppelinConfiguration.create();
+    final String announcementText = conf.getString(ZeppelinConfiguration.ConfVars.ZEPPELIN_ANNOUNCEMENT);
     json.put("announcement", announcementText);
     return new JsonResponse<>(Response.Status.OK, json).build();
   }
@@ -91,17 +92,17 @@ public class ZeppelinRestApi {
   /**
    * Set a new value for announcement text. Does not override announcement texts from Environment variables (set via zeppelin-env.sh)
    *
-   * @param request
-   * @return
+   * @param request Request should contain a payload in its body. Payload content will be set as the announcement text.
+   * @return Responds with a message indicating whether the operation resulted in an updated announcement text or not.
    */
   @PUT
   @Path("announcement")
-  public Response setAnnouncement(@Context HttpServletRequest request) {
+  public Response setAnnouncement(@Context final HttpServletRequest request) {
     Response response;
-    String envAnnouncement = System.getenv(ZeppelinConfiguration.ConfVars.ZEPPELIN_ANNOUNCEMENT.getVarName());
-    try(BufferedReader reader = new BufferedReader(new InputStreamReader(request.getInputStream()))){
+    final String envAnnouncement = System.getenv(ZeppelinConfiguration.ConfVars.ZEPPELIN_ANNOUNCEMENT.getVarName());
+    try(final BufferedReader reader = new BufferedReader(new InputStreamReader(request.getInputStream()))){
       if(envAnnouncement == null){
-        StringBuilder body = new StringBuilder();
+        final StringBuilder body = new StringBuilder();
           String line;
           while ((line = reader.readLine()) != null){
             body.append(line);
