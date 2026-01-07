@@ -97,7 +97,7 @@ public class ZeppelinRestApi {
    */
   @PUT
   @Path("announcement")
-  public Response setAnnouncement(@Context final HttpServletRequest request) {
+  public Response putAnnouncement(@Context final HttpServletRequest request) {
     Response response;
     final String envAnnouncement = System.getenv(ZeppelinConfiguration.ConfVars.ZEPPELIN_ANNOUNCEMENT.getVarName());
     try(final BufferedReader reader = new BufferedReader(new InputStreamReader(request.getInputStream()))){
