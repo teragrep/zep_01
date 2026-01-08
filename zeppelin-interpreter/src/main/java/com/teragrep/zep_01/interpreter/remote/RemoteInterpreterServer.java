@@ -29,13 +29,11 @@ import org.apache.thrift.transport.TTransportException;
 import com.teragrep.zep_01.conf.ZeppelinConfiguration;
 import com.teragrep.zep_01.display.AngularObject;
 import com.teragrep.zep_01.display.AngularObjectRegistry;
-import com.teragrep.zep_01.display.GUI;
 import com.teragrep.zep_01.interpreter.InterpreterHookRegistry.HookType;
 import com.teragrep.zep_01.interpreter.InterpreterResult.Code;
 import com.teragrep.zep_01.interpreter.thrift.InterpreterCompletion;
 import com.teragrep.zep_01.interpreter.thrift.InterpreterRPCException;
 import com.teragrep.zep_01.interpreter.thrift.RegisterInfo;
-import com.teragrep.zep_01.interpreter.thrift.RemoteApplicationResult;
 import com.teragrep.zep_01.interpreter.thrift.RemoteInterpreterContext;
 import com.teragrep.zep_01.interpreter.thrift.RemoteInterpreterResult;
 import com.teragrep.zep_01.interpreter.thrift.RemoteInterpreterResultMessage;
@@ -60,7 +58,6 @@ import java.net.URL;
 import java.nio.ByteBuffer;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedList;
@@ -478,9 +475,7 @@ public class RemoteInterpreterServer extends Thread
         if (interpretJob == null) {
           InterpreterResult result = new InterpreterResult(Code.ERROR, "Job is finished, unable to recover it");
           return convert(result,
-                  context.getConfig(),
-                  context.getGui(),
-                  context.getNoteGui());
+                  context.getConfig());
         }
       } else {
         Scheduler scheduler = intp.getScheduler();
@@ -518,9 +513,7 @@ public class RemoteInterpreterServer extends Thread
         result = new InterpreterResult(Code.KEEP_PREVIOUS_RESULT);
       }
       return convert(result,
-              context.getConfig(),
-              context.getGui(),
-              context.getNoteGui());
+              context.getConfig());
     } catch (Exception e) {
       LOGGER.error("Internal error when interpret code", e);
       throw new InterpreterRPCException(e.toString());
@@ -916,10 +909,8 @@ public class RemoteInterpreterServer extends Thread
         .setParagraphText(ric.getParagraphText())
         .setLocalProperties(ric.getLocalProperties())
         .setAuthenticationInfo(AuthenticationInfo.fromJson(ric.getAuthenticationInfo()))
-        .setGUI(GUI.fromJson(ric.getGui()))
         .setConfig(gson.fromJson(ric.getConfig(),
                    new TypeToken<Map<String, Object>>() {}.getType()))
-        .setNoteGUI(GUI.fromJson(ric.getNoteGui()))
         .setAngularObjectRegistry(interpreterGroup.getAngularObjectRegistry())
         .setResourcePool(interpreterGroup.getResourcePool())
         .setInterpreterOut(output)
@@ -966,7 +957,7 @@ public class RemoteInterpreterServer extends Thread
   }
 
   private RemoteInterpreterResult convert(InterpreterResult result,
-                                          Map<String, Object> config, GUI gui, GUI noteGui) {
+                                          Map<String, Object> config) {
 
     List<RemoteInterpreterResultMessage> msg = new LinkedList<>();
     for (InterpreterResultMessage m : result.message()) {
@@ -978,9 +969,7 @@ public class RemoteInterpreterServer extends Thread
     return new RemoteInterpreterResult(
         result.code().name(),
         msg,
-        gson.toJson(config),
-        gui.toJson(),
-        noteGui.toJson());
+        gson.toJson(config));
   }
 
   @Override
