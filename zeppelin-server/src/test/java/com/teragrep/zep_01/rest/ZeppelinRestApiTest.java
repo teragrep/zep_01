@@ -470,39 +470,6 @@ public class ZeppelinRestApiTest extends AbstractTestRestApi {
   }
 
   @Test
-  public void testRunParagraphWithParams() throws Exception {
-    LOG.debug("testRunParagraphWithParams");
-
-    Note note = TestUtils.getInstance(Notebook.class).createNote("note1_testRunParagraphWithParams", anonymous);
-    assertNotNull("can't create new note", note);
-    note.setName("note for run test");
-    Paragraph paragraph = note.addNewParagraph(AuthenticationInfo.ANONYMOUS);
-
-    Map<String, Object> config = paragraph.getConfig();
-    config.put("enabled", true);
-    paragraph.setConfig(config);
-
-    paragraph.setText("%spark\nval param = z.input(\"param\").toString\nprintln(param)");
-    TestUtils.getInstance(Notebook.class).saveNote(note, anonymous);
-    String noteId = note.getId();
-
-    note.runAll(anonymous, true, false, new HashMap<>());
-
-    // Call Run paragraph REST API
-    CloseableHttpResponse postParagraph = httpPost("/notebook/job/" + noteId + "/" + paragraph.getId(),
-        "{\"params\": {\"param\": \"hello\", \"param2\": \"world\"}}");
-    assertThat("test paragraph run:", postParagraph, isAllowed());
-    postParagraph.close();
-    Thread.sleep(1000);
-
-    Note retrNote = TestUtils.getInstance(Notebook.class).getNote(noteId);
-    Paragraph retrParagraph = retrNote.getParagraph(paragraph.getId());
-    Map<String, Object> params = retrParagraph.settings.getParams();
-    assertEquals("hello", params.get("param"));
-    assertEquals("world", params.get("param2"));
-  }
-
-  @Test
   public void testJobs() throws Exception {
     // create a note and a paragraph
     System.setProperty(ConfVars.ZEPPELIN_NOTEBOOK_CRON_ENABLE.getVarName(), "true");

@@ -367,9 +367,6 @@ public class NotebookService {
     p.setText(text);
     p.setTitle(title);
     p.setAuthenticationInfo(context.getAutheInfo());
-    if (params != null && !params.isEmpty()) {
-      p.settings.setParams(params);
-    }
     if (config != null && !config.isEmpty()) {
       p.mergeConfig(config);
     }
@@ -379,9 +376,6 @@ public class NotebookService {
       p.setText(text);
       p.setTitle(title);
       p.setAuthenticationInfo(context.getAutheInfo());
-      if (params != null && !params.isEmpty()) {
-        p.settings.setParams(params);
-      }
       if (config != null && !config.isEmpty()) {
         p.mergeConfig(config);
       }
@@ -649,13 +643,11 @@ public class NotebookService {
       return;
     }
 
-    p.settings.setParams(params);
     p.mergeConfig(config);
     p.setTitle(title);
     p.setText(text);
     if (note.isPersonalizedMode()) {
       p = p.getUserParagraph(context.getAutheInfo().getUser());
-      p.settings.setParams(params);
       p.mergeConfig(config);
       p.setTitle(title);
       p.setText(text);
@@ -803,7 +795,6 @@ public class NotebookService {
       return;
     }
 
-    note.setNoteParams(noteParams);
     notebook.saveNote(note, context.getAutheInfo());
     callback.onSuccess(note, context);
   }
@@ -823,8 +814,6 @@ public class NotebookService {
       return;
     }
 
-    note.getNoteForms().remove(formName);
-    note.getNoteParams().remove(formName);
     notebook.saveNote(note, context.getAutheInfo());
     callback.onSuccess(note, context);
   }
@@ -1185,7 +1174,6 @@ public class NotebookService {
     AuthenticationInfo subject =
         new AuthenticationInfo(fromMessage.principal, fromMessage.roles, fromMessage.ticket);
     p.setAuthenticationInfo(subject);
-    p.settings.setParams(params);
     p.setConfig(config);
 
     if (note.isPersonalizedMode()) {
@@ -1193,7 +1181,6 @@ public class NotebookService {
       p.setText(text);
       p.setTitle(title);
       p.setAuthenticationInfo(subject);
-      p.settings.setParams(params);
       p.setConfig(config);
     }
 
