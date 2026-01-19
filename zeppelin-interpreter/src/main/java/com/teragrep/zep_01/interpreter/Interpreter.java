@@ -472,4 +472,7 @@ public abstract class Interpreter {
   public String searchAndPaginate(String noteId, String paragraphId, int start, int length, String searchString, int draw) throws InterpreterException{
     throw new InterpreterException("Interpreter "+ getClassName() +" has no dataset!");
   }
+  public String formatDataset(String noteId, String paragraphId, String library, String graphType) throws InterpreterException{
+    throw new InterpreterException("Interpreter "+ getClassName() +" has no dataset!");
+  }
 }

@@ -53,6 +53,7 @@ import org.apache.spark.sql.Dataset;
 import org.apache.spark.sql.Row;
 import com.teragrep.zep_01.interpreter.InterpreterContext;
 
+import java.io.IOException;
 import java.io.StringReader;
 import java.util.ArrayList;
 import java.util.List;
@@ -63,7 +64,7 @@ public final class DTTableDatasetNg extends AbstractUserInterfaceElement {
     // FIXME Exceptions should cause interpreter to stop
 
     private final Lock lock = new ReentrantLock();
-
+    private Dataset<Row> dataset = null;
     private List<String> datasetAsJSON = null;
     private DTHeader schemaHeaders;
     private int drawCount;
@@ -111,32 +112,43 @@ public final class DTTableDatasetNg extends AbstractUserInterfaceElement {
             }
             if (rowDataset.schema().nonEmpty()) {
                 // needs to be here as sparkContext might disappear later
+                dataset = rowDataset;
                 schemaHeaders = new DTHeader(rowDataset.schema());
                 datasetAsJSON = rowDataset.toJSON().collectAsList();
-                updatePage(0,currentAJAXLength,"", drawCount);
             }
         } finally {
             lock.unlock();
         }
     }
 
+    public void writeRawDataupdate(){
+        writeRawDataupdate(0,currentAJAXLength,"",drawCount);
+    }
     // Sends a PARAGRAPH_UPDATE_OUTPUT message to UI containing the formatted data received from BatchHandler.
-    private void updatePage(int start, int length, String searchString, int draw){
+    private void writeRawDataupdate(int start, int length, String searchString, int draw){
         try {
             JsonObject response = SearchAndPaginate(draw, start,length,searchString);
             String outputContent = "%jsontable\n" +
                     response.toString();
+            write(outputContent);
+        } catch (InterpreterException ie){
+            LOGGER.error("Failed to draw pagination request!",ie);
+        }
+    }
+
+    private void write(String outputContent){
+        try {
             getInterpreterContext().out().clear(false);
             getInterpreterContext().out().write(outputContent);
             getInterpreterContext().out().flush();
-        }
-        // We catch and log Exceptions here instead of rethrowing because calls to this method come from DPLInterpreter's BatchHandler, which doesn't seem to have easy ways to propagate Exceptions.
-        catch (InterpreterException ie){
-            LOGGER.error("Failed to format dataset to proper datatable format!",ie);
-        }
-        catch (java.io.IOException e) {
+        } catch (IOException e) {
             LOGGER.error(e.toString());
+            e.printStackTrace();
         }
+    }
+
+    public Dataset<Row> dataset(){
+        return dataset;
     }
 
     public JsonObject SearchAndPaginate(int draw, int start, int length, String searchString) throws InterpreterException {

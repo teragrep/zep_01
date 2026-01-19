@@ -78,6 +78,7 @@ public class BatchHandler implements BiConsumer<Dataset<Row>, Boolean> {
         else {
             // use DTTableNg
             userInterfaceManager.getDtTableDatasetNg().setParagraphDataset(rowDataset);
+            userInterfaceManager.getDtTableDatasetNg().writeRawDataupdate();
         }
     }
 }

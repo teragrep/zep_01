@@ -36,8 +36,6 @@ import com.teragrep.zep_01.display.*;
 import com.teragrep.zep_01.interpreter.*;
 import com.teragrep.zep_01.interpreter.remote.RemoteInterpreter;
 import com.teragrep.zep_01.rest.exception.BadRequestException;
-import jakarta.json.Json;
-import jakarta.json.JsonObject;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.apache.thrift.TException;

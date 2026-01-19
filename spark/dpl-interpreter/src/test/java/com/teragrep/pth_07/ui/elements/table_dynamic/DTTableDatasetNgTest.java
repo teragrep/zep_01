@@ -52,9 +52,11 @@ import jakarta.json.Json;
 import jakarta.json.JsonArray;
 import jakarta.json.JsonArrayBuilder;
 import jakarta.json.JsonObject;
+import static org.apache.spark.sql.functions.col;
 import org.apache.spark.sql.Dataset;
 import org.apache.spark.sql.Row;
 import org.apache.spark.sql.SparkSession;
+import org.apache.spark.sql.expressions.Window;
 import org.apache.spark.sql.types.*;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
@@ -67,6 +69,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
+import static org.apache.spark.sql.functions.row_number;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class DTTableDatasetNgTest {
@@ -203,6 +206,7 @@ public class DTTableDatasetNgTest {
         // Simulate DPL receiving new data.
         Assertions.assertDoesNotThrow(()->{
             dtTableDatasetNg.setParagraphDataset(testDs);
+            dtTableDatasetNg.writeRawDataupdate();
         });
         Assertions.assertEquals(1,listener.numberOfUpdateCalls());
         Assertions.assertEquals(0,listener.numberOfResetCalls());
@@ -210,6 +214,7 @@ public class DTTableDatasetNgTest {
         // Simulate DPL receiving another batch of data.
         Assertions.assertDoesNotThrow(()->{
             dtTableDatasetNg.setParagraphDataset(testDs);
+            dtTableDatasetNg.writeRawDataupdate();
         });
         Assertions.assertEquals(2,listener.numberOfUpdateCalls());
         Assertions.assertEquals(0,listener.numberOfResetCalls());
@@ -232,6 +237,7 @@ public class DTTableDatasetNgTest {
         // Simulate DPL receiving new data.
         Assertions.assertDoesNotThrow(()->{
             dtTableDatasetNg.setParagraphDataset(testDs);
+            dtTableDatasetNg.writeRawDataupdate();
         });
         List<InterpreterResultMessage> messages = Assertions.assertDoesNotThrow(()->testOutput.toInterpreterResultMessage());
         // First message should have draw value of 1
@@ -240,6 +246,7 @@ public class DTTableDatasetNgTest {
         // Simulate DPL receiving another batch of new data without changing schema.
         Assertions.assertDoesNotThrow(()->{
             dtTableDatasetNg.setParagraphDataset(testDs);
+            dtTableDatasetNg.writeRawDataupdate();
         });
         List<InterpreterResultMessage> messages2 = Assertions.assertDoesNotThrow(()->testOutput.toInterpreterResultMessage());
         // Second message should have draw value of 2
@@ -248,6 +255,7 @@ public class DTTableDatasetNgTest {
         // Simulate DPL receiving yet another batch of new data but with a changed schema.
         Assertions.assertDoesNotThrow(()->{
             dtTableDatasetNg.setParagraphDataset(smallTestDs);
+            dtTableDatasetNg.writeRawDataupdate();
         });
         List<InterpreterResultMessage> messages3 = Assertions.assertDoesNotThrow(()->testOutput.toInterpreterResultMessage());
         // Third message's draw value should be reset to 1

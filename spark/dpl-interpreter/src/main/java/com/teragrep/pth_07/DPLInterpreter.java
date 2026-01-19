@@ -62,6 +62,8 @@ import com.teragrep.zep_01.interpreter.thrift.InterpreterCompletion;
 import com.teragrep.zep_01.scheduler.Scheduler;
 import com.teragrep.zep_01.scheduler.SchedulerFactory;
 import com.teragrep.zep_01.spark.SparkInterpreter;
+import org.apache.spark.sql.Dataset;
+import org.apache.spark.sql.Row;
 import org.apache.spark.sql.SparkSession;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -73,6 +75,9 @@ import java.util.Map;
 import java.util.Properties;
 import java.util.concurrent.TimeoutException;
 import java.util.concurrent.atomic.AtomicInteger;
+
+import static org.apache.spark.sql.functions.col;
+import static org.apache.spark.sql.functions.row_number;
 
 /**
  * DPL-Spark SQL interpreter for Zeppelin.
@@ -295,8 +300,7 @@ public class DPLInterpreter extends AbstractInterpreter {
         return null;
     }
 
-    @Override
-    public String getDataset(String noteId, String paragraphId, int start, int length, String searchString, int draw) throws InterpreterException{
+    private UserInterfaceManager findUserInterfacemanger(String noteId, String paragraphId) throws InterpreterException{
         if(notebookParagraphUserInterfaceManager == null){
             throw new InterpreterException("DPLInterpreter's notebookParagraphUserInterfaceManager map is not instantiated!");
         }
@@ -308,6 +312,12 @@ public class DPLInterpreter extends AbstractInterpreter {
         if(userInterfaceManager == null){
             throw new InterpreterException("DPLInterpreter does not have a UserInterfaceManager for paragraph id "+paragraphId+" within note id "+noteId);
         }
+        return userInterfaceManager;
+    }
+
+    @Override
+    public String searchAndPaginate(String noteId, String paragraphId, int start, int length, String searchString, int draw) throws InterpreterException{
+        UserInterfaceManager userInterfaceManager = findUserInterfacemanger(noteId,paragraphId);
         DTTableDatasetNg dtTableDatasetNg = userInterfaceManager.getDtTableDatasetNg();
         if(dtTableDatasetNg == null){
             throw new InterpreterException("UserInterfaceManager for paragraph id "+paragraphId+" does not have a DTTableDatasetNG object!");
