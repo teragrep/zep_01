@@ -130,17 +130,33 @@ public final class DTTableDatasetNg extends AbstractUserInterfaceElement {
             JsonObject response = SearchAndPaginate(draw, start,length,searchString);
             String outputContent = "%jsontable\n" +
                     response.toString();
-            write(outputContent);
+            write(outputContent, true);
         } catch (InterpreterException ie){
             LOGGER.error("Failed to draw pagination request!",ie);
         }
     }
 
-    private void write(String outputContent){
+    public void writeAggregatedDataupdate(){
+        writeAggregatedDataupdate("DataTables","table");
+    }
+
+    public void writeAggregatedDataupdate(String libraryName, String chartType){
+        JsonArray data = dataStreamParser(datasetAsJSON);
+        final JsonArray schemaHeadersAsJSON = schemaHeaders.json();
+        JsonObject response = DTNetResponse(data,schemaHeadersAsJSON,drawCount,datasetAsJSON.size(),datasetAsJSON.size());
+
+        String outputContent = "%jsontable\n" +
+                response.toString();
+        write(outputContent, false);
+    }
+
+    private void write(String outputContent, boolean flush){
         try {
             getInterpreterContext().out().clear(false);
             getInterpreterContext().out().write(outputContent);
-            getInterpreterContext().out().flush();
+            if(flush){
+                getInterpreterContext().out().flush();
+            }
         } catch (IOException e) {
             LOGGER.error(e.toString());
             e.printStackTrace();

@@ -73,7 +73,8 @@ public class BatchHandler implements BiConsumer<Dataset<Row>, Boolean> {
             // after the parallel operations are performed
 
             // use legacy table
-            userInterfaceManager.getOutputContent().setOutputContent(zeppelinContext.showData(rowDataset));
+            userInterfaceManager.getDtTableDatasetNg().setParagraphDataset(rowDataset);
+            userInterfaceManager.getDtTableDatasetNg().writeAggregatedDataupdate();
         }
         else {
             // use DTTableNg
