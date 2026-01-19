@@ -1131,10 +1131,10 @@ public class NotebookServer extends WebSocketServlet
       sessionId = ((RemoteInterpreter) interpreter).getSessionId();
     }
 
-    // getDataset() Throws an InterpreterException if there is a problem with getting or paginating data. In that case, we send a PARAGRAPH_UPDATE_OUTPUT message as expected by UI.
+    // searchAndPaginate() Throws an InterpreterException if there is a problem with getting or paginating data. In that case, we send a PARAGRAPH_UPDATE_OUTPUT message as expected by UI.
     // If any other type of Exception is thrown (indicating some other problem), it will be caught by NotebookServer.onMessage() and result in an ERROR_INFO message.
     try{
-      String dataset = ((ManagedInterpreterGroup)interpreterGroup).getDataset(sessionId,interpreter.getClassName(),noteId,paragraphId,start,length,search,draw);
+      String dataset = ((ManagedInterpreterGroup)interpreterGroup).searchAndPaginate(sessionId,interpreter.getClassName(),noteId,paragraphId,start,length,search,draw);
       Message msg = new Message(Message.OP.PARAGRAPH_UPDATE_OUTPUT)
               .withMsgId(msgId)
               .put("data",dataset)

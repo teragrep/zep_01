@@ -35,7 +35,6 @@ import com.teragrep.zep_01.interpreter.InterpreterResult.Code;
 import com.teragrep.zep_01.interpreter.thrift.InterpreterCompletion;
 import com.teragrep.zep_01.interpreter.thrift.InterpreterRPCException;
 import com.teragrep.zep_01.interpreter.thrift.RegisterInfo;
-import com.teragrep.zep_01.interpreter.thrift.RemoteApplicationResult;
 import com.teragrep.zep_01.interpreter.thrift.RemoteInterpreterContext;
 import com.teragrep.zep_01.interpreter.thrift.RemoteInterpreterResult;
 import com.teragrep.zep_01.interpreter.thrift.RemoteInterpreterResultMessage;
@@ -60,7 +59,6 @@ import java.net.URL;
 import java.nio.ByteBuffer;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedList;
@@ -380,10 +378,10 @@ public class RemoteInterpreterServer extends Thread
     throw new InterpreterRPCException("Interpreter instance " + className + " not found");
   }
 
-  public String getDataset(String sessionId, String className, String noteId, String paragraphId, int start, int length, String searchString, int draw) throws InterpreterRPCException, TException {
+  public String searchAndPaginate(String sessionId, String className, String noteId, String paragraphId, int start, int length, String searchString, int draw) throws InterpreterRPCException, TException {
     try{
       Interpreter intp = getInterpreter(sessionId, className);
-      return intp.getDataset(noteId, paragraphId, start, length, searchString, draw);
+      return intp.searchAndPaginate(noteId, paragraphId, start, length, searchString, draw);
       // Thrift only declares InterpreterRPCException that has a single string as a paraemeter, so we have to wrap the underlying Exception as a String with an InterpreterRPCException to pass Exceptions through Thrift.
       // RemoteInterpreterServers can have their own log files, so it's best to also log the Exception there before we stringify and send it further.
     } catch (InterpreterException e){
