@@ -45,6 +45,8 @@
  */
 package com.teragrep.pth_07.ui.elements.table_dynamic;
 
+import com.teragrep.pth_07.ui.elements.table_dynamic.formats.DataTablesFormat;
+import com.teragrep.pth_07.ui.elements.table_dynamic.formats.DatasetFormat;
 import com.teragrep.pth_07.ui.elements.table_dynamic.pojo.Order;
 import com.teragrep.pth_07.ui.elements.AbstractUserInterfaceElement;
 import com.teragrep.zep_01.interpreter.InterpreterException;
@@ -121,35 +123,6 @@ public final class DTTableDatasetNg extends AbstractUserInterfaceElement {
         }
     }
 
-    public void writeRawDataupdate(){
-        writeRawDataupdate(0,currentAJAXLength,"",drawCount);
-    }
-    // Sends a PARAGRAPH_UPDATE_OUTPUT message to UI containing the formatted data received from BatchHandler.
-    private void writeRawDataupdate(int start, int length, String searchString, int draw){
-        try {
-            JsonObject response = SearchAndPaginate(draw, start,length,searchString);
-            String outputContent = "%jsontable\n" +
-                    response.toString();
-            write(outputContent, true);
-        } catch (InterpreterException ie){
-            LOGGER.error("Failed to draw pagination request!",ie);
-        }
-    }
-
-    public void writeAggregatedDataupdate(){
-        writeAggregatedDataupdate("DataTables","table");
-    }
-
-    public void writeAggregatedDataupdate(String libraryName, String chartType){
-        JsonArray data = dataStreamParser(datasetAsJSON);
-        final JsonArray schemaHeadersAsJSON = schemaHeaders.json();
-        JsonObject response = DTNetResponse(data,schemaHeadersAsJSON,drawCount,datasetAsJSON.size(),datasetAsJSON.size());
-
-        String outputContent = "%jsontable\n" +
-                response.toString();
-        write(outputContent, false);
-    }
-
     private void write(String outputContent, boolean flush){
         try {
             getInterpreterContext().out().clear(false);
@@ -165,6 +138,21 @@ public final class DTTableDatasetNg extends AbstractUserInterfaceElement {
 
     public Dataset<Row> dataset(){
         return dataset;
+    }
+    public void writeDataUpdate(boolean flush){
+        writeDataUpdate(new DataTablesFormat(datasetAsJSON,schemaHeaders,drawCount,0,currentAJAXLength,""),flush);
+    }
+
+    public void writeDataUpdate(DatasetFormat format, boolean flush) {
+        try {
+            JsonObject formatted = format.format();
+            String outputContent = "%jsontable\n" +
+                    formatted.toString();
+            write(outputContent, flush);
+        }
+        catch (InterpreterException ie){
+            LOGGER.error("Failed to draw pagination request!",ie);
+        }
     }
 
     public JsonObject SearchAndPaginate(int draw, int start, int length, String searchString) throws InterpreterException {

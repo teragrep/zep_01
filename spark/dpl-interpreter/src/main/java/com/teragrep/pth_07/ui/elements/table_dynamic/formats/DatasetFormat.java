@@ -43,38 +43,11 @@
  * Teragrep, the applicable Commercial License may apply to this file if you as
  * a licensee so wish it.
  */
-package com.teragrep.pth_07.stream;
+package com.teragrep.pth_07.ui.elements.table_dynamic.formats;
 
-import com.teragrep.pth_07.ui.UserInterfaceManager;
-import org.apache.spark.sql.Dataset;
-import org.apache.spark.sql.Row;
-import com.teragrep.zep_01.interpreter.ZeppelinContext;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import com.teragrep.zep_01.interpreter.InterpreterException;
+import jakarta.json.JsonObject;
 
-import java.util.function.BiConsumer;
-
-public class BatchHandler implements BiConsumer<Dataset<Row>, Boolean> {
-    private static final Logger LOGGER = LoggerFactory.getLogger(BatchHandler.class);
-
-    private final UserInterfaceManager userInterfaceManager;
-    private final ZeppelinContext zeppelinContext;
-
-    public BatchHandler(UserInterfaceManager userInterfaceManager, ZeppelinContext zeppelinContext) {
-        this.userInterfaceManager = userInterfaceManager;
-        this.zeppelinContext = zeppelinContext;
-    }
-
-    @Override
-    public void accept(final Dataset<Row> rowDataset, final Boolean aggsUsed) {
-        LOGGER.error("BatchHandler accept called LOGGER");
-
-        // need to check aggregatesUsed from visitor at this point, since it can be updated in sequential mode
-        // after the parallel operations are performed.
-
-        // flushing affects whether or not
-        boolean flush = !aggsUsed;
-        userInterfaceManager.getDtTableDatasetNg().setParagraphDataset(rowDataset);
-        userInterfaceManager.getDtTableDatasetNg().writeDataUpdate(flush);
-    }
+public interface DatasetFormat {
+    public abstract JsonObject format() throws InterpreterException;
 }
