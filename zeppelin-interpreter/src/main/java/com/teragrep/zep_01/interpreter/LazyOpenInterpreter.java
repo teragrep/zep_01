@@ -19,6 +19,7 @@ package com.teragrep.zep_01.interpreter;
 
 import java.net.URL;
 import java.util.List;
+import java.util.Map;
 import java.util.Properties;
 
 import com.teragrep.zep_01.interpreter.thrift.InterpreterCompletion;
@@ -214,5 +215,9 @@ public class LazyOpenInterpreter
   @Override
   public String searchAndPaginate(String noteId, String paragraphId, int start, int length, String searchString, int draw) throws InterpreterException{
     return this.intp.searchAndPaginate(noteId, paragraphId, start, length, searchString, draw);
+  }
+  @Override
+  public String formatDataset(String noteId, String paragraphId, String visualizationLibraryName, Map<String, String> options) throws InterpreterException{
+    return this.intp.formatDataset(noteId, paragraphId, visualizationLibraryName, options);
   }
 }

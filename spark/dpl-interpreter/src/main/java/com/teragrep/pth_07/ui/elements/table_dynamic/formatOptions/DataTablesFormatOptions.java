@@ -43,43 +43,43 @@
  * Teragrep, the applicable Commercial License may apply to this file if you as
  * a licensee so wish it.
  */
-package com.teragrep.pth_07.stream;
+package com.teragrep.pth_07.ui.elements.table_dynamic.formatOptions;
 
-import com.teragrep.pth_07.ui.UserInterfaceManager;
 import com.teragrep.zep_01.interpreter.InterpreterException;
-import org.apache.spark.sql.Dataset;
-import org.apache.spark.sql.Row;
-import com.teragrep.zep_01.interpreter.ZeppelinContext;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
-import java.util.function.BiConsumer;
+import java.util.Map;
 
-public class BatchHandler implements BiConsumer<Dataset<Row>, Boolean> {
-    private static final Logger LOGGER = LoggerFactory.getLogger(BatchHandler.class);
-
-    private final UserInterfaceManager userInterfaceManager;
-    private final ZeppelinContext zeppelinContext;
-
-    public BatchHandler(UserInterfaceManager userInterfaceManager, ZeppelinContext zeppelinContext) {
-        this.userInterfaceManager = userInterfaceManager;
-        this.zeppelinContext = zeppelinContext;
+public class DataTablesFormatOptions implements FormatOptions{
+    private final Map<String, String> options;
+    public DataTablesFormatOptions(Map<String, String> options){
+        this.options = options;
     }
 
-    @Override
-    public void accept(final Dataset<Row> rowDataset, final Boolean aggsUsed) {
-        LOGGER.error("BatchHandler accept called LOGGER");
-
-        // need to check aggregatesUsed from visitor at this point, since it can be updated in sequential mode
-        // after the parallel operations are performed.
-
-        // flushing affects whether or not
-        try{
-            boolean flush = !aggsUsed;
-            userInterfaceManager.getDtTableDatasetNg().setParagraphDataset(rowDataset);
-            userInterfaceManager.getDtTableDatasetNg().writeDataUpdate(flush);
-        } catch (InterpreterException e){
-            LOGGER.error("BatchHandler failed to write dataset!",e);
+    public int draw() throws InterpreterException {
+        if(!options.containsKey("draw")){
+            throw new InterpreterException("Options map does not contain a draw value");
         }
+        return Integer.parseInt(options.get("draw"));
+    }
+
+    public String search() throws InterpreterException {
+        if(!options.containsKey("search")){
+            throw new InterpreterException("Options map does not contain a draw value");
+        }
+        return options.get("search");
+    }
+
+    public int start() throws InterpreterException {
+        if(!options.containsKey("start")){
+            throw new InterpreterException("Options map does not contain a start value");
+        }
+        return Integer.parseInt(options.get("start"));
+    }
+
+    public int length() throws InterpreterException {
+        if(!options.containsKey("length")){
+            throw new InterpreterException("Options map does not contain a length value");
+        }
+        return Integer.parseInt(options.get("length"));
     }
 }

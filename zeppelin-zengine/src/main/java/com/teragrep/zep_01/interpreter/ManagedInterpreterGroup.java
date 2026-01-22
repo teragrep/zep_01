@@ -29,6 +29,7 @@ import org.slf4j.LoggerFactory;
 import java.io.IOException;
 import java.util.Collection;
 import java.util.List;
+import java.util.Map;
 import java.util.Properties;
 import java.util.stream.Collectors;
 
@@ -187,6 +188,13 @@ public class ManagedInterpreterGroup extends InterpreterGroup {
       throw new InterpreterException("InterpreterGroup "+id+" does not have a running Interpreter process!");
     }
     return remoteInterpreterProcess.searchAndPaginate(sessionId,className,noteId,paragraphId,start,length,searchString,draw);
+  }
+
+  public String formatDataset(String sessionId, String classname, String noteId, String paragraphId, String visualizationLibraryName, Map<String,String> options) throws InterpreterException{
+    if(remoteInterpreterProcess == null){
+      throw new InterpreterException("InterpreterGroup "+id+" does not have a running Interpreter process!");
+    }
+    return remoteInterpreterProcess.formatDataset(sessionId, classname, noteId, paragraphId, visualizationLibraryName, options);
   }
   public boolean isEmpty() {
     return this.sessions.isEmpty();

@@ -45,6 +45,7 @@
  */
 package com.teragrep.pth_07.ui.elements.table_dynamic;
 
+import com.teragrep.pth_07.ui.elements.table_dynamic.formatOptions.DataTablesFormatOptions;
 import com.teragrep.pth_07.ui.elements.table_dynamic.formats.DataTablesFormat;
 import com.teragrep.pth_07.ui.elements.table_dynamic.formats.DatasetFormat;
 import com.teragrep.pth_07.ui.elements.table_dynamic.pojo.Order;
@@ -58,7 +59,9 @@ import com.teragrep.zep_01.interpreter.InterpreterContext;
 import java.io.IOException;
 import java.io.StringReader;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
@@ -139,20 +142,21 @@ public final class DTTableDatasetNg extends AbstractUserInterfaceElement {
     public Dataset<Row> dataset(){
         return dataset;
     }
-    public void writeDataUpdate(boolean flush){
-        writeDataUpdate(new DataTablesFormat(datasetAsJSON,schemaHeaders,drawCount,0,currentAJAXLength,""),flush);
+    public void writeDataUpdate(boolean flush) throws InterpreterException{
+        Map<String, String> defaultOptions = new HashMap<String, String>();
+        defaultOptions.put("draw",Integer.toString(drawCount));
+        defaultOptions.put("start",Integer.toString(0));
+        defaultOptions.put("length",Integer.toString(currentAJAXLength));
+        defaultOptions.put("search","");
+        writeDataUpdate(new DataTablesFormat(datasetAsJSON,schemaHeaders,new DataTablesFormatOptions(defaultOptions)),flush);
     }
 
-    public void writeDataUpdate(DatasetFormat format, boolean flush) {
-        try {
+    public void writeDataUpdate(DatasetFormat format, boolean flush) throws InterpreterException{
             JsonObject formatted = format.format();
             String outputContent = "%jsontable\n" +
                     formatted.toString();
             write(outputContent, flush);
-        }
-        catch (InterpreterException ie){
-            LOGGER.error("Failed to draw pagination request!",ie);
-        }
+
     }
 
     public JsonObject SearchAndPaginate(int draw, int start, int length, String searchString) throws InterpreterException {
@@ -216,6 +220,10 @@ public final class DTTableDatasetNg extends AbstractUserInterfaceElement {
             LOGGER.error(e.toString());
             return(Json.createObjectBuilder().build());
         }
+    }
+
+    public DTHeader schemaHeaders() {
+        return schemaHeaders;
     }
     public List<String> getDatasetAsJSON(){
         if(datasetAsJSON == null){

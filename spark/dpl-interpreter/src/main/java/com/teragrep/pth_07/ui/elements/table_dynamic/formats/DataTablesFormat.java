@@ -48,6 +48,7 @@ package com.teragrep.pth_07.ui.elements.table_dynamic.formats;
 import com.teragrep.pth_07.ui.elements.table_dynamic.DTHeader;
 import com.teragrep.pth_07.ui.elements.table_dynamic.DTPagination;
 import com.teragrep.pth_07.ui.elements.table_dynamic.DTSearch;
+import com.teragrep.pth_07.ui.elements.table_dynamic.formatOptions.DataTablesFormatOptions;
 import com.teragrep.pth_07.ui.elements.table_dynamic.pojo.Order;
 import com.teragrep.zep_01.interpreter.InterpreterException;
 import jakarta.json.*;
@@ -61,65 +62,59 @@ public class DataTablesFormat implements  DatasetFormat{
 
     private final List<String> datasetAsJSON;
     private final DTHeader schemaHeaders;
-    private final int draw;
-    private final int start;
-    private final int length;
-    private final String searchString;
+    private final DataTablesFormatOptions options;
     private static final Logger LOGGER = LoggerFactory.getLogger(DataTablesFormat.class);
 
-    public DataTablesFormat(List<String> datasetAsJSON, DTHeader schemaHeaders, int draw, int start, int length, String searchString){
+    public DataTablesFormat(List<String> datasetAsJSON, DTHeader schemaHeaders, DataTablesFormatOptions options){
         this.datasetAsJSON = datasetAsJSON;
         this.schemaHeaders = schemaHeaders;
-        this.draw = draw;
-        this.start = start;
-        this.length = length;
-        this.searchString = searchString;
+        this.options = options;
     }
     public JsonObject format() throws InterpreterException{
             if(datasetAsJSON == null){
                 throw new InterpreterException("Attempting to draw an empty dataset!");
             }
-            DTSearch dtSearch = new DTSearch(datasetAsJSON);
-            List<Order> currentOrder = null;
-
-            // searching
-            List<String> searchedList = dtSearch.search(searchString);
-
-            // TODO ordering
-            //DTOrder dtOrder = new DTOrder(searchedList);
-            //List<String> orderedlist = dtOrder.order(searchedList, currentOrder);
-            List<String> orderedlist = searchedList;
-
-            // pagination
-            DTPagination dtPagination = new DTPagination(orderedlist);
-            List<String> paginatedList = dtPagination.paginate(length, start);
-
-            // ui formatting
-            JsonArray formated;
             try{
-                JsonArrayBuilder builder = Json.createArrayBuilder();
+                DTSearch dtSearch = new DTSearch(datasetAsJSON);
+                List<Order> currentOrder = null;
+
+                // searching
+                List<String> searchedList = dtSearch.search(options.search());
+
+                // TODO ordering
+                //DTOrder dtOrder = new DTOrder(searchedList);
+                //List<String> orderedlist = dtOrder.order(searchedList, currentOrder);
+                List<String> orderedlist = searchedList;
+
+                // pagination
+                DTPagination dtPagination = new DTPagination(orderedlist);
+                List<String> paginatedList = dtPagination.paginate(options.length(), options.start());
+
+                // ui formatting
+                JsonArray formated;
+                JsonArrayBuilder arrayBuilder = Json.createArrayBuilder();
                 for (String row : paginatedList) {
                     JsonReader reader = Json.createReader(new StringReader(row));
                     JsonObject line = reader.readObject();
-                    builder.add(line);
+                    arrayBuilder.add(line);
                     reader.close();
                 }
-                formated = builder.build();
+                formated = arrayBuilder.build();
+
+                final JsonArray schemaHeadersAsJSON = schemaHeaders.json();
+                int recordsTotal = datasetAsJSON.size();
+                int recordsFiltered = searchedList.size();
+
+                JsonObjectBuilder objectBuilder = Json.createObjectBuilder();
+                objectBuilder.add("headers",schemaHeadersAsJSON);
+                objectBuilder.add("data", formated);
+                objectBuilder.add("draw", options.draw());
+                objectBuilder.add("recordsTotal", recordsTotal);
+                objectBuilder.add("recordsFiltered", recordsFiltered);
+                return objectBuilder.build();
             }catch(JsonException|IllegalStateException e){
                 LOGGER.error(e.toString());
-                formated = Json.createArrayBuilder().build();
+                throw new InterpreterException("Failed to format dataset into DataTables format");
             }
-
-            final JsonArray schemaHeadersAsJSON = schemaHeaders.json();
-            int recordsTotal = datasetAsJSON.size();
-            int recordsFiltered = searchedList.size();
-
-            JsonObjectBuilder builder = Json.createObjectBuilder();
-            builder.add("headers",schemaHeadersAsJSON);
-            builder.add("data", formated);
-            builder.add("draw", draw);
-            builder.add("recordsTotal", recordsTotal);
-            builder.add("recordsFiltered", recordsFiltered);
-            return builder.build();
     }
 }

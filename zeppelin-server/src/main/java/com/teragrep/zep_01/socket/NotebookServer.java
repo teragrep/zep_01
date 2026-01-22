@@ -369,6 +369,9 @@ public class NotebookServer extends WebSocketServlet
         case PARAGRAPH_UPDATE_RESULT:
           updateParagraphResult(conn, context, receivedMessage);
           break;
+        case PARAGRAPH_OUTPUT_REQUEST:
+          changeVisualizationType(conn, context, receivedMessage);
+          break;
         case NOTE_UPDATE:
           updateNote(conn, context, receivedMessage);
           break;
@@ -1090,7 +1093,7 @@ public class NotebookServer extends WebSocketServlet
   }
 
   // Handles a request for paginated or filtered DPL table data.
-
+  // TODO: remove this later, it will be deprecated by PARAGRAPH_OUTPUT_REQUEST and changeVisualizationType
   private void updateParagraphResult(NotebookSocket conn,
                                      ServiceContext context,
                                      Message fromMessage) throws IOException, InterpreterException {
@@ -1157,6 +1160,63 @@ public class NotebookServer extends WebSocketServlet
               .put("draw",0)
               .put("type",InterpreterResult.Type.JSONTABLE.toString())
               .put("index",0)
+              .put("noteId", noteId)
+              .put("paragraphId", paragraphId);
+      conn.send(serializeMessage(msg));
+    }
+  }
+
+
+  private void changeVisualizationType(NotebookSocket conn,
+                                     ServiceContext context,
+                                     Message fromMessage) throws IOException, InterpreterException {
+    // Casting is required to get Message parameters in correct format, as GSON parses all numbers as Doubles, and Message.get() returns a generic Object.
+    final String msgId = fromMessage.msgId;
+    final String noteId = (String) fromMessage.get("noteId");
+    final String paragraphId = (String) fromMessage.get("paragraphId");
+    final String visualizationLibraryName = (String) fromMessage.get("type");
+    final Map<String, String> options = (Map) fromMessage.get("options");
+
+    Note note = getNotebook().getNote(noteId);
+    if(note == null){
+      throw new BadRequestException("No such note: "+noteId);
+    }
+    Paragraph paragraph = note.getParagraph(paragraphId);
+    if(paragraph == null){
+      throw new BadRequestException("No such paragraph: " + paragraphId);
+    }
+    Interpreter interpreter = paragraph.getBindedInterpreter();
+    if(interpreter == null){
+      throw new BadRequestException("Paragraph "+paragraphId+" has no binded interpreter!");
+    }
+    InterpreterGroup interpreterGroup = interpreter.getInterpreterGroup();
+    if(interpreterGroup == null){
+      throw new BadRequestException("Paragraph "+paragraphId+"'s interpreter has no InterpreterGroup assigned!");
+    }
+
+    if(!interpreterGroup.getClass().equals(ManagedInterpreterGroup.class)){
+      throw new BadRequestException("InterpreterGroup is a "+interpreterGroup.getClass()+", and not a ManagedInterpreterGroup!");
+    }
+    ManagedInterpreterGroup managedInterpreterGroup = (ManagedInterpreterGroup) interpreterGroup;
+
+    String sessionId = "";
+    if (interpreter instanceof RemoteInterpreter){
+      sessionId = ((RemoteInterpreter) interpreter).getSessionId();
+    }
+
+    try{
+      String formattedDataset = managedInterpreterGroup.formatDataset(sessionId, interpreter.getClassName(), noteId, paragraphId, visualizationLibraryName, options);
+      Message msg = new Message(Message.OP.PARAGRAPH_UPDATE_OUTPUT)
+              .withMsgId(msgId)
+              .put("data",formattedDataset)
+              .put("type",InterpreterResult.Type.JSONTABLE.toString())
+              .put("noteId", noteId)
+              .put("paragraphId", paragraphId);
+      conn.send(serializeMessage(msg));
+    } catch (InterpreterException e){
+      Message msg = new Message(OP.ERROR_INFO)
+              .withMsgId(msgId)
+              .put("message", e.getMessage())
               .put("noteId", noteId)
               .put("paragraphId", paragraphId);
       conn.send(serializeMessage(msg));

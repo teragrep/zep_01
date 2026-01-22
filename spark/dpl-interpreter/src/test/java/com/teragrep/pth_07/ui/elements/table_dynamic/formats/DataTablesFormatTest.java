@@ -1,12 +1,53 @@
+/*
+ * Teragrep DPL Spark Integration PTH-07
+ * Copyright (C) 2022  Suomen Kanuuna Oy
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Affero General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Affero General Public License for more details.
+ *
+ * You should have received a copy of the GNU Affero General Public License
+ * along with this program.  If not, see <https://github.com/teragrep/teragrep/blob/main/LICENSE>.
+ *
+ *
+ * Additional permission under GNU Affero General Public License version 3
+ * section 7
+ *
+ * If you modify this Program, or any covered work, by linking or combining it
+ * with other code, such other code is not for that reason alone subject to any
+ * of the requirements of the GNU Affero GPL version 3 as long as this Program
+ * is the same Program as licensed from Suomen Kanuuna Oy without any additional
+ * modifications.
+ *
+ * Supplemented terms under GNU Affero General Public License version 3
+ * section 7
+ *
+ * Origin of the software must be attributed to Suomen Kanuuna Oy. Any modified
+ * versions must be marked as "Modified version of" The Program.
+ *
+ * Names of the licensors and authors may not be used for publicity purposes.
+ *
+ * No rights are granted for use of trade names, trademarks, or service marks
+ * which are in The Program if any.
+ *
+ * Licensee must indemnify licensors and authors for any liability that these
+ * contractual assumptions impose on licensors and authors.
+ *
+ * To the extent this program is licensed as part of the Commercial versions of
+ * Teragrep, the applicable Commercial License may apply to this file if you as
+ * a licensee so wish it.
+ */
 package com.teragrep.pth_07.ui.elements.table_dynamic.formats;
 
 import com.teragrep.pth_07.ui.elements.table_dynamic.DTHeader;
-import com.teragrep.pth_07.ui.elements.table_dynamic.DTTableDatasetNg;
-import com.teragrep.pth_07.ui.elements.table_dynamic.DTTableDatasetNgTest;
+import com.teragrep.pth_07.ui.elements.table_dynamic.formatOptions.DataTablesFormatOptions;
 import com.teragrep.pth_07.ui.elements.table_dynamic.testdata.TestDPLData;
-import com.teragrep.zep_01.display.AngularObjectRegistry;
-import com.teragrep.zep_01.interpreter.InterpreterContext;
-import com.teragrep.zep_01.interpreter.InterpreterOutput;
 import jakarta.json.JsonObject;
 import org.apache.spark.sql.Dataset;
 import org.apache.spark.sql.Row;
@@ -20,7 +61,9 @@ import org.junit.jupiter.api.Test;
 
 import java.sql.Timestamp;
 import java.time.Instant;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -59,9 +102,15 @@ class DataTablesFormatTest {
         final int start = 3;
         final int length = 2;
         final String searchString = "";
+        Map<String,String> optionsMap = new HashMap<>();
+        optionsMap.put("draw",Integer.toString(draw));
+        optionsMap.put("start",Integer.toString(start));
+        optionsMap.put("length",Integer.toString(length));
+        optionsMap.put("search",searchString);
 
         // Get rows 3-5 of the dataset, check that every value is present
-        DataTablesFormat request1 = new DataTablesFormat(datasetAsJSON,schema,draw,start,length,searchString);
+        DataTablesFormatOptions options1 = new DataTablesFormatOptions(optionsMap);
+        DataTablesFormat request1 = new DataTablesFormat(datasetAsJSON,schema,options1);
         JsonObject response1 = Assertions.assertDoesNotThrow(()->request1.format());
         Assertions.assertEquals(length,response1.getJsonArray("data").size());
 
@@ -121,16 +170,33 @@ class DataTablesFormatTest {
         List<String> datasetAsJSON = testDs.toJSON().collectAsList();
         DTHeader schema = new DTHeader(testDs.schema());
 
+
+
         // Get first 5 rows of the dataset, check values of first and last field
-        DataTablesFormat request1 = new DataTablesFormat(datasetAsJSON,schema,0,0,5,"");
+        Map<String,String> optionsMap1 = new HashMap<>();
+        optionsMap1.put("draw",Integer.toString(0));
+        optionsMap1.put("start",Integer.toString(0));
+        optionsMap1.put("length",Integer.toString(5));
+        optionsMap1.put("search","");
+        DataTablesFormatOptions options1 = new DataTablesFormatOptions(optionsMap1);
+
+        DataTablesFormat request1 = new DataTablesFormat(datasetAsJSON,schema,options1);
         JsonObject response1 = Assertions.assertDoesNotThrow(()->request1.format());
         Assertions.assertEquals(5,response1.getJsonArray("data").size());
         Assertions.assertEquals("1970-01-01T00:00:49.000Z",response1.getJsonArray("data").getJsonObject(0).getString("_time"));
         Assertions.assertEquals("1970-01-01T00:00:45.000Z",response1.getJsonArray("data").getJsonObject(4).getString("_time"));
 
 
-            // Get rows 6-15 of the dataset, check values of first and last field
-        DataTablesFormat request2 = new DataTablesFormat(datasetAsJSON,schema,0,5,10,"");
+        // Get rows 6-15 of the dataset, check values of first and last field
+
+        Map<String,String> optionsMap2 = new HashMap<>();
+        optionsMap2.put("draw",Integer.toString(0));
+        optionsMap2.put("start",Integer.toString(5));
+        optionsMap2.put("length",Integer.toString(10));
+        optionsMap2.put("search","");
+        DataTablesFormatOptions options2 = new DataTablesFormatOptions(optionsMap2);
+
+        DataTablesFormat request2 = new DataTablesFormat(datasetAsJSON,schema,options2);
         JsonObject response2 = Assertions.assertDoesNotThrow(()->request2.format());
         Assertions.assertEquals(10,response2.getJsonArray("data").size());
         Assertions.assertEquals("1970-01-01T00:00:44.000Z",response2.getJsonArray("data").getJsonObject(0).getString("_time"));
