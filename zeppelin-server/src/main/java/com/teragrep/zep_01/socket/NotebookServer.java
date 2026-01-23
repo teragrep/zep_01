@@ -1110,60 +1110,13 @@ public class NotebookServer extends WebSocketServlet
     final String search = (String) ((Map) fromMessage.get("search")).get("value");
     final int draw = (int) Double.parseDouble(fromMessage.get("draw").toString());
 
-    Note note = getNotebook().getNote(noteId);
-    if(note == null){
-      throw new BadRequestException("No such note: "+noteId);
-    }
-    Paragraph paragraph = note.getParagraph(paragraphId);
-    if(paragraph == null){
-      throw new BadRequestException("No such paragraph: " + paragraphId);
-    }
-    Interpreter interpreter = paragraph.getBindedInterpreter();
-    if(interpreter == null){
-      throw new BadRequestException("Paragraph "+paragraphId+" has no binded interpreter!");
-    }
-    InterpreterGroup interpreterGroup = interpreter.getInterpreterGroup();
-    if(interpreterGroup == null){
-      throw new BadRequestException("Paragraph "+paragraphId+"'s interpreter has no InterpreterGroup assigned!");
-    }
-
-    String sessionId = "";
-    if (interpreter instanceof RemoteInterpreter){
-      sessionId = ((RemoteInterpreter) interpreter).getSessionId();
-    }
-
-    // searchAndPaginate() Throws an InterpreterException if there is a problem with getting or paginating data. In that case, we send a PARAGRAPH_UPDATE_OUTPUT message as expected by UI.
-    // If any other type of Exception is thrown (indicating some other problem), it will be caught by NotebookServer.onMessage() and result in an ERROR_INFO message.
-    try{
-      String dataset = ((ManagedInterpreterGroup)interpreterGroup).searchAndPaginate(sessionId,interpreter.getClassName(),noteId,paragraphId,start,length,search,draw);
-      Message msg = new Message(Message.OP.PARAGRAPH_UPDATE_OUTPUT)
-              .withMsgId(msgId)
-              .put("data",dataset)
-              .put("index",0)
-              .put("noteid",noteId)
-              .put("paragraphId",paragraphId)
-              .put("type",InterpreterResult.Type.JSONTABLE);
-      conn.send(serializeMessage(msg));
-    }
-    catch (InterpreterException exception){
-      // Log the Exception to technical logs, only send a generic error message to UI.
-      LOG.error("Failed to access data from Interpreter process for note: {} paragraph: {} cause: {}",noteId,paragraphId,exception);
-      LinkedHashMap data = new LinkedHashMap();
-      data.put("error",true);
-      data.put("message","Failed to access data from Interpreter process. Please rerun the paragraph or see technical log for details!");
-      data.put("draw",draw);
-      data.put("recordsTotal",0);
-      data.put("recordsFiltered",0);
-      Message msg = new Message(Message.OP.PARAGRAPH_UPDATE_OUTPUT)
-              .withMsgId(msgId)
-              .put("data",data)
-              .put("draw",0)
-              .put("type",InterpreterResult.Type.JSONTABLE.toString())
-              .put("index",0)
-              .put("noteId", noteId)
-              .put("paragraphId", paragraphId);
-      conn.send(serializeMessage(msg));
-    }
+    HashMap optionsMap = new HashMap();
+    optionsMap.put("start",fromMessage.get("start").toString());
+    optionsMap.put("length",fromMessage.get("length").toString());
+    optionsMap.put("draw",fromMessage.get("draw").toString());
+    optionsMap.put("search",search);
+    Message newMessage = new Message(OP.PARAGRAPH_OUTPUT_REQUEST).withMsgId(msgId).put("noteId",noteId).put("paragraphId",paragraphId).put("type","DataTables").put("requestOptions",optionsMap);
+    paragraphOutput(conn,context,newMessage);
   }
 
 
