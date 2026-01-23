@@ -64,7 +64,7 @@ public class DataTablesFormatOptions implements FormatOptions{
 
     public String search() throws InterpreterException {
         if(!optionsMap.containsKey("search")){
-            throw new InterpreterException("Options map does not contain a draw value");
+            throw new InterpreterException("Options map does not contain a search value");
         }
         return optionsMap.get("search");
     }
