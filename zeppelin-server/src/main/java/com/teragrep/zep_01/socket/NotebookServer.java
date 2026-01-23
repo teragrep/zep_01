@@ -1214,9 +1214,10 @@ public class NotebookServer extends WebSocketServlet
               .put("paragraphId", paragraphId);
       conn.send(serializeMessage(msg));
     } catch (InterpreterException e){
+      LOG.error("Failed to retrieve data from Interpreter process for note: {} paragraph: {} cause: {}",noteId,paragraphId,e.getCause(),e);
       Message msg = new Message(OP.ERROR_INFO)
               .withMsgId(msgId)
-              .put("message", e.getMessage())
+              .put("message", "Failed to retrieve data. Please rerun the paragraph and try again or see technical log for details!")
               .put("noteId", noteId)
               .put("paragraphId", paragraphId);
       conn.send(serializeMessage(msg));
