@@ -49,37 +49,16 @@ import com.teragrep.zep_01.interpreter.InterpreterException;
 
 import java.util.Map;
 
-public class DataTablesFormatOptions implements FormatOptions{
+public class UPlotFormatOptions implements FormatOptions{
     private final Map<String, String> optionsMap;
-    public DataTablesFormatOptions(Map<String, String> optionsMap){
+    public UPlotFormatOptions(Map<String, String> optionsMap){
         this.optionsMap = optionsMap;
     }
 
-    public int draw() throws InterpreterException {
-        if(!optionsMap.containsKey("draw")){
-            throw new InterpreterException("Options map does not contain a draw value");
+    public String graphType() throws InterpreterException {
+        if(!optionsMap.containsKey("graphType")){
+            throw new InterpreterException("Options map does not contain a graphType value");
         }
-        return Integer.parseInt(optionsMap.get("draw"));
-    }
-
-    public String search() throws InterpreterException {
-        if(!optionsMap.containsKey("search")){
-            throw new InterpreterException("Options map does not contain a draw value");
-        }
-        return optionsMap.get("search");
-    }
-
-    public int start() throws InterpreterException {
-        if(!optionsMap.containsKey("start")){
-            throw new InterpreterException("Options map does not contain a start value");
-        }
-        return Integer.parseInt(optionsMap.get("start"));
-    }
-
-    public int length() throws InterpreterException {
-        if(!optionsMap.containsKey("length")){
-            throw new InterpreterException("Options map does not contain a length value");
-        }
-        return Integer.parseInt(optionsMap.get("length"));
+        return optionsMap.get("graphType");
     }
 }

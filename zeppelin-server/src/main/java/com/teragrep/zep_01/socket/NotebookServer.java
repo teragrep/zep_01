@@ -370,7 +370,7 @@ public class NotebookServer extends WebSocketServlet
           updateParagraphResult(conn, context, receivedMessage);
           break;
         case PARAGRAPH_OUTPUT_REQUEST:
-          changeVisualizationType(conn, context, receivedMessage);
+          paragraphOutput(conn, context, receivedMessage);
           break;
         case NOTE_UPDATE:
           updateNote(conn, context, receivedMessage);
@@ -1167,15 +1167,15 @@ public class NotebookServer extends WebSocketServlet
   }
 
 
-  private void changeVisualizationType(NotebookSocket conn,
-                                     ServiceContext context,
-                                     Message fromMessage) throws IOException, InterpreterException {
+  private void paragraphOutput(NotebookSocket conn,
+                               ServiceContext context,
+                               Message fromMessage) throws IOException, InterpreterException {
     // Casting is required to get Message parameters in correct format, as GSON parses all numbers as Doubles, and Message.get() returns a generic Object.
     final String msgId = fromMessage.msgId;
     final String noteId = (String) fromMessage.get("noteId");
     final String paragraphId = (String) fromMessage.get("paragraphId");
     final String visualizationLibraryName = (String) fromMessage.get("type");
-    final Map<String, String> options = (Map) fromMessage.get("options");
+    final Map<String, String> options = (Map<String, String>) fromMessage.get("requestOptions");
 
     Note note = getNotebook().getNote(noteId);
     if(note == null){
@@ -1209,7 +1209,7 @@ public class NotebookServer extends WebSocketServlet
       Message msg = new Message(Message.OP.PARAGRAPH_UPDATE_OUTPUT)
               .withMsgId(msgId)
               .put("data",formattedDataset)
-              .put("type",InterpreterResult.Type.JSONTABLE.toString())
+              .put("type",visualizationLibraryName)
               .put("noteId", noteId)
               .put("paragraphId", paragraphId);
       conn.send(serializeMessage(msg));

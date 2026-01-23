@@ -51,8 +51,10 @@ import com.teragrep.pth_07.ui.UserInterfaceManager;
 import com.teragrep.pth_07.ui.elements.table_dynamic.DTHeader;
 import com.teragrep.pth_07.ui.elements.table_dynamic.DTTableDatasetNg;
 import com.teragrep.pth_07.ui.elements.table_dynamic.formatOptions.DataTablesFormatOptions;
+import com.teragrep.pth_07.ui.elements.table_dynamic.formatOptions.UPlotFormatOptions;
 import com.teragrep.pth_07.ui.elements.table_dynamic.formats.DataTablesFormat;
 import com.teragrep.pth_07.ui.elements.table_dynamic.formats.DatasetFormat;
+import com.teragrep.pth_07.ui.elements.table_dynamic.formats.UPlotFormat;
 import com.teragrep.pth_07.ui.elements.table_dynamic.formats.VisualizationLibraries;
 import com.teragrep.pth_15.DPLExecutor;
 import com.teragrep.pth_15.DPLExecutorFactory;
@@ -339,16 +341,19 @@ public class DPLInterpreter extends AbstractInterpreter {
     public String formatDataset(String noteId, String paragraphId, String visualizationLibraryName, Map<String, String> options) throws InterpreterException{
         UserInterfaceManager userInterfaceManager = findUserInterfacemanger(noteId,paragraphId);
 
-        List<String> datasetAsJson = userInterfaceManager.getDtTableDatasetNg().getDatasetAsJSON();
-        DTHeader schemaHeaders = userInterfaceManager.getDtTableDatasetNg().schemaHeaders();
-
         DatasetFormat format;
         if(visualizationLibraryName.equals(VisualizationLibraries.UPLOT.label)){
-            // Implement UPlotFormat
-            DataTablesFormatOptions datatablesOptions = new DataTablesFormatOptions(options);
-            format = new DataTablesFormat(datasetAsJson, schemaHeaders, datatablesOptions);
+            List<Row> datasetRows = userInterfaceManager.getDtTableDatasetNg().getDatasetRows();
+            DTHeader schemaHeaders = userInterfaceManager.getDtTableDatasetNg().schemaHeaders();
+
+            UPlotFormatOptions uplotOptions = new UPlotFormatOptions(options);
+            format = new UPlotFormat(datasetRows, schemaHeaders, uplotOptions);
         }
         else {
+            // Default to DataTables
+            List<String> datasetAsJson = userInterfaceManager.getDtTableDatasetNg().getDatasetAsJSON();
+            DTHeader schemaHeaders = userInterfaceManager.getDtTableDatasetNg().schemaHeaders();
+
             DataTablesFormatOptions datatablesOptions = new DataTablesFormatOptions(options);
             format = new DataTablesFormat(datasetAsJson, schemaHeaders, datatablesOptions);
         }

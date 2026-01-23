@@ -71,6 +71,7 @@ public final class DTTableDatasetNg extends AbstractUserInterfaceElement {
     private final Lock lock = new ReentrantLock();
     private Dataset<Row> dataset = null;
     private List<String> datasetAsJSON = null;
+    private List<Row> datasetRows = null;
     private DTHeader schemaHeaders;
     private int drawCount;
 
@@ -119,6 +120,7 @@ public final class DTTableDatasetNg extends AbstractUserInterfaceElement {
                 // needs to be here as sparkContext might disappear later
                 dataset = rowDataset;
                 schemaHeaders = new DTHeader(rowDataset.schema());
+                datasetRows = rowDataset.collectAsList();
                 datasetAsJSON = rowDataset.toJSON().collectAsList();
             }
         } finally {
@@ -230,5 +232,11 @@ public final class DTTableDatasetNg extends AbstractUserInterfaceElement {
             return new ArrayList<>();
         }
         return datasetAsJSON;
+    }
+    public List<Row> getDatasetRows(){
+        if(datasetRows == null){
+            return new ArrayList<>();
+        }
+        return datasetRows;
     }
 }
