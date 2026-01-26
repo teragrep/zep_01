@@ -1110,7 +1110,7 @@ public class NotebookServer extends WebSocketServlet
     final String search = (String) ((Map) fromMessage.get("search")).get("value");
     final int draw = (int) Double.parseDouble(fromMessage.get("draw").toString());
 
-    HashMap optionsMap = new HashMap();
+    HashMap<String,Object> optionsMap = new HashMap<String,Object>();
     optionsMap.put("start",fromMessage.get("start").toString());
     optionsMap.put("length",fromMessage.get("length").toString());
     optionsMap.put("draw",fromMessage.get("draw").toString());
