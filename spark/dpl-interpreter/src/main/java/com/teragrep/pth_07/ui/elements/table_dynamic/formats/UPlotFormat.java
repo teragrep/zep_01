@@ -103,7 +103,7 @@ public class UPlotFormat implements  DatasetFormat{
         for (String fieldName : dataset.schema().fieldNames()) {
             seriesBuilder.add(fieldName);
         }
-        JsonArray series = Json.createArrayBuilder().build();
+        JsonArray series = seriesBuilder.build();
 
         // generate graph type
         String graphType = options.graphType();

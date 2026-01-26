@@ -115,7 +115,7 @@ class UPlotFormatTest {
         Assertions.assertEquals(graphType, formatted.getJsonObject("options").getString("graphType"));
         Assertions.assertEquals(0, formatted.getJsonObject("options").getJsonArray("labels").size());
         Assertions.assertEquals(0, formatted.getJsonObject("options").getJsonArray("range").size());
-        Assertions.assertEquals(0, formatted.getJsonObject("options").getJsonArray("series").size());
+        Assertions.assertEquals(schema.schema().size(), formatted.getJsonObject("options").getJsonArray("series").size());
 
     }
 }
