@@ -60,6 +60,7 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
 import java.sql.Timestamp;
+import java.time.Duration;
 import java.time.Instant;
 import java.util.HashMap;
 import java.util.List;
@@ -95,8 +96,7 @@ class DataTablesFormatTest {
 
     @Test
     void testFormat() {
-        List<String> datasetAsJSON = testDs.toJSON().collectAsList();
-        DTHeader schema = new DTHeader(testDs.schema());
+        Dataset<Row> datasetAsJSON = testDs;
 
         final int draw = 3;
         final int start = 3;
@@ -110,14 +110,15 @@ class DataTablesFormatTest {
 
         // Get rows 3-5 of the dataset, check that every value is present
         DataTablesFormatOptions options1 = new DataTablesFormatOptions(optionsMap);
-        DataTablesFormat request1 = new DataTablesFormat(datasetAsJSON,schema,options1);
+        DataTablesFormat request1 = new DataTablesFormat(datasetAsJSON,options1);
         JsonObject response1 = Assertions.assertDoesNotThrow(()->request1.format());
         Assertions.assertEquals(length,response1.getJsonArray("data").size());
 
         // Check metadata
+        int rowCount = datasetAsJSON.collectAsList().size();
         Assertions.assertEquals(draw,response1.getInt("draw"));
-        Assertions.assertEquals(datasetAsJSON.size(),response1.getInt("recordsTotal"));
-        Assertions.assertEquals(datasetAsJSON.size(),response1.getInt("recordsFiltered"));
+        Assertions.assertEquals(rowCount,response1.getInt("recordsTotal"));
+        Assertions.assertEquals(rowCount,response1.getInt("recordsFiltered"));
 
         // Check headers
         Assertions.assertEquals(testSchema.size(),response1.getJsonArray("headers").size());
@@ -167,11 +168,7 @@ class DataTablesFormatTest {
 
     @Test
     void testPagination() {
-        List<String> datasetAsJSON = testDs.toJSON().collectAsList();
-        DTHeader schema = new DTHeader(testDs.schema());
-
-
-
+        Instant start = Instant.now();
         // Get first 5 rows of the dataset, check values of first and last field
         Map<String,String> optionsMap1 = new HashMap<>();
         optionsMap1.put("draw",Integer.toString(0));
@@ -180,7 +177,7 @@ class DataTablesFormatTest {
         optionsMap1.put("search","");
         DataTablesFormatOptions options1 = new DataTablesFormatOptions(optionsMap1);
 
-        DataTablesFormat request1 = new DataTablesFormat(datasetAsJSON,schema,options1);
+        DataTablesFormat request1 = new DataTablesFormat(testDs,options1);
         JsonObject response1 = Assertions.assertDoesNotThrow(()->request1.format());
         Assertions.assertEquals(5,response1.getJsonArray("data").size());
         Assertions.assertEquals("1970-01-01T00:00:49.000Z",response1.getJsonArray("data").getJsonObject(0).getString("_time"));
@@ -196,10 +193,13 @@ class DataTablesFormatTest {
         optionsMap2.put("search","");
         DataTablesFormatOptions options2 = new DataTablesFormatOptions(optionsMap2);
 
-        DataTablesFormat request2 = new DataTablesFormat(datasetAsJSON,schema,options2);
+        DataTablesFormat request2 = new DataTablesFormat(testDs,options2);
         JsonObject response2 = Assertions.assertDoesNotThrow(()->request2.format());
         Assertions.assertEquals(10,response2.getJsonArray("data").size());
         Assertions.assertEquals("1970-01-01T00:00:44.000Z",response2.getJsonArray("data").getJsonObject(0).getString("_time"));
         Assertions.assertEquals("1970-01-01T00:00:35.000Z",response2.getJsonArray("data").getJsonObject(9).getString("_time"));
+
+        Instant end = Instant.now();
+        System.out.println("Took "+Duration.between(start,end).getNano()+" nanoseconds");
     }
 }

@@ -70,8 +70,7 @@ public final class DTTableDatasetNg extends AbstractUserInterfaceElement {
 
     private final Lock lock = new ReentrantLock();
     private Dataset<Row> dataset = null;
-    private List<String> datasetAsJSON = null;
-    private List<Row> datasetRows = null;
+    private Dataset<String> datasetAsJson = null;
     private DTHeader schemaHeaders;
     private int drawCount;
 
@@ -118,10 +117,9 @@ public final class DTTableDatasetNg extends AbstractUserInterfaceElement {
             }
             if (rowDataset.schema().nonEmpty()) {
                 // needs to be here as sparkContext might disappear later
-                dataset = rowDataset;
+                dataset = rowDataset.cache();
+                datasetAsJson = rowDataset.toJSON().cache();
                 schemaHeaders = new DTHeader(rowDataset.schema());
-                datasetRows = rowDataset.collectAsList();
-                datasetAsJSON = rowDataset.toJSON().collectAsList();
             }
         } finally {
             lock.unlock();
@@ -150,7 +148,7 @@ public final class DTTableDatasetNg extends AbstractUserInterfaceElement {
         defaultOptions.put("start",Integer.toString(0));
         defaultOptions.put("length",Integer.toString(currentAJAXLength));
         defaultOptions.put("search","");
-        writeDataUpdate(new DataTablesFormat(datasetAsJSON,schemaHeaders,new DataTablesFormatOptions(defaultOptions)),flush);
+        writeDataUpdate(new DataTablesFormat(dataset,new DataTablesFormatOptions(defaultOptions)),flush);
     }
 
     public void writeDataUpdate(DatasetFormat format, boolean flush) throws InterpreterException{
@@ -162,10 +160,11 @@ public final class DTTableDatasetNg extends AbstractUserInterfaceElement {
     }
 
     public JsonObject SearchAndPaginate(int draw, int start, int length, String searchString) throws InterpreterException {
-        if(datasetAsJSON == null){
+        if(dataset == null){
             throw new InterpreterException("Attempting to draw an empty dataset!");
         }
-        DTSearch dtSearch = new DTSearch(datasetAsJSON);
+        List<String> datasetJsonRows = datasetAsJson.collectAsList();
+        DTSearch dtSearch = new DTSearch(datasetJsonRows);
         List<Order> currentOrder = null;
 
         // TODO these all decode the JSON, it refactor therefore to decode only once
@@ -184,7 +183,7 @@ public final class DTTableDatasetNg extends AbstractUserInterfaceElement {
         // ui formatting
         JsonArray formated = dataStreamParser(paginatedList);
         final JsonArray schemaHeadersAsJSON = schemaHeaders.json();
-        int recordsTotal = datasetAsJSON.size();
+        int recordsTotal = datasetJsonRows.size();
         int recordsFiltered = searchedList.size();
 
         return DTNetResponse(formated, schemaHeadersAsJSON, draw, recordsTotal,recordsFiltered);
@@ -224,19 +223,7 @@ public final class DTTableDatasetNg extends AbstractUserInterfaceElement {
         }
     }
 
-    public DTHeader schemaHeaders() {
-        return schemaHeaders;
-    }
     public List<String> getDatasetAsJSON(){
-        if(datasetAsJSON == null){
-            return new ArrayList<>();
-        }
-        return datasetAsJSON;
-    }
-    public List<Row> getDatasetRows(){
-        if(datasetRows == null){
-            return new ArrayList<>();
-        }
-        return datasetRows;
+        return datasetAsJson.collectAsList();
     }
 }

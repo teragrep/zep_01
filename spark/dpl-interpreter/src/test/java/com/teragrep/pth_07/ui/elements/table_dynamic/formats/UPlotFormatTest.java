@@ -94,18 +94,28 @@ class UPlotFormatTest {
 
     @Test
     void testFormat() {
-        List<Row> datasetRows = testDs.collectAsList();
         DTHeader schema = new DTHeader(testDs.schema());
+        String graphType = "chart";
 
-        UPlotFormatOptions options = new UPlotFormatOptions(new HashMap<>());
-        UPlotFormat format = new UPlotFormat(datasetRows, schema, options);
+        HashMap<String,String> optionsMap = new HashMap<>();
+        optionsMap.put("graphType",graphType);
+        UPlotFormatOptions options = new UPlotFormatOptions(optionsMap);
+        UPlotFormat format = new UPlotFormat(testDs, options);
 
         JsonObject formatted = Assertions.assertDoesNotThrow(()-> format.format());
 
         // Formatted dataset should contain the data in a transposed array.
-        Assertions.assertEquals(rowsToGenerate,formatted.getJsonArray("xAxis").size());
-        Assertions.assertEquals(schema.schema().size()-1,formatted.getJsonArray("yAxis").size());
+        Assertions.assertEquals(rowsToGenerate,formatted.getJsonObject("data").getJsonArray("xAxis").size());
+        Assertions.assertEquals(schema.schema().size()-1,formatted.getJsonObject("data").getJsonArray("yAxis").size());
 
-        Assertions.assertEquals(rowsToGenerate, formatted.getJsonArray("yAxis").getJsonArray(0).size());
+        Assertions.assertEquals(rowsToGenerate, formatted.getJsonObject("data").getJsonArray("yAxis").getJsonArray(0).size());
+
+        // Formatted dataset should contain options object with correct data required by the uPlot library
+        Assertions.assertEquals(4, formatted.getJsonObject("options").size());
+        Assertions.assertEquals(graphType, formatted.getJsonObject("options").getString("graphType"));
+        Assertions.assertEquals(0, formatted.getJsonObject("options").getJsonArray("labels").size());
+        Assertions.assertEquals(0, formatted.getJsonObject("options").getJsonArray("range").size());
+        Assertions.assertEquals(0, formatted.getJsonObject("options").getJsonArray("series").size());
+
     }
 }

@@ -44,14 +44,11 @@
  * a licensee so wish it.
  */
 package com.teragrep.pth_07.ui.elements.table_dynamic.formats;
-import static org.apache.spark.sql.functions.min;
-
-import com.teragrep.pth_07.ui.elements.table_dynamic.DTHeader;
 import com.teragrep.pth_07.ui.elements.table_dynamic.formatOptions.UPlotFormatOptions;
 import com.teragrep.zep_01.interpreter.InterpreterException;
 import jakarta.json.*;
+import org.apache.spark.sql.Dataset;
 import org.apache.spark.sql.Row;
-import org.apache.spark.sql.Row$;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -60,21 +57,22 @@ import java.util.List;
 
 public class UPlotFormat implements  DatasetFormat{
 
-    private final List<Row> datasetRows;
-    private final DTHeader schemaHeaders;
+    private final Dataset<Row> dataset;
     private final UPlotFormatOptions options;
     private static final Logger LOGGER = LoggerFactory.getLogger(UPlotFormat.class);
 
-    public UPlotFormat(List<Row> datasetRows, DTHeader schemaHeaders, UPlotFormatOptions options){
-        this.datasetRows = datasetRows;
-        this.schemaHeaders = schemaHeaders;
+    public UPlotFormat(Dataset<Row> dataset, UPlotFormatOptions options){
+        this.dataset = dataset;
         this.options = options;
     }
 
     public JsonObject format() throws InterpreterException{
         // Spark data is defined by row-based arrays, but uPlot expects to get them in columns-based arrays
         // Transpose data so that we have: [[x-axis value,x-axis value,x-axis value,...],[[series1Value],[series1Value],[series1Value],...][[series2Value],[series2Value],[series2Value],...]]
-        int columnCount = schemaHeaders.schema().size();
+        int columnCount = dataset.schema().size();
+
+        List<Row> datasetRows = dataset.collectAsList();
+
         List<List<String>> transposed = new ArrayList<>();
         for (int i = 0; i < columnCount; i++) {
             List<String> columnList = new ArrayList<String>();
@@ -95,8 +93,28 @@ public class UPlotFormat implements  DatasetFormat{
             }
         }
         JsonArray yAxis = yAxisBuilder.build();
+        JsonObject axesObject = Json.createObjectBuilder().add("xAxis",xAxis).add("yAxis",yAxis).build();
 
-        JsonObject response = Json.createObjectBuilder().add("xAxis",xAxis).add("yAxis",yAxis).build();
+        // TODO: generate x-axis ticks
+        JsonArray labels = Json.createArrayBuilder().build();
+
+        // generate series names
+        JsonArrayBuilder seriesBuilder = Json.createArrayBuilder();
+        for (String fieldName : dataset.schema().fieldNames()) {
+            seriesBuilder.add(fieldName);
+        }
+        JsonArray series = Json.createArrayBuilder().build();
+
+        // generate graph type
+        String graphType = options.graphType();
+
+        // TODO: generete min and max values
+        //int min;
+        //int max;
+        JsonArray range = Json.createArrayBuilder().build();
+
+        JsonObject optionsObject = Json.createObjectBuilder().add("labels",labels).add("series",series).add("graphType",graphType).add("range",range).build();
+        JsonObject response = Json.createObjectBuilder().add("data",axesObject).add("options",optionsObject).build();
         return response;
     }
 }

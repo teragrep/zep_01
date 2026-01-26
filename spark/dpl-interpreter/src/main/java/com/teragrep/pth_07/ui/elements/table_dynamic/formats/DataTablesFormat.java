@@ -45,37 +45,40 @@
  */
 package com.teragrep.pth_07.ui.elements.table_dynamic.formats;
 
-import com.teragrep.pth_07.ui.elements.table_dynamic.DTHeader;
 import com.teragrep.pth_07.ui.elements.table_dynamic.DTPagination;
 import com.teragrep.pth_07.ui.elements.table_dynamic.DTSearch;
 import com.teragrep.pth_07.ui.elements.table_dynamic.formatOptions.DataTablesFormatOptions;
 import com.teragrep.pth_07.ui.elements.table_dynamic.pojo.Order;
 import com.teragrep.zep_01.interpreter.InterpreterException;
 import jakarta.json.*;
+import org.apache.spark.sql.Dataset;
+import org.apache.spark.sql.Row;
+import org.apache.spark.sql.types.StructField;
+import org.apache.spark.sql.types.StructType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import scala.collection.Iterator;
 
 import java.io.StringReader;
 import java.util.List;
 
 public class DataTablesFormat implements  DatasetFormat{
 
-    private final List<String> datasetAsJSON;
-    private final DTHeader schemaHeaders;
+    private final Dataset<Row> dataset;
     private final DataTablesFormatOptions options;
     private static final Logger LOGGER = LoggerFactory.getLogger(DataTablesFormat.class);
 
-    public DataTablesFormat(List<String> datasetAsJSON, DTHeader schemaHeaders, DataTablesFormatOptions options){
-        this.datasetAsJSON = datasetAsJSON;
-        this.schemaHeaders = schemaHeaders;
+    public DataTablesFormat(Dataset<Row> dataset, DataTablesFormatOptions options){
+        this.dataset = dataset;
         this.options = options;
     }
     public JsonObject format() throws InterpreterException{
-            if(datasetAsJSON == null){
+            if(dataset == null){
                 throw new InterpreterException("Attempting to draw an empty dataset!");
             }
             try{
-                DTSearch dtSearch = new DTSearch(datasetAsJSON);
+                List<String> datasetAsJson = dataset.toJSON().collectAsList();
+                DTSearch dtSearch = new DTSearch(datasetAsJson);
                 List<Order> currentOrder = null;
 
                 // searching
@@ -101,8 +104,15 @@ public class DataTablesFormat implements  DatasetFormat{
                 }
                 formated = arrayBuilder.build();
 
-                final JsonArray schemaHeadersAsJSON = schemaHeaders.json();
-                int recordsTotal = datasetAsJSON.size();
+                JsonArrayBuilder builder = Json.createArrayBuilder();
+                Iterator<StructField> it = dataset.schema().iterator();
+                while(it.hasNext()) {
+                    StructField column = it.next();
+                    builder.add(column.name());
+                }
+                final JsonArray schemaHeadersAsJSON = builder.build();
+
+                int recordsTotal = datasetAsJson.size();
                 int recordsFiltered = searchedList.size();
 
                 JsonObjectBuilder objectBuilder = Json.createObjectBuilder();

@@ -343,19 +343,17 @@ public class DPLInterpreter extends AbstractInterpreter {
 
         DatasetFormat format;
         if(visualizationLibraryName.equals(VisualizationLibraries.UPLOT.label)){
-            List<Row> datasetRows = userInterfaceManager.getDtTableDatasetNg().getDatasetRows();
-            DTHeader schemaHeaders = userInterfaceManager.getDtTableDatasetNg().schemaHeaders();
+            Dataset<Row> dataset = userInterfaceManager.getDtTableDatasetNg().dataset();
 
             UPlotFormatOptions uplotOptions = new UPlotFormatOptions(options);
-            format = new UPlotFormat(datasetRows, schemaHeaders, uplotOptions);
+            format = new UPlotFormat(dataset, uplotOptions);
         }
         else {
             // Default to DataTables
-            List<String> datasetAsJson = userInterfaceManager.getDtTableDatasetNg().getDatasetAsJSON();
-            DTHeader schemaHeaders = userInterfaceManager.getDtTableDatasetNg().schemaHeaders();
+            Dataset<Row> dataset = userInterfaceManager.getDtTableDatasetNg().dataset();
 
             DataTablesFormatOptions datatablesOptions = new DataTablesFormatOptions(options);
-            format = new DataTablesFormat(datasetAsJson, schemaHeaders, datatablesOptions);
+            format = new DataTablesFormat(dataset, datatablesOptions);
         }
         return format.format().toString();
     }
