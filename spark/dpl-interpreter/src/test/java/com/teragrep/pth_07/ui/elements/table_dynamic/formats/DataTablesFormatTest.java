@@ -168,7 +168,6 @@ class DataTablesFormatTest {
 
     @Test
     void testPagination() {
-        Instant start = Instant.now();
         // Get first 5 rows of the dataset, check values of first and last field
         Map<String,String> optionsMap1 = new HashMap<>();
         optionsMap1.put("draw",Integer.toString(0));
@@ -198,8 +197,5 @@ class DataTablesFormatTest {
         Assertions.assertEquals(10,response2.getJsonArray("data").size());
         Assertions.assertEquals("1970-01-01T00:00:44.000Z",response2.getJsonArray("data").getJsonObject(0).getString("_time"));
         Assertions.assertEquals("1970-01-01T00:00:35.000Z",response2.getJsonArray("data").getJsonObject(9).getString("_time"));
-
-        Instant end = Instant.now();
-        System.out.println("Took "+Duration.between(start,end).getNano()+" nanoseconds");
     }
 }
