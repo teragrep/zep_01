@@ -1111,9 +1111,9 @@ public class NotebookServer extends WebSocketServlet
     final int draw = (int) Double.parseDouble(fromMessage.get("draw").toString());
 
     HashMap<String,Object> optionsMap = new HashMap<String,Object>();
-    optionsMap.put("start",fromMessage.get("start").toString());
-    optionsMap.put("length",fromMessage.get("length").toString());
-    optionsMap.put("draw",fromMessage.get("draw").toString());
+    optionsMap.put("start",Integer.toString(start));
+    optionsMap.put("length",Integer.toString(length));
+    optionsMap.put("draw",Integer.toString(draw));
     optionsMap.put("search",search);
     Message newMessage = new Message(OP.PARAGRAPH_OUTPUT_REQUEST).withMsgId(msgId).put("noteId",noteId).put("paragraphId",paragraphId).put("type","DataTables").put("requestOptions",optionsMap);
     paragraphOutput(conn,context,newMessage);
