@@ -194,6 +194,8 @@ public class ManagedInterpreterGroup extends InterpreterGroup {
     if(remoteInterpreterProcess == null){
       throw new InterpreterException("InterpreterGroup "+id+" does not have a running Interpreter process!");
     }
+    LOGGER.info(visualizationLibraryName);
+    LOGGER.info(options.toString());
     return remoteInterpreterProcess.formatDataset(sessionId, classname, noteId, paragraphId, visualizationLibraryName, options);
   }
   public boolean isEmpty() {
