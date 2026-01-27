@@ -123,7 +123,7 @@ public class SparkInterpreterLauncher extends StandardInterpreterLauncher {
 
       String scalaVersion = null;
       try {
-        scalaVersion = detectSparkScalaVersion(getEnv("SPARK_HOME"), env);
+        scalaVersion = detectSparkScalaVersion(getEnv("SPARK_HOME"));
         LOGGER.info("Scala version: {}", scalaVersion);
         context.getProperties().put("zeppelin.spark.scala.version", scalaVersion);
       } catch (Exception e) {
@@ -256,27 +256,10 @@ public class SparkInterpreterLauncher extends StandardInterpreterLauncher {
     return env;
   }
 
-  private String detectSparkScalaVersion(String sparkHome, Map<String, String> env) throws Exception {
-    LOGGER.info("Detect scala version from SPARK_HOME: {}", sparkHome);
-    SparkLauncher sparkLauncher = new SparkLauncher();
-    sparkLauncher.setSparkHome(sparkHome);
-    sparkLauncher.addAppArgs("--version");
-    LOGGER.info("env");
-    for (Map.Entry<String,String> envEntry: env.entrySet()) {
-      LOGGER.info("{}:{}",envEntry.getKey(),envEntry.getValue());
-      sparkLauncher.addSparkArg(envEntry.getKey(),envEntry.getValue());
-    }
-    Process process = sparkLauncher.launch();
-    process.waitFor();
-    String processOutput;
-    try(InputStream inputStream = process.getErrorStream()) {
-      processOutput = IOUtils.toString(inputStream, StandardCharsets.UTF_8);
-    }
-    LOGGER.info("Process output: {}",processOutput);
-    Pattern pattern = Pattern.compile(".*Using Scala version (.*),.*");
-    Matcher matcher = pattern.matcher(processOutput);
-    if (matcher.find()) {
-      String scalaVersion = matcher.group(1);
+  private String detectSparkScalaVersion(String sparkHome) throws Exception {
+    String scalaVersion = scala.util.Properties.versionNumberString();
+    LOGGER.info("scalaVersionString {}", scalaVersion);
+    if (!scalaVersion.isEmpty()) {
       if (scalaVersion.startsWith("2.10")) {
         return "2.10";
       } else if (scalaVersion.startsWith("2.11")) {
