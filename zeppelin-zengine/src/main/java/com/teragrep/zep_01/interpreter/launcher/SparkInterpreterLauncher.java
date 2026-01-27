@@ -280,8 +280,7 @@ public class SparkInterpreterLauncher extends StandardInterpreterLauncher {
         }
       }
     }
-    // Default to 2.10 to stay consistent with behaviour of previous implementation
-    return "2.10";
+    throw new Exception("Could not detect a valid Scala version!");
   }
 
   /**
