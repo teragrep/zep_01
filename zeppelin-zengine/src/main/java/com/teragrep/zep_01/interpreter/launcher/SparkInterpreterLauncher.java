@@ -17,28 +17,27 @@
 
 package com.teragrep.zep_01.interpreter.launcher;
 
-import java.io.*;
+import java.io.FileInputStream;
+import java.io.FilenameFilter;
+import java.io.IOException;
 import java.net.URL;
 import java.net.URLClassLoader;
-import java.nio.charset.StandardCharsets;
 import java.nio.file.DirectoryStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.*;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
 
-import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
 import com.teragrep.zep_01.conf.ZeppelinConfiguration;
 import com.teragrep.zep_01.interpreter.recovery.RecoveryStorage;
 import com.teragrep.zep_01.interpreter.remote.RemoteInterpreterUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import java.io.File;
 
 /**
  * Spark specific launcher.
@@ -112,7 +111,7 @@ public class SparkInterpreterLauncher extends StandardInterpreterLauncher {
 
       String scalaVersion = null;
       try {
-        scalaVersion = detectSparkScalaVersion(getEnv("SPARK_HOME"));
+        scalaVersion = detectSparkScalaVersionByReplClass(getEnv("SPARK_HOME"));
         LOGGER.info("Scala version: {}", scalaVersion);
         context.getProperties().put("zeppelin.spark.scala.version", scalaVersion);
       } catch (Exception e) {
@@ -245,10 +244,6 @@ public class SparkInterpreterLauncher extends StandardInterpreterLauncher {
     return env;
   }
 
-  private String detectSparkScalaVersion(String sparkHome) throws Exception {
-      return detectSparkScalaVersionByReplClass(sparkHome);
-  }
-
   private String detectSparkScalaVersionByReplClass(String sparkHome) throws Exception {
     File sparkLibFolder = new File(sparkHome + "/lib");
     if (sparkLibFolder.exists()) {
@@ -265,7 +260,7 @@ public class SparkInterpreterLauncher extends StandardInterpreterLauncher {
       if (sparkAssemblyJars.length > 1) {
         throw new Exception("Multiple spark assembly file found in SPARK_HOME: " + sparkHome);
       }
-      try (URLClassLoader urlClassLoader = new URLClassLoader(new URL[]{sparkAssemblyJars[0].toURI().toURL()});) {
+      try (URLClassLoader urlClassLoader = new URLClassLoader(new URL[]{sparkAssemblyJars[0].toURI().toURL()});){
         urlClassLoader.loadClass("org.apache.spark.repl.SparkCommandLine");
         return "2.10";
       } catch (ClassNotFoundException e) {
@@ -277,15 +272,15 @@ public class SparkInterpreterLauncher extends StandardInterpreterLauncher {
       Optional<File> sparkReplFound = Arrays.stream(sparkJarsFolder.listFiles()).filter(file -> file.getName().contains("spark-repl")).findFirst();
       if (sparkReplFound.isPresent()) {
         File sparkRepl = sparkReplFound.get();
-        if (sparkRepl.getName().contains("2.11")) {
+        if (sparkRepl.getName().contains("spark-repl_2.11")) {
           return "2.11";
         }
-        if (sparkRepl.getName().contains("2.12")) {
+        if (sparkRepl.getName().contains("spark-repl_2.12")) {
           return "2.12";
         }
       }
     }
-    // Default to 2.0
+    // Default to 2.10 to stay consistent with behaviour of previous implementation
     return "2.10";
   }
 
