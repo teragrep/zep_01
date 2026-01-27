@@ -261,7 +261,9 @@ public class SparkInterpreterLauncher extends StandardInterpreterLauncher {
     SparkLauncher sparkLauncher = new SparkLauncher();
     sparkLauncher.setSparkHome(sparkHome);
     sparkLauncher.addAppArgs("--version");
+    LOGGER.info("env");
     for (Map.Entry<String,String> envEntry: env.entrySet()) {
+      LOGGER.info("{}:{}",envEntry.getKey(),envEntry.getValue());
       sparkLauncher.addSparkArg(envEntry.getKey(),envEntry.getValue());
     }
     Process process = sparkLauncher.launch();
@@ -270,6 +272,7 @@ public class SparkInterpreterLauncher extends StandardInterpreterLauncher {
     try(InputStream inputStream = process.getErrorStream()) {
       processOutput = IOUtils.toString(inputStream, StandardCharsets.UTF_8);
     }
+    LOGGER.info("Process output: {}",processOutput);
     Pattern pattern = Pattern.compile(".*Using Scala version (.*),.*");
     Matcher matcher = pattern.matcher(processOutput);
     if (matcher.find()) {
