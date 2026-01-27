@@ -43,6 +43,7 @@ import org.apache.commons.lang3.StringUtils;
 import com.teragrep.zep_01.conf.ZeppelinConfiguration;
 import com.teragrep.zep_01.interpreter.recovery.RecoveryStorage;
 import com.teragrep.zep_01.interpreter.remote.RemoteInterpreterUtils;
+import org.apache.spark.launcher.SparkLauncher;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -257,9 +258,13 @@ public class SparkInterpreterLauncher extends StandardInterpreterLauncher {
 
   private String detectSparkScalaVersion(String sparkHome, Map<String, String> env) throws Exception {
     LOGGER.info("Detect scala version from SPARK_HOME: {}", sparkHome);
-    ProcessBuilder builder = new ProcessBuilder(sparkHome + "/bin/spark-submit", "--version");
-    builder.environment().putAll(env);
-    Process process = builder.start();
+    SparkLauncher sparkLauncher = new SparkLauncher();
+    sparkLauncher.setSparkHome(sparkHome);
+    sparkLauncher.addAppArgs("--version");
+    for (Map.Entry<String,String> envEntry: env.entrySet()) {
+      sparkLauncher.addSparkArg(envEntry.getKey(),envEntry.getValue());
+    }
+    Process process = sparkLauncher.launch();
     process.waitFor();
     String processOutput;
     try(InputStream inputStream = process.getErrorStream()) {
