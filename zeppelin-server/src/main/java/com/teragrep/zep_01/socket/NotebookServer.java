@@ -1161,16 +1161,20 @@ public class NotebookServer extends WebSocketServlet
       String formattedDataset = managedInterpreterGroup.formatDataset(sessionId, interpreter.getClassName(), noteId, paragraphId, visualizationLibraryName, options);
       Message msg = new Message(Message.OP.PARAGRAPH_OUTPUT)
               .withMsgId(msgId)
-              .put("data",formattedDataset)
+              .put("result",formattedDataset)
               .put("type",visualizationLibraryName)
               .put("noteId", noteId)
               .put("paragraphId", paragraphId);
       conn.send(serializeMessage(msg));
     } catch (InterpreterException e){
       LOG.error("Failed to retrieve data from Interpreter process for note: {} paragraph: {} cause: {}",noteId,paragraphId,e.getCause(),e);
-      Message msg = new Message(OP.ERROR_INFO)
+      HashMap<String,String> errorResult = new HashMap<>();
+      errorResult.put("error","true");
+      errorResult.put("message", "Failed to retrieve data. Please rerun the paragraph and try again or see technical log for details!");
+      Message msg = new Message(OP.PARAGRAPH_OUTPUT) //TODO: change this to ERROR_INFO once UI has a refactored error handling protocol
               .withMsgId(msgId)
-              .put("message", "Failed to retrieve data. Please rerun the paragraph and try again or see technical log for details!")
+              .put("type",visualizationLibraryName)
+              .put("result",errorResult)
               .put("noteId", noteId)
               .put("paragraphId", paragraphId);
       conn.send(serializeMessage(msg));
