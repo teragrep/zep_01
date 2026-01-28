@@ -73,7 +73,7 @@ public class BatchHandler implements BiConsumer<Dataset<Row>, Boolean> {
         // need to check aggregatesUsed from visitor at this point, since it can be updated in sequential mode
         // after the parallel operations are performed.
 
-        // flushing affects whether or not
+        // to keep consistent with previous implementation, aggregated data won't be flushed.
         try{
             boolean flush = !aggsUsed;
             userInterfaceManager.getDtTableDatasetNg().setParagraphDataset(rowDataset);
