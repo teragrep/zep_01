@@ -1159,7 +1159,7 @@ public class NotebookServer extends WebSocketServlet
 
     try{
       String formattedDataset = managedInterpreterGroup.formatDataset(sessionId, interpreter.getClassName(), noteId, paragraphId, visualizationLibraryName, options);
-      Message msg = new Message(Message.OP.PARAGRAPH_UPDATE_OUTPUT)
+      Message msg = new Message(Message.OP.PARAGRAPH_OUTPUT)
               .withMsgId(msgId)
               .put("data",formattedDataset)
               .put("type",visualizationLibraryName)
@@ -1694,7 +1694,7 @@ public class NotebookServer extends WebSocketServlet
     if (!sendParagraphStatusToFrontend) {
       return;
     }
-    Message msg = new Message(OP.PARAGRAPH_UPDATE_OUTPUT).put("noteId", noteId)
+    Message msg = new Message(OP.PARAGRAPH_OUTPUT).put("noteId", noteId)
         .put("paragraphId", paragraphId).put("index", index).put("type", type).put("data", output);
     try {
       Note note = getNotebook().getNote(noteId);
