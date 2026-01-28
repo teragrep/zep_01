@@ -42,7 +42,7 @@ public class ValidatedMessageTest {
             Gson gson = new Gson();
             // Message is missing search.value field
             JsonObject testMessageObject = Json.createObjectBuilder()
-                    .add("op", "PARAGRAPH_UPDATE_OUTPUT")
+                    .add("op", "PARAGRAPH_OUTPUT")
                     .add("data", Json.createObjectBuilder()
                             .add("start",0)
                             .add("length",25)
