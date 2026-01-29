@@ -51,8 +51,11 @@ import java.util.Map;
 
 public class UPlotFormatOptions implements FormatOptions{
     private final Map<String, String> optionsMap;
-    public UPlotFormatOptions(Map<String, String> optionsMap){
+    private final String query;
+
+    public UPlotFormatOptions(Map<String, String> optionsMap, String query){
         this.optionsMap = optionsMap;
+        this.query = query;
     }
 
     public String graphType() throws InterpreterException {
@@ -60,5 +63,12 @@ public class UPlotFormatOptions implements FormatOptions{
             throw new InterpreterException("Options map does not contain a graphType value");
         }
         return optionsMap.get("graphType");
+    }
+
+    public String query() throws InterpreterException {
+        if(query.isEmpty()){
+            throw new InterpreterException("Query is empty!");
+        }
+        return query;
     }
 }

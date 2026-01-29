@@ -167,7 +167,7 @@ public class DTTableDatasetNgTest {
         AngularObjectRegistry testRegistry = new AngularObjectRegistry("test", null);
         InterpreterContext context = InterpreterContext.builder().setInterpreterOut(testOutput).setAngularObjectRegistry(testRegistry).build();
 
-        DTTableDatasetNg dtTableDatasetNg = new DTTableDatasetNg(context);
+        DTTableDatasetNg dtTableDatasetNg = new DTTableDatasetNg(context,"test query");
 
         // Simulate DPL receiving new data.
         Assertions.assertDoesNotThrow(()->{
@@ -198,7 +198,7 @@ public class DTTableDatasetNgTest {
 
         AngularObjectRegistry testRegistry = new AngularObjectRegistry("test", null);
         InterpreterContext context = InterpreterContext.builder().setInterpreterOut(testOutput).setAngularObjectRegistry(testRegistry).build();
-        DTTableDatasetNg dtTableDatasetNg = new DTTableDatasetNg(context);
+        DTTableDatasetNg dtTableDatasetNg = new DTTableDatasetNg(context, "test query");
 
         // Simulate DPL receiving new data.
         Assertions.assertDoesNotThrow(()->{
@@ -229,7 +229,7 @@ public class DTTableDatasetNgTest {
 
         AngularObjectRegistry testRegistry = new AngularObjectRegistry("test", null);
         InterpreterContext context = InterpreterContext.builder().setInterpreterOut(testOutput).setAngularObjectRegistry(testRegistry).build();
-        DTTableDatasetNg dtTableDatasetNg = new DTTableDatasetNg(context);
+        DTTableDatasetNg dtTableDatasetNg = new DTTableDatasetNg(context, "test query");
 
         // Simulate DPL receiving new data.
         Assertions.assertDoesNotThrow(()->{

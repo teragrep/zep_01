@@ -99,7 +99,10 @@ class UPlotFormatTest {
 
         HashMap<String,String> optionsMap = new HashMap<>();
         optionsMap.put("graphType",graphType);
-        UPlotFormatOptions options = new UPlotFormatOptions(optionsMap);
+        UPlotFormatOptions options = new UPlotFormatOptions(optionsMap, "index=test earliest=-5y\n" +
+                "| spath\n" +
+                "| timechart count by source\n" +
+                "| sort source");
         UPlotFormat format = new UPlotFormat(testDs, options);
 
         JsonObject formatted = Assertions.assertDoesNotThrow(()-> format.format());

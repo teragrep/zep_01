@@ -66,8 +66,8 @@ public class UserInterfaceManager {
     private final MessageLog messageLog;
     private final OutputContent outputContent;
 
-    public UserInterfaceManager(InterpreterContext interpreterContext) {
-        dtTableDatasetNg = new DTTableDatasetNg(interpreterContext);
+    public UserInterfaceManager(InterpreterContext interpreterContext, String query) {
+        dtTableDatasetNg = new DTTableDatasetNg(interpreterContext, query);
         performanceIndicator = new PerformanceIndicator(interpreterContext);
         messageLog = new MessageLog(interpreterContext);
         outputContent = new OutputContent(interpreterContext);

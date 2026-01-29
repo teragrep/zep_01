@@ -72,6 +72,7 @@ public final class DTTableDatasetNg extends AbstractUserInterfaceElement {
     private Dataset<Row> dataset = null;
     private Dataset<String> datasetAsJson = null;
     private DTHeader schemaHeaders;
+    private final String query;
     private int drawCount;
 
     /*
@@ -82,14 +83,15 @@ public final class DTTableDatasetNg extends AbstractUserInterfaceElement {
      */
     private int currentAJAXLength = 50;
 
-    public DTTableDatasetNg(final InterpreterContext interpreterContext) {
-        this(interpreterContext, new DTHeader(), 1);
+    public DTTableDatasetNg(final InterpreterContext interpreterContext, String query) {
+        this(interpreterContext, new DTHeader(), 1, query);
     }
 
-    public DTTableDatasetNg(final InterpreterContext interpreterContext, final DTHeader schemaHeaders, final int drawCount){
+    public DTTableDatasetNg(final InterpreterContext interpreterContext, final DTHeader schemaHeaders, final int drawCount, final String query){
         super(interpreterContext);
         this.schemaHeaders = schemaHeaders;
         this.drawCount = drawCount;
+        this.query = query;
     }
     @Override
     public void draw() {
@@ -221,6 +223,10 @@ public final class DTTableDatasetNg extends AbstractUserInterfaceElement {
             LOGGER.error(e.toString());
             return(Json.createObjectBuilder().build());
         }
+    }
+
+    public String getQuery() {
+        return query;
     }
 
     public List<String> getDatasetAsJSON(){
