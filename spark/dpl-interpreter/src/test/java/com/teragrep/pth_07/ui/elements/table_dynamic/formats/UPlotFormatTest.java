@@ -114,10 +114,9 @@ class UPlotFormatTest {
         Assertions.assertEquals(rowsToGenerate, formatted.getJsonObject("data").getJsonArray("yAxis").getJsonArray(0).size());
 
         // Formatted dataset should contain options object with correct data required by the uPlot library
-        Assertions.assertEquals(4, formatted.getJsonObject("options").size());
+        Assertions.assertEquals(3, formatted.getJsonObject("options").size());
         Assertions.assertEquals(graphType, formatted.getJsonObject("options").getString("graphType"));
         Assertions.assertEquals(0, formatted.getJsonObject("options").getJsonArray("labels").size());
-        Assertions.assertEquals(0, formatted.getJsonObject("options").getJsonArray("range").size());
         Assertions.assertEquals(schema.schema().size(), formatted.getJsonObject("options").getJsonArray("series").size());
 
     }

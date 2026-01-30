@@ -108,12 +108,7 @@ public class UPlotFormat implements  DatasetFormat{
         // generate graph type
         String graphType = options.graphType();
 
-        // TODO: generete min and max values
-        //int min;
-        //int max;
-        JsonArray range = Json.createArrayBuilder().build();
-
-        JsonObject optionsObject = Json.createObjectBuilder().add("labels",labels).add("series",series).add("graphType",graphType).add("range",range).build();
+        JsonObject optionsObject = Json.createObjectBuilder().add("labels",labels).add("series",series).add("graphType",graphType).build();
         JsonObject response = Json.createObjectBuilder().add("data",axesObject).add("options",optionsObject).build();
         return response;
     }
