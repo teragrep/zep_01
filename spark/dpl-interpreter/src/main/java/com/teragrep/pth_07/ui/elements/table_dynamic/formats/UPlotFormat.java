@@ -49,6 +49,10 @@ import com.teragrep.zep_01.interpreter.InterpreterException;
 import jakarta.json.*;
 import org.apache.spark.sql.Dataset;
 import org.apache.spark.sql.Row;
+import org.apache.spark.sql.functions;
+import org.apache.spark.sql.types.DataTypes;
+import org.apache.spark.sql.types.StructField;
+import org.apache.spark.sql.functions.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -67,48 +71,89 @@ public class UPlotFormat implements  DatasetFormat{
     }
 
     public JsonObject format() throws InterpreterException{
+
+        List<String> seriesNames = options.seriesNames();
+        int numGroups = seriesNames.size();
         // Spark data is defined by row-based arrays, but uPlot expects to get them in columns-based arrays
         // Transpose data so that we have: [[x-axis value,x-axis value,x-axis value,...],[[series1Value],[series1Value],[series1Value],...][[series2Value],[series2Value],[series2Value],...]]
         int columnCount = dataset.schema().size();
 
-        List<Row> datasetRows = dataset.collectAsList();
+        List<String> timestampFieldNames = new ArrayList<>();
+        for (StructField field:dataset.schema().fields()) {
+            if(field.dataType().equals(DataTypes.TimestampType)){
+                timestampFieldNames.add(field.name());
+            }
+        }
 
-        List<List<String>> transposed = new ArrayList<>();
+        Dataset<Row> modifiedDataset = dataset;
+        for (String timestampFieldName: timestampFieldNames) {
+            modifiedDataset = modifiedDataset.withColumn(timestampFieldName, org.apache.spark.sql.functions.unix_timestamp(functions.col(timestampFieldName)));
+        }
+
+        List<Row> datasetRows = modifiedDataset.collectAsList();
+
+        List<List<Object>> transposed = new ArrayList<>();
         for (int i = 0; i < columnCount; i++) {
-            List<String> columnList = new ArrayList<String>();
+            List<Object> columnList = new ArrayList<Object>();
             transposed.add(columnList);
         }
 
         for(Row row : datasetRows){
             for (int i = 0; i < columnCount; i++){
-                transposed.get(i).add(row.get(i).toString());
+                transposed.get(i).add(row.getAs(i));
             }
         }
-        
-        JsonArray xAxis = Json.createArrayBuilder(transposed.get(0)).build();
+
+        List<String> combinedXAxisValues = new ArrayList<String>();
+        if(numGroups > 1){
+            for (int i = 0; i < transposed.get(0).size(); i++) {
+                StringBuilder combinedLabel = new StringBuilder();
+                for (int j = 0; j < numGroups; j++) {
+                    combinedLabel.append(transposed.get(j).get(i));
+                    if(j+1 != numGroups){
+                        combinedLabel.append(".");
+                    }
+                }
+                combinedXAxisValues.add(combinedLabel.toString());
+            }
+        }
+        else {
+            combinedXAxisValues.add(dataset.schema().fieldNames()[0]);
+        }
+
+
+        // X-axis is an array of idexes, mapped to labels,
+        JsonArrayBuilder xAxisBuilder = Json.createArrayBuilder();
+        for (int i = 0; i < combinedXAxisValues.size(); i++) {
+            xAxisBuilder.add(i);
+        }
+        JsonArray xAxis = xAxisBuilder.build();
+
+        // y-axis contains the transposed datapoints
         JsonArrayBuilder yAxisBuilder = Json.createArrayBuilder();
         if(transposed.size() > 1){
-            for (int i = 1; i < transposed.size(); i++) {
+            for (int i = numGroups; i < transposed.size(); i++) {
                 yAxisBuilder.add(Json.createArrayBuilder(transposed.get(i)));
             }
         }
         JsonArray yAxis = yAxisBuilder.build();
-        JsonObject axesObject = Json.createObjectBuilder().add("xAxis",xAxis).add("yAxis",yAxis).build();
+        JsonArray axesObject = Json.createArrayBuilder().add(xAxis).add(yAxis).build();
 
-        // TODO: generate x-axis ticks
-        JsonArray labels = Json.createArrayBuilder().build();
+        // labels contains the names of each series of data in an array
+        JsonArrayBuilder labelsBuilder = Json.createArrayBuilder(combinedXAxisValues);
+        JsonArray labels = labelsBuilder.build();
 
         // generate series names
         JsonArrayBuilder seriesBuilder = Json.createArrayBuilder();
-        for (String fieldName : dataset.schema().fieldNames()) {
-            seriesBuilder.add(fieldName);
+        for (int i = 0+numGroups; i < dataset.schema().size(); i++) {
+            seriesBuilder.add(dataset.schema().names()[i]);
         }
         JsonArray series = seriesBuilder.build();
 
         // generate graph type
         String graphType = options.graphType();
 
-        JsonObject optionsObject = Json.createObjectBuilder().add("labels",labels).add("series",series).add("graphType",graphType).build();
+        JsonObject optionsObject = Json.createObjectBuilder().add("series",series).add("labels",labels).add("graphType",graphType).build();
         JsonObject response = Json.createObjectBuilder().add("data",axesObject).add("options",optionsObject).build();
         return response;
     }

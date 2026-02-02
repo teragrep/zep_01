@@ -52,6 +52,7 @@ import com.teragrep.pth_07.ui.elements.table_dynamic.testdata.TestDPLData;
 import jakarta.json.JsonObject;
 import org.apache.spark.sql.Dataset;
 import org.apache.spark.sql.Row;
+import org.apache.spark.sql.RowFactory;
 import org.apache.spark.sql.SparkSession;
 import org.apache.spark.sql.types.DataTypes;
 import org.apache.spark.sql.types.MetadataBuilder;
@@ -60,11 +61,10 @@ import org.apache.spark.sql.types.StructType;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
+import java.awt.font.NumericShaper;
 import java.sql.Timestamp;
 import java.time.Instant;
-import java.util.HashMap;
-import java.util.List;
-import java.util.UUID;
+import java.util.*;
 
 class UPlotFormatTest {
     private final SparkSession sparkSession = SparkSession.builder()
@@ -73,51 +73,97 @@ class UPlotFormatTest {
             .config("checkpointLocation","/tmp/pth_10/test/StackTest/checkpoints/" + UUID.randomUUID() + "/")
             .config("spark.sql.session.timeZone", "UTC")
             .getOrCreate();
-    private final StructType testSchema = new StructType(
-            new StructField[] {
-                    new StructField("_time", DataTypes.TimestampType, false, new MetadataBuilder().build()),
-                    new StructField("id", DataTypes.LongType, false, new MetadataBuilder().build()),
-                    new StructField("_raw", DataTypes.StringType, false, new MetadataBuilder().build()),
-                    new StructField("index", DataTypes.StringType, false, new MetadataBuilder().build()),
-                    new StructField("sourcetype", DataTypes.StringType, false, new MetadataBuilder().build()),
-                    new StructField("host", DataTypes.StringType, false, new MetadataBuilder().build()),
-                    new StructField("source", DataTypes.StringType, false, new MetadataBuilder().build()),
-                    new StructField("partition", DataTypes.StringType, false, new MetadataBuilder().build()),
-                    new StructField("offset", DataTypes.LongType, false, new MetadataBuilder().build()),
-                    new StructField("origin", DataTypes.StringType, false, new MetadataBuilder().build())
-            }
-    );
-    private final int rowsToGenerate = 49;
-    private final TestDPLData testDataset = new TestDPLData(sparkSession, testSchema);
-    private final Dataset<Row> testDs = testDataset.createDataset(rowsToGenerate, Timestamp.from(Instant.ofEpochSecond(0)),0L,"data data","index_A","stream","host","input",String.valueOf(0),0L,"test data");
-
 
     @Test
-    void testFormat() {
+    void testNormalFormat() {
+        final StructType aggregatedTestSchema = new StructType(
+                new StructField[] {
+                        new StructField("_time", DataTypes.TimestampType, false, new MetadataBuilder().build()),
+                        new StructField("count(operation)", DataTypes.IntegerType, false, new MetadataBuilder().build()),
+                        new StructField("avg(operation)", DataTypes.IntegerType, false, new MetadataBuilder().build()),
+                        new StructField("max(operation)", DataTypes.IntegerType, false, new MetadataBuilder().build())
+                }
+        );
+
+        Random random = new Random();
+        List<Row> rows = new ArrayList<>();
+        rows.add(RowFactory.create(Instant.ofEpochSecond(Instant.now().getEpochSecond()+random.nextInt(100)),random.nextInt(500),random.nextInt(5),random.nextInt(50)));
+        rows.add(RowFactory.create(Instant.ofEpochSecond(Instant.now().getEpochSecond()+random.nextInt(100)),random.nextInt(500),random.nextInt(5),random.nextInt(50)));
+        rows.add(RowFactory.create(Instant.ofEpochSecond(Instant.now().getEpochSecond()+random.nextInt(100)),random.nextInt(500),random.nextInt(5),random.nextInt(50)));
+        rows.add(RowFactory.create(Instant.ofEpochSecond(Instant.now().getEpochSecond()+random.nextInt(100)),random.nextInt(500),random.nextInt(5),random.nextInt(50)));
+        rows.add(RowFactory.create(Instant.ofEpochSecond(Instant.now().getEpochSecond()+random.nextInt(100)),random.nextInt(500),random.nextInt(5),random.nextInt(50)));
+        rows.add(RowFactory.create(Instant.ofEpochSecond(Instant.now().getEpochSecond()+random.nextInt(100)),random.nextInt(500),random.nextInt(5),random.nextInt(50)));
+        final Dataset<Row> testDs = sparkSession.createDataFrame(rows,aggregatedTestSchema);
         DTHeader schema = new DTHeader(testDs.schema());
         String graphType = "chart";
 
         HashMap<String,String> optionsMap = new HashMap<>();
         optionsMap.put("graphType",graphType);
         UPlotFormatOptions options = new UPlotFormatOptions(optionsMap, "index=test earliest=-5y\n" +
-                "| spath\n" +
-                "| timechart count by source\n" +
-                "| sort source");
+                "| timechart count(operation) avg(operation) max(operation)");
         UPlotFormat format = new UPlotFormat(testDs, options);
 
         JsonObject formatted = Assertions.assertDoesNotThrow(()-> format.format());
 
         // Formatted dataset should contain the data in a transposed array.
-        Assertions.assertEquals(rowsToGenerate,formatted.getJsonObject("data").getJsonArray("xAxis").size());
-        Assertions.assertEquals(schema.schema().size()-1,formatted.getJsonObject("data").getJsonArray("yAxis").size());
+        Assertions.assertEquals(1,formatted.getJsonArray("data").getJsonArray(0).size());
+        Assertions.assertEquals(schema.schema().size(),formatted.getJsonArray("data").getJsonArray(1).size());
 
-        Assertions.assertEquals(rowsToGenerate, formatted.getJsonObject("data").getJsonArray("yAxis").getJsonArray(0).size());
+        Assertions.assertEquals(6, formatted.getJsonArray("data").getJsonArray(1).getJsonArray(0).size());
 
         // Formatted dataset should contain options object with correct data required by the uPlot library
         Assertions.assertEquals(3, formatted.getJsonObject("options").size());
         Assertions.assertEquals(graphType, formatted.getJsonObject("options").getString("graphType"));
-        Assertions.assertEquals(0, formatted.getJsonObject("options").getJsonArray("labels").size());
+        Assertions.assertEquals(1, formatted.getJsonObject("options").getJsonArray("labels").size());
         Assertions.assertEquals(schema.schema().size(), formatted.getJsonObject("options").getJsonArray("series").size());
 
+    }
+
+    @Test
+    void testAggregatedFormat() {
+        final StructType aggregatedTestSchema = new StructType(
+                new StructField[] {
+                        new StructField("operation", DataTypes.StringType, false, new MetadataBuilder().build()),
+                        new StructField("success", DataTypes.BooleanType, false, new MetadataBuilder().build()),
+                        new StructField("count(operation)", DataTypes.IntegerType, false, new MetadataBuilder().build()),
+                        new StructField("avg(operation)", DataTypes.IntegerType, false, new MetadataBuilder().build()),
+                        new StructField("max(operation)", DataTypes.IntegerType, false, new MetadataBuilder().build())
+                }
+        );
+
+        Random random = new Random();
+        List<Row> rows = new ArrayList<>();
+        rows.add(RowFactory.create("create",true,random.nextInt(500),random.nextInt(5),random.nextInt(50)));
+        rows.add(RowFactory.create("create",false,random.nextInt(500),random.nextInt(5),random.nextInt(50)));
+        rows.add(RowFactory.create("delete",true,random.nextInt(500),random.nextInt(5),random.nextInt(50)));
+        rows.add(RowFactory.create("delete",false,random.nextInt(500),random.nextInt(5),random.nextInt(50)));
+        rows.add(RowFactory.create("update",true,random.nextInt(500),random.nextInt(5),random.nextInt(50)));
+        rows.add(RowFactory.create("update",false,random.nextInt(500),random.nextInt(5),random.nextInt(50)));
+        final Dataset<Row> aggregatedTestDs = sparkSession.createDataFrame(rows,aggregatedTestSchema);
+
+        DTHeader schema = new DTHeader(aggregatedTestDs.schema());
+        String graphType = "chart";
+
+        HashMap<String,String> optionsMap = new HashMap<>();
+        optionsMap.put("graphType",graphType);
+        UPlotFormatOptions options = new UPlotFormatOptions(optionsMap, "index=test earliest=-5y\n" +
+                "| spath\n" +
+                "| stats count(operation) avg(operation) max(operation) by operation success");
+        UPlotFormat format = new UPlotFormat(aggregatedTestDs, options);
+
+        JsonObject formatted = Assertions.assertDoesNotThrow(()-> format.format());
+
+        // Formatted dataset should contain the data in a transposed array.
+        Assertions.assertEquals(rows.size(),formatted.getJsonArray("data").getJsonArray(0).size());
+        Assertions.assertEquals(schema.schema().size()-2,formatted.getJsonArray("data").getJsonArray(1).size());
+
+        Assertions.assertEquals(rows.size(), formatted.getJsonArray("data").getJsonArray(1).getJsonArray(0).size());
+
+        // Formatted dataset should contain options object with correct data required by the uPlot library
+        Assertions.assertEquals(3, formatted.getJsonObject("options").size());
+        Assertions.assertEquals(graphType, formatted.getJsonObject("options").getString("graphType"));
+
+        Assertions.assertEquals(3, formatted.getJsonObject("options").getJsonArray("series").size());
+        Assertions.assertEquals(6, formatted.getJsonObject("options").getJsonArray("labels").size());
     }
 }

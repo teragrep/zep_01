@@ -46,46 +46,24 @@
 package com.teragrep.pth_07.ui.elements.table_dynamic.formatOptions;
 
 import com.teragrep.zep_01.interpreter.InterpreterException;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 
-import java.util.ArrayList;
-import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
-public class UPlotFormatOptions implements FormatOptions{
-    private final Map<String, String> optionsMap;
-    private final String query;
+class UPlotFormatOptionsTest {
 
-    public UPlotFormatOptions(Map<String, String> optionsMap, String query){
-        this.optionsMap = optionsMap;
-        this.query = query;
+    @Test
+    public void testSeriesNames(){
+        UPlotFormatOptions options = new UPlotFormatOptions(new HashMap<>(),"%dpl\n" +
+                "index=crud earliest=-5y\n" +
+                "| spath\n" +
+                "| rename count AS countOperation\n" +
+                "| stats sum(countOperation) min(countOperation) max(countOperation) by operation success\n" +
+                "| stats operation by operation success yee_haw");
+        List<String> seriesNames = Assertions.assertDoesNotThrow(()->options.seriesNames());
+        System.out.println(seriesNames);
     }
 
-    public String graphType() throws InterpreterException {
-        if(!optionsMap.containsKey("graphType")){
-            throw new InterpreterException("Options map does not contain a graphType value");
-        }
-        return optionsMap.get("graphType");
-    }
-
-    public String query() throws InterpreterException {
-        if(query.isEmpty()){
-            throw new InterpreterException("Query is empty!");
-        }
-        return query;
-    }
-
-    // Gets series names by finding last instance of " by {seriesName} {seriesName...}|" from query string.
-    public List<String> seriesNames() throws InterpreterException{
-        List<String> seriesNames = new ArrayList<>();
-        String query = query();
-        Pattern pattern = Pattern.compile(" by ([^|\n$]+)");
-        Matcher matcher = pattern.matcher(query);
-        while(matcher.find()){
-            seriesNames = Arrays.asList(matcher.group(matcher.groupCount()).split(" "));
-        }
-        return seriesNames;
-    }
 }
