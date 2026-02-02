@@ -81,10 +81,21 @@ public class UPlotFormatOptions implements FormatOptions{
     public List<String> seriesNames() throws InterpreterException{
         List<String> seriesNames = new ArrayList<>();
         String query = query();
-        Pattern pattern = Pattern.compile(" by ([^|\n$]+)");
-        Matcher matcher = pattern.matcher(query);
-        while(matcher.find()){
-            seriesNames = Arrays.asList(matcher.group(matcher.groupCount()).split(" "));
+
+        Pattern pattern1 = Pattern.compile("(stats.*|timechart.*|eventstats.*|chart.*)");
+        Matcher matcher1 = pattern1.matcher(query);
+
+        String lastAggregationQuery = "";
+        while (matcher1.find()){
+            lastAggregationQuery = matcher1.group();
+        }
+
+        if(matcher1.groupCount() != 0){
+            Pattern pattern = Pattern.compile(" by ([^|\n$]+)");
+            Matcher matcher = pattern.matcher(lastAggregationQuery);
+            while(matcher.find()){
+                seriesNames = Arrays.asList(matcher.group(matcher.groupCount()).split(" "));
+            }
         }
         return seriesNames;
     }
