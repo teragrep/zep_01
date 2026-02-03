@@ -125,11 +125,6 @@ public class UPlotFormat implements  DatasetFormat{
                 combinedSeriesNames.add(combinedSeriesName.toString());
             }
         }
-        else {
-            for (String fieldName:modifiedDataset.schema().fieldNames()) {
-                combinedSeriesNames.add(fieldName);
-            }
-        }
         List<String> distinctLabels = combinedSeriesNames.stream().distinct().collect(Collectors.toList());
 
         // X-axis is an array of indexes, mapped to labels,
@@ -155,10 +150,8 @@ public class UPlotFormat implements  DatasetFormat{
 
         // generate series names
         JsonArrayBuilder seriesBuilder = Json.createArrayBuilder();
-        if(numSeries > 0){
-            for (int i = 0+numSeries; i < modifiedDataset.schema().size(); i++) {
-                seriesBuilder.add(modifiedDataset.schema().names()[i]);
-            }
+        for (int i = 0+numSeries; i < modifiedDataset.schema().size(); i++) {
+            seriesBuilder.add(modifiedDataset.schema().names()[i]);
         }
         JsonArray series = seriesBuilder.build();
 

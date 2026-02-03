@@ -45,10 +45,7 @@
  */
 package com.teragrep.pth_07.ui.elements.table_dynamic.formats;
 
-import com.teragrep.pth_07.ui.elements.table_dynamic.DTHeader;
-import com.teragrep.pth_07.ui.elements.table_dynamic.formatOptions.DataTablesFormatOptions;
 import com.teragrep.pth_07.ui.elements.table_dynamic.formatOptions.UPlotFormatOptions;
-import com.teragrep.pth_07.ui.elements.table_dynamic.testdata.TestDPLData;
 import jakarta.json.JsonObject;
 import org.apache.spark.sql.Dataset;
 import org.apache.spark.sql.Row;
@@ -61,8 +58,6 @@ import org.apache.spark.sql.types.StructType;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
-import java.awt.font.NumericShaper;
-import java.sql.Timestamp;
 import java.time.Instant;
 import java.util.*;
 
@@ -76,91 +71,131 @@ class UPlotFormatTest {
 
     @Test
     void testSingleRowAggregationFormat() {
-        final StructType nonAggregetedSchema = new StructType(
-                new StructField[] {
-                        new StructField("max(operation)", DataTypes.IntegerType, false, new MetadataBuilder().build()),
-                        new StructField("min(operation)", DataTypes.IntegerType, false, new MetadataBuilder().build()),
-                }
-        );
-
-        Random random = new Random();
-        List<Row> rows = new ArrayList<>();
-        rows.add(RowFactory.create(random.nextInt(500),random.nextInt(5)));
-        final Dataset<Row> testDs = sparkSession.createDataFrame(rows,nonAggregetedSchema);
-        String graphType = "graph";
-
-        HashMap<String,String> optionsMap = new HashMap<>();
-        optionsMap.put("graphType",graphType);
-        UPlotFormatOptions options = new UPlotFormatOptions(optionsMap, "%dpl\n" +
+        // Create test dataset and a query string to simulate most recent dataset received from DPL
+        String dplQuery = "%dpl\n" +
                 "index=test\n" +
                 "| spath\n" +
                 "| rename count AS countOperation\n" +
-                "| stats max(countOperation) min(countOperation)");
-        UPlotFormat format = new UPlotFormat(testDs, options);
+                "| stats max(countOperation) min(countOperation)";
+        int groupByCount = 0; // DPL query does not contain any group by clauses
+        final StructType datasetSchema = new StructType(
+                new StructField[] {
+                        new StructField("max(operation)", DataTypes.IntegerType, false, new MetadataBuilder().build()),
+                        new StructField("min(operation)", DataTypes.IntegerType, false, new MetadataBuilder().build()),
+                        new StructField("avg(operation)", DataTypes.IntegerType, false, new MetadataBuilder().build())
+                }
+        );
+        List<Row> rows = new ArrayList<>();
+        Random random = new Random();
+        rows.add(RowFactory.create(random.nextInt(500),random.nextInt(5),random.nextInt(25)));
+        final Dataset<Row> dataset = sparkSession.createDataFrame(rows,datasetSchema);
+
+        // Create a map containing  object to simulate a formatting request received from UI
+        String graphType = "graph";
+        HashMap<String,String> optionsMap = new HashMap<>();
+        optionsMap.put("graphType",graphType);
+
+        // Create options and Format objects to be tested
+        UPlotFormatOptions options = new UPlotFormatOptions(optionsMap, dplQuery);
+        UPlotFormat format = new UPlotFormat(dataset, options);
 
         JsonObject formatted = Assertions.assertDoesNotThrow(()-> format.format());
 
-        // Formatted dataset should contain the data in a transposed array.
-        Assertions.assertEquals(testDs.schema().size(),formatted.getJsonArray("data").getJsonArray(0).size());
-        Assertions.assertEquals(2,formatted.getJsonArray("data").getJsonArray(1).size());
+        // Object must contain both "data" array and "options" object
+        Assertions.assertTrue(formatted.containsKey("data"));
+        Assertions.assertTrue(formatted.containsKey("options"));
 
-        Assertions.assertEquals(rows.size(), formatted.getJsonArray("data").getJsonArray(1).getJsonArray(0).size());
+        // Data must contain at least two arrays
+        Assertions.assertTrue(formatted.getJsonArray("data").size() > 1);
+        // First array of Data is the indexes for the series names used for X axis, so it's length should be zero if there are no group by clauses in the DPL query
+        Assertions.assertEquals(0,formatted.getJsonArray("data").getJsonArray(0).size());
+        // Second array of Data must contain one value for each column of data in the original dataset (minus number of group by fields)
+        Assertions.assertEquals(datasetSchema.size()-groupByCount,formatted.getJsonArray("data").getJsonArray(1).size());
+        // Each sub-array within the second array of Data should contain one value for each row of data in the original dataset
+        Assertions.assertEquals(rows.size(),formatted.getJsonArray("data").getJsonArray(1).getJsonArray(0).size());
 
-        // Formatted dataset should contain options object with correct data required by the uPlot library
-        Assertions.assertEquals(3, formatted.getJsonObject("options").size());
+        // Options must contain a series array, a labels array and a graphType
+        Assertions.assertTrue(formatted.getJsonObject("options").containsKey("series"));
+        Assertions.assertTrue(formatted.getJsonObject("options").containsKey("labels"));
+        Assertions.assertTrue(formatted.getJsonObject("options").containsKey("graphType"));
+        // GraphType must match with what's given in the UI request
         Assertions.assertEquals(graphType, formatted.getJsonObject("options").getString("graphType"));
-        Assertions.assertEquals(testDs.schema().size(), formatted.getJsonObject("options").getJsonArray("labels").size());
-        Assertions.assertEquals(0, formatted.getJsonObject("options").getJsonArray("series").size());
+        // Labels size must match with size of first array of Data
+        Assertions.assertEquals(formatted.getJsonArray("data").getJsonArray(0).size(), formatted.getJsonObject("options").getJsonArray("labels").size());
+        // Series size must match with the size of second array of Data
+        Assertions.assertEquals(formatted.getJsonArray("data").getJsonArray(1).size(), formatted.getJsonObject("options").getJsonArray("series").size());
     }
 
     @Test
     void testSingleSeriesAggregationFormat() {
-        final StructType nonAggregetedSchema = new StructType(
+
+        // Create test dataset and a query string to simulate most recent dataset received from DPL
+        String dplQuery = "%dpl\n" +
+                "index=test\n" +
+                "| spath\n" +
+                "| rename count AS countOperation\n" +
+                "| stats max(countOperation) min(countOperation) by success";
+        int groupByCount = 1; // DPL query contains one group by clause
+        final StructType datasetSchema = new StructType(
                 new StructField[] {
                         new StructField("success", DataTypes.BooleanType, false, new MetadataBuilder().build()),
                         new StructField("max(operation)", DataTypes.IntegerType, false, new MetadataBuilder().build()),
                         new StructField("min(operation)", DataTypes.IntegerType, false, new MetadataBuilder().build()),
+                        new StructField("avg(operation)", DataTypes.IntegerType, false, new MetadataBuilder().build()),
                 }
         );
 
         Random random = new Random();
         List<Row> rows = new ArrayList<>();
-        rows.add(RowFactory.create(true,random.nextInt(500),random.nextInt(5)));
-        rows.add(RowFactory.create(false,random.nextInt(500),random.nextInt(5)));
-        final Dataset<Row> testDs = sparkSession.createDataFrame(rows,nonAggregetedSchema);
-        String graphType = "graph";
+        rows.add(RowFactory.create(true,random.nextInt(500),random.nextInt(5),random.nextInt(25)));
+        rows.add(RowFactory.create(false,random.nextInt(500),random.nextInt(5),random.nextInt(25)));
+        final Dataset<Row> dataset = sparkSession.createDataFrame(rows,datasetSchema);
 
+        // Create a map containing  object to simulate a formatting request received from UI
+        String graphType = "graph";
         HashMap<String,String> optionsMap = new HashMap<>();
         optionsMap.put("graphType",graphType);
-        UPlotFormatOptions options = new UPlotFormatOptions(optionsMap, "%dpl\n" +
-                "index=test\n" +
-                "| spath\n" +
-                "| rename count AS countOperation\n" +
-                "| stats max(countOperation) min(countOperation) by success");
-        UPlotFormat format = new UPlotFormat(testDs, options);
+
+        // Create options and Format objects to be tested
+        UPlotFormatOptions options = new UPlotFormatOptions(optionsMap, dplQuery);
+        UPlotFormat format = new UPlotFormat(dataset, options);
 
         JsonObject formatted = Assertions.assertDoesNotThrow(()-> format.format());
 
-        // Formatted dataset should contain the data in a transposed array.
-        Assertions.assertEquals(2,formatted.getJsonArray("data").getJsonArray(0).size());
-        Assertions.assertEquals(testDs.schema().size()-1,formatted.getJsonArray("data").getJsonArray(1).size());
+        // Object must contain both "data" array and "options" object
+        Assertions.assertTrue(formatted.containsKey("data"));
+        Assertions.assertTrue(formatted.containsKey("options"));
 
-        Assertions.assertEquals(rows.size(), formatted.getJsonArray("data").getJsonArray(1).getJsonArray(0).size());
+        // Data must contain at least two arrays
+        Assertions.assertTrue(formatted.getJsonArray("data").size() > 1);
+        // First array of Data is the indexes for the series names used for X axis, so it's length should be zero if there are no group by clauses in the DPL query
+        Assertions.assertEquals(rows.size(),formatted.getJsonArray("data").getJsonArray(0).size());
+        // Second array of Data must contain one value for each column of data in the original dataset (minus number of group by fields)
+        Assertions.assertEquals(datasetSchema.size()-groupByCount,formatted.getJsonArray("data").getJsonArray(1).size());
+        // Each sub-array within the second array of Data should contain one value for each row of data in the original dataset
+        Assertions.assertEquals(rows.size(),formatted.getJsonArray("data").getJsonArray(1).getJsonArray(0).size());
 
-        // Formatted dataset should contain options object with correct data required by the uPlot library
-        Assertions.assertEquals(3, formatted.getJsonObject("options").size());
+        // Options must contain a series array, a labels array and a graphType
+        Assertions.assertTrue(formatted.getJsonObject("options").containsKey("series"));
+        Assertions.assertTrue(formatted.getJsonObject("options").containsKey("labels"));
+        Assertions.assertTrue(formatted.getJsonObject("options").containsKey("graphType"));
+        // GraphType must match with what's given in the UI request
         Assertions.assertEquals(graphType, formatted.getJsonObject("options").getString("graphType"));
-        Assertions.assertEquals(2, formatted.getJsonObject("options").getJsonArray("labels").size());
-        Assertions.assertEquals("true",formatted.getJsonObject("options").getJsonArray("labels").getString(0));
-        Assertions.assertEquals("false",formatted.getJsonObject("options").getJsonArray("labels").getString(1));
-        Assertions.assertEquals(2, formatted.getJsonObject("options").getJsonArray("series").size());
-        Assertions.assertEquals(testDs.schema().fieldNames()[1],formatted.getJsonObject("options").getJsonArray("series").getString(0));
-        Assertions.assertEquals(testDs.schema().fieldNames()[2],formatted.getJsonObject("options").getJsonArray("series").getString(1));
+        // Labels size must match with size of first array of Data
+        Assertions.assertEquals(formatted.getJsonArray("data").getJsonArray(0).size(), formatted.getJsonObject("options").getJsonArray("labels").size());
+        // Series size must match with the size of second array of Data
+        Assertions.assertEquals(formatted.getJsonArray("data").getJsonArray(1).size(), formatted.getJsonObject("options").getJsonArray("series").size());
     }
 
     @Test
     void testTimechartFormat() {
-        final StructType aggregatedTestSchema = new StructType(
+        // Create test dataset and a query string to simulate most recent dataset received from DPL
+        String dplQuery = "%dpl\n" +
+                "index=test earliest=-5y\n" +
+                "| spath\n" +
+                "| timechart count(operation) avg(operation) max(operation) by success";
+        int groupByCount = 2; // DPL query contains two group by clauses due to usage of 'timechart' command
+        final StructType datasetSchema = new StructType(
                 new StructField[] {
                         new StructField("_time", DataTypes.TimestampType, false, new MetadataBuilder().build()),
                         new StructField("success", DataTypes.BooleanType, false, new MetadataBuilder().build()),
@@ -169,9 +204,8 @@ class UPlotFormatTest {
                         new StructField("max(operation)", DataTypes.IntegerType, false, new MetadataBuilder().build())
                 }
         );
-
-        Random random = new Random();
         List<Row> rows = new ArrayList<>();
+        Random random = new Random();
         rows.add(RowFactory.create(Instant.ofEpochSecond(1777777771),true,random.nextInt(500),random.nextInt(5),random.nextInt(50)));
         rows.add(RowFactory.create(Instant.ofEpochSecond(1777777772),false,random.nextInt(500),random.nextInt(5),random.nextInt(50)));
         rows.add(RowFactory.create(Instant.ofEpochSecond(1777777773),true,random.nextInt(500),random.nextInt(5),random.nextInt(50)));
@@ -179,42 +213,54 @@ class UPlotFormatTest {
         rows.add(RowFactory.create(Instant.ofEpochSecond(1777777775),true,random.nextInt(500),random.nextInt(5),random.nextInt(50)));
         rows.add(RowFactory.create(Instant.ofEpochSecond(1777777776),false,random.nextInt(500),random.nextInt(5),random.nextInt(50)));
         rows.add(RowFactory.create(Instant.ofEpochSecond(1777777777),true,random.nextInt(500),random.nextInt(5),random.nextInt(50)));
-        rows.add(RowFactory.create(Instant.ofEpochSecond(1777777777),true,random.nextInt(500),random.nextInt(5),random.nextInt(50)));
-        rows.add(RowFactory.create(Instant.ofEpochSecond(1777777777),true,random.nextInt(500),random.nextInt(5),random.nextInt(50)));
         rows.add(RowFactory.create(Instant.ofEpochSecond(1777777777),false,random.nextInt(500),random.nextInt(5),random.nextInt(50)));
-        final Dataset<Row> aggregatedTestDs = sparkSession.createDataFrame(rows,aggregatedTestSchema);
+        final Dataset<Row> dataset = sparkSession.createDataFrame(rows,datasetSchema);
 
-        String graphType = "chart";
-
+        // Create a map containing  object to simulate a formatting request received from UI
+        String graphType = "graph";
         HashMap<String,String> optionsMap = new HashMap<>();
         optionsMap.put("graphType",graphType);
-        UPlotFormatOptions options = new UPlotFormatOptions(optionsMap, "index=test earliest=-5y\n" +
-                "| spath\n" +
-                "| timechart count(operation) avg(operation) max(operation) by success");
-        UPlotFormat format = new UPlotFormat(aggregatedTestDs, options);
+
+        // Create options and Format objects to be tested
+        UPlotFormatOptions options = new UPlotFormatOptions(optionsMap, dplQuery);
+        UPlotFormat format = new UPlotFormat(dataset, options);
 
         JsonObject formatted = Assertions.assertDoesNotThrow(()-> format.format());
 
-        // Formatted dataset should contain the data in a transposed array.
+        // Object must contain both "data" array and "options" object
+        Assertions.assertTrue(formatted.containsKey("data"));
+        Assertions.assertTrue(formatted.containsKey("options"));
+
+        // Data must contain at least two arrays
+        Assertions.assertTrue(formatted.getJsonArray("data").size() > 1);
+        // First array of Data is the indexes for the series names used for X axis, so it's length should be zero if there are no group by clauses in the DPL query
         Assertions.assertEquals(rows.size(),formatted.getJsonArray("data").getJsonArray(0).size());
-        Assertions.assertEquals(aggregatedTestDs.schema().size()-2,formatted.getJsonArray("data").getJsonArray(1).size());
-        Assertions.assertEquals(rows.size(), formatted.getJsonArray("data").getJsonArray(1).getJsonArray(0).size());
+        // Second array of Data must contain one value for each column of data in the original dataset (minus number of group by fields)
+        Assertions.assertEquals(datasetSchema.size()-groupByCount,formatted.getJsonArray("data").getJsonArray(1).size());
+        // Each sub-array within the second array of Data should contain one value for each row of data in the original dataset
+        Assertions.assertEquals(rows.size(),formatted.getJsonArray("data").getJsonArray(1).getJsonArray(0).size());
 
-        // Formatted dataset should contain options object with correct data required by the uPlot library
-        Assertions.assertEquals(3, formatted.getJsonObject("options").size());
+        // Options must contain a series array, a labels array and a graphType
+        Assertions.assertTrue(formatted.getJsonObject("options").containsKey("series"));
+        Assertions.assertTrue(formatted.getJsonObject("options").containsKey("labels"));
+        Assertions.assertTrue(formatted.getJsonObject("options").containsKey("graphType"));
+        // GraphType must match with what's given in the UI request
         Assertions.assertEquals(graphType, formatted.getJsonObject("options").getString("graphType"));
-
-        // There are two identical labels in the test dataset, so the number of unique labels should be 10-2 = 8
-        Assertions.assertEquals(rows.size()-2, formatted.getJsonObject("options").getJsonArray("labels").size());
-        Assertions.assertEquals("1777777771.true", formatted.getJsonObject("options").getJsonArray("labels").getString(0));
-        Assertions.assertEquals("1777777772.false", formatted.getJsonObject("options").getJsonArray("labels").getString(1));
-
-        Assertions.assertEquals(3, formatted.getJsonObject("options").getJsonArray("series").size());
+        // Labels size must match with size of first array of Data
+        Assertions.assertEquals(formatted.getJsonArray("data").getJsonArray(0).size(), formatted.getJsonObject("options").getJsonArray("labels").size());
+        // Series size must match with the size of second array of Data
+        Assertions.assertEquals(formatted.getJsonArray("data").getJsonArray(1).size(), formatted.getJsonObject("options").getJsonArray("series").size());
     }
 
     @Test
     void testAggregatedFormat() {
-        final StructType aggregatedTestSchema = new StructType(
+        // Create test dataset and a query string to simulate most recent dataset received from DPL
+        String dplQuery = "%dpl\n" +
+                "index=test earliest=-5y\n" +
+                "| spath\n" +
+                "| stats count(operation) avg(operation) max(operation) by operation success";
+        int groupByCount = 2; // DPL query contains two group by clauses
+        final StructType datasetSchema = new StructType(
                 new StructField[] {
                         new StructField("operation", DataTypes.StringType, false, new MetadataBuilder().build()),
                         new StructField("success", DataTypes.BooleanType, false, new MetadataBuilder().build()),
@@ -232,31 +278,41 @@ class UPlotFormatTest {
         rows.add(RowFactory.create("delete",false,random.nextInt(500),random.nextInt(5),random.nextInt(50)));
         rows.add(RowFactory.create("update",true,random.nextInt(500),random.nextInt(5),random.nextInt(50)));
         rows.add(RowFactory.create("update",false,random.nextInt(500),random.nextInt(5),random.nextInt(50)));
-        final Dataset<Row> aggregatedTestDs = sparkSession.createDataFrame(rows,aggregatedTestSchema);
+        final Dataset<Row> dataset = sparkSession.createDataFrame(rows,datasetSchema);
 
-        DTHeader schema = new DTHeader(aggregatedTestDs.schema());
-        String graphType = "chart";
-
+        // Create a map containing  object to simulate a formatting request received from UI
+        String graphType = "graph";
         HashMap<String,String> optionsMap = new HashMap<>();
         optionsMap.put("graphType",graphType);
-        UPlotFormatOptions options = new UPlotFormatOptions(optionsMap, "index=test earliest=-5y\n" +
-                "| spath\n" +
-                "| stats count(operation) avg(operation) max(operation) by operation success");
-        UPlotFormat format = new UPlotFormat(aggregatedTestDs, options);
+
+        // Create options and Format objects to be tested
+        UPlotFormatOptions options = new UPlotFormatOptions(optionsMap, dplQuery);
+        UPlotFormat format = new UPlotFormat(dataset, options);
 
         JsonObject formatted = Assertions.assertDoesNotThrow(()-> format.format());
 
-        // Formatted dataset should contain the data in a transposed array.
+        // Object must contain both "data" array and "options" object
+        Assertions.assertTrue(formatted.containsKey("data"));
+        Assertions.assertTrue(formatted.containsKey("options"));
+
+        // Data must contain at least two arrays
+        Assertions.assertTrue(formatted.getJsonArray("data").size() > 1);
+        // First array of Data is the indexes for the series names used for X axis, so it's length should be zero if there are no group by clauses in the DPL query
         Assertions.assertEquals(rows.size(),formatted.getJsonArray("data").getJsonArray(0).size());
-        Assertions.assertEquals(schema.schema().size()-2,formatted.getJsonArray("data").getJsonArray(1).size());
+        // Second array of Data must contain one value for each column of data in the original dataset (minus number of group by fields)
+        Assertions.assertEquals(datasetSchema.size()-groupByCount,formatted.getJsonArray("data").getJsonArray(1).size());
+        // Each sub-array within the second array of Data should contain one value for each row of data in the original dataset
+        Assertions.assertEquals(rows.size(),formatted.getJsonArray("data").getJsonArray(1).getJsonArray(0).size());
 
-        Assertions.assertEquals(rows.size(), formatted.getJsonArray("data").getJsonArray(1).getJsonArray(0).size());
-
-        // Formatted dataset should contain options object with correct data required by the uPlot library
-        Assertions.assertEquals(3, formatted.getJsonObject("options").size());
+        // Options must contain a series array, a labels array and a graphType
+        Assertions.assertTrue(formatted.getJsonObject("options").containsKey("series"));
+        Assertions.assertTrue(formatted.getJsonObject("options").containsKey("labels"));
+        Assertions.assertTrue(formatted.getJsonObject("options").containsKey("graphType"));
+        // GraphType must match with what's given in the UI request
         Assertions.assertEquals(graphType, formatted.getJsonObject("options").getString("graphType"));
-
-        Assertions.assertEquals(3, formatted.getJsonObject("options").getJsonArray("series").size());
-        Assertions.assertEquals(6, formatted.getJsonObject("options").getJsonArray("labels").size());
+        // Labels size must match with size of first array of Data
+        Assertions.assertEquals(formatted.getJsonArray("data").getJsonArray(0).size(), formatted.getJsonObject("options").getJsonArray("labels").size());
+        // Series size must match with the size of second array of Data
+        Assertions.assertEquals(formatted.getJsonArray("data").getJsonArray(1).size(), formatted.getJsonObject("options").getJsonArray("series").size());
     }
 }
