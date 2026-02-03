@@ -101,16 +101,61 @@ class UPlotFormatTest {
         JsonObject formatted = Assertions.assertDoesNotThrow(()-> format.format());
 
         // Formatted dataset should contain the data in a transposed array.
-        Assertions.assertEquals(1,formatted.getJsonArray("data").getJsonArray(0).size());
-        Assertions.assertEquals(testDs.schema().size(),formatted.getJsonArray("data").getJsonArray(1).size());
+        Assertions.assertEquals(testDs.schema().size(),formatted.getJsonArray("data").getJsonArray(0).size());
+        Assertions.assertEquals(2,formatted.getJsonArray("data").getJsonArray(1).size());
 
-        Assertions.assertEquals(1, formatted.getJsonArray("data").getJsonArray(1).getJsonArray(0).size());
+        Assertions.assertEquals(rows.size(), formatted.getJsonArray("data").getJsonArray(1).getJsonArray(0).size());
 
         // Formatted dataset should contain options object with correct data required by the uPlot library
         Assertions.assertEquals(3, formatted.getJsonObject("options").size());
         Assertions.assertEquals(graphType, formatted.getJsonObject("options").getString("graphType"));
-        Assertions.assertEquals(1, formatted.getJsonObject("options").getJsonArray("labels").size());
-        Assertions.assertEquals(testDs.schema().fieldNames()[0],formatted.getJsonObject("options").getJsonArray("series").getString(0));
+        Assertions.assertEquals(testDs.schema().size(), formatted.getJsonObject("options").getJsonArray("labels").size());
+        Assertions.assertEquals(0, formatted.getJsonObject("options").getJsonArray("series").size());
+    }
+
+    @Test
+    void testSingleSeriesAggregationFormat() {
+        final StructType nonAggregetedSchema = new StructType(
+                new StructField[] {
+                        new StructField("success", DataTypes.BooleanType, false, new MetadataBuilder().build()),
+                        new StructField("max(operation)", DataTypes.IntegerType, false, new MetadataBuilder().build()),
+                        new StructField("min(operation)", DataTypes.IntegerType, false, new MetadataBuilder().build()),
+                }
+        );
+
+        Random random = new Random();
+        List<Row> rows = new ArrayList<>();
+        rows.add(RowFactory.create(true,random.nextInt(500),random.nextInt(5)));
+        rows.add(RowFactory.create(false,random.nextInt(500),random.nextInt(5)));
+        final Dataset<Row> testDs = sparkSession.createDataFrame(rows,nonAggregetedSchema);
+        String graphType = "graph";
+
+        HashMap<String,String> optionsMap = new HashMap<>();
+        optionsMap.put("graphType",graphType);
+        UPlotFormatOptions options = new UPlotFormatOptions(optionsMap, "%dpl\n" +
+                "index=test\n" +
+                "| spath\n" +
+                "| rename count AS countOperation\n" +
+                "| stats max(countOperation) min(countOperation) by success");
+        UPlotFormat format = new UPlotFormat(testDs, options);
+
+        JsonObject formatted = Assertions.assertDoesNotThrow(()-> format.format());
+
+        // Formatted dataset should contain the data in a transposed array.
+        Assertions.assertEquals(2,formatted.getJsonArray("data").getJsonArray(0).size());
+        Assertions.assertEquals(testDs.schema().size()-1,formatted.getJsonArray("data").getJsonArray(1).size());
+
+        Assertions.assertEquals(rows.size(), formatted.getJsonArray("data").getJsonArray(1).getJsonArray(0).size());
+
+        // Formatted dataset should contain options object with correct data required by the uPlot library
+        Assertions.assertEquals(3, formatted.getJsonObject("options").size());
+        Assertions.assertEquals(graphType, formatted.getJsonObject("options").getString("graphType"));
+        Assertions.assertEquals(2, formatted.getJsonObject("options").getJsonArray("labels").size());
+        Assertions.assertEquals("true",formatted.getJsonObject("options").getJsonArray("labels").getString(0));
+        Assertions.assertEquals("false",formatted.getJsonObject("options").getJsonArray("labels").getString(1));
+        Assertions.assertEquals(2, formatted.getJsonObject("options").getJsonArray("series").size());
+        Assertions.assertEquals(testDs.schema().fieldNames()[1],formatted.getJsonObject("options").getJsonArray("series").getString(0));
+        Assertions.assertEquals(testDs.schema().fieldNames()[2],formatted.getJsonObject("options").getJsonArray("series").getString(1));
     }
 
     @Test

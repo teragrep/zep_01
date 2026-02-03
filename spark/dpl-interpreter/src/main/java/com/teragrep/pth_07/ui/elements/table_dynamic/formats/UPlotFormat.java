@@ -52,7 +52,6 @@ import org.apache.spark.sql.Row;
 import org.apache.spark.sql.functions;
 import org.apache.spark.sql.types.DataTypes;
 import org.apache.spark.sql.types.StructField;
-import org.apache.spark.sql.functions.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -73,59 +72,69 @@ public class UPlotFormat implements  DatasetFormat{
 
     public JsonObject format() throws InterpreterException{
 
-        List<String> seriesNames = options.seriesNames();
-        int numGroups = seriesNames.size();
-        // Spark data is defined by row-based arrays, but uPlot expects to get them in columns-based arrays
-        // Transpose data so that we have: [[x-axis value,x-axis value,x-axis value,...],[[series1Value],[series1Value],[series1Value],...][[series2Value],[series2Value],[series2Value],...]]
-        int columnCount = dataset.schema().size();
-
+        // uPlot expects timestamps to be unix epoch numbers, while the Dataframe contains ISO8601 timestamps, so they must be converted.
         List<String> timestampFieldNames = new ArrayList<>();
         for (StructField field:dataset.schema().fields()) {
             if(field.dataType().equals(DataTypes.TimestampType)){
                 timestampFieldNames.add(field.name());
             }
         }
-
         Dataset<Row> modifiedDataset = dataset;
         for (String timestampFieldName: timestampFieldNames) {
             modifiedDataset = modifiedDataset.withColumn(timestampFieldName, org.apache.spark.sql.functions.unix_timestamp(functions.col(timestampFieldName)));
         }
-
         List<Row> datasetRows = modifiedDataset.collectAsList();
 
+        // Spark data is defined by row-based arrays, but uPlot expects to get them in columns-based arrays
+        // Transpose data so that we have:
+        // [
+        //  [x-axis value,x-axis value,x-axis value,...],
+        //  [[series1Value],[series1Value],[series1Value],...],
+        //  [[series2Value],[series2Value],[series2Value],...]
+        // ]
+
+        int columnCount = modifiedDataset.schema().size();
         List<List<Object>> transposed = new ArrayList<>();
         for (int i = 0; i < columnCount; i++) {
             List<Object> columnList = new ArrayList<Object>();
             transposed.add(columnList);
         }
-
         for(Row row : datasetRows){
             for (int i = 0; i < columnCount; i++){
                 transposed.get(i).add(row.getAs(i));
             }
         }
 
-        List<String> combinedXAxisValues = new ArrayList<String>();
-        if(numGroups > 1){
+        // Data may be grouped by multiple series, in which case the first {numGroups} columns in the Dataset are not part of the data, but contain labels for grouped series.
+        // uPlot expects to receive the names of the series separately of the data, so we need to remove the correct number of columns from the data and provide these separately.
+        // Options object provides a way to retrieve a list of series label names,
+        List<String> seriesNames = options.seriesNames();
+        int numSeries = seriesNames.size();
+
+        // Series names should be provided as a single string, with additional dimensions separated by periods. Eg. [series1value1.series2value1,series1value2,series2value1,...]
+        List<String> combinedSeriesNames = new ArrayList<String>();
+        if(numSeries > 0){
             for (int i = 0; i < transposed.get(0).size(); i++) {
-                StringBuilder combinedLabel = new StringBuilder();
-                for (int j = 0; j < numGroups; j++) {
-                    combinedLabel.append(transposed.get(j).get(i));
-                    if(j+1 != numGroups){
-                        combinedLabel.append(".");
+                StringBuilder combinedSeriesName = new StringBuilder();
+                for (int j = 0; j < numSeries; j++) {
+                    combinedSeriesName.append(transposed.get(j).get(i));
+                    if(j+1 != numSeries){
+                        combinedSeriesName.append(".");
                     }
                 }
-                combinedXAxisValues.add(combinedLabel.toString());
+                combinedSeriesNames.add(combinedSeriesName.toString());
             }
         }
         else {
-            combinedXAxisValues.add(dataset.schema().fieldNames()[0]);
+            for (String fieldName:modifiedDataset.schema().fieldNames()) {
+                combinedSeriesNames.add(fieldName);
+            }
         }
-        List<String> distinctLabels = combinedXAxisValues.stream().distinct().collect(Collectors.toList());
+        List<String> distinctLabels = combinedSeriesNames.stream().distinct().collect(Collectors.toList());
 
         // X-axis is an array of indexes, mapped to labels,
         JsonArrayBuilder xAxisBuilder = Json.createArrayBuilder();
-        for (String combinedXAxisValue:combinedXAxisValues) {
+        for (String combinedXAxisValue:combinedSeriesNames) {
             xAxisBuilder.add(distinctLabels.indexOf(combinedXAxisValue));
         }
         JsonArray xAxis = xAxisBuilder.build();
@@ -133,7 +142,7 @@ public class UPlotFormat implements  DatasetFormat{
         // y-axis contains the transposed datapoints
         JsonArrayBuilder yAxisBuilder = Json.createArrayBuilder();
         if(transposed.size() >= 1){
-            for (int i = numGroups; i < transposed.size(); i++) {
+            for (int i = numSeries; i < transposed.size(); i++) {
                 yAxisBuilder.add(Json.createArrayBuilder(transposed.get(i)));
             }
         }
@@ -146,11 +155,8 @@ public class UPlotFormat implements  DatasetFormat{
 
         // generate series names
         JsonArrayBuilder seriesBuilder = Json.createArrayBuilder();
-        if(numGroups == 0){
-            seriesBuilder.add(modifiedDataset.schema().names()[0]);
-        }
-        else {
-            for (int i = 0+numGroups; i < modifiedDataset.schema().size(); i++) {
+        if(numSeries > 0){
+            for (int i = 0+numSeries; i < modifiedDataset.schema().size(); i++) {
                 seriesBuilder.add(modifiedDataset.schema().names()[i]);
             }
         }
