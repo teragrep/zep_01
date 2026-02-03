@@ -89,12 +89,18 @@ public class UPlotFormatOptions implements FormatOptions{
         while (matcher1.find()){
             lastAggregationQuery = matcher1.group();
         }
+        if(lastAggregationQuery.startsWith("timechart")){
+            seriesNames.add("_time");
+        }
 
         if(matcher1.groupCount() != 0){
             Pattern pattern = Pattern.compile(" by ([^|\n$]+)");
             Matcher matcher = pattern.matcher(lastAggregationQuery);
             while(matcher.find()){
-                seriesNames = Arrays.asList(matcher.group(matcher.groupCount()).split(" "));
+                List<String> labels = Arrays.asList(matcher.group(matcher.groupCount()).split(" "));
+                for (String label: labels) {
+                    seriesNames.add(label);
+                }
             }
         }
         return seriesNames;

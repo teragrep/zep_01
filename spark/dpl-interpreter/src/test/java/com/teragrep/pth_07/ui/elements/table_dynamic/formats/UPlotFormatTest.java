@@ -75,10 +75,50 @@ class UPlotFormatTest {
             .getOrCreate();
 
     @Test
-    void testNormalFormat() {
+    void testSingleRowAggregationFormat() {
+        final StructType nonAggregetedSchema = new StructType(
+                new StructField[] {
+                        new StructField("max(operation)", DataTypes.IntegerType, false, new MetadataBuilder().build()),
+                        new StructField("min(operation)", DataTypes.IntegerType, false, new MetadataBuilder().build()),
+                }
+        );
+
+        Random random = new Random();
+        List<Row> rows = new ArrayList<>();
+        rows.add(RowFactory.create(random.nextInt(500),random.nextInt(5)));
+        final Dataset<Row> testDs = sparkSession.createDataFrame(rows,nonAggregetedSchema);
+        String graphType = "graph";
+
+        HashMap<String,String> optionsMap = new HashMap<>();
+        optionsMap.put("graphType",graphType);
+        UPlotFormatOptions options = new UPlotFormatOptions(optionsMap, "%dpl\n" +
+                "index=test\n" +
+                "| spath\n" +
+                "| rename count AS countOperation\n" +
+                "| stats max(countOperation) min(countOperation)");
+        UPlotFormat format = new UPlotFormat(testDs, options);
+
+        JsonObject formatted = Assertions.assertDoesNotThrow(()-> format.format());
+
+        // Formatted dataset should contain the data in a transposed array.
+        Assertions.assertEquals(1,formatted.getJsonArray("data").getJsonArray(0).size());
+        Assertions.assertEquals(testDs.schema().size(),formatted.getJsonArray("data").getJsonArray(1).size());
+
+        Assertions.assertEquals(1, formatted.getJsonArray("data").getJsonArray(1).getJsonArray(0).size());
+
+        // Formatted dataset should contain options object with correct data required by the uPlot library
+        Assertions.assertEquals(3, formatted.getJsonObject("options").size());
+        Assertions.assertEquals(graphType, formatted.getJsonObject("options").getString("graphType"));
+        Assertions.assertEquals(1, formatted.getJsonObject("options").getJsonArray("labels").size());
+        Assertions.assertEquals(testDs.schema().fieldNames()[0],formatted.getJsonObject("options").getJsonArray("series").getString(0));
+    }
+
+    @Test
+    void testTimechartFormat() {
         final StructType aggregatedTestSchema = new StructType(
                 new StructField[] {
                         new StructField("_time", DataTypes.TimestampType, false, new MetadataBuilder().build()),
+                        new StructField("success", DataTypes.BooleanType, false, new MetadataBuilder().build()),
                         new StructField("count(operation)", DataTypes.IntegerType, false, new MetadataBuilder().build()),
                         new StructField("avg(operation)", DataTypes.IntegerType, false, new MetadataBuilder().build()),
                         new StructField("max(operation)", DataTypes.IntegerType, false, new MetadataBuilder().build())
@@ -87,36 +127,44 @@ class UPlotFormatTest {
 
         Random random = new Random();
         List<Row> rows = new ArrayList<>();
-        rows.add(RowFactory.create(Instant.ofEpochSecond(Instant.now().getEpochSecond()+random.nextInt(100)),random.nextInt(500),random.nextInt(5),random.nextInt(50)));
-        rows.add(RowFactory.create(Instant.ofEpochSecond(Instant.now().getEpochSecond()+random.nextInt(100)),random.nextInt(500),random.nextInt(5),random.nextInt(50)));
-        rows.add(RowFactory.create(Instant.ofEpochSecond(Instant.now().getEpochSecond()+random.nextInt(100)),random.nextInt(500),random.nextInt(5),random.nextInt(50)));
-        rows.add(RowFactory.create(Instant.ofEpochSecond(Instant.now().getEpochSecond()+random.nextInt(100)),random.nextInt(500),random.nextInt(5),random.nextInt(50)));
-        rows.add(RowFactory.create(Instant.ofEpochSecond(Instant.now().getEpochSecond()+random.nextInt(100)),random.nextInt(500),random.nextInt(5),random.nextInt(50)));
-        rows.add(RowFactory.create(Instant.ofEpochSecond(Instant.now().getEpochSecond()+random.nextInt(100)),random.nextInt(500),random.nextInt(5),random.nextInt(50)));
-        final Dataset<Row> testDs = sparkSession.createDataFrame(rows,aggregatedTestSchema);
-        DTHeader schema = new DTHeader(testDs.schema());
+        rows.add(RowFactory.create(Instant.ofEpochSecond(1777777771),true,random.nextInt(500),random.nextInt(5),random.nextInt(50)));
+        rows.add(RowFactory.create(Instant.ofEpochSecond(1777777772),false,random.nextInt(500),random.nextInt(5),random.nextInt(50)));
+        rows.add(RowFactory.create(Instant.ofEpochSecond(1777777773),true,random.nextInt(500),random.nextInt(5),random.nextInt(50)));
+        rows.add(RowFactory.create(Instant.ofEpochSecond(1777777774),false,random.nextInt(500),random.nextInt(5),random.nextInt(50)));
+        rows.add(RowFactory.create(Instant.ofEpochSecond(1777777775),true,random.nextInt(500),random.nextInt(5),random.nextInt(50)));
+        rows.add(RowFactory.create(Instant.ofEpochSecond(1777777776),false,random.nextInt(500),random.nextInt(5),random.nextInt(50)));
+        rows.add(RowFactory.create(Instant.ofEpochSecond(1777777777),true,random.nextInt(500),random.nextInt(5),random.nextInt(50)));
+        rows.add(RowFactory.create(Instant.ofEpochSecond(1777777777),true,random.nextInt(500),random.nextInt(5),random.nextInt(50)));
+        rows.add(RowFactory.create(Instant.ofEpochSecond(1777777777),true,random.nextInt(500),random.nextInt(5),random.nextInt(50)));
+        rows.add(RowFactory.create(Instant.ofEpochSecond(1777777777),false,random.nextInt(500),random.nextInt(5),random.nextInt(50)));
+        final Dataset<Row> aggregatedTestDs = sparkSession.createDataFrame(rows,aggregatedTestSchema);
+
         String graphType = "chart";
 
         HashMap<String,String> optionsMap = new HashMap<>();
         optionsMap.put("graphType",graphType);
         UPlotFormatOptions options = new UPlotFormatOptions(optionsMap, "index=test earliest=-5y\n" +
-                "| timechart count(operation) avg(operation) max(operation)");
-        UPlotFormat format = new UPlotFormat(testDs, options);
+                "| spath\n" +
+                "| timechart count(operation) avg(operation) max(operation) by success");
+        UPlotFormat format = new UPlotFormat(aggregatedTestDs, options);
 
         JsonObject formatted = Assertions.assertDoesNotThrow(()-> format.format());
 
         // Formatted dataset should contain the data in a transposed array.
-        Assertions.assertEquals(1,formatted.getJsonArray("data").getJsonArray(0).size());
-        Assertions.assertEquals(schema.schema().size(),formatted.getJsonArray("data").getJsonArray(1).size());
-
-        Assertions.assertEquals(6, formatted.getJsonArray("data").getJsonArray(1).getJsonArray(0).size());
+        Assertions.assertEquals(rows.size(),formatted.getJsonArray("data").getJsonArray(0).size());
+        Assertions.assertEquals(aggregatedTestDs.schema().size()-2,formatted.getJsonArray("data").getJsonArray(1).size());
+        Assertions.assertEquals(rows.size(), formatted.getJsonArray("data").getJsonArray(1).getJsonArray(0).size());
 
         // Formatted dataset should contain options object with correct data required by the uPlot library
         Assertions.assertEquals(3, formatted.getJsonObject("options").size());
         Assertions.assertEquals(graphType, formatted.getJsonObject("options").getString("graphType"));
-        Assertions.assertEquals(1, formatted.getJsonObject("options").getJsonArray("labels").size());
-        Assertions.assertEquals(schema.schema().size(), formatted.getJsonObject("options").getJsonArray("series").size());
 
+        // There are two identical labels in the test dataset, so the number of unique labels should be 10-2 = 8
+        Assertions.assertEquals(rows.size()-2, formatted.getJsonObject("options").getJsonArray("labels").size());
+        Assertions.assertEquals("1777777771.true", formatted.getJsonObject("options").getJsonArray("labels").getString(0));
+        Assertions.assertEquals("1777777772.false", formatted.getJsonObject("options").getJsonArray("labels").getString(1));
+
+        Assertions.assertEquals(3, formatted.getJsonObject("options").getJsonArray("series").size());
     }
 
     @Test

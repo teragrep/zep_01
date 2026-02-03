@@ -58,6 +58,7 @@ import org.slf4j.LoggerFactory;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 public class UPlotFormat implements  DatasetFormat{
 
@@ -120,18 +121,18 @@ public class UPlotFormat implements  DatasetFormat{
         else {
             combinedXAxisValues.add(dataset.schema().fieldNames()[0]);
         }
+        List<String> distinctLabels = combinedXAxisValues.stream().distinct().collect(Collectors.toList());
 
-
-        // X-axis is an array of idexes, mapped to labels,
+        // X-axis is an array of indexes, mapped to labels,
         JsonArrayBuilder xAxisBuilder = Json.createArrayBuilder();
-        for (int i = 0; i < combinedXAxisValues.size(); i++) {
-            xAxisBuilder.add(i);
+        for (String combinedXAxisValue:combinedXAxisValues) {
+            xAxisBuilder.add(distinctLabels.indexOf(combinedXAxisValue));
         }
         JsonArray xAxis = xAxisBuilder.build();
 
         // y-axis contains the transposed datapoints
         JsonArrayBuilder yAxisBuilder = Json.createArrayBuilder();
-        if(transposed.size() > 1){
+        if(transposed.size() >= 1){
             for (int i = numGroups; i < transposed.size(); i++) {
                 yAxisBuilder.add(Json.createArrayBuilder(transposed.get(i)));
             }
@@ -140,13 +141,18 @@ public class UPlotFormat implements  DatasetFormat{
         JsonArray axesObject = Json.createArrayBuilder().add(xAxis).add(yAxis).build();
 
         // labels contains the names of each series of data in an array
-        JsonArrayBuilder labelsBuilder = Json.createArrayBuilder(combinedXAxisValues);
+        JsonArrayBuilder labelsBuilder = Json.createArrayBuilder(distinctLabels);
         JsonArray labels = labelsBuilder.build();
 
         // generate series names
         JsonArrayBuilder seriesBuilder = Json.createArrayBuilder();
-        for (int i = 0+numGroups; i < dataset.schema().size(); i++) {
-            seriesBuilder.add(dataset.schema().names()[i]);
+        if(numGroups == 0){
+            seriesBuilder.add(modifiedDataset.schema().names()[0]);
+        }
+        else {
+            for (int i = 0+numGroups; i < modifiedDataset.schema().size(); i++) {
+                seriesBuilder.add(modifiedDataset.schema().names()[i]);
+            }
         }
         JsonArray series = seriesBuilder.build();
 
