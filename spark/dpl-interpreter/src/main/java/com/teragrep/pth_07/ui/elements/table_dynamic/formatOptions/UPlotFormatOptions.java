@@ -77,9 +77,9 @@ public class UPlotFormatOptions implements FormatOptions{
         return query;
     }
 
-    // Gets series names by finding last instance of " by {seriesName} {seriesName...}|" from query string.
-    public List<String> seriesNames() throws InterpreterException{
-        List<String> seriesNames = new ArrayList<>();
+    // Gets series labels by finding last instance of " by {seriesName} {seriesName...}|" from query string.
+    public List<String> seriesLabels() throws InterpreterException{
+        List<String> seriesLabels = new ArrayList<>();
         String query = query();
 
         Pattern pattern1 = Pattern.compile("(stats.*|timechart.*|eventstats.*|chart.*)");
@@ -90,7 +90,7 @@ public class UPlotFormatOptions implements FormatOptions{
             lastAggregationQuery = matcher1.group();
         }
         if(lastAggregationQuery.startsWith("timechart")){
-            seriesNames.add("_time");
+            seriesLabels.add("_time");
         }
 
         if(matcher1.groupCount() != 0){
@@ -99,10 +99,10 @@ public class UPlotFormatOptions implements FormatOptions{
             while(matcher.find()){
                 List<String> labels = Arrays.asList(matcher.group(matcher.groupCount()).split(" "));
                 for (String label: labels) {
-                    seriesNames.add(label);
+                    seriesLabels.add(label);
                 }
             }
         }
-        return seriesNames;
+        return seriesLabels;
     }
 }

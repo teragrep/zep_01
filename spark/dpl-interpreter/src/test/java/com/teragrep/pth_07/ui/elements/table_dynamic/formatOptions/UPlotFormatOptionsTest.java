@@ -45,7 +45,6 @@
  */
 package com.teragrep.pth_07.ui.elements.table_dynamic.formatOptions;
 
-import com.teragrep.zep_01.interpreter.InterpreterException;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
@@ -67,7 +66,7 @@ class UPlotFormatOptionsTest {
                 "| rename count AS countOperation\n" +
                 "| stats sum(countOperation) min(countOperation) max(countOperation) by operation success\n" +
                 "| stats operation by operation success _time");
-        List<String> seriesNames = Assertions.assertDoesNotThrow(()->options.seriesNames());
+        List<String> seriesNames = Assertions.assertDoesNotThrow(()->options.seriesLabels());
         List<String> expectedNames = new ArrayList<>();
         expectedNames.add("operation");
         expectedNames.add("success");
@@ -82,7 +81,7 @@ class UPlotFormatOptionsTest {
                 "| spath\n" +
                 "| rename count AS countOperation\n" +
                 "| stats sum(countOperation)");
-        List<String> seriesNames = Assertions.assertDoesNotThrow(()->options.seriesNames());
+        List<String> seriesNames = Assertions.assertDoesNotThrow(()->options.seriesLabels());
         List<String> expectedNames = new ArrayList<>();
         Assertions.assertEquals(expectedNames,seriesNames);
     }
@@ -95,7 +94,7 @@ class UPlotFormatOptionsTest {
                 "| rename count AS countOperation\n" +
                 "| stats sum(countOperation) min(countOperation) max(countOperation) by operation success\n" +
                 "| accum countOperation AS totalOperationCount");
-        List<String> seriesNames = Assertions.assertDoesNotThrow(()->options.seriesNames());
+        List<String> seriesNames = Assertions.assertDoesNotThrow(()->options.seriesLabels());
         List<String> expectedNames = new ArrayList<>();
         expectedNames.add("operation");
         expectedNames.add("success");
