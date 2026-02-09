@@ -77,6 +77,9 @@ public class UPlotFormat implements  DatasetFormat{
     }
 
     public JsonObject format() throws InterpreterException{
+        if(dataset.isEmpty()){
+            throw new InterpreterException("Cannot format an empty Dataset!");
+        }
         // Get a list of column names that were used in aggregation
         List<String> groupByLabels = new ArrayList<>();
         LogicalPlan plan = dataset.queryExecution().logical();

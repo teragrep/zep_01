@@ -46,6 +46,7 @@
 package com.teragrep.pth_07.ui.elements.table_dynamic.formats;
 
 import com.teragrep.pth_07.ui.elements.table_dynamic.formatOptions.UPlotFormatOptions;
+import com.teragrep.zep_01.interpreter.InterpreterException;
 import jakarta.json.JsonObject;
 import org.apache.spark.sql.Dataset;
 import org.apache.spark.sql.Row;
@@ -376,5 +377,23 @@ class UPlotFormatTest {
         // Series size must match with the size of second array of Data and the number of columns in the result dataset schema (minus number of group by fields used)
         Assertions.assertEquals(formatted.getJsonArray("data").getJsonArray(1).size(), formatted.getJsonObject("options").getJsonArray("series").size());
         Assertions.assertEquals(resultDataset.schema().size()-groupByCount, formatted.getJsonObject("options").getJsonArray("series").size());
+    }
+
+    @Test
+    public void testEmptyDataFrame(){
+        StructType schema = new StructType();
+        List<Row> rows = new ArrayList<>();
+        final Dataset<Row> resultDataset = sparkSession.createDataFrame(rows,schema);
+
+        // Create a map containing  object to simulate a formatting request received from UI
+        String graphType = "graph";
+        HashMap<String,String> optionsMap = new HashMap<>();
+        optionsMap.put("graphType",graphType);
+
+        // Create options and Format objects to be tested
+        UPlotFormatOptions options = new UPlotFormatOptions(optionsMap);
+        UPlotFormat format = new UPlotFormat(resultDataset, options);
+
+        Assertions.assertThrows(InterpreterException.class,()->format.format());
     }
 }
