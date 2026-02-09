@@ -56,11 +56,9 @@ import java.util.regex.Pattern;
 
 public class UPlotFormatOptions implements FormatOptions{
     private final Map<String, String> optionsMap;
-    private final String query;
 
-    public UPlotFormatOptions(Map<String, String> optionsMap, String query){
+    public UPlotFormatOptions(Map<String, String> optionsMap){
         this.optionsMap = optionsMap;
-        this.query = query;
     }
 
     public String graphType() throws InterpreterException {
@@ -68,41 +66,5 @@ public class UPlotFormatOptions implements FormatOptions{
             throw new InterpreterException("Options map does not contain a graphType value");
         }
         return optionsMap.get("graphType");
-    }
-
-    public String query() throws InterpreterException {
-        if(query.isEmpty()){
-            throw new InterpreterException("Query is empty!");
-        }
-        return query;
-    }
-
-    // Gets series labels by finding last instance of " by {seriesName} {seriesName...}|" from query string.
-    public List<String> seriesLabels() throws InterpreterException{
-        List<String> seriesLabels = new ArrayList<>();
-        String query = query();
-
-        Pattern pattern1 = Pattern.compile("(stats.*|timechart.*|eventstats.*|chart.*)");
-        Matcher matcher1 = pattern1.matcher(query);
-
-        String lastAggregationQuery = "";
-        while (matcher1.find()){
-            lastAggregationQuery = matcher1.group();
-        }
-        if(lastAggregationQuery.startsWith("timechart")){
-            seriesLabels.add("_time");
-        }
-
-        if(matcher1.groupCount() != 0){
-            Pattern pattern = Pattern.compile(" by ([^|\n$]+)");
-            Matcher matcher = pattern.matcher(lastAggregationQuery);
-            while(matcher.find()){
-                List<String> labels = Arrays.asList(matcher.group(matcher.groupCount()).split(" "));
-                for (String label: labels) {
-                    seriesLabels.add(label);
-                }
-            }
-        }
-        return seriesLabels;
     }
 }

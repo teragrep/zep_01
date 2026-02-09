@@ -173,7 +173,7 @@ public class DPLInterpreter extends AbstractInterpreter {
         // FIXME clear fron NgDPLRenderer too
 
         // setup UserInterfaceManager
-        UserInterfaceManager userInterfaceManager = new UserInterfaceManager(interpreterContext, lines);
+        UserInterfaceManager userInterfaceManager = new UserInterfaceManager(interpreterContext);
 
         // store UserInterfaceManager
         if (!notebookParagraphUserInterfaceManager.containsKey(interpreterContext.getNoteId())) {
@@ -345,9 +345,8 @@ public class DPLInterpreter extends AbstractInterpreter {
         if(visualizationLibraryName.equals(VisualizationLibraries.UPLOT.label)){
             DTTableDatasetNg dtTableDatasetNg = userInterfaceManager.getDtTableDatasetNg();
             Dataset<Row> dataset = dtTableDatasetNg.dataset();
-            String query = dtTableDatasetNg.getQuery();
 
-            UPlotFormatOptions uplotOptions = new UPlotFormatOptions(options, query);
+            UPlotFormatOptions uplotOptions = new UPlotFormatOptions(options);
             format = new UPlotFormat(dataset, uplotOptions);
         }
         else {

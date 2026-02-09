@@ -48,8 +48,17 @@ import com.teragrep.pth_07.ui.elements.table_dynamic.formatOptions.UPlotFormatOp
 import com.teragrep.zep_01.interpreter.InterpreterException;
 import jakarta.json.*;
 import org.apache.spark.sql.*;
+import org.apache.spark.sql.catalyst.expressions.AttributeReference;
+import org.apache.spark.sql.catalyst.expressions.Expression;
+import org.apache.spark.sql.catalyst.plans.logical.Aggregate;
+import org.apache.spark.sql.catalyst.plans.logical.LogicalPlan;
+import org.apache.spark.sql.types.ArrayType;
+import org.apache.spark.sql.types.DataType;
+import org.apache.spark.sql.types.DataTypes;
+import org.apache.spark.sql.types.StructField;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import scala.collection.JavaConverters;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -68,88 +77,110 @@ public class UPlotFormat implements  DatasetFormat{
     }
 
     public JsonObject format() throws InterpreterException{
-
-        // Take X columns beginning from left to get access to group by series names. The remaining columns represent the data. Separate these two into different datasets.
-        List<String> seriesLabels = options.seriesLabels();
-        String[] seriesLabelsArray = seriesLabels.toArray(new String[0]);
-        final Dataset<Row> seriesLabelDataset;
-        final Dataset<Row> remainingDataset;
-
-        if(seriesLabelsArray.length > 1){
-            String firstColumn = seriesLabelsArray[0];
-            String[] additionalColumns = Arrays.copyOfRange(seriesLabelsArray,1,seriesLabelsArray.length);
-            seriesLabelDataset = dataset.select(firstColumn, additionalColumns);
-
-            String firstDataColumn = dataset.schema().names()[seriesLabels.size()];
-            String[] additionalDataColumns = Arrays.copyOfRange(dataset.schema().names(),seriesLabels.size()+1,dataset.schema().names().length);
-            remainingDataset = dataset.select(firstDataColumn, additionalDataColumns);
-        }
-        else if(seriesLabelsArray.length == 1){
-            String firstColumn = seriesLabelsArray[0];
-            seriesLabelDataset = dataset.select(firstColumn);
-
-            String firstDataColumn = dataset.schema().names()[seriesLabels.size()];
-            String[] additionalDataColumns = Arrays.copyOfRange(dataset.schema().names(),seriesLabels.size()+1,dataset.schema().names().length);
-            remainingDataset = dataset.select(firstDataColumn, additionalDataColumns);
-        }
-        else {
-            seriesLabelDataset = dataset.select();
-            remainingDataset = dataset;
-        }
-
-        // concatenate every group by row -- > options.labels
-        Column[] groupByColumns = Arrays.asList(seriesLabelsArray)
-                .stream().map(columnName -> org.apache.spark.sql.functions.col(columnName))
-                .collect(Collectors.toList())
-                .toArray(new Column[0]);
-        JsonArrayBuilder labelsBuilder;
-        // concat_ws will add one empty name to the dataset even if the size of provided columns is 0, so we have to fork the execution here.
-        if(groupByColumns.length > 0){
-            Dataset<Row> concatenatedDataset = seriesLabelDataset.withColumn("seriesName", org.apache.spark.sql.functions.concat_ws(".", groupByColumns)).select("seriesName");
-            List<String> concatenatedLabels = new ArrayList<>();
-            for (Row row:concatenatedDataset.collectAsList()) {
-                for (int i = 0; i < row.size(); i++) {
-                    concatenatedLabels.add(row.getString(i));
+        // Get a list of column names that were used in aggregation
+        List<String> groupByLabels = new ArrayList<>();
+        LogicalPlan plan = dataset.queryExecution().logical();
+        if (plan instanceof Aggregate) {
+            Aggregate aggPlan = (Aggregate) plan;
+            List<Expression> expressions = JavaConverters.seqAsJavaList((aggPlan.groupingExpressions().seq()));
+            for (Expression expression: expressions) {
+                if(expression instanceof AttributeReference){
+                    AttributeReference attributeReference = (AttributeReference)expression;
+                    groupByLabels.add(attributeReference.name());
                 }
             }
-            labelsBuilder = Json.createArrayBuilder(concatenatedLabels);
+        }
+
+        // Get references to Column objects for each column used in aggregation
+        List<Column> groupByColumns = new ArrayList<>();
+        for (String columnName:groupByLabels) {
+            groupByColumns.add(dataset.col(columnName));
+        }
+
+        // Turn both lists into Arrays
+        String[] groupByLabelsArray = groupByLabels.toArray(new String[0]);
+        Column[] groupByColumnArray = groupByColumns.toArray(new Column[0]);
+        final Dataset<Row> concatenatedDataset;
+        final StringBuilder concatenatedGroupByLabel = new StringBuilder();
+
+        // If there are more than one label used in grouping data, the names must be concatenated into a single column. eg: "group1|group2|group3"
+        if(groupByLabels.size() > 1){
+            for (int i = 0; i < groupByLabels.size(); i++) {
+                concatenatedGroupByLabel.append(groupByLabels.get(i));
+                if(i < groupByLabels.size()-1){
+                    concatenatedGroupByLabel.append("|");
+                }
+            }
+            concatenatedDataset = dataset.withColumn(concatenatedGroupByLabel.toString(),functions.concat_ws("|",groupByColumnArray)).drop(groupByLabelsArray);
+        }
+        else if(groupByLabels.size() == 1){
+            concatenatedGroupByLabel.append(groupByLabels.get(0));
+            concatenatedDataset = dataset;
         }
         else {
-            labelsBuilder = Json.createArrayBuilder();
+            concatenatedDataset = dataset;
         }
-        JsonArray labels = labelsBuilder.build();
 
-        // iterate over labels, put index into new list --> data[0]
-        List<Integer> seriesNameIndexes = new ArrayList<>();
-        for (int i = 0; i < labels.size(); i++) {
-            seriesNameIndexes.add(i);
+        // Transpose the dataset containing the concatenated column created above.
+        // As Spark does not support columnar data, this is accomplished by collecting all the data under each column into a list and generating a Dataset with a single row containing those lists as its data.
+        List<Column> columns = new ArrayList<Column>();
+        for (String columnName : concatenatedDataset.columns()) {
+            columns.add(org.apache.spark.sql.functions.collect_list(columnName).as(columnName));
         }
-        JsonArray data0 = Json.createArrayBuilder(seriesNameIndexes).build();
+        Column[] columnArray = columns.toArray(new Column[0]); //We need to separate the first column from the others to satisfy the parameters of Dataset.agg(Column, Column...)
+        Column firstColumn = columnArray[0];
+        Column[] additionalColumns = Arrays.copyOfRange(columnArray,1,columnArray.length);
+        Dataset<Row> transposed = concatenatedDataset.agg(firstColumn,additionalColumns);
 
-        // take remaining column names --> options.series
-        String[] dataNames = remainingDataset.schema().fieldNames();
-        List<String> datanamesList = Arrays.asList(dataNames);
-        JsonArray series = Json.createArrayBuilder(datanamesList).build();
-
-        // transpose remaining data --> data[1]
-        List<List<Object>> transposed = new ArrayList<>();
-        int columnCount = remainingDataset.schema().size();
-        List<Row> dataRows = remainingDataset.collectAsList();
-        for (int i = 0; i < columnCount; i++) {
-            List<Object> columnList = new ArrayList<Object>();
-            transposed.add(columnList);
-        }
-        for(Row row : dataRows){
-            for (int i = 0; i < columnCount; i++){
-                transposed.get(i).add(row.getAs(i));
-            }
-        }
-        JsonArray data1 = Json.createArrayBuilder(transposed).build();
-
-        // get graph type --> options.graphType
+        // Finally, create a JSON object as expected by uPlot.
+        JsonArrayBuilder data0 = Json.createArrayBuilder();
+        JsonArrayBuilder data1 = Json.createArrayBuilder();
+        JsonArrayBuilder labels = Json.createArrayBuilder();
+        JsonArrayBuilder series = Json.createArrayBuilder();
         String graphType = options.graphType();
 
-        // finally, create a JSON object
+        // Transposition collected all the data into a single row containing a number of lists.
+        Row resultRow = transposed.collectAsList().get(0);
+        for (int i = 0; i < resultRow.schema().size(); i++) {
+            StructField schemaField = resultRow.schema().fields()[i];
+            // Aggregated data labels should be added to options.labels, as well as their indexes in the first sub-array of the data object.
+            if(schemaField.name().equals(concatenatedGroupByLabel.toString())){
+                List<Object> values = resultRow.getList(i);
+                int valueIndex = 0;
+                for (Object value:values) {
+                    data0.add(valueIndex); // Is data[0] necessary to have? aggregated data should never have duplicated labels for aggregation group names so you could just use options.labels for this information
+                    labels.add(value.toString());
+                    valueIndex++;
+                }
+            }
+            // Standard data must be cast into a numerical type based on the Schema. uPlot does not support displaying non-numerical data at all.
+            else {
+                List<Object> values = resultRow.getList(i);
+                JsonArrayBuilder subArray = Json.createArrayBuilder();
+                DataType elementType = ((ArrayType)(schemaField).dataType()).elementType();
+                for (Object value:values) {
+                    if(elementType.equals(DataTypes.IntegerType)){
+                        subArray.add((int) value);
+                    } else if (elementType.equals(DataTypes.LongType)) {
+                        subArray.add((Long) value);
+                    }
+                    else if (elementType.equals(DataTypes.ShortType)) {
+                            subArray.add((Short) value);
+                    }
+                    else if (elementType.equals(DataTypes.DoubleType)) {
+                        subArray.add((Double) value);
+                    }
+                    else if (elementType.equals(DataTypes.FloatType)) {
+                        subArray.add((Float) value);
+                    }
+                    else{
+                        throw new InterpreterException("uPlot format only supports numerical data, tried to format data of type "+elementType+" in column "+ schemaField.name() +"!");
+                    }
+                }
+                data1.add(subArray.build());
+                series.add(schemaField.name());
+            }
+        }
         JsonObjectBuilder builder = Json.createObjectBuilder()
                 .add("data",Json.createArrayBuilder()
                         .add(data0)

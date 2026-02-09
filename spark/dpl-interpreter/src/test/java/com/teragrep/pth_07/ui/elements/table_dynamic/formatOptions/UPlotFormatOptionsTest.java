@@ -54,52 +54,5 @@ import java.util.List;
 
 class UPlotFormatOptionsTest {
 
-    // Series names should be parsed from the DPL query, where the last aggregation command used determines the names of the series.
-    // In case no aggregation commands are used, the series names should return an empty list.
-    // If there are multiple aggregation commands, tha latest one is used.
-    // Any other commands have no effect on series names.
-    @Test
-    public void testSeriesNames(){
-        UPlotFormatOptions options = new UPlotFormatOptions(new HashMap<>(),"%dpl\n" +
-                "index=crud earliest=-5y\n" +
-                "| spath\n" +
-                "| rename count AS countOperation\n" +
-                "| stats sum(countOperation) min(countOperation) max(countOperation) by operation success\n" +
-                "| stats operation by operation success _time");
-        List<String> seriesNames = Assertions.assertDoesNotThrow(()->options.seriesLabels());
-        List<String> expectedNames = new ArrayList<>();
-        expectedNames.add("operation");
-        expectedNames.add("success");
-        expectedNames.add("_time");
-        Assertions.assertEquals(expectedNames,seriesNames);
-    }
-
-    @Test
-    public void testSeriesNamesWithNoAggregation(){
-        UPlotFormatOptions options = new UPlotFormatOptions(new HashMap<>(),"%dpl\n" +
-                "index=crud earliest=-5y\n" +
-                "| spath\n" +
-                "| rename count AS countOperation\n" +
-                "| stats sum(countOperation)");
-        List<String> seriesNames = Assertions.assertDoesNotThrow(()->options.seriesLabels());
-        List<String> expectedNames = new ArrayList<>();
-        Assertions.assertEquals(expectedNames,seriesNames);
-    }
-
-    @Test
-    public void testSeriesNamesWithNonAggregateLastCommand(){
-        UPlotFormatOptions options = new UPlotFormatOptions(new HashMap<>(),"%dpl\n" +
-                "index=crud earliest=-5y\n" +
-                "| spath\n" +
-                "| rename count AS countOperation\n" +
-                "| stats sum(countOperation) min(countOperation) max(countOperation) by operation success\n" +
-                "| accum countOperation AS totalOperationCount");
-        List<String> seriesNames = Assertions.assertDoesNotThrow(()->options.seriesLabels());
-        List<String> expectedNames = new ArrayList<>();
-        expectedNames.add("operation");
-        expectedNames.add("success");
-        Assertions.assertEquals(expectedNames,seriesNames);
-    }
-
 
 }
