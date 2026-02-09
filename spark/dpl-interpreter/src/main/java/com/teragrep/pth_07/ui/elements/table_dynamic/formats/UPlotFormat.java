@@ -161,25 +161,33 @@ public class UPlotFormat implements  DatasetFormat{
                 List<Object> values = resultRow.getList(i);
                 JsonArrayBuilder subArray = Json.createArrayBuilder();
                 DataType elementType = ((ArrayType)(schemaField).dataType()).elementType();
-                for (Object value:values) {
                     if(elementType.equals(DataTypes.IntegerType)){
-                        subArray.add((int) value);
+                        for (Object value:values) {
+                            subArray.add((int) value);
+                        }
                     } else if (elementType.equals(DataTypes.LongType)) {
-                        subArray.add((Long) value);
+                        for (Object value:values) {
+                            subArray.add((Long) value);
+                        }
                     }
                     else if (elementType.equals(DataTypes.ShortType)) {
+                        for (Object value:values) {
                             subArray.add((Short) value);
+                        }
                     }
                     else if (elementType.equals(DataTypes.DoubleType)) {
-                        subArray.add((Double) value);
+                        for (Object value:values) {
+                            subArray.add((Double) value);
+                        }
                     }
                     else if (elementType.equals(DataTypes.FloatType)) {
-                        subArray.add((Float) value);
+                        for (Object value:values) {
+                            subArray.add((Float) value);
+                        }
                     }
                     else{
                         throw new InterpreterException("uPlot format only supports numerical data, tried to format data of type "+elementType+" in column "+ schemaField.name() +"!");
                     }
-                }
                 data1.add(subArray.build());
                 series.add(schemaField.name());
             }
