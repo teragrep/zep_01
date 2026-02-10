@@ -46,6 +46,7 @@
 package com.teragrep.pth_07.ui.elements.table_dynamic.formats;
 import com.teragrep.pth_07.ui.elements.table_dynamic.formatOptions.UPlotFormatOptions;
 import com.teragrep.zep_01.interpreter.InterpreterException;
+import com.teragrep.zep_01.interpreter.InterpreterResult;
 import jakarta.json.*;
 import org.apache.spark.sql.*;
 import org.apache.spark.sql.catalyst.expressions.AttributeReference;
@@ -202,5 +203,10 @@ public class UPlotFormat implements  DatasetFormat{
                         .add("graphType",graphType));
         JsonObject json = builder.build();
         return json;
+    }
+
+    @Override
+    public String type(){
+        return InterpreterResult.Type.UPLOT.label;
     }
 }

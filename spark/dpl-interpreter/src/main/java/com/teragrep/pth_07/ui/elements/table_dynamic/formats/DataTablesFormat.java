@@ -50,6 +50,7 @@ import com.teragrep.pth_07.ui.elements.table_dynamic.DTSearch;
 import com.teragrep.pth_07.ui.elements.table_dynamic.formatOptions.DataTablesFormatOptions;
 import com.teragrep.pth_07.ui.elements.table_dynamic.pojo.Order;
 import com.teragrep.zep_01.interpreter.InterpreterException;
+import com.teragrep.zep_01.interpreter.InterpreterResult;
 import jakarta.json.*;
 import org.apache.spark.sql.Dataset;
 import org.apache.spark.sql.Row;
@@ -126,5 +127,10 @@ public class DataTablesFormat implements  DatasetFormat{
                 LOGGER.error(e.toString());
                 throw new InterpreterException("Failed to format dataset into DataTables format");
             }
+    }
+
+    @Override
+    public String type(){
+        return InterpreterResult.Type.DATATABLES.label;
     }
 }

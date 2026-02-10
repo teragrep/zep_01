@@ -50,4 +50,5 @@ import jakarta.json.JsonObject;
 
 public interface DatasetFormat {
     public abstract JsonObject format() throws InterpreterException;
+    public abstract String type();
 }

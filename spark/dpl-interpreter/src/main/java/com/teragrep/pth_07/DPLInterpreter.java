@@ -48,14 +48,12 @@ package com.teragrep.pth_07;
 
 import com.teragrep.pth_07.stream.BatchHandler;
 import com.teragrep.pth_07.ui.UserInterfaceManager;
-import com.teragrep.pth_07.ui.elements.table_dynamic.DTHeader;
 import com.teragrep.pth_07.ui.elements.table_dynamic.DTTableDatasetNg;
 import com.teragrep.pth_07.ui.elements.table_dynamic.formatOptions.DataTablesFormatOptions;
 import com.teragrep.pth_07.ui.elements.table_dynamic.formatOptions.UPlotFormatOptions;
 import com.teragrep.pth_07.ui.elements.table_dynamic.formats.DataTablesFormat;
 import com.teragrep.pth_07.ui.elements.table_dynamic.formats.DatasetFormat;
 import com.teragrep.pth_07.ui.elements.table_dynamic.formats.UPlotFormat;
-import com.teragrep.pth_07.ui.elements.table_dynamic.formats.VisualizationLibraries;
 import com.teragrep.pth_15.DPLExecutor;
 import com.teragrep.pth_15.DPLExecutorFactory;
 import com.teragrep.pth_15.DPLExecutorResult;
@@ -82,9 +80,6 @@ import java.util.Map;
 import java.util.Properties;
 import java.util.concurrent.TimeoutException;
 import java.util.concurrent.atomic.AtomicInteger;
-
-import static org.apache.spark.sql.functions.col;
-import static org.apache.spark.sql.functions.row_number;
 
 /**
  * DPL-Spark SQL interpreter for Zeppelin.
@@ -342,7 +337,7 @@ public class DPLInterpreter extends AbstractInterpreter {
         UserInterfaceManager userInterfaceManager = findUserInterfacemanger(noteId,paragraphId);
 
         DatasetFormat format;
-        if(visualizationLibraryName.equals(VisualizationLibraries.UPLOT.label)){
+        if(visualizationLibraryName.equals(InterpreterResult.Type.UPLOT.label)){
             DTTableDatasetNg dtTableDatasetNg = userInterfaceManager.getDtTableDatasetNg();
             Dataset<Row> dataset = dtTableDatasetNg.dataset();
 

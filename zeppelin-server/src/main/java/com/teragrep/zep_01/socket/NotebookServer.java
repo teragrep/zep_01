@@ -1699,7 +1699,7 @@ public class NotebookServer extends WebSocketServlet
       return;
     }
     Message msg = new Message(OP.PARAGRAPH_OUTPUT).put("noteId", noteId)
-        .put("paragraphId", paragraphId).put("index", index).put("type", type).put("data", output);
+        .put("paragraphId", paragraphId).put("index", index).put("type", type.label).put("data", output);
     try {
       Note note = getNotebook().getNote(noteId);
       if (note == null) {

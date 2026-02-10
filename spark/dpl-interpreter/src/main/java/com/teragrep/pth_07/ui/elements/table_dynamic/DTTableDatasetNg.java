@@ -153,7 +153,7 @@ public final class DTTableDatasetNg extends AbstractUserInterfaceElement {
 
     public void writeDataUpdate(DatasetFormat format, boolean flush) throws InterpreterException{
             JsonObject formatted = format.format();
-            String outputContent = "%jsontable\n" +
+            String outputContent = "%"+format.type()+"\n" +
                     formatted.toString();
             write(outputContent, flush);
 

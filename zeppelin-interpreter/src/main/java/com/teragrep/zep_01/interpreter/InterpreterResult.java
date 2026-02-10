@@ -48,15 +48,22 @@ public class InterpreterResult implements Serializable, JsonSerializable {
    * Type of Data.
    */
   public enum Type {
-    TEXT,
-    HTML,
-    ANGULAR,
-    TABLE,
-    IMG,
-    SVG,
-    NULL,
-    NETWORK,
-    JSONTABLE
+    TEXT("text"),
+    HTML("html"),
+    ANGULAR("angular"),
+    TABLE("table"),
+    IMG("img"),
+    SVG("svg"),
+    NULL("null"),
+    NETWORK("network"),
+    DATATABLES("dataTables"),
+    UPLOT("uPlot");
+
+    public final String label;
+
+    Type(String label) {
+      this.label = label;
+    }
   }
 
   Code code;
