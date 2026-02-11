@@ -39,6 +39,7 @@ import com.teragrep.zep_01.interpreter.remote.RemoteInterpreter;
 import com.teragrep.zep_01.rest.exception.BadRequestException;
 import jakarta.json.Json;
 import jakarta.json.JsonObject;
+import jakarta.json.JsonObjectBuilder;
 import jakarta.json.JsonValue;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.exception.ExceptionUtils;
@@ -1704,18 +1705,21 @@ public class NotebookServer extends WebSocketServlet
     }
     // As formatted data is passed as a String via Thrift, we have to parse it into JSON in order to turn it into format expected by UI.
     JsonObject outputJson = Json.createReader(new StringReader(output)).readObject();
+    JsonObjectBuilder result = Json.createObjectBuilder();
     JsonValue data = outputJson.get("data");
-    Message msg = new Message(OP.PARAGRAPH_OUTPUT).put("noteId", noteId)
-        .put("paragraphId", paragraphId).put("index", index).put("type", type.label).put("result", data.toString());
+    result.add("data",data);
+    result.add("type",type.label);
     // Parse optional fields
     if(outputJson.containsKey("isAggregated")){
       boolean isAggregated = outputJson.getBoolean("isAggregated");
-      msg.put("isAggregated",isAggregated);
+      result.add("isAggregated",isAggregated);
     }
     if(outputJson.containsKey("options")){
       JsonValue options = outputJson.get("options");
-      msg.put("options",options.toString());
+      result.add("options",options);
     }
+    Message msg = new Message(OP.PARAGRAPH_OUTPUT).put("noteId", noteId)
+        .put("paragraphId", paragraphId).put("index", index).put("type", type.label).put("result", result);
     try {
       Note note = getNotebook().getNote(noteId);
       if (note == null) {
