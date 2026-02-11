@@ -76,7 +76,7 @@ public class BatchHandler implements BiConsumer<Dataset<Row>, Boolean> {
         // to keep consistent with previous implementation, aggregated data won't be flushed.
         try{
             userInterfaceManager.getDtTableDatasetNg().setParagraphDataset(rowDataset);
-            userInterfaceManager.getDtTableDatasetNg().writeDataUpdate(true);
+            userInterfaceManager.getDtTableDatasetNg().writeDataUpdate();
         } catch (InterpreterException e){
             LOGGER.error("BatchHandler failed to write dataset!",e);
         }

@@ -125,13 +125,11 @@ public final class DTTableDatasetNg extends AbstractUserInterfaceElement {
         }
     }
 
-    private void write(String outputContent, boolean flush){
+    private void write(String outputContent){
         try {
             getInterpreterContext().out().clear(false);
             getInterpreterContext().out().write(outputContent);
-            if(flush){
-                getInterpreterContext().out().flush();
-            }
+            getInterpreterContext().out().flush();
         } catch (IOException e) {
             LOGGER.error(e.toString());
             e.printStackTrace();
@@ -141,20 +139,20 @@ public final class DTTableDatasetNg extends AbstractUserInterfaceElement {
     public Dataset<Row> dataset(){
         return dataset;
     }
-    public void writeDataUpdate(boolean flush) throws InterpreterException{
+    public void writeDataUpdate() throws InterpreterException{
         Map<String, String> defaultOptions = new HashMap<String, String>();
         defaultOptions.put("draw",Integer.toString(drawCount));
         defaultOptions.put("start",Integer.toString(0));
         defaultOptions.put("length",Integer.toString(currentAJAXLength));
         defaultOptions.put("search","");
-        writeDataUpdate(new DataTablesFormat(dataset,new DataTablesFormatOptions(defaultOptions)),flush);
+        writeDataUpdate(new DataTablesFormat(dataset,new DataTablesFormatOptions(defaultOptions)));
     }
 
-    public void writeDataUpdate(DatasetFormat format, boolean flush) throws InterpreterException{
+    public void writeDataUpdate(DatasetFormat format) throws InterpreterException{
             JsonObject formatted = format.format();
             String outputContent = "%"+format.type().toLowerCase()+"\n" +
                     formatted.toString();
-            write(outputContent, flush);
+            write(outputContent);
 
     }
 
