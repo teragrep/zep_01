@@ -111,7 +111,7 @@ class DataTablesFormatTest {
         // Get rows 3-5 of the dataset, check that every value is present
         DataTablesFormatOptions options1 = new DataTablesFormatOptions(optionsMap);
         DataTablesFormat request1 = new DataTablesFormat(datasetAsJSON,options1);
-        JsonObject response1 = Assertions.assertDoesNotThrow(()->request1.format());
+        JsonObject response1 = Assertions.assertDoesNotThrow(()->request1.format().getJsonObject("data"));
         Assertions.assertEquals(length,response1.getJsonArray("data").size());
 
         // Check metadata
@@ -177,7 +177,7 @@ class DataTablesFormatTest {
         DataTablesFormatOptions options1 = new DataTablesFormatOptions(optionsMap1);
 
         DataTablesFormat request1 = new DataTablesFormat(testDs,options1);
-        JsonObject response1 = Assertions.assertDoesNotThrow(()->request1.format());
+        JsonObject response1 = Assertions.assertDoesNotThrow(()->request1.format().getJsonObject("data"));
         Assertions.assertEquals(5,response1.getJsonArray("data").size());
         Assertions.assertEquals("1970-01-01T00:00:49.000Z",response1.getJsonArray("data").getJsonObject(0).getString("_time"));
         Assertions.assertEquals("1970-01-01T00:00:45.000Z",response1.getJsonArray("data").getJsonObject(4).getString("_time"));
@@ -193,7 +193,7 @@ class DataTablesFormatTest {
         DataTablesFormatOptions options2 = new DataTablesFormatOptions(optionsMap2);
 
         DataTablesFormat request2 = new DataTablesFormat(testDs,options2);
-        JsonObject response2 = Assertions.assertDoesNotThrow(()->request2.format());
+        JsonObject response2 = Assertions.assertDoesNotThrow(()->request2.format().getJsonObject("data"));
         Assertions.assertEquals(10,response2.getJsonArray("data").size());
         Assertions.assertEquals("1970-01-01T00:00:44.000Z",response2.getJsonArray("data").getJsonObject(0).getString("_time"));
         Assertions.assertEquals("1970-01-01T00:00:35.000Z",response2.getJsonArray("data").getJsonObject(9).getString("_time"));

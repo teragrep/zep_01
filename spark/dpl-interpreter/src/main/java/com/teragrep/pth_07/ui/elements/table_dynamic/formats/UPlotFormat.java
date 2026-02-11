@@ -84,7 +84,9 @@ public class UPlotFormat implements  DatasetFormat{
         // Get a list of column names that were used in aggregation
         List<String> groupByLabels = new ArrayList<>();
         LogicalPlan plan = dataset.queryExecution().logical();
+        boolean aggsUsed;
         if (plan instanceof Aggregate) {
+            aggsUsed = true;
             Aggregate aggPlan = (Aggregate) plan;
             List<Expression> expressions = JavaConverters.seqAsJavaList((aggPlan.groupingExpressions().seq()));
             for (Expression expression: expressions) {
@@ -93,6 +95,9 @@ public class UPlotFormat implements  DatasetFormat{
                     groupByLabels.add(attributeReference.name());
                 }
             }
+        }
+        else {
+            aggsUsed = false;
         }
 
         // Get references to Column objects for each column used in aggregation
@@ -200,7 +205,8 @@ public class UPlotFormat implements  DatasetFormat{
                 .add("options",Json.createObjectBuilder()
                         .add("labels",labels)
                         .add("series",series)
-                        .add("graphType",graphType));
+                        .add("graphType",graphType))
+                .add("isAggregated",aggsUsed);
         JsonObject json = builder.build();
         return json;
     }

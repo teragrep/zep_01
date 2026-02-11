@@ -20,6 +20,7 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.reflect.TypeToken;
 import java.io.IOException;
+import java.io.StringReader;
 import java.lang.reflect.Type;
 import java.net.URISyntaxException;
 import java.net.UnknownHostException;
@@ -36,6 +37,9 @@ import com.teragrep.zep_01.display.*;
 import com.teragrep.zep_01.interpreter.*;
 import com.teragrep.zep_01.interpreter.remote.RemoteInterpreter;
 import com.teragrep.zep_01.rest.exception.BadRequestException;
+import jakarta.json.Json;
+import jakarta.json.JsonObject;
+import jakarta.json.JsonValue;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.apache.thrift.TException;
@@ -1698,8 +1702,20 @@ public class NotebookServer extends WebSocketServlet
     if (!sendParagraphStatusToFrontend) {
       return;
     }
+    // As formatted data is passed as a String via Thrift, we have to parse it into JSON in order to turn it into format expected by UI.
+    JsonObject outputJson = Json.createReader(new StringReader(output)).readObject();
+    JsonValue data = outputJson.get("data");
     Message msg = new Message(OP.PARAGRAPH_OUTPUT).put("noteId", noteId)
-        .put("paragraphId", paragraphId).put("index", index).put("type", type.label).put("data", output);
+        .put("paragraphId", paragraphId).put("index", index).put("type", type.label).put("result", data.toString());
+    // Parse optional fields
+    if(outputJson.containsKey("isAggregated")){
+      boolean isAggregated = outputJson.getBoolean("isAggregated");
+      msg.put("isAggregated",isAggregated);
+    }
+    if(outputJson.containsKey("options")){
+      JsonValue options = outputJson.get("options");
+      msg.put("options",options.toString());
+    }
     try {
       Note note = getNotebook().getNote(noteId);
       if (note == null) {

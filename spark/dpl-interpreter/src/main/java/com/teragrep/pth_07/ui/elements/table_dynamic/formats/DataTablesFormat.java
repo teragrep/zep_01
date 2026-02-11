@@ -54,6 +54,8 @@ import com.teragrep.zep_01.interpreter.InterpreterResult;
 import jakarta.json.*;
 import org.apache.spark.sql.Dataset;
 import org.apache.spark.sql.Row;
+import org.apache.spark.sql.catalyst.plans.logical.Aggregate;
+import org.apache.spark.sql.catalyst.plans.logical.LogicalPlan;
 import org.apache.spark.sql.types.StructField;
 import org.apache.spark.sql.types.StructType;
 import org.slf4j.Logger;
@@ -113,16 +115,26 @@ public class DataTablesFormat implements  DatasetFormat{
                 }
                 final JsonArray schemaHeadersAsJSON = builder.build();
 
+                LogicalPlan plan = dataset.queryExecution().logical();
+                boolean aggsUsed;
+                if (plan instanceof Aggregate) {
+                    aggsUsed = true;
+                }
+                else {
+                    aggsUsed = false;
+                }
+
                 int recordsTotal = datasetAsJson.size();
                 int recordsFiltered = searchedList.size();
-
-                JsonObjectBuilder objectBuilder = Json.createObjectBuilder();
-                objectBuilder.add("headers",schemaHeadersAsJSON);
-                objectBuilder.add("data", formated);
-                objectBuilder.add("draw", options.draw());
-                objectBuilder.add("recordsTotal", recordsTotal);
-                objectBuilder.add("recordsFiltered", recordsFiltered);
-                return objectBuilder.build();
+                JsonObjectBuilder dataBuilder = Json.createObjectBuilder();
+                dataBuilder.add("headers",schemaHeadersAsJSON);
+                dataBuilder.add("data", formated);
+                dataBuilder.add("draw", options.draw());
+                dataBuilder.add("recordsTotal", recordsTotal);
+                dataBuilder.add("recordsFiltered", recordsFiltered);
+                JsonObject data = dataBuilder.build();
+                JsonObject json = Json.createObjectBuilder().add("data",data).add("isAggregated",aggsUsed).build();
+                return json;
             }catch(JsonException|IllegalStateException e){
                 LOGGER.error(e.toString());
                 throw new InterpreterException("Failed to format dataset into DataTables format");
