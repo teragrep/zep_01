@@ -37,10 +37,7 @@ import com.teragrep.zep_01.display.*;
 import com.teragrep.zep_01.interpreter.*;
 import com.teragrep.zep_01.interpreter.remote.RemoteInterpreter;
 import com.teragrep.zep_01.rest.exception.BadRequestException;
-import jakarta.json.Json;
-import jakarta.json.JsonObject;
-import jakarta.json.JsonObjectBuilder;
-import jakarta.json.JsonValue;
+import jakarta.json.*;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.apache.thrift.TException;
@@ -1718,8 +1715,14 @@ public class NotebookServer extends WebSocketServlet
       JsonValue options = outputJson.get("options");
       result.add("options",options);
     }
+
+    // As ConnectionManager.send() uses Gson.toJson() to serialize the Message object into a Json string, we cannot pass JsonObjectImpl objects to it, as they include metadata which messes up the Json format.
+    // Gson.toJson() provides correct Json when the passed objects are primitive Java types, so we must turn the "result" JsonObject into a Map<String,Object>
+    Map<String,Object> resultMap = (Map<String, Object>) jsonValueAsObject(result.build());
+
+
     Message msg = new Message(OP.PARAGRAPH_OUTPUT).put("noteId", noteId)
-        .put("paragraphId", paragraphId).put("index", index).put("type", type.label).put("result", result);
+        .put("paragraphId", paragraphId).put("index", index).put("type", type.label).put("result", resultMap);
     try {
       Note note = getNotebook().getNote(noteId);
       if (note == null) {
@@ -2239,6 +2242,47 @@ public class NotebookServer extends WebSocketServlet
     userAndRoles.addAll(authInfo.getRoles());
     return new ServiceContext(authInfo, userAndRoles);
   }
+
+  // Turns any of Jakarta's JsonValues into a standard Java Object.
+  private Object jsonValueAsObject(JsonValue value){
+    JsonValue.ValueType type = value.getValueType();
+    if(type.equals(JsonValue.ValueType.STRING)){
+      JsonString jsonString = (JsonString) value;
+      return jsonString.getString();
+    } else if (type.equals(JsonValue.ValueType.TRUE)) {
+      return true;
+    } else if (type.equals(JsonValue.ValueType.FALSE)) {
+      return false;
+    } else if (type.equals(JsonValue.ValueType.NUMBER)) {
+      JsonNumber numberValue = (JsonNumber) value;
+      if(numberValue.isIntegral()){
+        return numberValue.longValue();
+      }
+      else{
+        return numberValue.doubleValue();
+      }
+    } else if (type.equals(JsonValue.ValueType.NULL)) {
+      return null;
+    } else if (type.equals(JsonValue.ValueType.OBJECT)) {
+      JsonObject jsonObjectValue = value.asJsonObject();
+      Map<String, Object> objectMap = new HashMap<>();
+      for (Map.Entry<String,JsonValue> entry:jsonObjectValue.entrySet()) {
+        objectMap.put(entry.getKey(),jsonValueAsObject(entry.getValue()));
+      }
+      return objectMap;
+    } else if (type.equals(JsonValue.ValueType.ARRAY)) {
+      JsonArray jsonArrayValue = value.asJsonArray();
+      ArrayList<Object> arrayValue = new ArrayList<>();
+      for (JsonValue entry:jsonArrayValue) {
+        arrayValue.add(jsonValueAsObject(entry));
+      }
+      return arrayValue;
+    }
+    else {
+      throw new IllegalStateException("JsonValue does not correspond to any defined ValueType!");
+    }
+  }
+
 
   public class WebSocketServiceCallback<T> extends SimpleServiceCallback<T> {
 
