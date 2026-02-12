@@ -48,9 +48,11 @@ package com.teragrep.pth_07.ui.elements.table_dynamic.formats;
 import com.teragrep.pth_07.ui.elements.table_dynamic.DTHeader;
 import com.teragrep.pth_07.ui.elements.table_dynamic.formatOptions.DataTablesFormatOptions;
 import com.teragrep.pth_07.ui.elements.table_dynamic.testdata.TestDPLData;
+import jakarta.json.JsonArray;
 import jakarta.json.JsonObject;
 import org.apache.spark.sql.Dataset;
 import org.apache.spark.sql.Row;
+import org.apache.spark.sql.RowFactory;
 import org.apache.spark.sql.SparkSession;
 import org.apache.spark.sql.types.DataTypes;
 import org.apache.spark.sql.types.MetadataBuilder;
@@ -62,10 +64,7 @@ import org.junit.jupiter.api.Test;
 import java.sql.Timestamp;
 import java.time.Duration;
 import java.time.Instant;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.UUID;
+import java.util.*;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -96,7 +95,6 @@ class DataTablesFormatTest {
 
     @Test
     void testFormat() {
-        Dataset<Row> datasetAsJSON = testDs;
 
         final int draw = 3;
         final int start = 3;
@@ -110,60 +108,101 @@ class DataTablesFormatTest {
 
         // Get rows 3-5 of the dataset, check that every value is present
         DataTablesFormatOptions options1 = new DataTablesFormatOptions(optionsMap);
-        DataTablesFormat request1 = new DataTablesFormat(datasetAsJSON,options1);
-        JsonObject response1 = Assertions.assertDoesNotThrow(()->request1.format().getJsonObject("data"));
-        Assertions.assertEquals(length,response1.getJsonArray("data").size());
+        DataTablesFormat request1 = new DataTablesFormat(testDs,options1);
+        JsonObject formatted = Assertions.assertDoesNotThrow(()->request1.format());
+        JsonObject data = formatted.getJsonObject("data");
+        JsonArray headers = data.getJsonArray("headers");
+        boolean isAggregated = formatted.getBoolean("isAggregated");
+        Assertions.assertEquals(length,formatted.size());
 
         // Check metadata
-        int rowCount = datasetAsJSON.collectAsList().size();
-        Assertions.assertEquals(draw,response1.getInt("draw"));
-        Assertions.assertEquals(rowCount,response1.getInt("recordsTotal"));
-        Assertions.assertEquals(rowCount,response1.getInt("recordsFiltered"));
+        int rowCount = testDs.collectAsList().size();
+        Assertions.assertEquals(draw,data.getInt("draw"));
+        Assertions.assertEquals(rowCount,data.getInt("recordsTotal"));
+        Assertions.assertEquals(rowCount,data.getInt("recordsFiltered"));
 
         // Check headers
-        Assertions.assertEquals(testSchema.size(),response1.getJsonArray("headers").size());
+        Assertions.assertEquals(testSchema.size(),data.getJsonArray("headers").size());
 
-        Assertions.assertEquals(testSchema.fieldNames()[0],response1.getJsonArray("headers").getString(0));
-        Assertions.assertEquals(testSchema.fieldNames()[1],response1.getJsonArray("headers").getString(1));
-        Assertions.assertEquals(testSchema.fieldNames()[2],response1.getJsonArray("headers").getString(2));
-        Assertions.assertEquals(testSchema.fieldNames()[3],response1.getJsonArray("headers").getString(3));
-        Assertions.assertEquals(testSchema.fieldNames()[4],response1.getJsonArray("headers").getString(4));
-        Assertions.assertEquals(testSchema.fieldNames()[5],response1.getJsonArray("headers").getString(5));
-        Assertions.assertEquals(testSchema.fieldNames()[6],response1.getJsonArray("headers").getString(6));
-        Assertions.assertEquals(testSchema.fieldNames()[7],response1.getJsonArray("headers").getString(7));
-        Assertions.assertEquals(testSchema.fieldNames()[8],response1.getJsonArray("headers").getString(8));
-        Assertions.assertEquals(testSchema.fieldNames()[9],response1.getJsonArray("headers").getString(9));
+        Assertions.assertEquals(testSchema.fieldNames()[0],headers.getString(0));
+        Assertions.assertEquals(testSchema.fieldNames()[1],headers.getString(1));
+        Assertions.assertEquals(testSchema.fieldNames()[2],headers.getString(2));
+        Assertions.assertEquals(testSchema.fieldNames()[3],headers.getString(3));
+        Assertions.assertEquals(testSchema.fieldNames()[4],headers.getString(4));
+        Assertions.assertEquals(testSchema.fieldNames()[5],headers.getString(5));
+        Assertions.assertEquals(testSchema.fieldNames()[6],headers.getString(6));
+        Assertions.assertEquals(testSchema.fieldNames()[7],headers.getString(7));
+        Assertions.assertEquals(testSchema.fieldNames()[8],headers.getString(8));
+        Assertions.assertEquals(testSchema.fieldNames()[9],headers.getString(9));
 
         // Check data
-        Assertions.assertEquals("1970-01-01T00:00:46.000Z",response1.getJsonArray("data").getJsonObject(0).getString("_time"));
-        Assertions.assertEquals("1970-01-01T00:00:45.000Z",response1.getJsonArray("data").getJsonObject(1).getString("_time"));
+        Assertions.assertEquals("1970-01-01T00:00:46.000Z",data.getJsonArray("data").getJsonObject(0).getString("_time"));
+        Assertions.assertEquals("1970-01-01T00:00:45.000Z",data.getJsonArray("data").getJsonObject(1).getString("_time"));
 
-        Assertions.assertEquals(0,response1.getJsonArray("data").getJsonObject(0).getInt("id"));
-        Assertions.assertEquals(0,response1.getJsonArray("data").getJsonObject(1).getInt("id"));
+        Assertions.assertEquals(0,data.getJsonArray("data").getJsonObject(0).getInt("id"));
+        Assertions.assertEquals(0,data.getJsonArray("data").getJsonObject(1).getInt("id"));
 
-        Assertions.assertEquals("index_A",response1.getJsonArray("data").getJsonObject(0).getString("index"));
-        Assertions.assertEquals("index_A",response1.getJsonArray("data").getJsonObject(1).getString("index"));
+        Assertions.assertEquals("index_A",data.getJsonArray("data").getJsonObject(0).getString("index"));
+        Assertions.assertEquals("index_A",data.getJsonArray("data").getJsonObject(1).getString("index"));
 
-        Assertions.assertEquals("data data",response1.getJsonArray("data").getJsonObject(0).getString("_raw"));
-        Assertions.assertEquals("data data",response1.getJsonArray("data").getJsonObject(1).getString("_raw"));
+        Assertions.assertEquals("data data",data.getJsonArray("data").getJsonObject(0).getString("_raw"));
+        Assertions.assertEquals("data data",data.getJsonArray("data").getJsonObject(1).getString("_raw"));
 
-        Assertions.assertEquals("stream",response1.getJsonArray("data").getJsonObject(0).getString("sourcetype"));
-        Assertions.assertEquals("stream",response1.getJsonArray("data").getJsonObject(1).getString("sourcetype"));
+        Assertions.assertEquals("stream",data.getJsonArray("data").getJsonObject(0).getString("sourcetype"));
+        Assertions.assertEquals("stream",data.getJsonArray("data").getJsonObject(1).getString("sourcetype"));
 
-        Assertions.assertEquals("host",response1.getJsonArray("data").getJsonObject(0).getString("host"));
-        Assertions.assertEquals("host",response1.getJsonArray("data").getJsonObject(1).getString("host"));
+        Assertions.assertEquals("host",data.getJsonArray("data").getJsonObject(0).getString("host"));
+        Assertions.assertEquals("host",data.getJsonArray("data").getJsonObject(1).getString("host"));
 
-        Assertions.assertEquals("input",response1.getJsonArray("data").getJsonObject(0).getString("source"));
-        Assertions.assertEquals("input",response1.getJsonArray("data").getJsonObject(1).getString("source"));
+        Assertions.assertEquals("input",data.getJsonArray("data").getJsonObject(0).getString("source"));
+        Assertions.assertEquals("input",data.getJsonArray("data").getJsonObject(1).getString("source"));
 
-        Assertions.assertEquals("0",response1.getJsonArray("data").getJsonObject(0).getString("partition"));
-        Assertions.assertEquals("0",response1.getJsonArray("data").getJsonObject(1).getString("partition"));
+        Assertions.assertEquals("0",data.getJsonArray("data").getJsonObject(0).getString("partition"));
+        Assertions.assertEquals("0",data.getJsonArray("data").getJsonObject(1).getString("partition"));
 
-        Assertions.assertEquals(0,response1.getJsonArray("data").getJsonObject(0).getInt("offset"));
-        Assertions.assertEquals(0,response1.getJsonArray("data").getJsonObject(1).getInt("offset"));
+        Assertions.assertEquals(0,data.getJsonArray("data").getJsonObject(0).getInt("offset"));
+        Assertions.assertEquals(0,data.getJsonArray("data").getJsonObject(1).getInt("offset"));
 
-        Assertions.assertEquals("test data",response1.getJsonArray("data").getJsonObject(0).getString("origin"));
-        Assertions.assertEquals("test data",response1.getJsonArray("data").getJsonObject(1).getString("origin"));
+        Assertions.assertEquals("test data",data.getJsonArray("data").getJsonObject(0).getString("origin"));
+        Assertions.assertEquals("test data",data.getJsonArray("data").getJsonObject(1).getString("origin"));
+
+        Assertions.assertEquals(false,isAggregated);
+    }
+
+    @Test
+    void testAggregation(){
+        final StructType aggSchema = new StructType(
+                new StructField[] {
+                        new StructField("_time", DataTypes.TimestampType, false, new MetadataBuilder().build()),
+                        new StructField("deletion", DataTypes.IntegerType, false, new MetadataBuilder().build()),
+                }
+        );
+        List<Row> rows = new ArrayList<>();
+        rows.add(RowFactory.create(Instant.ofEpochSecond(100000),10));
+        rows.add(RowFactory.create(Instant.ofEpochSecond(100000),5));
+        rows.add(RowFactory.create(Instant.ofEpochSecond(110000),10));
+        rows.add(RowFactory.create(Instant.ofEpochSecond(110000),20));
+        rows.add(RowFactory.create(Instant.ofEpochSecond(120000),1));
+        final Dataset aggDataset = sparkSession.createDataFrame(rows,aggSchema).groupBy("_time").agg(org.apache.spark.sql.functions.avg("deletion"));
+
+
+        final int draw = 3;
+        final int start = 3;
+        final int length = 2;
+        final String searchString = "";
+        Map<String,String> optionsMap = new HashMap<>();
+        optionsMap.put("draw",Integer.toString(draw));
+        optionsMap.put("start",Integer.toString(start));
+        optionsMap.put("length",Integer.toString(length));
+        optionsMap.put("search",searchString);
+
+
+        DataTablesFormatOptions options1 = new DataTablesFormatOptions(optionsMap);
+        DataTablesFormat request1 = new DataTablesFormat(aggDataset,options1);
+        JsonObject formatted = Assertions.assertDoesNotThrow(()->request1.format());
+
+        boolean isAggregated = formatted.getBoolean("isAggregated");
+        Assertions.assertEquals(true,isAggregated);
     }
 
     @Test

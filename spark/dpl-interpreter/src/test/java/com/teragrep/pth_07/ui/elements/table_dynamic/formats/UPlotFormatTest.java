@@ -185,9 +185,10 @@ class UPlotFormatTest {
 
         JsonObject formatted = Assertions.assertDoesNotThrow(()-> format.format());
 
-        // Object must contain both "data" array and "options" object
+        // Object must contain "data" array, "options" object and "isAggregated" boolean
         Assertions.assertTrue(formatted.containsKey("data"));
         Assertions.assertTrue(formatted.containsKey("options"));
+        Assertions.assertTrue(formatted.containsKey("isAggregated"));
 
         // Data must contain at least two arrays
         Assertions.assertTrue(formatted.getJsonArray("data").size() > 1);
@@ -216,6 +217,9 @@ class UPlotFormatTest {
         // Series size must match with the size of second array of Data and the number of columns in the result dataset schema (minus number of group by fields used)
         Assertions.assertEquals(formatted.getJsonArray("data").getJsonArray(1).size(), formatted.getJsonObject("options").getJsonArray("series").size());
         Assertions.assertEquals(resultDataset.schema().size()-groupByCount, formatted.getJsonObject("options").getJsonArray("series").size());
+
+        // This dataset is aggregated, so isAggregated should be true
+        Assertions.assertEquals(true,formatted.getBoolean("isAggregated"));
     }
 
     @Test
@@ -239,9 +243,10 @@ class UPlotFormatTest {
 
         JsonObject formatted = Assertions.assertDoesNotThrow(()-> format.format());
 
-        // Object must contain both "data" array and "options" object
+        // Object must contain "data" array, "options" object and "isAggregated" boolean
         Assertions.assertTrue(formatted.containsKey("data"));
         Assertions.assertTrue(formatted.containsKey("options"));
+        Assertions.assertTrue(formatted.containsKey("isAggregated"));
 
         // Data must contain at least two arrays
         Assertions.assertTrue(formatted.getJsonArray("data").size() > 1);
@@ -270,6 +275,9 @@ class UPlotFormatTest {
         // Series size must match with the size of second array of Data and the number of columns in the result dataset schema (minus number of group by fields used)
         Assertions.assertEquals(formatted.getJsonArray("data").getJsonArray(1).size(), formatted.getJsonObject("options").getJsonArray("series").size());
         Assertions.assertEquals(resultDataset.schema().size()-groupByCount, formatted.getJsonObject("options").getJsonArray("series").size());
+
+        // This dataset is aggregated, so isAggregated should be true
+        Assertions.assertEquals(true,formatted.containsKey("isAggregated"));
     }
 
     @Test
@@ -293,9 +301,10 @@ class UPlotFormatTest {
 
         JsonObject formatted = Assertions.assertDoesNotThrow(()-> format.format());
 
-        // Object must contain both "data" array and "options" object
+        // Object must contain "data" array, "options" object and "isAggregated" boolean
         Assertions.assertTrue(formatted.containsKey("data"));
         Assertions.assertTrue(formatted.containsKey("options"));
+        Assertions.assertTrue(formatted.containsKey("isAggregated"));
 
         // Data must contain at least two arrays
         Assertions.assertTrue(formatted.getJsonArray("data").size() > 1);
@@ -324,6 +333,9 @@ class UPlotFormatTest {
         // Series size must match with the size of second array of Data and the number of columns in the result dataset schema (minus number of group by fields used)
         Assertions.assertEquals(formatted.getJsonArray("data").getJsonArray(1).size(), formatted.getJsonObject("options").getJsonArray("series").size());
         Assertions.assertEquals(resultDataset.schema().size()-groupByCount, formatted.getJsonObject("options").getJsonArray("series").size());
+
+        // This dataset is aggregated, so isAggregated should be true
+        Assertions.assertEquals(true,formatted.containsKey("isAggregated"));
     }
 
     @Test
@@ -346,9 +358,10 @@ class UPlotFormatTest {
 
         JsonObject formatted = Assertions.assertDoesNotThrow(()-> format.format());
 
-        // Object must contain both "data" array and "options" object
+        // Object must contain "data" array, "options" object and "isAggregated" boolean
         Assertions.assertTrue(formatted.containsKey("data"));
         Assertions.assertTrue(formatted.containsKey("options"));
+        Assertions.assertTrue(formatted.containsKey("isAggregated"));
 
         // Data must contain at least two arrays
         Assertions.assertTrue(formatted.getJsonArray("data").size() > 1);
@@ -377,6 +390,9 @@ class UPlotFormatTest {
         // Series size must match with the size of second array of Data and the number of columns in the result dataset schema (minus number of group by fields used)
         Assertions.assertEquals(formatted.getJsonArray("data").getJsonArray(1).size(), formatted.getJsonObject("options").getJsonArray("series").size());
         Assertions.assertEquals(resultDataset.schema().size()-groupByCount, formatted.getJsonObject("options").getJsonArray("series").size());
+
+        // This dataset is aggregated, so isAggregated should be true
+        Assertions.assertEquals(true,formatted.containsKey("isAggregated"));
     }
 
     @Test
@@ -395,5 +411,82 @@ class UPlotFormatTest {
         UPlotFormat format = new UPlotFormat(resultDataset, options);
 
         Assertions.assertThrows(InterpreterException.class,()->format.format());
+    }
+
+    @Test
+    void testNonNumericalFormat() {
+        // Create test dataset and a query string to simulate most recent dataset received from DPL
+        String dplQuery = "%dpl\n" +
+                "index=test\n" +
+                "| spath";
+        final Dataset<Row> resultDataset = sparkSession.createDataFrame(rows,schema);
+
+        // Create a map containing  object to simulate a formatting request received from UI
+        String graphType = "graph";
+        HashMap<String,String> optionsMap = new HashMap<>();
+        optionsMap.put("graphType",graphType);
+
+        // Create options and Format objects to be tested
+        UPlotFormatOptions options = new UPlotFormatOptions(optionsMap);
+        UPlotFormat format = new UPlotFormat(resultDataset, options);
+
+        // Trying to display string data (such as operation name: "create") should result in an Exception as uPlot only supports numerical data
+        Assertions.assertThrows(InterpreterException.class,()-> format.format());
+    }
+    @Test
+    void testUnaggregatedFormat() {
+        // Create test dataset and a query string to simulate most recent dataset received from DPL
+        String dplQuery = "%dpl\n" +
+                "index=test\n" +
+                "| spath";
+        final Dataset<Row> resultDataset = sparkSession.createDataFrame(rows,schema).select("filesModified");
+        int groupByCount = 0;
+
+        // Create a map containing  object to simulate a formatting request received from UI
+        String graphType = "graph";
+        HashMap<String,String> optionsMap = new HashMap<>();
+        optionsMap.put("graphType",graphType);
+
+        // Create options and Format objects to be tested
+        UPlotFormatOptions options = new UPlotFormatOptions(optionsMap);
+        UPlotFormat format = new UPlotFormat(resultDataset, options);
+
+        JsonObject formatted = Assertions.assertDoesNotThrow(()-> format.format());
+
+        // Object must contain "data" array, "options" object and "isAggregated" boolean
+        Assertions.assertTrue(formatted.containsKey("data"));
+        Assertions.assertTrue(formatted.containsKey("options"));
+        Assertions.assertTrue(formatted.containsKey("isAggregated"));
+
+        // Data must contain at least two arrays
+        Assertions.assertTrue(formatted.getJsonArray("data").size() > 1);
+
+        // First array of Data is the indexes for the series names used for X axis. It's length should be the number of unique combinations you can make with the values of the "group by" clause used.
+        // In cases where aggregations are used, the dataset's size should always equal this number. If no aggregations aren't used, the number should be zero
+        Assertions.assertEquals(0,formatted.getJsonArray("data").getJsonArray(0).size());
+
+        // Second array of Data must contain one value for each column of data in the result dataset (minus number of group by fields)
+        Assertions.assertEquals(resultDataset.schema().size()-groupByCount,formatted.getJsonArray("data").getJsonArray(1).size());
+
+        // Each sub-array within the second array of Data should contain one value for each row of data in the original dataset
+        Assertions.assertEquals(resultDataset.count(),formatted.getJsonArray("data").getJsonArray(1).getJsonArray(0).size());
+
+        // Options must contain a series array, a labels array and a graphType
+        Assertions.assertTrue(formatted.getJsonObject("options").containsKey("series"));
+        Assertions.assertTrue(formatted.getJsonObject("options").containsKey("labels"));
+        Assertions.assertTrue(formatted.getJsonObject("options").containsKey("graphType"));
+
+        // GraphType must match with what's given in the UI request
+        Assertions.assertEquals(graphType, formatted.getJsonObject("options").getString("graphType"));
+
+        // Labels size must match with size of first array of Data so that each index is mapped to a label.
+        Assertions.assertEquals(formatted.getJsonArray("data").getJsonArray(0).size(), formatted.getJsonObject("options").getJsonArray("labels").size());
+
+        // Series size must match with the size of second array of Data and the number of columns in the result dataset schema (minus number of group by fields used)
+        Assertions.assertEquals(formatted.getJsonArray("data").getJsonArray(1).size(), formatted.getJsonObject("options").getJsonArray("series").size());
+        Assertions.assertEquals(resultDataset.schema().size()-groupByCount, formatted.getJsonObject("options").getJsonArray("series").size());
+
+        // This dataset is not, so isAggregated should be false
+        Assertions.assertEquals(false,formatted.getBoolean("isAggregated"));
     }
 }
