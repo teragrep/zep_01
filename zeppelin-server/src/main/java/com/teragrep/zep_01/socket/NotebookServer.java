@@ -32,6 +32,7 @@ import javax.inject.Inject;
 import javax.inject.Provider;
 import javax.servlet.http.HttpServletRequest;
 
+import com.teragrep.zep_01.common.JsonMessage;
 import com.teragrep.zep_01.common.ValidatedMessage;
 import com.teragrep.zep_01.display.*;
 import com.teragrep.zep_01.interpreter.*;
@@ -589,8 +590,8 @@ public class NotebookServer extends WebSocketServlet
     if (note.isPersonalizedMode()) {
       broadcastParagraphs(p.getUserParagraphMap(), p, msgId);
     } else {
-      Message message = new Message(OP.PARAGRAPH).withMsgId(msgId).put("paragraph", p);
-      getConnectionManager().broadcast(note.getId(), message);
+      JsonObject message = new JsonMessage(OP.PARAGRAPH,p).asJson();
+      getConnectionManager().broadcast(note.getId(),message.toString());
     }
   }
 

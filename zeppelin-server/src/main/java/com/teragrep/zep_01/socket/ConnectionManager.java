@@ -20,6 +20,9 @@ package com.teragrep.zep_01.socket;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import com.teragrep.zep_01.common.JsonMessage;
+import jakarta.json.Json;
+import jakarta.json.JsonObject;
 import org.apache.commons.lang3.StringUtils;
 import com.teragrep.zep_01.conf.ZeppelinConfiguration;
 import com.teragrep.zep_01.display.GUI;
@@ -228,6 +231,25 @@ public class ConnectionManager {
     }
   }
 
+  public void broadcast(String noteId, String message){
+    List<NotebookSocket> socketsToBroadcast = Collections.emptyList();
+    synchronized (noteSocketMap) {
+      broadcastToWatchers(noteId, StringUtils.EMPTY, message);
+      List<NotebookSocket> socketLists = noteSocketMap.get(noteId);
+      if (socketLists == null || socketLists.size() == 0) {
+        return;
+      }
+      socketsToBroadcast = new ArrayList<>(socketLists);
+    }
+    for (NotebookSocket conn : socketsToBroadcast) {
+      try {
+        conn.send(message);
+      } catch (IOException | WebSocketException e) {
+        LOGGER.error("socket error", e);
+      }
+    }
+  }
+
   private void broadcastToWatchers(String noteId, String subject, Message message) {
     synchronized (watcherSockets) {
       for (NotebookSocket watcher : watcherSockets) {
@@ -238,6 +260,23 @@ public class ConnectionManager {
                   .message(serializeMessage(message))
                   .build()
                   .toJson());
+        } catch (IOException | WebSocketException e) {
+          LOGGER.error("Cannot broadcast message to watcher", e);
+        }
+      }
+    }
+  }
+
+  private void broadcastToWatchers(String noteId, String subject, String message) {
+    synchronized (watcherSockets) {
+      for (NotebookSocket watcher : watcherSockets) {
+        try {
+          watcher.send(
+                  WatcherMessage.builder(noteId)
+                          .subject(subject)
+                          .message(message)
+                          .build()
+                          .toJson());
         } catch (IOException | WebSocketException e) {
           LOGGER.error("Cannot broadcast message to watcher", e);
         }
