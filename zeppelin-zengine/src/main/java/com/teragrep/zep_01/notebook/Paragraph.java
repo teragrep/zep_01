@@ -19,16 +19,20 @@ package com.teragrep.zep_01.notebook;
 
 import java.io.IOException;
 import java.security.SecureRandom;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import com.teragrep.zep_01.common.Jsonable;
+import jakarta.json.Json;
+import jakarta.json.JsonObject;
+import jakarta.json.JsonObjectBuilder;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import com.teragrep.zep_01.common.JsonSerializable;
@@ -66,7 +70,7 @@ import com.google.common.annotations.VisibleForTesting;
  * Paragraph is a representation of an execution unit.
  */
 public class Paragraph extends JobWithProgressPoller<InterpreterResult> implements Cloneable,
-    JsonSerializable {
+    JsonSerializable, Jsonable {
 
   private static final Logger LOGGER = LoggerFactory.getLogger(Paragraph.class);
 
@@ -77,7 +81,7 @@ public class Paragraph extends JobWithProgressPoller<InterpreterResult> implemen
   private Date dateUpdated;
   private int progress;
   // paragraph configs like isOpen, colWidth, etc
-  private Map<String, Object> config = new HashMap<>();
+  private Map<String, Object> config = new HashMap<>(); // We could replace this with ParagraphConfig object, but use of GSON would cause changes in saved file contents.
   // form and parameter settings
   public GUI settings = new GUI();
   private InterpreterResult results;
@@ -94,7 +98,7 @@ public class Paragraph extends JobWithProgressPoller<InterpreterResult> implemen
   private transient Map<String, Paragraph> userParagraphMap = new HashMap<>();
   private transient Map<String, String> localProperties = new HashMap<>();
 
-  private Map<String, ParagraphRuntimeInfo> runtimeInfos = new HashMap<>();
+  private Map<String, ParagraphRuntimeInfo> runtimeInfos = new HashMap<>(); // We could replace this with ParagraphRuntimeInfos object, but use of GSON would cause changes in saved file contents.
   private transient List<InterpreterResultMessage> outputBuffer = new ArrayList<>();
 
 
@@ -125,6 +129,35 @@ public class Paragraph extends JobWithProgressPoller<InterpreterResult> implemen
     this.text = p2.text;
     this.results = p2.results;
     setStatus(p2.getStatus());
+  }
+
+
+  public JsonObject asJson(){
+    JsonObjectBuilder builder = Json.createObjectBuilder();
+
+    JsonObject runtimeInfosJson = new ParagraphRuntimeInfos(runtimeInfos).asJson();
+    JsonObject resultJson = results.asJson();
+    JsonObject configJson = new ParagraphConfig(config).asJson();
+
+    String dateFormatPattern = "yyyy-MM-dd'T'HH:mm:ssZ";
+
+    String dateUpdated = new SimpleDateFormat(dateFormatPattern).format(this.dateUpdated);
+    String dateStarted  = new SimpleDateFormat(dateFormatPattern).format(getDateStarted());
+    String dateCreated  = new SimpleDateFormat(dateFormatPattern).format(getDateCreated());
+    String dateFinished = new SimpleDateFormat(dateFormatPattern).format(getDateFinished());
+
+    builder.add("title",title)
+            .add("text",text)
+            .add("user",user)
+            .add("dateStarted",dateStarted)
+            .add("dateUpdated",dateUpdated)
+            .add("dateCreated",dateCreated)
+            .add("dateFinished",dateFinished)
+            .add("progress",progress)
+            .add("config",configJson)
+            .add("runtimeInfos",runtimeInfosJson)
+            .add("result",resultJson);
+    return builder.build();
   }
 
   private static String generateId() {

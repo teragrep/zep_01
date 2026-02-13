@@ -30,30 +30,20 @@ import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.text.SimpleDateFormat;
+import java.util.*;
 
+import com.teragrep.zep_01.interpreter.*;
+import jakarta.json.*;
 import org.apache.commons.lang3.tuple.Triple;
 import com.teragrep.zep_01.display.AngularObject;
 import com.teragrep.zep_01.display.AngularObjectBuilder;
 import com.teragrep.zep_01.display.AngularObjectRegistry;
 import com.teragrep.zep_01.display.Input;
-import com.teragrep.zep_01.interpreter.AbstractInterpreterTest;
-import com.teragrep.zep_01.interpreter.Constants;
-import com.teragrep.zep_01.interpreter.Interpreter;
 import com.teragrep.zep_01.interpreter.Interpreter.FormType;
-import com.teragrep.zep_01.interpreter.InterpreterContext;
-import com.teragrep.zep_01.interpreter.InterpreterOption;
-import com.teragrep.zep_01.interpreter.InterpreterResult;
 import com.teragrep.zep_01.interpreter.InterpreterResult.Code;
 import com.teragrep.zep_01.interpreter.InterpreterResult.Type;
-import com.teragrep.zep_01.interpreter.InterpreterResultMessage;
-import com.teragrep.zep_01.interpreter.InterpreterSetting;
 import com.teragrep.zep_01.interpreter.InterpreterSetting.Status;
-import com.teragrep.zep_01.interpreter.ManagedInterpreterGroup;
 import com.teragrep.zep_01.resource.ResourcePool;
 import com.teragrep.zep_01.user.AuthenticationInfo;
 import com.teragrep.zep_01.user.Credentials;
@@ -62,6 +52,7 @@ import com.teragrep.zep_01.user.UsernamePassword;
 import org.junit.Ignore;
 import org.junit.Rule;
 import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
 import org.junit.rules.ExpectedException;
 
 import org.mockito.Mockito;
@@ -405,4 +396,143 @@ public class ParagraphTest extends AbstractInterpreterTest {
     verify(mockInterpreter).interpret(eq("val x = \"usr=user&pass=pwd\""), any(InterpreterContext.class));
 
   }
+
+  // Validate JSON formatting of Paragraph objects using Jakarta Json instead of GSON
+  @Test
+  public void testAsJson(){
+
+    // Boilerplate for creating a Paragraph
+
+    String title = "test title";
+    String text = "%test hello world";
+    String user = "user";
+    Paragraph paragraph = new Paragraph();
+    paragraph.setTitle(title);
+    paragraph.setText(text);
+    AuthenticationInfo authenticationInfo = new AuthenticationInfo(user);
+    paragraph.setAuthenticationInfo(authenticationInfo);
+
+    Note note = new Note();
+    Credentials credentials = new Credentials();
+    note.setCredentials(credentials);
+    paragraph.setNote(note);
+
+    Interpreter interpreter = Assertions.assertDoesNotThrow(()->interpreterFactory.getInterpreter("test",new ExecutionContext()));
+    paragraph.setInterpreter(interpreter);
+    paragraph.progress();
+
+    String language = "test";
+    String completionKey = "TAB";
+    boolean completionSupport = true;
+    boolean editOnDoubleClick = true;
+
+    Map<String,Object> editorSettings = new HashMap<>();
+    editorSettings.put("language",language);
+    editorSettings.put("completionKey",completionKey);
+    editorSettings.put("completionSupport",completionSupport);
+    editorSettings.put("editOnDoubleClick",editOnDoubleClick);
+
+    int colWidth = 12;
+    boolean enabled = true;
+    int fontSize = 12;
+    boolean lineNumbers = true;
+    String editorMode = "mode";
+
+    Map<String, Object> config = new HashMap<>();
+    config.put("colWidth",colWidth);
+    config.put("enabled",enabled);
+    config.put("fontSize",fontSize);
+    config.put("lineNumbers",lineNumbers);
+    config.put("editorSetting",editorSettings);
+    config.put("editorMode",editorMode);
+
+    paragraph.setConfig(config);
+
+    Date dateStarted = new Date(1000000);
+    Date dateFinished = new Date(1000005);
+    paragraph.setDateStarted(dateStarted);
+    paragraph.setDateFinished(dateFinished);
+
+    InterpreterResult result = new InterpreterResult(Code.SUCCESS);
+    String resultJsonString = "{\"data\":{\"headers\":[\"_time\",\"operation\",\"count\"],\"data\":[{\"_time\":\"2021-02-24T02:00:00.000+02:00\",\"operation\":\"create\",\"count\":722},{\"_time\":\"2021-03-26T02:00:00.000+02:00\",\"operation\":\"create\",\"count\":693},{\"_time\":\"2021-03-27T02:00:00.000+02:00\",\"operation\":\"create\",\"count\":673}],\"draw\":1,\"recordsTotal\":10,\"recordsFiltered\":3},\"isAggregated\":false}";
+    result.add(new InterpreterResultMessage(Type.DATATABLES,resultJsonString));
+    paragraph.setResult(result);
+
+    Map<String, String> infos = new HashMap<>();
+    infos.put("jobUrl","dummy_url");
+    paragraph.updateRuntimeInfos("SPARK JOB","View in Spark web UI",infos,"spark","spark");
+
+    // Turn into Json
+    JsonObject json = Assertions.assertDoesNotThrow(()->paragraph.asJson());
+
+    // Should contain every key
+    Assertions.assertTrue(json.containsKey("title"));
+    Assertions.assertTrue(json.containsKey("text"));
+    Assertions.assertTrue(json.containsKey("user"));
+    Assertions.assertTrue(json.containsKey("dateUpdated"));
+    Assertions.assertTrue(json.containsKey("dateCreated"));
+    Assertions.assertTrue(json.containsKey("dateFinished"));
+    Assertions.assertTrue(json.containsKey("dateStarted"));
+    Assertions.assertTrue(json.containsKey("progress"));
+    Assertions.assertTrue(json.containsKey("config"));
+    Assertions.assertTrue(json.containsKey("runtimeInfos"));
+    Assertions.assertTrue(json.containsKey("result"));
+
+    // Check every value that is not set dynamically
+    Assertions.assertEquals(title,json.getString("title"));
+    Assertions.assertEquals(text,json.getString("text"));
+    Assertions.assertEquals(user,json.getString("user"));
+    Assertions.assertEquals(new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssZ").format(dateStarted),json.getString("dateStarted"));
+    Assertions.assertEquals(new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssZ").format(dateFinished),json.getString("dateFinished"));
+    Assertions.assertEquals(0,json.getInt("progress"));
+
+    JsonObject configJson = json.getJsonObject("config");
+    Assertions.assertEquals(colWidth,configJson.getInt("colWidth"));
+    Assertions.assertEquals(enabled,configJson.getBoolean("enabled"));
+    Assertions.assertEquals(fontSize,configJson.getInt("fontSize"));
+    Assertions.assertEquals(lineNumbers,configJson.getBoolean("lineNumbers"));
+    Assertions.assertEquals(editorMode,configJson.getString("editorMode"));
+
+    JsonObject editorSettingJson = configJson.getJsonObject("editorSetting");
+    Assertions.assertEquals(language, editorSettingJson.getString("language"));
+    Assertions.assertEquals(completionKey, editorSettingJson.getString("completionKey"));
+    Assertions.assertEquals(completionSupport, editorSettingJson.getBoolean("completionSupport"));
+    Assertions.assertEquals(editOnDoubleClick, editorSettingJson.getBoolean("editOnDoubleClick"));
+
+    JsonObject resultJson = json.getJsonObject("result");
+    Assertions.assertEquals(false,resultJson.getBoolean("isAggregated"));
+    Assertions.assertEquals(Type.DATATABLES.label,resultJson.getString("type"));
+    JsonArray expectedHeaders = Json.createArrayBuilder()
+            .add("_time")
+            .add("operation")
+            .add("count")
+            .build();
+    JsonArray expectedDataArray = Json.createArrayBuilder()
+            .add(Json.createObjectBuilder()
+                    .add("_time","2021-02-24T02:00:00.000+02:00")
+                    .add("operation","create")
+                    .add("count",722)
+                    .build())
+            .add(Json.createObjectBuilder()
+                    .add("_time","2021-03-26T02:00:00.000+02:00")
+                    .add("operation","create")
+                    .add("count",693)
+                    .build())
+            .add(Json.createObjectBuilder()
+                    .add("_time","2021-03-27T02:00:00.000+02:00")
+                    .add("operation","create")
+                    .add("count",673)
+                    .build())
+            .build();
+    JsonObject expectedData = Json.createObjectBuilder()
+            .add("recordsTotal",10)
+            .add("recordsFiltered",3)
+            .add("draw",1)
+            .add("headers",expectedHeaders)
+            .add("data",expectedDataArray)
+            .build();
+    Assertions.assertEquals(expectedData,resultJson.getJsonObject("data"));
+
+  }
+
 }

@@ -19,18 +19,24 @@ package com.teragrep.zep_01.interpreter;
 
 import com.google.gson.Gson;
 import com.teragrep.zep_01.common.JsonSerializable;
+import com.teragrep.zep_01.common.Jsonable;
+import jakarta.json.Json;
+import jakarta.json.JsonObject;
+import jakarta.json.JsonObjectBuilder;
+import jakarta.json.JsonValue;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.io.Serializable;
+import java.io.StringReader;
 import java.util.LinkedList;
 import java.util.List;
 
 /**
  * Interpreter result template.
  */
-public class InterpreterResult implements Serializable, JsonSerializable {
+public class InterpreterResult implements Serializable, JsonSerializable, Jsonable {
   transient Logger logger = LoggerFactory.getLogger(InterpreterResult.class);
   private static final Gson gson = new Gson();
 
@@ -144,5 +150,28 @@ public class InterpreterResult implements Serializable, JsonSerializable {
     }
 
     return sb.toString();
+  }
+  @Override
+  public JsonObject asJson() {
+    JsonObjectBuilder resultBuilder = Json.createObjectBuilder();
+
+    InterpreterResultMessage resultMessage = msg.get(0); // Result format does not support multiple ResultMessages, so we take the first one.
+    JsonObject resultMessageJson = Json.createReader(new StringReader(resultMessage.getData())).readObject();
+
+    // ResultMessage is guaranteed to have some type.
+    resultBuilder.add("type",resultMessage.type.label);
+
+    if(resultMessageJson.containsKey("isAggregated")){
+      JsonValue.ValueType isAggregatedType = resultMessageJson.get("isAggregated").getValueType();
+      if(isAggregatedType.equals(JsonValue.ValueType.TRUE) || isAggregatedType.equals(JsonValue.ValueType.FALSE)){
+        boolean isAggregated = resultMessageJson.getBoolean("isAggregated");
+        resultBuilder.add("isAggregated",isAggregated);
+      }
+    }
+
+    if(resultMessageJson.containsKey("data")){
+      resultBuilder.add("data",resultMessageJson.get("data"));
+    }
+    return resultBuilder.build();
   }
 }
