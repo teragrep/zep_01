@@ -51,23 +51,36 @@ public class ParagraphRuntimeInfo implements Jsonable {
 
   @Override
   public JsonObject asJson() {
+    JsonObjectBuilder runtimeInfo = Json.createObjectBuilder();
     JsonArrayBuilder valuesArrayBuilder = Json.createArrayBuilder();
     for (Map<String,String> valueMap : values) {
-      JsonObjectBuilder valueJson = Json.createObjectBuilder();
-      for (Map.Entry<String,String> entry: valueMap.entrySet()) {
-        valueJson.add(entry.getKey(),entry.getValue());
+      if(valueMap != null){
+        JsonObjectBuilder valueJson = Json.createObjectBuilder();
+        for (Map.Entry<String,String> entry: valueMap.entrySet()) {
+          if(entry.getKey() != null && entry.getValue() != null){
+            valueJson.add(entry.getKey(),entry.getValue());
+          }
+        }
+        valuesArrayBuilder.add(valueJson.build());
       }
-      valuesArrayBuilder.add(valueJson.build());
     }
     JsonArray valuesArray = valuesArrayBuilder.build();
-    JsonObject runtimeInfo = Json.createObjectBuilder()
-            .add("propertyName",propertyName)
-            .add("label",label)
-            .add("tooltip",tooltip)
-            .add("group",group)
-            .add("interpreterSettingId",interpreterSettingId)
-            .add("values",valuesArray)
-            .build();
-    return runtimeInfo;
+    runtimeInfo.add("values",valuesArray);
+    if(propertyName != null){
+      runtimeInfo.add("propertyName",propertyName);
+    }
+    if(label != null){
+      runtimeInfo.add("label",label);
+    }
+    if(tooltip != null){
+      runtimeInfo.add("tooltip",tooltip);
+    }
+    if(group != null){
+      runtimeInfo.add("group",group);
+    }
+    if(interpreterSettingId != null){
+      runtimeInfo.add("interpreterSettingId",interpreterSettingId);
+    }
+    return runtimeInfo.build();
   }
 }

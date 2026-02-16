@@ -134,29 +134,45 @@ public class Paragraph extends JobWithProgressPoller<InterpreterResult> implemen
 
   public JsonObject asJson(){
     JsonObjectBuilder builder = Json.createObjectBuilder();
-
-    JsonObject runtimeInfosJson = new ParagraphRuntimeInfos(runtimeInfos).asJson();
-    JsonObject resultJson = results.asJson();
-    JsonObject configJson = new ParagraphConfig(config).asJson();
-
-    String dateFormatPattern = "yyyy-MM-dd'T'HH:mm:ssZ";
-
-    String dateUpdated = new SimpleDateFormat(dateFormatPattern).format(this.dateUpdated);
-    String dateStarted  = new SimpleDateFormat(dateFormatPattern).format(getDateStarted());
-    String dateCreated  = new SimpleDateFormat(dateFormatPattern).format(getDateCreated());
-    String dateFinished = new SimpleDateFormat(dateFormatPattern).format(getDateFinished());
-
-    builder.add("title",title)
-            .add("text",text)
-            .add("user",user)
-            .add("dateStarted",dateStarted)
-            .add("dateUpdated",dateUpdated)
-            .add("dateCreated",dateCreated)
-            .add("dateFinished",dateFinished)
-            .add("progress",progress)
-            .add("config",configJson)
-            .add("runtimeInfos",runtimeInfosJson)
-            .add("result",resultJson);
+    if(title != null){
+      builder.add("title",title);
+    }
+    if(text != null){
+      builder.add("text",text);
+    }
+    if(user != null){
+      builder.add("user",user);
+    }
+    String dateFormatPattern = "yyyy-MM-dd'T'HH:mm:ssZ"; // This should really be configured somewhere else. Previously this format was hardcoded into ConnectionManagers and NotebookServers Gson initialization.
+    if(dateUpdated != null){
+      String dateUpdated = new SimpleDateFormat(dateFormatPattern).format(this.dateUpdated);
+      builder.add("dateUpdated",dateUpdated);
+    }
+    if(getDateStarted() != null){
+      String dateStarted  = new SimpleDateFormat(dateFormatPattern).format(getDateStarted());
+      builder.add("dateStarted",dateStarted);
+    }
+    if(getDateCreated() != null){
+      String dateCreated  = new SimpleDateFormat(dateFormatPattern).format(getDateCreated());
+      builder.add("dateCreated",dateCreated);
+    }
+    if(getDateFinished() != null){
+      String dateFinished = new SimpleDateFormat(dateFormatPattern).format(getDateFinished());
+      builder.add("dateFinished",dateFinished);
+    }
+    if(runtimeInfos != null){
+      JsonObject runtimeInfosJson = new ParagraphRuntimeInfos(runtimeInfos).asJson();
+      builder.add("runtimeInfos",runtimeInfosJson);
+    }
+    if(results != null){
+      JsonObject resultJson = results.asJson();
+      builder.add("result",resultJson);
+    }
+    if(config != null){
+      JsonObject configJson = new ParagraphConfig(config).asJson();
+      builder.add("config",configJson);
+    }
+    builder.add("progress",progress);
     return builder.build();
   }
 

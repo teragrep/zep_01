@@ -16,8 +16,10 @@ public class ParagraphRuntimeInfos implements Jsonable {
     @Override
     public JsonObject asJson() {
         JsonObjectBuilder runtimeInfos = Json.createObjectBuilder();
-        for (Map.Entry<String,ParagraphRuntimeInfo> entry : runtimeInfoMap.entrySet()) {
-            runtimeInfos.add(entry.getKey(),entry.getValue().asJson()).build();
+        if(runtimeInfoMap != null){
+            for (Map.Entry<String,ParagraphRuntimeInfo> entry : runtimeInfoMap.entrySet()) {
+                runtimeInfos.add(entry.getKey(),entry.getValue().asJson()).build();
+            }
         }
         return runtimeInfos.build();
     }
