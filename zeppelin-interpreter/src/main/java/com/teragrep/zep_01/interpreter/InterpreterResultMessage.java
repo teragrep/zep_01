@@ -16,12 +16,16 @@
  */
 package com.teragrep.zep_01.interpreter;
 
+import com.teragrep.zep_01.common.Jsonable;
+import jakarta.json.*;
+
 import java.io.Serializable;
+import java.io.StringReader;
 
 /**
  * Interpreter result message
  */
-public class InterpreterResultMessage implements Serializable {
+public class InterpreterResultMessage implements Serializable, Jsonable {
   InterpreterResult.Type type;
   String data;
 
@@ -40,5 +44,30 @@ public class InterpreterResultMessage implements Serializable {
 
   public String toString() {
     return "%" + type.name().toLowerCase() + " " + data;
+  }
+
+  @Override
+  public JsonObject asJson() {
+    JsonObjectBuilder resultBuilder = Json.createObjectBuilder();
+    resultBuilder.add("type",type.label);
+    // If the result is a valid JSON object, parse its contents into proper format.
+    try{
+      JsonObject messageAsJson = Json.createReader(new StringReader(data)).readObject();
+      if(messageAsJson.containsKey("isAggregated")){
+        JsonValue.ValueType isAggregatedType = messageAsJson.get("isAggregated").getValueType();
+        if(isAggregatedType.equals(JsonValue.ValueType.TRUE) || isAggregatedType.equals(JsonValue.ValueType.FALSE)){
+          boolean isAggregated = messageAsJson.getBoolean("isAggregated");
+          resultBuilder.add("isAggregated",isAggregated);
+        }
+      }
+      if(messageAsJson.containsKey("data")){
+        resultBuilder.add("data",messageAsJson.get("data"));
+      }
+    }
+    // Results are not always valid json, for example in cases where a stack trace is printed. In that case the data is simply added as a String.
+    catch (JsonException jsonException){
+      resultBuilder.add("data",data);
+    }
+    return resultBuilder.build();
   }
 }
