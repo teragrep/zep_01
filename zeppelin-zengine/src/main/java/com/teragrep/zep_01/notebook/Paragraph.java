@@ -143,6 +143,13 @@ public class Paragraph extends JobWithProgressPoller<InterpreterResult> implemen
     if(user != null){
       builder.add("user",user);
     }
+    if(getId() != null){
+      builder.add("id",getId());
+    }
+    if(getJobName() != null){
+      builder.add("jobName",getJobName());
+    }
+
     String dateFormatPattern = "yyyy-MM-dd'T'HH:mm:ssZ"; // This should really be configured somewhere else. Previously this format was hardcoded into ConnectionManagers and NotebookServers Gson initialization.
     if(dateUpdated != null){
       String dateUpdated = new SimpleDateFormat(dateFormatPattern).format(this.dateUpdated);

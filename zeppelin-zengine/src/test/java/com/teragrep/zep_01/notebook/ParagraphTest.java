@@ -407,6 +407,10 @@ public class ParagraphTest extends AbstractInterpreterTest {
     String text = "%test hello world";
     String user = "user";
     Paragraph paragraph = new Paragraph();
+
+    String id = paragraph.getId();
+    String jobName = paragraph.getJobName();
+
     paragraph.setTitle(title);
     paragraph.setText(text);
     AuthenticationInfo authenticationInfo = new AuthenticationInfo(user);
@@ -478,12 +482,16 @@ public class ParagraphTest extends AbstractInterpreterTest {
     Assertions.assertTrue(json.containsKey("runtimeInfos"));
     Assertions.assertTrue(json.containsKey("result"));
     Assertions.assertTrue(json.containsKey("status"));
+    Assertions.assertTrue(json.containsKey("jobName"));
+    Assertions.assertTrue(json.containsKey("id"));
 
     // Check every value that is not set dynamically
     Assertions.assertEquals(title,json.getString("title"));
     Assertions.assertEquals(text,json.getString("text"));
     Assertions.assertEquals(user,json.getString("user"));
     Assertions.assertEquals(Status.READY.name(),json.getString("status"));
+    Assertions.assertEquals(jobName,json.getString("jobName"));
+    Assertions.assertEquals(id,json.getString("id"));
     Assertions.assertEquals(new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssZ").format(dateStarted),json.getString("dateStarted"));
     Assertions.assertEquals(new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssZ").format(dateFinished),json.getString("dateFinished"));
     Assertions.assertEquals(0,json.getInt("progress"));
