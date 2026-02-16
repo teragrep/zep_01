@@ -704,7 +704,8 @@ public class NotebookServer extends WebSocketServlet
           @Override
           public void onSuccess(Note note, ServiceContext context) throws IOException {
             getConnectionManager().addNoteConnection(note.getId(), conn);
-            conn.send(serializeMessage(new Message(OP.NOTE).put("note", note)));
+            JsonObject message = new JsonMessage(OP.NOTE,note).asJson();
+            conn.send(message.toString());
             updateAngularObjectRegistry(conn, note);
             sendAllAngularObjects(note, context.getAutheInfo().getUser(), conn);
           }
