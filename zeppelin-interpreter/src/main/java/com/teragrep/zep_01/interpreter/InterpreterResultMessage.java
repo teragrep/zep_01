@@ -49,7 +49,9 @@ public class InterpreterResultMessage implements Serializable, Jsonable {
   @Override
   public JsonObject asJson() {
     JsonObjectBuilder resultBuilder = Json.createObjectBuilder();
-    resultBuilder.add("type",type.label);
+    if(type != null){
+      resultBuilder.add("type",type.label);
+    }
     // If the result is a valid JSON object, parse its contents into proper format.
     try{
       JsonObject messageAsJson = Json.createReader(new StringReader(data)).readObject();
