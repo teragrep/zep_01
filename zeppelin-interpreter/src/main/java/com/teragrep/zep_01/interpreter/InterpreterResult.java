@@ -155,4 +155,5 @@ public class InterpreterResult implements Serializable, JsonSerializable, Jsonab
   public JsonObject asJson() {
     InterpreterResultMessage resultMessage = msg.get(0); // Result format does not support multiple ResultMessages, so we take the first one.
     return resultMessage.asJson();
+  }
 }
