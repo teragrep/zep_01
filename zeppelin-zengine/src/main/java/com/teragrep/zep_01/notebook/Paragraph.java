@@ -172,6 +172,9 @@ public class Paragraph extends JobWithProgressPoller<InterpreterResult> implemen
       JsonObject configJson = new ParagraphConfig(config).asJson();
       builder.add("config",configJson);
     }
+    if(status != null){
+      builder.add("status",status.name());
+    }
     builder.add("progress",progress);
     return builder.build();
   }

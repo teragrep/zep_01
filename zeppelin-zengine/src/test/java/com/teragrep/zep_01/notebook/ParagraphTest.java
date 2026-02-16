@@ -477,11 +477,13 @@ public class ParagraphTest extends AbstractInterpreterTest {
     Assertions.assertTrue(json.containsKey("config"));
     Assertions.assertTrue(json.containsKey("runtimeInfos"));
     Assertions.assertTrue(json.containsKey("result"));
+    Assertions.assertTrue(json.containsKey("status"));
 
     // Check every value that is not set dynamically
     Assertions.assertEquals(title,json.getString("title"));
     Assertions.assertEquals(text,json.getString("text"));
     Assertions.assertEquals(user,json.getString("user"));
+    Assertions.assertEquals(Status.READY.name(),json.getString("status"));
     Assertions.assertEquals(new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssZ").format(dateStarted),json.getString("dateStarted"));
     Assertions.assertEquals(new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssZ").format(dateFinished),json.getString("dateFinished"));
     Assertions.assertEquals(0,json.getInt("progress"));
