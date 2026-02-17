@@ -69,11 +69,6 @@ public class BatchHandler implements BiConsumer<Dataset<Row>, Boolean> {
     @Override
     public void accept(final Dataset<Row> rowDataset, final Boolean aggsUsed) {
         LOGGER.error("BatchHandler accept called LOGGER");
-
-        // need to check aggregatesUsed from visitor at this point, since it can be updated in sequential mode
-        // after the parallel operations are performed.
-
-        // to keep consistent with previous implementation, aggregated data won't be flushed.
         try{
             userInterfaceManager.getDtTableDatasetNg().setParagraphDataset(rowDataset);
             userInterfaceManager.getDtTableDatasetNg().writeDataUpdate();
