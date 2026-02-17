@@ -57,7 +57,7 @@ import java.util.regex.Pattern;
 public class UPlotFormatOptions implements FormatOptions{
     private final Map<String, String> optionsMap;
 
-    public UPlotFormatOptions(Map<String, String> optionsMap){
+    public UPlotFormatOptions(final Map<String, String> optionsMap){
         this.optionsMap = optionsMap;
     }
 

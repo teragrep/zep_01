@@ -72,7 +72,7 @@ public class UPlotFormat implements  DatasetFormat{
     private final UPlotFormatOptions options;
     private static final Logger LOGGER = LoggerFactory.getLogger(UPlotFormat.class);
 
-    public UPlotFormat(Dataset<Row> dataset, UPlotFormatOptions options){
+    public UPlotFormat(final Dataset<Row> dataset, final UPlotFormatOptions options){
         this.dataset = dataset;
         this.options = options;
     }
@@ -82,16 +82,16 @@ public class UPlotFormat implements  DatasetFormat{
             throw new InterpreterException("Cannot format an empty Dataset!");
         }
         // Get a list of column names that were used in aggregation
-        List<String> groupByLabels = new ArrayList<>();
-        LogicalPlan plan = dataset.queryExecution().logical();
-        boolean aggsUsed;
+        final List<String> groupByLabels = new ArrayList<>();
+        final LogicalPlan plan = dataset.queryExecution().logical();
+        final boolean aggsUsed;
         if (plan instanceof Aggregate) {
             aggsUsed = true;
-            Aggregate aggPlan = (Aggregate) plan;
-            List<Expression> expressions = JavaConverters.seqAsJavaList((aggPlan.groupingExpressions().seq()));
-            for (Expression expression: expressions) {
+            final Aggregate aggPlan = (Aggregate) plan;
+            final List<Expression> expressions = JavaConverters.seqAsJavaList((aggPlan.groupingExpressions().seq()));
+            for (final Expression expression: expressions) {
                 if(expression instanceof AttributeReference){
-                    AttributeReference attributeReference = (AttributeReference)expression;
+                    final AttributeReference attributeReference = (AttributeReference)expression;
                     groupByLabels.add(attributeReference.name());
                 }
             }
@@ -101,14 +101,14 @@ public class UPlotFormat implements  DatasetFormat{
         }
 
         // Get references to Column objects for each column used in aggregation
-        List<Column> groupByColumns = new ArrayList<>();
-        for (String columnName:groupByLabels) {
+        final List<Column> groupByColumns = new ArrayList<>();
+        for (final String columnName:groupByLabels) {
             groupByColumns.add(dataset.col(columnName));
         }
 
         // Turn both lists into Arrays
-        String[] groupByLabelsArray = groupByLabels.toArray(new String[0]);
-        Column[] groupByColumnArray = groupByColumns.toArray(new Column[0]);
+        final String[] groupByLabelsArray = groupByLabels.toArray(new String[0]);
+        final Column[] groupByColumnArray = groupByColumns.toArray(new Column[0]);
         final Dataset<Row> concatenatedDataset;
         final StringBuilder concatenatedGroupByLabel = new StringBuilder();
 
@@ -132,31 +132,31 @@ public class UPlotFormat implements  DatasetFormat{
 
         // Transpose the dataset containing the concatenated column created above.
         // As Spark does not support columnar data, this is accomplished by collecting all the data under each column into a list and generating a Dataset with a single row containing those lists as its data.
-        List<Column> columns = new ArrayList<Column>();
-        for (String columnName : concatenatedDataset.columns()) {
+        final List<Column> columns = new ArrayList<Column>();
+        for (final String columnName : concatenatedDataset.columns()) {
             columns.add(org.apache.spark.sql.functions.collect_list(columnName).as(columnName));
         }
-        Column[] columnArray = columns.toArray(new Column[0]); //We need to separate the first column from the others to satisfy the parameters of Dataset.agg(Column, Column...)
-        Column firstColumn = columnArray[0];
-        Column[] additionalColumns = Arrays.copyOfRange(columnArray,1,columnArray.length);
-        Dataset<Row> transposed = concatenatedDataset.agg(firstColumn,additionalColumns);
+        final Column[] columnArray = columns.toArray(new Column[0]); //We need to separate the first column from the others to satisfy the parameters of Dataset.agg(Column, Column...)
+        final Column firstColumn = columnArray[0];
+        final Column[] additionalColumns = Arrays.copyOfRange(columnArray,1,columnArray.length);
+        final Dataset<Row> transposed = concatenatedDataset.agg(firstColumn,additionalColumns);
 
         // Finally, create a JSON object as expected by uPlot.
-        JsonArrayBuilder data0 = Json.createArrayBuilder();
-        JsonArrayBuilder data1 = Json.createArrayBuilder();
-        JsonArrayBuilder labels = Json.createArrayBuilder();
-        JsonArrayBuilder series = Json.createArrayBuilder();
-        String graphType = options.graphType();
+        final JsonArrayBuilder data0 = Json.createArrayBuilder();
+        final JsonArrayBuilder data1 = Json.createArrayBuilder();
+        final JsonArrayBuilder labels = Json.createArrayBuilder();
+        final JsonArrayBuilder series = Json.createArrayBuilder();
+        final String graphType = options.graphType();
 
         // Transposition collected all the data into a single row containing a number of lists.
-        Row resultRow = transposed.collectAsList().get(0);
+        final Row resultRow = transposed.collectAsList().get(0);
         for (int i = 0; i < resultRow.schema().size(); i++) {
-            StructField schemaField = resultRow.schema().fields()[i];
+            final StructField schemaField = resultRow.schema().fields()[i];
             // Aggregated data labels should be added to options.labels, as well as their indexes in the first sub-array of the data object.
             if(schemaField.name().equals(concatenatedGroupByLabel.toString())){
-                List<Object> values = resultRow.getList(i);
+                final List<Object> values = resultRow.getList(i);
                 int valueIndex = 0;
-                for (Object value:values) {
+                for (final Object value:values) {
                     data0.add(valueIndex); // Is data[0] necessary to have? aggregated data should never have duplicated labels for aggregation group names so you could just use options.labels for this information
                     labels.add(value.toString());
                     valueIndex++;
@@ -164,30 +164,30 @@ public class UPlotFormat implements  DatasetFormat{
             }
             // Standard data must be cast into a numerical type based on the Schema. uPlot does not support displaying non-numerical data at all.
             else {
-                List<Object> values = resultRow.getList(i);
-                JsonArrayBuilder subArray = Json.createArrayBuilder();
-                DataType elementType = ((ArrayType)(schemaField).dataType()).elementType();
+                final List<Object> values = resultRow.getList(i);
+                final JsonArrayBuilder subArray = Json.createArrayBuilder();
+                final DataType elementType = ((ArrayType)(schemaField).dataType()).elementType();
                     if(elementType.equals(DataTypes.IntegerType)){
-                        for (Object value:values) {
+                        for (final Object value:values) {
                             subArray.add((int) value);
                         }
                     } else if (elementType.equals(DataTypes.LongType)) {
-                        for (Object value:values) {
+                        for (final Object value:values) {
                             subArray.add((Long) value);
                         }
                     }
                     else if (elementType.equals(DataTypes.ShortType)) {
-                        for (Object value:values) {
+                        for (final Object value:values) {
                             subArray.add((Short) value);
                         }
                     }
                     else if (elementType.equals(DataTypes.DoubleType)) {
-                        for (Object value:values) {
+                        for (final Object value:values) {
                             subArray.add((Double) value);
                         }
                     }
                     else if (elementType.equals(DataTypes.FloatType)) {
-                        for (Object value:values) {
+                        for (final Object value:values) {
                             subArray.add((Float) value);
                         }
                     }
@@ -198,7 +198,7 @@ public class UPlotFormat implements  DatasetFormat{
                 series.add(schemaField.name());
             }
         }
-        JsonObjectBuilder builder = Json.createObjectBuilder()
+        final JsonObjectBuilder builder = Json.createObjectBuilder()
                 .add("data",Json.createArrayBuilder()
                         .add(data0)
                         .add(data1))
@@ -207,7 +207,7 @@ public class UPlotFormat implements  DatasetFormat{
                         .add("series",series)
                         .add("graphType",graphType))
                 .add("isAggregated",aggsUsed);
-        JsonObject json = builder.build();
+        final JsonObject json = builder.build();
         return json;
     }
 

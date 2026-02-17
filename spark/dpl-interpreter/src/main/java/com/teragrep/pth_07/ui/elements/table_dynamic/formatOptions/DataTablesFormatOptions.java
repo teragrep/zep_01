@@ -51,7 +51,7 @@ import java.util.Map;
 
 public class DataTablesFormatOptions implements FormatOptions{
     private final Map<String, String> optionsMap;
-    public DataTablesFormatOptions(Map<String, String> optionsMap){
+    public DataTablesFormatOptions(final Map<String, String> optionsMap){
         this.optionsMap = optionsMap;
     }
 

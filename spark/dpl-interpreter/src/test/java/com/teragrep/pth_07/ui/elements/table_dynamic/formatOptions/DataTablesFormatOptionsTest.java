@@ -63,48 +63,48 @@ class DataTablesFormatOptionsTest {
 
     @Test
     void testDraw() {
-        HashMap<String, String> optionsMap = new HashMap<>();
+        final HashMap<String, String> optionsMap = new HashMap<>();
         optionsMap.put("draw",Integer.toString(draw));
-        DataTablesFormatOptions options = new DataTablesFormatOptions(optionsMap);
+        final DataTablesFormatOptions options = new DataTablesFormatOptions(optionsMap);
         Assertions.assertEquals(draw,Assertions.assertDoesNotThrow(()->options.draw()));
     }
 
     @Test
     void testSearch() {
-        HashMap<String, String> optionsMap = new HashMap<>();
+        final HashMap<String, String> optionsMap = new HashMap<>();
         optionsMap.put("search",searchString);
-        DataTablesFormatOptions options = new DataTablesFormatOptions(optionsMap);
+        final DataTablesFormatOptions options = new DataTablesFormatOptions(optionsMap);
         Assertions.assertEquals(searchString,Assertions.assertDoesNotThrow(()->options.search()));
     }
 
     @Test
     void testStart() {
-        HashMap<String, String> optionsMap = new HashMap<>();
+        final HashMap<String, String> optionsMap = new HashMap<>();
         optionsMap.put("start",Integer.toString(start));
-        DataTablesFormatOptions options = new DataTablesFormatOptions(optionsMap);
+        final DataTablesFormatOptions options = new DataTablesFormatOptions(optionsMap);
         Assertions.assertEquals(start,Assertions.assertDoesNotThrow(()->options.start()));
     }
 
     @Test
     void testLength() {
-        HashMap<String, String> optionsMap = new HashMap<>();
+        final HashMap<String, String> optionsMap = new HashMap<>();
         optionsMap.put("length",Integer.toString(length));
-        DataTablesFormatOptions options = new DataTablesFormatOptions(optionsMap);
+        final DataTablesFormatOptions options = new DataTablesFormatOptions(optionsMap);
         Assertions.assertEquals(length,Assertions.assertDoesNotThrow(()->options.length()));
     }
 
     @Test
     void testMissingfields(){
-        HashMap<String, String> optionsMap = new HashMap<>();
+        final HashMap<String, String> optionsMap = new HashMap<>();
         optionsMap.put("draw",Integer.toString(draw));
         optionsMap.put("start",Integer.toString(start));
         optionsMap.put("search",searchString);
-        DataTablesFormatOptions options = new DataTablesFormatOptions(optionsMap);
+        final DataTablesFormatOptions options = new DataTablesFormatOptions(optionsMap);
         Assertions.assertThrows(InterpreterException.class,()->options.length());
 
 
-        HashMap<String, String> emptyMap = new HashMap<>();
-        DataTablesFormatOptions emptyOptions = new DataTablesFormatOptions(emptyMap);
+        final HashMap<String, String> emptyMap = new HashMap<>();
+        final DataTablesFormatOptions emptyOptions = new DataTablesFormatOptions(emptyMap);
         Assertions.assertThrows(InterpreterException.class,()->emptyOptions.draw());
         Assertions.assertThrows(InterpreterException.class,()->emptyOptions.start());
         Assertions.assertThrows(InterpreterException.class,()->emptyOptions.length());

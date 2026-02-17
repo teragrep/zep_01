@@ -50,7 +50,7 @@ import java.util.Objects;
 
 public final class DTPagination {
 
-    private final List<String> rowList;
+    final private List<String> rowList;
     public DTPagination(List<String> rowList){
         this.rowList = rowList;
     }

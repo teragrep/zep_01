@@ -71,7 +71,7 @@ public class DataTablesFormat implements  DatasetFormat{
     private final DataTablesFormatOptions options;
     private static final Logger LOGGER = LoggerFactory.getLogger(DataTablesFormat.class);
 
-    public DataTablesFormat(Dataset<Row> dataset, DataTablesFormatOptions options){
+    public DataTablesFormat(final Dataset<Row> dataset, final DataTablesFormatOptions options){
         this.dataset = dataset;
         this.options = options;
     }
@@ -80,43 +80,43 @@ public class DataTablesFormat implements  DatasetFormat{
                 throw new InterpreterException("Attempting to draw an empty dataset!");
             }
             try{
-                List<String> datasetAsJson = dataset.toJSON().collectAsList();
-                DTSearch dtSearch = new DTSearch(datasetAsJson);
-                List<Order> currentOrder = null;
+                final List<String> datasetAsJson = dataset.toJSON().collectAsList();
+                final DTSearch dtSearch = new DTSearch(datasetAsJson);
+                final List<Order> currentOrder = null;
 
                 // searching
-                List<String> searchedList = dtSearch.search(options.search());
+                final List<String> searchedList = dtSearch.search(options.search());
 
                 // TODO ordering
                 //DTOrder dtOrder = new DTOrder(searchedList);
                 //List<String> orderedlist = dtOrder.order(searchedList, currentOrder);
-                List<String> orderedlist = searchedList;
+                final List<String> orderedlist = searchedList;
 
                 // pagination
-                DTPagination dtPagination = new DTPagination(orderedlist);
-                List<String> paginatedList = dtPagination.paginate(options.length(), options.start());
+                final DTPagination dtPagination = new DTPagination(orderedlist);
+                final List<String> paginatedList = dtPagination.paginate(options.length(), options.start());
 
                 // ui formatting
-                JsonArray formated;
-                JsonArrayBuilder arrayBuilder = Json.createArrayBuilder();
-                for (String row : paginatedList) {
-                    JsonReader reader = Json.createReader(new StringReader(row));
-                    JsonObject line = reader.readObject();
+                final JsonArray formated;
+                final JsonArrayBuilder arrayBuilder = Json.createArrayBuilder();
+                for (final String row : paginatedList) {
+                    final JsonReader reader = Json.createReader(new StringReader(row));
+                    final JsonObject line = reader.readObject();
                     arrayBuilder.add(line);
                     reader.close();
                 }
                 formated = arrayBuilder.build();
 
-                JsonArrayBuilder builder = Json.createArrayBuilder();
-                Iterator<StructField> it = dataset.schema().iterator();
+                final JsonArrayBuilder builder = Json.createArrayBuilder();
+                final Iterator<StructField> it = dataset.schema().iterator();
                 while(it.hasNext()) {
-                    StructField column = it.next();
+                    final StructField column = it.next();
                     builder.add(column.name());
                 }
                 final JsonArray schemaHeadersAsJSON = builder.build();
 
-                LogicalPlan plan = dataset.queryExecution().logical();
-                boolean aggsUsed;
+                final LogicalPlan plan = dataset.queryExecution().logical();
+                final boolean aggsUsed;
                 if (plan instanceof Aggregate) {
                     aggsUsed = true;
                 }
@@ -124,18 +124,18 @@ public class DataTablesFormat implements  DatasetFormat{
                     aggsUsed = false;
                 }
 
-                int recordsTotal = datasetAsJson.size();
-                int recordsFiltered = searchedList.size();
-                JsonObjectBuilder dataBuilder = Json.createObjectBuilder();
+                final int recordsTotal = datasetAsJson.size();
+                final int recordsFiltered = searchedList.size();
+                final JsonObjectBuilder dataBuilder = Json.createObjectBuilder();
                 dataBuilder.add("headers",schemaHeadersAsJSON);
                 dataBuilder.add("data", formated);
                 dataBuilder.add("draw", options.draw());
                 dataBuilder.add("recordsTotal", recordsTotal);
                 dataBuilder.add("recordsFiltered", recordsFiltered);
-                JsonObject data = dataBuilder.build();
-                JsonObject json = Json.createObjectBuilder().add("data",data).add("isAggregated",aggsUsed).build();
+                final JsonObject data = dataBuilder.build();
+                final JsonObject json = Json.createObjectBuilder().add("data",data).add("isAggregated",aggsUsed).build();
                 return json;
-            }catch(JsonException|IllegalStateException e){
+            }catch(final JsonException | IllegalStateException e){
                 LOGGER.error(e.toString());
                 throw new InterpreterException("Failed to format dataset into DataTables format");
             }

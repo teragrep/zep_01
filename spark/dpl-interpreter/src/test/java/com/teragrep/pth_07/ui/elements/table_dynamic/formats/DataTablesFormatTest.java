@@ -100,23 +100,23 @@ class DataTablesFormatTest {
         final int start = 3;
         final int length = 2;
         final String searchString = "";
-        Map<String,String> optionsMap = new HashMap<>();
+        final Map<String,String> optionsMap = new HashMap<>();
         optionsMap.put("draw",Integer.toString(draw));
         optionsMap.put("start",Integer.toString(start));
         optionsMap.put("length",Integer.toString(length));
         optionsMap.put("search",searchString);
 
         // Get rows 3-5 of the dataset, check that every value is present
-        DataTablesFormatOptions options1 = new DataTablesFormatOptions(optionsMap);
-        DataTablesFormat request1 = new DataTablesFormat(testDs,options1);
-        JsonObject formatted = Assertions.assertDoesNotThrow(()->request1.format());
-        JsonObject data = formatted.getJsonObject("data");
-        JsonArray headers = data.getJsonArray("headers");
-        boolean isAggregated = formatted.getBoolean("isAggregated");
+        final DataTablesFormatOptions options1 = new DataTablesFormatOptions(optionsMap);
+        final DataTablesFormat request1 = new DataTablesFormat(testDs,options1);
+        final JsonObject formatted = Assertions.assertDoesNotThrow(()->request1.format());
+        final JsonObject data = formatted.getJsonObject("data");
+        final JsonArray headers = data.getJsonArray("headers");
+        final boolean isAggregated = formatted.getBoolean("isAggregated");
         Assertions.assertEquals(length,formatted.size());
 
         // Check metadata
-        int rowCount = testDs.collectAsList().size();
+        final int rowCount = testDs.collectAsList().size();
         Assertions.assertEquals(draw,data.getInt("draw"));
         Assertions.assertEquals(rowCount,data.getInt("recordsTotal"));
         Assertions.assertEquals(rowCount,data.getInt("recordsFiltered"));
@@ -177,7 +177,7 @@ class DataTablesFormatTest {
                         new StructField("deletion", DataTypes.IntegerType, false, new MetadataBuilder().build()),
                 }
         );
-        List<Row> rows = new ArrayList<>();
+        final List<Row> rows = new ArrayList<>();
         rows.add(RowFactory.create(Instant.ofEpochSecond(100000),10));
         rows.add(RowFactory.create(Instant.ofEpochSecond(100000),5));
         rows.add(RowFactory.create(Instant.ofEpochSecond(110000),10));
@@ -190,33 +190,33 @@ class DataTablesFormatTest {
         final int start = 3;
         final int length = 2;
         final String searchString = "";
-        Map<String,String> optionsMap = new HashMap<>();
+        final Map<String,String> optionsMap = new HashMap<>();
         optionsMap.put("draw",Integer.toString(draw));
         optionsMap.put("start",Integer.toString(start));
         optionsMap.put("length",Integer.toString(length));
         optionsMap.put("search",searchString);
 
 
-        DataTablesFormatOptions options1 = new DataTablesFormatOptions(optionsMap);
-        DataTablesFormat request1 = new DataTablesFormat(aggDataset,options1);
-        JsonObject formatted = Assertions.assertDoesNotThrow(()->request1.format());
+        final DataTablesFormatOptions options1 = new DataTablesFormatOptions(optionsMap);
+        final DataTablesFormat request1 = new DataTablesFormat(aggDataset,options1);
+        final JsonObject formatted = Assertions.assertDoesNotThrow(()->request1.format());
 
-        boolean isAggregated = formatted.getBoolean("isAggregated");
+        final boolean isAggregated = formatted.getBoolean("isAggregated");
         Assertions.assertEquals(true,isAggregated);
     }
 
     @Test
     void testPagination() {
         // Get first 5 rows of the dataset, check values of first and last field
-        Map<String,String> optionsMap1 = new HashMap<>();
+        final Map<String,String> optionsMap1 = new HashMap<>();
         optionsMap1.put("draw",Integer.toString(0));
         optionsMap1.put("start",Integer.toString(0));
         optionsMap1.put("length",Integer.toString(5));
         optionsMap1.put("search","");
-        DataTablesFormatOptions options1 = new DataTablesFormatOptions(optionsMap1);
+        final DataTablesFormatOptions options1 = new DataTablesFormatOptions(optionsMap1);
 
-        DataTablesFormat request1 = new DataTablesFormat(testDs,options1);
-        JsonObject response1 = Assertions.assertDoesNotThrow(()->request1.format().getJsonObject("data"));
+        final DataTablesFormat request1 = new DataTablesFormat(testDs,options1);
+        final JsonObject response1 = Assertions.assertDoesNotThrow(()->request1.format().getJsonObject("data"));
         Assertions.assertEquals(5,response1.getJsonArray("data").size());
         Assertions.assertEquals("1970-01-01T00:00:49.000Z",response1.getJsonArray("data").getJsonObject(0).getString("_time"));
         Assertions.assertEquals("1970-01-01T00:00:45.000Z",response1.getJsonArray("data").getJsonObject(4).getString("_time"));
@@ -224,15 +224,15 @@ class DataTablesFormatTest {
 
         // Get rows 6-15 of the dataset, check values of first and last field
 
-        Map<String,String> optionsMap2 = new HashMap<>();
+        final Map<String,String> optionsMap2 = new HashMap<>();
         optionsMap2.put("draw",Integer.toString(0));
         optionsMap2.put("start",Integer.toString(5));
         optionsMap2.put("length",Integer.toString(10));
         optionsMap2.put("search","");
-        DataTablesFormatOptions options2 = new DataTablesFormatOptions(optionsMap2);
+        final DataTablesFormatOptions options2 = new DataTablesFormatOptions(optionsMap2);
 
-        DataTablesFormat request2 = new DataTablesFormat(testDs,options2);
-        JsonObject response2 = Assertions.assertDoesNotThrow(()->request2.format().getJsonObject("data"));
+        final DataTablesFormat request2 = new DataTablesFormat(testDs,options2);
+        final JsonObject response2 = Assertions.assertDoesNotThrow(()->request2.format().getJsonObject("data"));
         Assertions.assertEquals(10,response2.getJsonArray("data").size());
         Assertions.assertEquals("1970-01-01T00:00:44.000Z",response2.getJsonArray("data").getJsonObject(0).getString("_time"));
         Assertions.assertEquals("1970-01-01T00:00:35.000Z",response2.getJsonArray("data").getJsonObject(9).getString("_time"));

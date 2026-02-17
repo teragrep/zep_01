@@ -167,23 +167,23 @@ class UPlotFormatTest {
     @Test
     void testSingleRowAggregationFormat() {
         // Create test dataset and a query string to simulate most recent dataset received from DPL
-        String dplQuery = "%dpl\n" +
+        final String dplQuery = "%dpl\n" +
                 "index=test\n" +
                 "| spath\n" +
                 "| stats max(filesModified) min(filesModified)";
         final Dataset<Row> resultDataset = sparkSession.createDataFrame(rows,schema).agg(org.apache.spark.sql.functions.max("filesModified"),org.apache.spark.sql.functions.min("filesModified"));
-        int groupByCount = 0;
+        final int groupByCount = 0;
 
         // Create a map containing  object to simulate a formatting request received from UI
-        String graphType = "graph";
-        HashMap<String,String> optionsMap = new HashMap<>();
+        final String graphType = "graph";
+        final HashMap<String,String> optionsMap = new HashMap<>();
         optionsMap.put("graphType",graphType);
 
         // Create options and Format objects to be tested
-        UPlotFormatOptions options = new UPlotFormatOptions(optionsMap);
-        UPlotFormat format = new UPlotFormat(resultDataset, options);
+        final UPlotFormatOptions options = new UPlotFormatOptions(optionsMap);
+        final UPlotFormat format = new UPlotFormat(resultDataset, options);
 
-        JsonObject formatted = Assertions.assertDoesNotThrow(()-> format.format());
+        final JsonObject formatted = Assertions.assertDoesNotThrow(()-> format.format());
 
         // Object must contain "data" array, "options" object and "isAggregated" boolean
         Assertions.assertTrue(formatted.containsKey("data"));
@@ -226,22 +226,22 @@ class UPlotFormatTest {
     void testSingleSeriesAggregationFormat() {
 
         // Create test dataset and a query string to simulate most recent dataset received from DPL
-        String dplQuery = "%dpl\n" +
+        final String dplQuery = "%dpl\n" +
                 "index=test\n" +
                 "| spath\n" +
                 "| stats max(filesModified) min(filesModified) by success";
         final Dataset<Row> resultDataset = sparkSession.createDataFrame(rows,schema).groupBy("success").agg(org.apache.spark.sql.functions.max("filesModified"),org.apache.spark.sql.functions.min("filesModified"));
-        int groupByCount = 1;
+        final int groupByCount = 1;
         // Create a map containing  object to simulate a formatting request received from UI
-        String graphType = "graph";
-        HashMap<String,String> optionsMap = new HashMap<>();
+        final String graphType = "graph";
+        final HashMap<String,String> optionsMap = new HashMap<>();
         optionsMap.put("graphType",graphType);
 
         // Create options and Format objects to be tested
-        UPlotFormatOptions options = new UPlotFormatOptions(optionsMap);
-        UPlotFormat format = new UPlotFormat(resultDataset, options);
+        final UPlotFormatOptions options = new UPlotFormatOptions(optionsMap);
+        final UPlotFormat format = new UPlotFormat(resultDataset, options);
 
-        JsonObject formatted = Assertions.assertDoesNotThrow(()-> format.format());
+        final JsonObject formatted = Assertions.assertDoesNotThrow(()-> format.format());
 
         // Object must contain "data" array, "options" object and "isAggregated" boolean
         Assertions.assertTrue(formatted.containsKey("data"));
@@ -283,23 +283,23 @@ class UPlotFormatTest {
     @Test
     void testTimechartFormat() {
         // Create test dataset and a query string to simulate most recent dataset received from DPL
-        String dplQuery = "%dpl\n" +
+        final String dplQuery = "%dpl\n" +
                 "index=test earliest=-5y\n" +
                 "| spath\n" +
                 "| timechart count(operation) avg(operation) max(operation)";
-        int groupByCount = 1; // DPL query contains two group by clauses due to usage of 'timechart' command
+        final int groupByCount = 1; // DPL query contains two group by clauses due to usage of 'timechart' command
         final Dataset<Row> resultDataset = sparkSession.createDataFrame(timeChartRows,timeChartSchema).groupBy("_time").agg(org.apache.spark.sql.functions.count("operation"));
 
         // Create a map containing  object to simulate a formatting request received from UI
-        String graphType = "graph";
-        HashMap<String,String> optionsMap = new HashMap<>();
+        final String graphType = "graph";
+        final HashMap<String,String> optionsMap = new HashMap<>();
         optionsMap.put("graphType",graphType);
 
         // Create options and Format objects to be tested
-        UPlotFormatOptions options = new UPlotFormatOptions(optionsMap);
-        UPlotFormat format = new UPlotFormat(resultDataset, options);
+        final UPlotFormatOptions options = new UPlotFormatOptions(optionsMap);
+        final UPlotFormat format = new UPlotFormat(resultDataset, options);
 
-        JsonObject formatted = Assertions.assertDoesNotThrow(()-> format.format());
+        final JsonObject formatted = Assertions.assertDoesNotThrow(()-> format.format());
 
         // Object must contain "data" array, "options" object and "isAggregated" boolean
         Assertions.assertTrue(formatted.containsKey("data"));
@@ -341,22 +341,22 @@ class UPlotFormatTest {
     @Test
     void testAggregatedFormat() {
         // Create test dataset and a query string to simulate most recent dataset received from DPL
-        String dplQuery = "%dpl\n" +
+        final String dplQuery = "%dpl\n" +
                 "index=test earliest=-5y\n" +
                 "| spath\n" +
                 "| stats count(operation) avg(operation) max(operation) by operation success";
         final Dataset<Row> resultDataset = sparkSession.createDataFrame(rows,schema).groupBy("operation","success").agg(org.apache.spark.sql.functions.count("success"),org.apache.spark.sql.functions.avg("filesModified"),org.apache.spark.sql.functions.max("filesModified"));
-        int groupByCount = 2; //  contains two group by clauses
+        final int groupByCount = 2; //  contains two group by clauses
         // Create a map containing  object to simulate a formatting request received from UI
-        String graphType = "graph";
-        HashMap<String,String> optionsMap = new HashMap<>();
+        final String graphType = "graph";
+        final HashMap<String,String> optionsMap = new HashMap<>();
         optionsMap.put("graphType",graphType);
 
         // Create options and Format objects to be tested
-        UPlotFormatOptions options = new UPlotFormatOptions(optionsMap);
-        UPlotFormat format = new UPlotFormat(resultDataset, options);
+        final UPlotFormatOptions options = new UPlotFormatOptions(optionsMap);
+        final UPlotFormat format = new UPlotFormat(resultDataset, options);
 
-        JsonObject formatted = Assertions.assertDoesNotThrow(()-> format.format());
+        final JsonObject formatted = Assertions.assertDoesNotThrow(()-> format.format());
 
         // Object must contain "data" array, "options" object and "isAggregated" boolean
         Assertions.assertTrue(formatted.containsKey("data"));
@@ -397,18 +397,18 @@ class UPlotFormatTest {
 
     @Test
     public void testEmptyDataFrame(){
-        StructType schema = new StructType();
-        List<Row> rows = new ArrayList<>();
+        final StructType schema = new StructType();
+        final List<Row> rows = new ArrayList<>();
         final Dataset<Row> resultDataset = sparkSession.createDataFrame(rows,schema);
 
         // Create a map containing  object to simulate a formatting request received from UI
-        String graphType = "graph";
-        HashMap<String,String> optionsMap = new HashMap<>();
+        final String graphType = "graph";
+        final HashMap<String,String> optionsMap = new HashMap<>();
         optionsMap.put("graphType",graphType);
 
         // Create options and Format objects to be tested
-        UPlotFormatOptions options = new UPlotFormatOptions(optionsMap);
-        UPlotFormat format = new UPlotFormat(resultDataset, options);
+        final UPlotFormatOptions options = new UPlotFormatOptions(optionsMap);
+        final UPlotFormat format = new UPlotFormat(resultDataset, options);
 
         Assertions.assertThrows(InterpreterException.class,()->format.format());
     }
@@ -416,19 +416,19 @@ class UPlotFormatTest {
     @Test
     void testNonNumericalFormat() {
         // Create test dataset and a query string to simulate most recent dataset received from DPL
-        String dplQuery = "%dpl\n" +
+        final String dplQuery = "%dpl\n" +
                 "index=test\n" +
                 "| spath";
         final Dataset<Row> resultDataset = sparkSession.createDataFrame(rows,schema);
 
         // Create a map containing  object to simulate a formatting request received from UI
-        String graphType = "graph";
-        HashMap<String,String> optionsMap = new HashMap<>();
+        final String graphType = "graph";
+        final HashMap<String,String> optionsMap = new HashMap<>();
         optionsMap.put("graphType",graphType);
 
         // Create options and Format objects to be tested
-        UPlotFormatOptions options = new UPlotFormatOptions(optionsMap);
-        UPlotFormat format = new UPlotFormat(resultDataset, options);
+        final UPlotFormatOptions options = new UPlotFormatOptions(optionsMap);
+        final UPlotFormat format = new UPlotFormat(resultDataset, options);
 
         // Trying to display string data (such as operation name: "create") should result in an Exception as uPlot only supports numerical data
         Assertions.assertThrows(InterpreterException.class,()-> format.format());
@@ -436,22 +436,22 @@ class UPlotFormatTest {
     @Test
     void testUnaggregatedFormat() {
         // Create test dataset and a query string to simulate most recent dataset received from DPL
-        String dplQuery = "%dpl\n" +
+        final String dplQuery = "%dpl\n" +
                 "index=test\n" +
                 "| spath";
         final Dataset<Row> resultDataset = sparkSession.createDataFrame(rows,schema).select("filesModified");
-        int groupByCount = 0;
+        final int groupByCount = 0;
 
         // Create a map containing  object to simulate a formatting request received from UI
-        String graphType = "graph";
-        HashMap<String,String> optionsMap = new HashMap<>();
+        final String graphType = "graph";
+        final HashMap<String,String> optionsMap = new HashMap<>();
         optionsMap.put("graphType",graphType);
 
         // Create options and Format objects to be tested
-        UPlotFormatOptions options = new UPlotFormatOptions(optionsMap);
-        UPlotFormat format = new UPlotFormat(resultDataset, options);
+        final UPlotFormatOptions options = new UPlotFormatOptions(optionsMap);
+        final UPlotFormat format = new UPlotFormat(resultDataset, options);
 
-        JsonObject formatted = Assertions.assertDoesNotThrow(()-> format.format());
+        final JsonObject formatted = Assertions.assertDoesNotThrow(()-> format.format());
 
         // Object must contain "data" array, "options" object and "isAggregated" boolean
         Assertions.assertTrue(formatted.containsKey("data"));
