@@ -369,9 +369,6 @@ public class NotebookServer extends WebSocketServlet
         case PARAGRAPH_CLEAR_ALL_OUTPUT:
           clearAllParagraphOutput(conn, context, receivedMessage);
           break;
-        case PARAGRAPH_UPDATE_RESULT:
-          updateParagraphResult(conn, context, receivedMessage);
-          break;
         case PARAGRAPH_OUTPUT_REQUEST:
           paragraphOutput(conn, context, receivedMessage);
           break;
@@ -1095,35 +1092,6 @@ public class NotebookServer extends WebSocketServlet
           }
         });
   }
-
-  // Handles a request for paginated or filtered DPL table data.
-  // TODO: remove this later, it will be deprecated by PARAGRAPH_OUTPUT_REQUEST and changeVisualizationType
-  private void updateParagraphResult(NotebookSocket conn,
-                                     ServiceContext context,
-                                     Message fromMessage) throws IOException, InterpreterException {
-    ValidatedMessage validatedMessage = new ValidatedMessage(fromMessage);
-    if(!validatedMessage.isValid()) {
-      throw new BadRequestException("Request must contain \"noteId\", \"paragraphId\", \"start\", \"length\", \"draw\" and \"search.value\" parameters!");
-    }
-    // Casting is required to get Message parameters in correct format, as GSON parses all numbers as Doubles, and Message.get() returns a generic Object.
-    final String msgId = fromMessage.msgId;
-    final String noteId = (String) fromMessage.get("noteId");
-    final String paragraphId = (String) fromMessage.get("paragraphId");
-    final int start = (int) Double.parseDouble(fromMessage.get("start").toString());
-    final int length = (int) Double.parseDouble(fromMessage.get("length").toString());
-    final String search = (String) ((Map) fromMessage.get("search")).get("value");
-    final int draw = (int) Double.parseDouble(fromMessage.get("draw").toString());
-
-    HashMap<String,Object> optionsMap = new HashMap<String,Object>();
-    optionsMap.put("start",Integer.toString(start));
-    optionsMap.put("length",Integer.toString(length));
-    optionsMap.put("draw",Integer.toString(draw));
-    optionsMap.put("search",search);
-    Message newMessage = new Message(OP.PARAGRAPH_OUTPUT_REQUEST).withMsgId(msgId).put("noteId",noteId).put("paragraphId",paragraphId).put("type","DataTables").put("requestOptions",optionsMap);
-    paragraphOutput(conn,context,newMessage);
-  }
-
-
   private void paragraphOutput(NotebookSocket conn,
                                ServiceContext context,
                                Message fromMessage) throws IOException, InterpreterException {
