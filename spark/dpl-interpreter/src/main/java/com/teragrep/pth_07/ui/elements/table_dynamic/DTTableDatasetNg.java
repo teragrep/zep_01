@@ -55,6 +55,7 @@ import jakarta.json.*;
 import org.apache.spark.sql.Dataset;
 import org.apache.spark.sql.Row;
 import com.teragrep.zep_01.interpreter.InterpreterContext;
+import org.apache.spark.storage.StorageLevel;
 
 import java.io.IOException;
 import java.io.StringReader;
@@ -114,10 +115,18 @@ public final class DTTableDatasetNg extends AbstractUserInterfaceElement {
             else {
                 drawCount++;
             }
+
+            // unpersist dataset upon receiving new data
+            if(datasetAsJson != null){
+                datasetAsJson.unpersist();
+            }
+            if(dataset != null){
+                dataset.unpersist();
+            }
             if (rowDataset.schema().nonEmpty()) {
                 // needs to be here as sparkContext might disappear later
-                dataset = rowDataset.cache();
-                datasetAsJson = rowDataset.toJSON().cache();
+                dataset = rowDataset.persist(StorageLevel.MEMORY_AND_DISK());
+                datasetAsJson = rowDataset.toJSON().persist(StorageLevel.MEMORY_AND_DISK());
                 schemaHeaders = new DTHeader(rowDataset.schema());
             }
         } finally {
