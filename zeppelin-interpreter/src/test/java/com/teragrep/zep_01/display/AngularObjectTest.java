@@ -17,6 +17,7 @@
 
 package com.teragrep.zep_01.display;
 
+import jakarta.json.JsonObject;
 import org.apache.thrift.TException;
 import com.teragrep.zep_01.interpreter.InterpreterContext;
 import org.junit.Ignore;
@@ -24,6 +25,7 @@ import org.junit.Test;
 
 import java.util.concurrent.atomic.AtomicInteger;
 
+import org.junit.jupiter.api.Assertions;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotSame;
 
@@ -129,5 +131,25 @@ public class AngularObjectTest {
 
     Thread.sleep(500);
     assertEquals(1, onWatch.get());
+  }
+
+  @Test
+  public void testJson(){
+    String name = "name";
+    String value = "value";
+    String noteId = "note1";
+    String paragraphId = "paragraph1";
+    AngularObject ao = new AngularObject(name,value,noteId,paragraphId, null);
+    JsonObject json = ao.asJson();
+
+    Assertions.assertTrue(json.containsKey("name"));
+    Assertions.assertTrue(json.containsKey("noteId"));
+    Assertions.assertTrue(json.containsKey("paragraphId"));
+    Assertions.assertTrue(json.containsKey("object"));
+
+    Assertions.assertEquals(value, json.getString("object"));
+    Assertions.assertEquals(name, json.getString("name"));
+    Assertions.assertEquals(noteId, json.getString("noteId"));
+    Assertions.assertEquals(paragraphId, json.getString("paragraphId"));
   }
 }

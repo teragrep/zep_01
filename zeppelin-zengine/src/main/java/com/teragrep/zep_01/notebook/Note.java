@@ -1137,6 +1137,17 @@ public class Note implements JsonSerializable, Jsonable {
       }
       builder.add("paragraphs",paragraphArrayBuilder.build());
     }
+    if(angularObjects != null){
+      JsonObjectBuilder angularObjectsBuilder = Json.createObjectBuilder();
+      for (Map.Entry<String,List<AngularObject>> entry: angularObjects.entrySet()) {
+        JsonArrayBuilder angularObjectArrayBuilder = Json.createArrayBuilder();
+        for (AngularObject object: entry.getValue()) {
+          angularObjectArrayBuilder.add(object.asJson());
+        }
+        angularObjectsBuilder.add(entry.getKey(),angularObjectArrayBuilder.build());
+      }
+      builder.add("dynamicBindings",angularObjectsBuilder.build());
+    }
     return builder.build();
   }
 

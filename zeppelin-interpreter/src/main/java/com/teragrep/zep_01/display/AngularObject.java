@@ -19,7 +19,11 @@ package com.teragrep.zep_01.display;
 
 import com.google.gson.Gson;
 import com.teragrep.zep_01.common.JsonSerializable;
+import com.teragrep.zep_01.common.Jsonable;
 import com.teragrep.zep_01.scheduler.ExecutorFactory;
+import jakarta.json.Json;
+import jakarta.json.JsonObject;
+import jakarta.json.JsonObjectBuilder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -35,7 +39,7 @@ import java.util.concurrent.ExecutorService;
  *
  * @param <T>
  */
-public class AngularObject<T> implements JsonSerializable {
+public class AngularObject<T> implements JsonSerializable, Jsonable {
   private static final Logger LOGGER = LoggerFactory.getLogger(AngularObject.class);
   private static final Gson GSON = new Gson();
 
@@ -264,5 +268,30 @@ public class AngularObject<T> implements JsonSerializable {
 
   public static AngularObject<?> fromJson(String json) {
     return GSON.fromJson(json, AngularObject.class);
+  }
+
+  @Override
+  public JsonObject asJson() {
+    JsonObjectBuilder builder = Json.createObjectBuilder();
+    if(name != null){
+      builder.add("name",name);
+    }
+    if(noteId != null){
+      builder.add("noteId",noteId);
+    }
+    if(paragraphId != null){
+      builder.add("paragraphId",paragraphId);
+    }
+    if (object != null){
+      // Currently we only support String type objects.
+      // Any other type will be represented with the toString() method of the object.
+      if(object instanceof String){
+        builder.add("object",(String) object);
+      }
+      else {
+        builder.add("object", object.toString());
+      }
+    }
+    return builder.build();
   }
 }
