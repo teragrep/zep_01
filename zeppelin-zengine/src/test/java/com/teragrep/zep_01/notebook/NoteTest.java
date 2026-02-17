@@ -30,9 +30,7 @@ import com.teragrep.zep_01.notebook.repo.NotebookRepo;
 import com.teragrep.zep_01.scheduler.Scheduler;
 import com.teragrep.zep_01.user.AuthenticationInfo;
 import com.teragrep.zep_01.user.Credentials;
-import jakarta.json.Json;
 import jakarta.json.JsonObject;
-import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.jupiter.api.Assertions;
@@ -227,22 +225,20 @@ public class NoteTest {
     p.settings.getParams().put("textbox_1", "my_name");
     note.getAngularObjects().put("ao_1", Arrays.asList(new AngularObject("name_1", "value_1", note.getId(), p.getId(), null)));
 
-    JsonObject json = note.asJson();
-    Assertions.assertTrue(json.containsKey("note"));
-    JsonObject noteContent = json.getJsonObject("note");
+    JsonObject noteJson = note.asJson();
 
     // Assert that keys exist
-    Assertions.assertTrue(noteContent.containsKey("id"));
-    Assertions.assertTrue(noteContent.containsKey("name"));
-    Assertions.assertTrue(noteContent.containsKey("path"));
-    Assertions.assertTrue(noteContent.containsKey("config"));
-    Assertions.assertTrue(noteContent.containsKey("defaultInterpreterGroup"));
-    Assertions.assertTrue(noteContent.containsKey("paragraphs"));
+    Assertions.assertTrue(noteJson.containsKey("id"));
+    Assertions.assertTrue(noteJson.containsKey("name"));
+    Assertions.assertTrue(noteJson.containsKey("path"));
+    Assertions.assertTrue(noteJson.containsKey("config"));
+    Assertions.assertTrue(noteJson.containsKey("defaultInterpreterGroup"));
+    Assertions.assertTrue(noteJson.containsKey("paragraphs"));
 
-    Assertions.assertEquals("test_note", noteContent.getString("name"));
-    Assertions.assertEquals(note.getId(), noteContent.getString("id"));
-    Assertions.assertEquals("/test_note", noteContent.getString("path"));
-    JsonObject config = Assertions.assertDoesNotThrow(()->noteContent.getJsonObject("config"));
+    Assertions.assertEquals("test_note", noteJson.getString("name"));
+    Assertions.assertEquals(note.getId(), noteJson.getString("id"));
+    Assertions.assertEquals("/test_note", noteJson.getString("path"));
+    JsonObject config = Assertions.assertDoesNotThrow(()->noteJson.getJsonObject("config"));
     Assertions.assertEquals(1, config.size());
     Assertions.assertEquals(false, config.getBoolean("isZeppelinNotebookCronEnable"));
   }

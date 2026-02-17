@@ -1148,9 +1148,7 @@ public class Note implements JsonSerializable, Jsonable {
       }
       builder.add("dynamicBindings",angularObjectsBuilder.build());
     }
-    // UI Expects to receive the contents of the note within an object called "note", so we add it here.
-    JsonObjectBuilder note = Json.createObjectBuilder().add("note",builder.build());
-    return note.build();
+    return builder.build();
   }
 
   /**
