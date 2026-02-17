@@ -875,7 +875,8 @@ public class NotebookServer extends WebSocketServlet
           public void onSuccess(Note note, ServiceContext context) throws IOException {
             super.onSuccess(note, context);
             getConnectionManager().addNoteConnection(note.getId(), conn);
-            conn.send(serializeMessage(new Message(OP.NEW_NOTE).put("note", note)));
+            JsonObject message = new JsonMessage(OP.NEW_NOTE,note).asJson();
+            conn.send(message.toString());
             broadcastNoteList(context.getAutheInfo(), context.getUserAndRoles());
           }
 
