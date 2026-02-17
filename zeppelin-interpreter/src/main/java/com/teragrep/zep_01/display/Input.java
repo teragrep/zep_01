@@ -17,6 +17,10 @@
 
 package com.teragrep.zep_01.display;
 
+import com.teragrep.zep_01.common.Jsonable;
+import jakarta.json.Json;
+import jakarta.json.JsonObject;
+import jakarta.json.JsonObjectBuilder;
 import org.apache.commons.lang3.StringUtils;
 import com.teragrep.zep_01.display.ui.CheckBox;
 import com.teragrep.zep_01.display.ui.OptionInput;
@@ -41,7 +45,7 @@ import java.util.regex.Pattern;
  *
  * @param <T>
  */
-public class Input<T> implements Serializable {
+public class Input<T> implements Serializable, Jsonable {
 
   // @TODO(zjffdu). Use gson's RuntimeTypeAdapterFactory and remove the old input form support
   // in future.
@@ -555,5 +559,19 @@ public class Input<T> implements Serializable {
     } else {
       return false;
     }
+  }
+  @Override
+  public JsonObject asJson() {
+    JsonObjectBuilder builder = Json.createObjectBuilder();
+    if(name != null){
+      builder.add("name",name);
+    }
+    if(displayName != null){
+      builder.add("displayName",displayName);
+    }
+    if(argument != null){
+      builder.add("argument",argument);
+    }
+    return builder.build();
   }
 }

@@ -182,6 +182,9 @@ public class Paragraph extends JobWithProgressPoller<InterpreterResult> implemen
     if(status != null){
       builder.add("status",status.name());
     }
+    if(settings != null){
+      builder.add("settings",settings.asJson());
+    }
     builder.add("progress",progress);
     return builder.build();
   }

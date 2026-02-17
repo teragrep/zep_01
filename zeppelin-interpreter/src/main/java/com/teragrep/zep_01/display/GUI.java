@@ -19,11 +19,15 @@ package com.teragrep.zep_01.display;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import com.teragrep.zep_01.common.Jsonable;
 import com.teragrep.zep_01.display.ui.CheckBox;
 import com.teragrep.zep_01.display.ui.OptionInput.ParamOption;
 import com.teragrep.zep_01.display.ui.Password;
 import com.teragrep.zep_01.display.ui.Select;
 import com.teragrep.zep_01.display.ui.TextBox;
+import jakarta.json.Json;
+import jakarta.json.JsonObject;
+import jakarta.json.JsonObjectBuilder;
 
 import java.io.Serializable;
 import java.util.Collection;
@@ -37,7 +41,7 @@ import java.util.Map;
 /**
  * Settings of a form.
  */
-public class GUI implements Serializable {
+public class GUI implements Serializable, Jsonable {
 
   private static Gson gson = new GsonBuilder()
       .registerTypeAdapterFactory(Input.TypeAdapterFactory)
@@ -204,5 +208,32 @@ public class GUI implements Serializable {
     convertedInput.setHidden(oldInput.isHidden());
     convertedInput.setArgument(oldInput.getArgument());
     return convertedInput;
+  }
+
+  @Override
+  public JsonObject asJson() {
+    JsonObjectBuilder builder = Json.createObjectBuilder();
+    if(params != null){
+      JsonObjectBuilder paramsBuilder = Json.createObjectBuilder();
+      for (Map.Entry<String,Object> entry : params.entrySet()) {
+        Object value = entry.getValue();
+        // We support only String values for now. Any other kind of object is added as their toString() implementations
+        if(value instanceof String){
+          paramsBuilder.add(entry.getKey(),(String) value);
+        }
+        else {
+          paramsBuilder.add(entry.getKey(),value.toString());
+        }
+      }
+      builder.add("params",paramsBuilder.build());
+    }
+    if(forms != null){
+      JsonObjectBuilder formsBuilder = Json.createObjectBuilder();
+      for (Map.Entry<String,Input> entry : forms.entrySet()){
+        formsBuilder.add(entry.getKey(),entry.getValue().asJson());
+      }
+      builder.add("forms",formsBuilder.build());
+    }
+    return builder.build();
   }
 }
