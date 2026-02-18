@@ -1101,7 +1101,17 @@ public class NotebookServer extends WebSocketServlet
     final String noteId = (String) fromMessage.get("noteId");
     final String paragraphId = (String) fromMessage.get("paragraphId");
     final String visualizationLibraryName = (String) fromMessage.get("type");
-    final Map<String, String> options = (Map<String, String>) fromMessage.get("requestOptions");
+    final Map<String, Object> options = (Map<String, Object>) fromMessage.get("requestOptions");
+
+    //TODO: think up a better solution than this
+    final Map<String, String> optionsMap = new HashMap<>();
+
+    if (visualizationLibraryName.equals(InterpreterResult.Type.DATATABLES.label)){
+      optionsMap.put("draw",options.get("draw").toString());
+      optionsMap.put("length",options.get("length").toString());
+      optionsMap.put("start",options.get("start").toString());
+      optionsMap.put("search",((Map<String,Object>)options.get("search")).get("value").toString());
+    }
 
     Note note = getNotebook().getNote(noteId);
     if(note == null){
@@ -1131,7 +1141,7 @@ public class NotebookServer extends WebSocketServlet
     }
 
     try{
-      String formattedDataset = managedInterpreterGroup.formatDataset(sessionId, interpreter.getClassName(), noteId, paragraphId, visualizationLibraryName, options);
+      String formattedDataset = managedInterpreterGroup.formatDataset(sessionId, interpreter.getClassName(), noteId, paragraphId, visualizationLibraryName, optionsMap);
       Message msg = new Message(Message.OP.PARAGRAPH_OUTPUT)
               .withMsgId(msgId)
               .put("result",formattedDataset)
