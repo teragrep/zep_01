@@ -183,13 +183,6 @@ public class ManagedInterpreterGroup extends InterpreterGroup {
     }
   }
 
-  public String searchAndPaginate(String sessionId, String className, String noteId, String paragraphId, int start, int length, String searchString, int draw) throws InterpreterException {
-    if(remoteInterpreterProcess == null){
-      throw new InterpreterException("InterpreterGroup "+id+" does not have a running Interpreter process!");
-    }
-    return remoteInterpreterProcess.searchAndPaginate(sessionId,className,noteId,paragraphId,start,length,searchString,draw);
-  }
-
   public String formatDataset(String sessionId, String classname, String noteId, String paragraphId, String visualizationLibraryName, Map<String,String> options) throws InterpreterException{
     if(remoteInterpreterProcess == null){
       throw new InterpreterException("InterpreterGroup "+id+" does not have a running Interpreter process!");

@@ -378,18 +378,6 @@ public class RemoteInterpreterServer extends Thread
     throw new InterpreterRPCException("Interpreter instance " + className + " not found");
   }
 
-  public String searchAndPaginate(String sessionId, String className, String noteId, String paragraphId, int start, int length, String searchString, int draw) throws InterpreterRPCException, TException {
-    try{
-      Interpreter intp = getInterpreter(sessionId, className);
-      return intp.searchAndPaginate(noteId, paragraphId, start, length, searchString, draw);
-      // Thrift only declares InterpreterRPCException that has a single string as a paraemeter, so we have to wrap the underlying Exception as a String with an InterpreterRPCException to pass Exceptions through Thrift.
-      // RemoteInterpreterServers can have their own log files, so it's best to also log the Exception there before we stringify and send it further.
-    } catch (InterpreterException e){
-      LOGGER.error("Failed to get dataset!",e);
-      throw new InterpreterRPCException(e.toString());
-    }
-  }
-
   @Override
   public String formatDataset(String sessionId, String className, String noteId, String paragraphId, String visualizationLibraryName, Map<String, String> options) throws InterpreterRPCException, TException {
     try{

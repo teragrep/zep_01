@@ -109,18 +109,6 @@ public abstract class RemoteInterpreterProcess implements InterpreterClient, Aut
     });
   }
 
-  public String searchAndPaginate(String sessionId, String className, String noteId, String paragraphId, int start, int length, String searchString, int draw) throws InterpreterException {
-    try{
-      String dataset = callRemoteFunction(client -> {
-        return client.searchAndPaginate(sessionId, className, noteId, paragraphId, start, length, searchString, draw);
-      });
-      return dataset;
-    } catch (Exception e){
-      // Re-throw any Exception received via Thrift.
-      throw new InterpreterException("Failed to get dataset from RemoteInterpreter!",e);
-    }
-  }
-
   public String formatDataset(String sessionId, String classname, String noteId, String paragraphId, String visualizationLibraryName, Map<String, String> options) throws InterpreterException{
     try{
       String formattedDataset = callRemoteFunction(client -> {

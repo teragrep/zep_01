@@ -318,21 +318,6 @@ public class DPLInterpreter extends AbstractInterpreter {
     }
 
     @Override
-    public String searchAndPaginate(final String noteId, final String paragraphId, final int start, final int length, final String searchString, final int draw) throws InterpreterException{
-        final UserInterfaceManager userInterfaceManager = findUserInterfacemanger(noteId,paragraphId);
-        final DTTableDatasetNg dtTableDatasetNg = userInterfaceManager.getDtTableDatasetNg();
-        if(dtTableDatasetNg == null){
-            throw new InterpreterException("UserInterfaceManager for paragraph id "+paragraphId+" does not have a DTTableDatasetNG object!");
-        }
-        if(dtTableDatasetNg.getDatasetAsJSON().isEmpty()){
-            throw new InterpreterException("Dataset of paragraph "+paragraphId+" within note "+noteId+" is empty!");
-        }
-        final JsonObject json = dtTableDatasetNg.SearchAndPaginate(draw,start,length,searchString);
-        final String dataset = json.toString();
-        return dataset;
-    }
-
-    @Override
     public String formatDataset(final String noteId, final String paragraphId, final String visualizationLibraryName, final Map<String, String> options) throws InterpreterException{
         final UserInterfaceManager userInterfaceManager = findUserInterfacemanger(noteId,paragraphId);
 

@@ -213,10 +213,6 @@ public class LazyOpenInterpreter
   }
 
   @Override
-  public String searchAndPaginate(String noteId, String paragraphId, int start, int length, String searchString, int draw) throws InterpreterException{
-    return this.intp.searchAndPaginate(noteId, paragraphId, start, length, searchString, draw);
-  }
-  @Override
   public String formatDataset(String noteId, String paragraphId, String visualizationLibraryName, Map<String, String> options) throws InterpreterException{
     return this.intp.formatDataset(noteId, paragraphId, visualizationLibraryName, options);
   }

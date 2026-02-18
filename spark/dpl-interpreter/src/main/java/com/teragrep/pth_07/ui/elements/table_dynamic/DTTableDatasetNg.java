@@ -165,36 +165,6 @@ public final class DTTableDatasetNg extends AbstractUserInterfaceElement {
 
     }
 
-    public JsonObject SearchAndPaginate(int draw, int start, int length, String searchString) throws InterpreterException {
-        if(dataset == null){
-            throw new InterpreterException("Attempting to draw an empty dataset!");
-        }
-        List<String> datasetJsonRows = datasetAsJson.collectAsList();
-        DTSearch dtSearch = new DTSearch(datasetJsonRows);
-        List<Order> currentOrder = null;
-
-        // TODO these all decode the JSON, it refactor therefore to decode only once
-        // searching
-        List<String> searchedList = dtSearch.search(searchString);
-
-        // TODO ordering
-        //DTOrder dtOrder = new DTOrder(searchedList);
-        //List<String> orderedlist = dtOrder.order(searchedList, currentOrder);
-        List<String> orderedlist = searchedList;
-
-        // pagination
-        DTPagination dtPagination = new DTPagination(orderedlist);
-        List<String> paginatedList = dtPagination.paginate(length, start);
-
-        // ui formatting
-        JsonArray formated = dataStreamParser(paginatedList);
-        final JsonArray schemaHeadersAsJSON = schemaHeaders.json();
-        int recordsTotal = datasetJsonRows.size();
-        int recordsFiltered = searchedList.size();
-
-        return DTNetResponse(formated, schemaHeadersAsJSON, draw, recordsTotal,recordsFiltered);
-    }
-
     static JsonArray dataStreamParser(List<String> data){
 
         try{
