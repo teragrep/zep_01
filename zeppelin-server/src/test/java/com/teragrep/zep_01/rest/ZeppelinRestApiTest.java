@@ -26,6 +26,9 @@ import static org.junit.Assert.fail;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 
+import com.teragrep.zep_01.conf.ZeppelinConfiguration;
+import jakarta.json.Json;
+import jakarta.json.JsonObject;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.util.EntityUtils;
@@ -34,6 +37,7 @@ import com.teragrep.zep_01.notebook.Notebook;
 import com.teragrep.zep_01.rest.message.NoteJobStatus;
 import com.teragrep.zep_01.utils.TestUtils;
 import org.junit.*;
+import org.junit.jupiter.api.Assertions;
 import org.junit.runners.MethodSorters;
 
 import java.io.IOException;
@@ -53,7 +57,6 @@ import com.teragrep.zep_01.user.AuthenticationInfo;
 /**
  * BASIC Zeppelin rest api tests.
  */
-@Ignore(value="Flaky tests: HttpHostConnect Connect to localhost:8080 [localhost/127.0.0.1] failed: Connection refused (Connection refused) or Task com.teragrep.zep_01.notebook.NoteEventAsyncListener$EventHandling@1eea9d2d rejected from java.util.concurrent.ThreadPoolExecutor@29182679")
 @FixMethodOrder(MethodSorters.NAME_ASCENDING)
 public class ZeppelinRestApiTest extends AbstractTestRestApi {
   Gson gson = new Gson();
@@ -77,6 +80,7 @@ public class ZeppelinRestApiTest extends AbstractTestRestApi {
   /**
    * ROOT API TEST.
    **/
+  @Ignore(value="Flaky tests: HttpHostConnect Connect to localhost:8080 [localhost/127.0.0.1] failed: Connection refused (Connection refused) or Task com.teragrep.zep_01.notebook.NoteEventAsyncListener$EventHandling@1eea9d2d rejected from java.util.concurrent.ThreadPoolExecutor@29182679")
   @Test
   public void getApiRoot() throws IOException {
     // when
@@ -86,7 +90,43 @@ public class ZeppelinRestApiTest extends AbstractTestRestApi {
     httpGetRoot.close();
   }
 
+  // A GET request to /api/announcement should return the currently set announcement configuration value.
   @Test
+  public void getAnnouncementTextTest() throws IOException {
+    final CloseableHttpResponse get = httpGet("/announcement");
+    final String getResponse = EntityUtils.toString(get.getEntity(), StandardCharsets.UTF_8);
+    get.close();
+    final JsonObject expectedResponse = Json.createObjectBuilder()
+            .add("status","OK")
+            .add("body",Json.createObjectBuilder()
+                    .add("announcement",ZeppelinConfiguration.create().getString(ConfVars.ZEPPELIN_ANNOUNCEMENT))
+                    .build())
+            .build();
+    Assertions.assertEquals(expectedResponse.toString(),getResponse);
+  }
+
+  // A PUT request with a plain text body to /api/announcement should set the announcement configuration value.
+  @Test
+  public void setAnnouncementTextTest() throws IOException {
+    final String editedAnnouncementText = "A new announcement just dropped!";
+    // Announcement variable should not be set to desired value at the start.
+    Assertions.assertNotEquals(editedAnnouncementText, ZeppelinConfiguration.create().getString(ConfVars.ZEPPELIN_ANNOUNCEMENT));
+    final CloseableHttpResponse put = httpPut("/announcement", editedAnnouncementText);
+    final String putResponse = EntityUtils.toString(put.getEntity(), StandardCharsets.UTF_8);
+    put.close();
+
+    // Request should receive the appropriate response
+    final JsonObject expectedResponse = Json.createObjectBuilder()
+            .add("status","OK")
+            .add("message","Announcement text set successfully")
+            .build();
+    Assertions.assertEquals(expectedResponse.toString(),putResponse);
+    // Announcement variable should be set to desired value after successful request.
+    Assertions.assertEquals(editedAnnouncementText, ZeppelinConfiguration.create().getString(ConfVars.ZEPPELIN_ANNOUNCEMENT));
+  }
+
+  @Test
+  @Ignore(value="Flaky tests: HttpHostConnect Connect to localhost:8080 [localhost/127.0.0.1] failed: Connection refused (Connection refused) or Task com.teragrep.zep_01.notebook.NoteEventAsyncListener$EventHandling@1eea9d2d rejected from java.util.concurrent.ThreadPoolExecutor@29182679")
   public void testGetNoteInfo() throws IOException {
     LOG.debug("testGetNoteInfo");
     Note note = TestUtils.getInstance(Notebook.class).createNote("note1", anonymous);
@@ -121,17 +161,20 @@ public class ZeppelinRestApiTest extends AbstractTestRestApi {
   }
 
   @Test
+  @Ignore(value="Flaky tests: HttpHostConnect Connect to localhost:8080 [localhost/127.0.0.1] failed: Connection refused (Connection refused) or Task com.teragrep.zep_01.notebook.NoteEventAsyncListener$EventHandling@1eea9d2d rejected from java.util.concurrent.ThreadPoolExecutor@29182679")
   public void testNoteCreateWithName() throws IOException {
     String noteName = "Test note name";
     testNoteCreate(noteName);
   }
 
   @Test
+  @Ignore(value="Flaky tests: HttpHostConnect Connect to localhost:8080 [localhost/127.0.0.1] failed: Connection refused (Connection refused) or Task com.teragrep.zep_01.notebook.NoteEventAsyncListener$EventHandling@1eea9d2d rejected from java.util.concurrent.ThreadPoolExecutor@29182679")
   public void testNoteCreateNoName() throws IOException {
     testNoteCreate("");
   }
 
   @Test
+  @Ignore(value="Flaky tests: HttpHostConnect Connect to localhost:8080 [localhost/127.0.0.1] failed: Connection refused (Connection refused) or Task com.teragrep.zep_01.notebook.NoteEventAsyncListener$EventHandling@1eea9d2d rejected from java.util.concurrent.ThreadPoolExecutor@29182679")
   public void testNoteCreateWithParagraphs() throws IOException {
     // Call Create Note REST API
     String noteName = "test";
@@ -208,6 +251,7 @@ public class ZeppelinRestApiTest extends AbstractTestRestApi {
   }
 
   @Test
+  @Ignore(value="Flaky tests: HttpHostConnect Connect to localhost:8080 [localhost/127.0.0.1] failed: Connection refused (Connection refused) or Task com.teragrep.zep_01.notebook.NoteEventAsyncListener$EventHandling@1eea9d2d rejected from java.util.concurrent.ThreadPoolExecutor@29182679")
   public void testDeleteNote() throws IOException {
     LOG.debug("testDeleteNote");
     Note note = TestUtils.getInstance(Notebook.class).createNote("note1_testDeletedNote", anonymous);
@@ -216,12 +260,14 @@ public class ZeppelinRestApiTest extends AbstractTestRestApi {
   }
 
   @Test
+  @Ignore(value="Flaky tests: HttpHostConnect Connect to localhost:8080 [localhost/127.0.0.1] failed: Connection refused (Connection refused) or Task com.teragrep.zep_01.notebook.NoteEventAsyncListener$EventHandling@1eea9d2d rejected from java.util.concurrent.ThreadPoolExecutor@29182679")
   public void testDeleteNoteBadId() throws IOException {
     LOG.debug("testDeleteNoteBadId");
     testDeleteNotExistNote("bad_ID");
   }
 
   @Test
+  @Ignore(value="Flaky tests: HttpHostConnect Connect to localhost:8080 [localhost/127.0.0.1] failed: Connection refused (Connection refused) or Task com.teragrep.zep_01.notebook.NoteEventAsyncListener$EventHandling@1eea9d2d rejected from java.util.concurrent.ThreadPoolExecutor@29182679")
   public void testExportNote() throws IOException {
     LOG.debug("testExportNote");
 
@@ -252,6 +298,7 @@ public class ZeppelinRestApiTest extends AbstractTestRestApi {
   }
 
   @Test
+  @Ignore(value="Flaky tests: HttpHostConnect Connect to localhost:8080 [localhost/127.0.0.1] failed: Connection refused (Connection refused) or Task com.teragrep.zep_01.notebook.NoteEventAsyncListener$EventHandling@1eea9d2d rejected from java.util.concurrent.ThreadPoolExecutor@29182679")
   public void testImportNotebook() throws IOException {
     Map<String, Object> resp;
     String oldJson;
@@ -321,6 +368,7 @@ public class ZeppelinRestApiTest extends AbstractTestRestApi {
   }
 
   @Test
+  @Ignore(value="Flaky tests: HttpHostConnect Connect to localhost:8080 [localhost/127.0.0.1] failed: Connection refused (Connection refused) or Task com.teragrep.zep_01.notebook.NoteEventAsyncListener$EventHandling@1eea9d2d rejected from java.util.concurrent.ThreadPoolExecutor@29182679")
   public void testCloneNote() throws IOException, IllegalArgumentException {
     LOG.debug("testCloneNote");
     // Create note to clone
@@ -357,6 +405,7 @@ public class ZeppelinRestApiTest extends AbstractTestRestApi {
   }
 
   @Test
+  @Ignore(value="Flaky tests: HttpHostConnect Connect to localhost:8080 [localhost/127.0.0.1] failed: Connection refused (Connection refused) or Task com.teragrep.zep_01.notebook.NoteEventAsyncListener$EventHandling@1eea9d2d rejected from java.util.concurrent.ThreadPoolExecutor@29182679")
   public void testListNotes() throws IOException {
     LOG.debug("testListNotes");
     CloseableHttpResponse get = httpGet("/notebook/");
@@ -374,6 +423,7 @@ public class ZeppelinRestApiTest extends AbstractTestRestApi {
   }
 
   @Test
+  @Ignore(value="Flaky tests: HttpHostConnect Connect to localhost:8080 [localhost/127.0.0.1] failed: Connection refused (Connection refused) or Task com.teragrep.zep_01.notebook.NoteEventAsyncListener$EventHandling@1eea9d2d rejected from java.util.concurrent.ThreadPoolExecutor@29182679")
   public void testNoteJobs() throws Exception {
     LOG.debug("testNoteJobs");
 
@@ -425,6 +475,7 @@ public class ZeppelinRestApiTest extends AbstractTestRestApi {
   }
 
   @Test
+  @Ignore(value="Flaky tests: HttpHostConnect Connect to localhost:8080 [localhost/127.0.0.1] failed: Connection refused (Connection refused) or Task com.teragrep.zep_01.notebook.NoteEventAsyncListener$EventHandling@1eea9d2d rejected from java.util.concurrent.ThreadPoolExecutor@29182679")
   public void testGetNoteJob() throws Exception {
     LOG.debug("testGetNoteJob");
 
@@ -470,6 +521,7 @@ public class ZeppelinRestApiTest extends AbstractTestRestApi {
   }
 
   @Test
+  @Ignore(value="Flaky tests: HttpHostConnect Connect to localhost:8080 [localhost/127.0.0.1] failed: Connection refused (Connection refused) or Task com.teragrep.zep_01.notebook.NoteEventAsyncListener$EventHandling@1eea9d2d rejected from java.util.concurrent.ThreadPoolExecutor@29182679")
   public void testRunParagraphWithParams() throws Exception {
     LOG.debug("testRunParagraphWithParams");
 
@@ -503,6 +555,7 @@ public class ZeppelinRestApiTest extends AbstractTestRestApi {
   }
 
   @Test
+  @Ignore(value="Flaky tests: HttpHostConnect Connect to localhost:8080 [localhost/127.0.0.1] failed: Connection refused (Connection refused) or Task com.teragrep.zep_01.notebook.NoteEventAsyncListener$EventHandling@1eea9d2d rejected from java.util.concurrent.ThreadPoolExecutor@29182679")
   public void testJobs() throws Exception {
     // create a note and a paragraph
     System.setProperty(ConfVars.ZEPPELIN_NOTEBOOK_CRON_ENABLE.getVarName(), "true");
@@ -544,6 +597,7 @@ public class ZeppelinRestApiTest extends AbstractTestRestApi {
   }
 
   @Test
+  @Ignore(value="Flaky tests: HttpHostConnect Connect to localhost:8080 [localhost/127.0.0.1] failed: Connection refused (Connection refused) or Task com.teragrep.zep_01.notebook.NoteEventAsyncListener$EventHandling@1eea9d2d rejected from java.util.concurrent.ThreadPoolExecutor@29182679")
   public void testCronDisable() throws Exception {
     // create a note and a paragraph
     System.setProperty(ConfVars.ZEPPELIN_NOTEBOOK_CRON_ENABLE.getVarName(), "false");
@@ -585,6 +639,7 @@ public class ZeppelinRestApiTest extends AbstractTestRestApi {
   }
 
   @Test
+  @Ignore(value="Flaky tests: HttpHostConnect Connect to localhost:8080 [localhost/127.0.0.1] failed: Connection refused (Connection refused) or Task com.teragrep.zep_01.notebook.NoteEventAsyncListener$EventHandling@1eea9d2d rejected from java.util.concurrent.ThreadPoolExecutor@29182679")
   public void testRegressionZEPPELIN_527() throws Exception {
     Note note = TestUtils.getInstance(Notebook.class).createNote("note1_testRegressionZEPPELIN_527", anonymous);
     note.setName("note for run test");
@@ -604,6 +659,7 @@ public class ZeppelinRestApiTest extends AbstractTestRestApi {
   }
 
   @Test
+  @Ignore(value="Flaky tests: HttpHostConnect Connect to localhost:8080 [localhost/127.0.0.1] failed: Connection refused (Connection refused) or Task com.teragrep.zep_01.notebook.NoteEventAsyncListener$EventHandling@1eea9d2d rejected from java.util.concurrent.ThreadPoolExecutor@29182679")
   public void testInsertParagraph() throws IOException {
     Note note = TestUtils.getInstance(Notebook.class).createNote("note1_testInsertParagraph", anonymous);
 
@@ -661,6 +717,7 @@ public class ZeppelinRestApiTest extends AbstractTestRestApi {
   }
 
   @Test
+  @Ignore(value="Flaky tests: HttpHostConnect Connect to localhost:8080 [localhost/127.0.0.1] failed: Connection refused (Connection refused) or Task com.teragrep.zep_01.notebook.NoteEventAsyncListener$EventHandling@1eea9d2d rejected from java.util.concurrent.ThreadPoolExecutor@29182679")
   public void testUpdateParagraph() throws IOException {
     Note note = TestUtils.getInstance(Notebook.class).createNote("note1_testUpdateParagraph", anonymous);
 
@@ -702,6 +759,7 @@ public class ZeppelinRestApiTest extends AbstractTestRestApi {
   }
 
   @Test
+  @Ignore(value="Flaky tests: HttpHostConnect Connect to localhost:8080 [localhost/127.0.0.1] failed: Connection refused (Connection refused) or Task com.teragrep.zep_01.notebook.NoteEventAsyncListener$EventHandling@1eea9d2d rejected from java.util.concurrent.ThreadPoolExecutor@29182679")
   public void testGetParagraph() throws IOException {
     Note note = TestUtils.getInstance(Notebook.class).createNote("note1_testGetParagraph", anonymous);
 
@@ -730,6 +788,7 @@ public class ZeppelinRestApiTest extends AbstractTestRestApi {
   }
 
   @Test
+  @Ignore(value="Flaky tests: HttpHostConnect Connect to localhost:8080 [localhost/127.0.0.1] failed: Connection refused (Connection refused) or Task com.teragrep.zep_01.notebook.NoteEventAsyncListener$EventHandling@1eea9d2d rejected from java.util.concurrent.ThreadPoolExecutor@29182679")
   public void testMoveParagraph() throws IOException {
     Note note = TestUtils.getInstance(Notebook.class).createNote("note1_testMoveParagraph", anonymous);
 
@@ -762,6 +821,7 @@ public class ZeppelinRestApiTest extends AbstractTestRestApi {
   }
 
   @Test
+  @Ignore(value="Flaky tests: HttpHostConnect Connect to localhost:8080 [localhost/127.0.0.1] failed: Connection refused (Connection refused) or Task com.teragrep.zep_01.notebook.NoteEventAsyncListener$EventHandling@1eea9d2d rejected from java.util.concurrent.ThreadPoolExecutor@29182679")
   public void testDeleteParagraph() throws IOException {
     Note note = TestUtils.getInstance(Notebook.class).createNote("note1_testDeleteParagraph", anonymous);
 
@@ -781,6 +841,7 @@ public class ZeppelinRestApiTest extends AbstractTestRestApi {
   }
 
   @Test
+  @Ignore(value="Flaky tests: HttpHostConnect Connect to localhost:8080 [localhost/127.0.0.1] failed: Connection refused (Connection refused) or Task com.teragrep.zep_01.notebook.NoteEventAsyncListener$EventHandling@1eea9d2d rejected from java.util.concurrent.ThreadPoolExecutor@29182679")
   public void testTitleSearch() throws IOException, InterruptedException {
     Note note = TestUtils.getInstance(Notebook.class).createNote("note1_testTitleSearch", anonymous);
     String jsonRequest = "{\"title\": \"testTitleSearchOfParagraph\", " +
