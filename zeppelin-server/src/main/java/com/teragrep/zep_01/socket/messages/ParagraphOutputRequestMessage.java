@@ -27,6 +27,9 @@ public class ParagraphOutputRequestMessage implements Jsonable {
 
     public String noteId() throws JsonException {
         if(!json.containsKey("data") || !json.get("data").getValueType().equals(JsonValue.ValueType.OBJECT)) {
+            throw new JsonException("Json does not contain a data object!");
+        }
+        else{
             JsonObject data = json.getJsonObject("data");
             if (!data.containsKey("noteId") || !data.get("noteId").getValueType().equals(JsonValue.ValueType.STRING)) {
                 throw new JsonException("Json does not contain a noteId!");
@@ -34,13 +37,13 @@ public class ParagraphOutputRequestMessage implements Jsonable {
                 return data.getString("noteId");
             }
         }
-        else{
-                throw new JsonException("Json does not contain a data object!");
-            }
-        }
+    }
 
     public String paragraphId() throws JsonException {
-            if(!json.containsKey("data") || !json.get("data").getValueType().equals(JsonValue.ValueType.OBJECT)){
+            if(!json.containsKey("data") || !json.get("data").getValueType().equals(JsonValue.ValueType.OBJECT)) {
+                throw new JsonException("Json does not contain a data object!");
+            }
+            else {
                 JsonObject data = json.getJsonObject("data");
                 if (!data.containsKey("paragraphId") || !data.get("paragraphId").getValueType().equals(JsonValue.ValueType.STRING)) {
                     throw new JsonException("Json does not contain a paragraphId!");
@@ -48,22 +51,18 @@ public class ParagraphOutputRequestMessage implements Jsonable {
                     return data.getString("paragraphId");
                 }
             }
-            else {
-                throw new JsonException("Json does not contain a data object!");
-            }
-
     }
     public String visualizationLibraryName() throws JsonException {
             if(!json.containsKey("data") || !json.get("data").getValueType().equals(JsonValue.ValueType.OBJECT)){
+                throw new JsonException("Json does not contain a data object!");
+            }
+            else {
                 JsonObject data = json.getJsonObject("data");
                 if (!data.containsKey("type") || !data.get("type").getValueType().equals(JsonValue.ValueType.STRING)) {
                     throw new JsonException("Json does not contain a type!");
                 } else {
                     return data.getString("type");
                 }
-            }
-            else {
-                throw new JsonException("Json does not contain a data object!");
             }
         }
 
