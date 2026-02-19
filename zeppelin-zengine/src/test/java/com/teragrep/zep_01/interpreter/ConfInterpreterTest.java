@@ -20,6 +20,7 @@ package com.teragrep.zep_01.interpreter;
 import com.teragrep.zep_01.interpreter.remote.RemoteInterpreter;
 import org.junit.Before;
 import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
@@ -97,4 +98,26 @@ public class ConfInterpreterTest extends AbstractInterpreterTest {
     assertEquals(InterpreterResult.Code.ERROR, result.code);
   }
 
+  // Running confInterpreter should print out the currently used properties
+  @Test
+  public void testPrintingCurrentConfiguration(){
+    Assertions.assertDoesNotThrow(()->{
+      assertTrue(interpreterFactory.getInterpreter("test.conf", executionContext) instanceof ConfInterpreter);
+      ConfInterpreter confInterpreter = (ConfInterpreter) interpreterFactory.getInterpreter("test.conf", executionContext);
+
+      InterpreterContext context = InterpreterContext.builder()
+              .setNoteId("noteId")
+              .setParagraphId("paragraphId")
+              .build();
+
+      // Assign a new value to one of the properties and create one new property, should result in a message listing out all existing properties properly updated as well as the new property.
+      InterpreterResult result = confInterpreter.interpret("property_1\tnew_value\nnew_property\tdummy_value", context);
+      assertEquals(InterpreterResult.Code.SUCCESS, result.code);
+      assertTrue(result.toString().contains("Properties for "+confInterpreter.getInterpreterGroup().getId()+" are:"));
+      assertTrue(result.toString().contains("new_property = dummy_value"));
+      assertTrue(result.toString().contains("property_3 = value_3"));
+      assertTrue(result.toString().contains("property_2 = new_value_2"));
+      assertTrue(result.toString().contains("property_1 = new_value"));
+    });
+  }
 }
