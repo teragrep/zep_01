@@ -49,17 +49,15 @@ package com.teragrep.pth_07;
 import com.teragrep.pth_07.stream.BatchHandler;
 import com.teragrep.pth_07.ui.UserInterfaceManager;
 import com.teragrep.pth_07.ui.elements.table_dynamic.DTTableDatasetNg;
-import com.teragrep.pth_07.ui.elements.table_dynamic.formatOptions.DataTablesFormatOptions;
-import com.teragrep.pth_07.ui.elements.table_dynamic.formatOptions.UPlotFormatOptions;
 import com.teragrep.pth_07.ui.elements.table_dynamic.formats.DataTablesFormat;
 import com.teragrep.pth_07.ui.elements.table_dynamic.formats.DatasetFormat;
 import com.teragrep.pth_07.ui.elements.table_dynamic.formats.UPlotFormat;
 import com.teragrep.pth_15.DPLExecutor;
 import com.teragrep.pth_15.DPLExecutorFactory;
 import com.teragrep.pth_15.DPLExecutorResult;
+import com.teragrep.zep_01.interpreter.thrift.Options;
 import com.typesafe.config.Config;
 import com.typesafe.config.ConfigFactory;
-import jakarta.json.JsonObject;
 import org.apache.spark.SparkContext;
 import com.teragrep.zep_01.interpreter.*;
 import com.teragrep.zep_01.interpreter.InterpreterResult.Code;
@@ -318,23 +316,19 @@ public class DPLInterpreter extends AbstractInterpreter {
     }
 
     @Override
-    public String formatDataset(final String noteId, final String paragraphId, final String visualizationLibraryName, final Map<String, String> options) throws InterpreterException{
+    public String formatDataset(final String noteId, final String paragraphId, final String visualizationLibraryName, final Options options) throws InterpreterException{
         final UserInterfaceManager userInterfaceManager = findUserInterfacemanger(noteId,paragraphId);
 
         final DatasetFormat format;
         if(visualizationLibraryName.equals(InterpreterResult.Type.UPLOT.label)){
             final DTTableDatasetNg dtTableDatasetNg = userInterfaceManager.getDtTableDatasetNg();
             final Dataset<Row> dataset = dtTableDatasetNg.dataset();
-
-            final UPlotFormatOptions uplotOptions = new UPlotFormatOptions(options);
-            format = new UPlotFormat(dataset, uplotOptions);
+            format = new UPlotFormat(dataset, options.getUPlotOptions());
         }
         else {
             // Default to DataTables
             final Dataset<Row> dataset = userInterfaceManager.getDtTableDatasetNg().dataset();
-
-            final DataTablesFormatOptions datatablesOptions = new DataTablesFormatOptions(options);
-            format = new DataTablesFormat(dataset, datatablesOptions);
+            format = new DataTablesFormat(dataset, options.getDataTablesOptions());
         }
         return format.format().toString();
     }

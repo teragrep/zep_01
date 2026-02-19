@@ -33,10 +33,11 @@ import javax.inject.Provider;
 import javax.servlet.http.HttpServletRequest;
 
 import com.teragrep.zep_01.common.JsonMessage;
-import com.teragrep.zep_01.common.ValidatedMessage;
+import com.teragrep.zep_01.socket.messages.ParagraphOutputRequestMessage;
 import com.teragrep.zep_01.display.*;
 import com.teragrep.zep_01.interpreter.*;
 import com.teragrep.zep_01.interpreter.remote.RemoteInterpreter;
+import com.teragrep.zep_01.interpreter.thrift.*;
 import com.teragrep.zep_01.rest.exception.BadRequestException;
 import jakarta.json.*;
 import org.apache.commons.lang3.StringUtils;
@@ -45,9 +46,6 @@ import org.apache.thrift.TException;
 import com.teragrep.zep_01.conf.ZeppelinConfiguration;
 import com.teragrep.zep_01.interpreter.remote.RemoteAngularObjectRegistry;
 import com.teragrep.zep_01.interpreter.remote.RemoteInterpreterProcessListener;
-import com.teragrep.zep_01.interpreter.thrift.InterpreterCompletion;
-import com.teragrep.zep_01.interpreter.thrift.ParagraphInfo;
-import com.teragrep.zep_01.interpreter.thrift.ServiceException;
 import com.teragrep.zep_01.notebook.Note;
 import com.teragrep.zep_01.notebook.NoteEventListener;
 import com.teragrep.zep_01.notebook.NoteInfo;
@@ -370,7 +368,10 @@ public class NotebookServer extends WebSocketServlet
           clearAllParagraphOutput(conn, context, receivedMessage);
           break;
         case PARAGRAPH_OUTPUT_REQUEST:
-          paragraphOutput(conn, context, receivedMessage);
+          // Reading of "msg" should be done at the very top of onMessage, but refactoring every message to use their own object type is out of scope for now
+          JsonObject json = Json.createReader(new StringReader(msg)).readObject();
+          ParagraphOutputRequestMessage message = new ParagraphOutputRequestMessage(json);
+          paragraphOutput(conn, message);
           break;
         case NOTE_UPDATE:
           updateNote(conn, context, receivedMessage);
@@ -1094,24 +1095,13 @@ public class NotebookServer extends WebSocketServlet
         });
   }
   private void paragraphOutput(NotebookSocket conn,
-                               ServiceContext context,
-                               Message fromMessage) throws IOException, InterpreterException {
+                               ParagraphOutputRequestMessage fromMessage) throws IOException, InterpreterException {
     // Casting is required to get Message parameters in correct format, as GSON parses all numbers as Doubles, and Message.get() returns a generic Object.
-    final String msgId = fromMessage.msgId;
-    final String noteId = (String) fromMessage.get("noteId");
-    final String paragraphId = (String) fromMessage.get("paragraphId");
-    final String visualizationLibraryName = (String) fromMessage.get("type");
-    final Map<String, Object> options = (Map<String, Object>) fromMessage.get("requestOptions");
-
-    //TODO: think up a better solution than this
-    final Map<String, String> optionsMap = new HashMap<>();
-
-    if (visualizationLibraryName.equals(InterpreterResult.Type.DATATABLES.label)){
-      optionsMap.put("draw",options.get("draw").toString());
-      optionsMap.put("length",options.get("length").toString());
-      optionsMap.put("start",options.get("start").toString());
-      optionsMap.put("search",((Map<String,Object>)options.get("search")).get("value").toString());
-    }
+    final String msgId = fromMessage.messageId();
+    final String noteId = fromMessage.noteId();
+    final String paragraphId = fromMessage.paragraphId();
+    final String visualizationLibraryName = fromMessage.visualizationLibraryName();
+    final Options options = fromMessage.options();
 
     Note note = getNotebook().getNote(noteId);
     if(note == null){
@@ -1141,7 +1131,7 @@ public class NotebookServer extends WebSocketServlet
     }
 
     try{
-      String formattedDataset = managedInterpreterGroup.formatDataset(sessionId, interpreter.getClassName(), noteId, paragraphId, visualizationLibraryName, optionsMap);
+      String formattedDataset = managedInterpreterGroup.formatDataset(sessionId, interpreter.getClassName(), noteId, paragraphId, visualizationLibraryName, options);
       Message msg = new Message(Message.OP.PARAGRAPH_OUTPUT)
               .withMsgId(msgId)
               .put("result",formattedDataset)

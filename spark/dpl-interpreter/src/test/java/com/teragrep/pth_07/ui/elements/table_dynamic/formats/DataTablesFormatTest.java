@@ -46,8 +46,9 @@
 package com.teragrep.pth_07.ui.elements.table_dynamic.formats;
 
 import com.teragrep.pth_07.ui.elements.table_dynamic.DTHeader;
-import com.teragrep.pth_07.ui.elements.table_dynamic.formatOptions.DataTablesFormatOptions;
 import com.teragrep.pth_07.ui.elements.table_dynamic.testdata.TestDPLData;
+import com.teragrep.zep_01.interpreter.thrift.DataTablesOptions;
+import com.teragrep.zep_01.interpreter.thrift.DataTablesSearch;
 import jakarta.json.JsonArray;
 import jakarta.json.JsonObject;
 import org.apache.spark.sql.Dataset;
@@ -100,15 +101,10 @@ class DataTablesFormatTest {
         final int start = 3;
         final int length = 2;
         final String searchString = "";
-        final Map<String,String> optionsMap = new HashMap<>();
-        optionsMap.put("draw",Integer.toString(draw));
-        optionsMap.put("start",Integer.toString(start));
-        optionsMap.put("length",Integer.toString(length));
-        optionsMap.put("search",searchString);
+        final DataTablesOptions options = new DataTablesOptions(draw,start,length,new DataTablesSearch(searchString,false,new ArrayList<>()),new ArrayList<>(), new ArrayList<>());
 
         // Get rows 3-5 of the dataset, check that every value is present
-        final DataTablesFormatOptions options1 = new DataTablesFormatOptions(optionsMap);
-        final DataTablesFormat request1 = new DataTablesFormat(testDs,options1);
+        final DataTablesFormat request1 = new DataTablesFormat(testDs,options);
         final JsonObject formatted = Assertions.assertDoesNotThrow(()->request1.format());
         final JsonObject data = formatted.getJsonObject("data");
         final JsonArray headers = data.getJsonArray("headers");
@@ -190,16 +186,10 @@ class DataTablesFormatTest {
         final int start = 3;
         final int length = 2;
         final String searchString = "";
-        final Map<String,String> optionsMap = new HashMap<>();
-        optionsMap.put("draw",Integer.toString(draw));
-        optionsMap.put("start",Integer.toString(start));
-        optionsMap.put("length",Integer.toString(length));
-        optionsMap.put("search",searchString);
+        final DataTablesOptions options = new DataTablesOptions(draw,start,length,new DataTablesSearch(searchString,false,new ArrayList<>()),new ArrayList<>(), new ArrayList<>());
 
-
-        final DataTablesFormatOptions options1 = new DataTablesFormatOptions(optionsMap);
-        final DataTablesFormat request1 = new DataTablesFormat(aggDataset,options1);
-        final JsonObject formatted = Assertions.assertDoesNotThrow(()->request1.format());
+        final DataTablesFormat request = new DataTablesFormat(aggDataset,options);
+        final JsonObject formatted = Assertions.assertDoesNotThrow(()->request.format());
 
         final boolean isAggregated = formatted.getBoolean("isAggregated");
         Assertions.assertEquals(true,isAggregated);
@@ -208,12 +198,12 @@ class DataTablesFormatTest {
     @Test
     void testPagination() {
         // Get first 5 rows of the dataset, check values of first and last field
-        final Map<String,String> optionsMap1 = new HashMap<>();
-        optionsMap1.put("draw",Integer.toString(0));
-        optionsMap1.put("start",Integer.toString(0));
-        optionsMap1.put("length",Integer.toString(5));
-        optionsMap1.put("search","");
-        final DataTablesFormatOptions options1 = new DataTablesFormatOptions(optionsMap1);
+        int draw1 = 0;
+        int start1 = 0;
+        int length1 = 5;
+        String searchString1 = "";
+        final DataTablesOptions options1 = new DataTablesOptions(draw1,start1,length1,new DataTablesSearch(searchString1,false,new ArrayList<>()),new ArrayList<>(), new ArrayList<>());
+
 
         final DataTablesFormat request1 = new DataTablesFormat(testDs,options1);
         final JsonObject response1 = Assertions.assertDoesNotThrow(()->request1.format().getJsonObject("data"));
@@ -223,13 +213,11 @@ class DataTablesFormatTest {
 
 
         // Get rows 6-15 of the dataset, check values of first and last field
-
-        final Map<String,String> optionsMap2 = new HashMap<>();
-        optionsMap2.put("draw",Integer.toString(0));
-        optionsMap2.put("start",Integer.toString(5));
-        optionsMap2.put("length",Integer.toString(10));
-        optionsMap2.put("search","");
-        final DataTablesFormatOptions options2 = new DataTablesFormatOptions(optionsMap2);
+        int draw2 = 1;
+        int start2 = 5;
+        int length2 = 10;
+        String searchString2 = "";
+        final DataTablesOptions options2 = new DataTablesOptions(draw2,start2,length2,new DataTablesSearch(searchString2,false,new ArrayList<>()),new ArrayList<>(), new ArrayList<>());
 
         final DataTablesFormat request2 = new DataTablesFormat(testDs,options2);
         final JsonObject response2 = Assertions.assertDoesNotThrow(()->request2.format().getJsonObject("data"));

@@ -90,6 +90,39 @@ exception InterpreterRPCException {
   1: string errorMessage,
 }
 
+struct DataTablesSearch {
+  1: string value,
+  2: bool regex,
+  3: list<string> fixed
+}
+
+struct DataTablesColumns {
+  1: string data,
+  2: string name,
+  3: bool orderable,
+  4: DataTablesSearch search,
+  5: bool searchable
+}
+
+
+struct DataTablesOptions {
+  1: i32 draw,
+  2: i32 start,
+  3: i32 length,
+  4: DataTablesSearch search,
+  5: list<string> order,
+  6: list<DataTablesColumns> columns
+}
+
+struct UPlotOptions {
+  1: string graphType
+}
+
+union Options {
+    1: DataTablesOptions dataTablesOptions,
+    2: UPlotOptions uPlotOptions
+}
+
 service RemoteInterpreterService {
 
   void createInterpreter(1: string intpGroupId, 2: string sessionId, 3: string className, 4: map<string, string> properties, 5: string userName) throws (1: InterpreterRPCException ex);
@@ -102,7 +135,7 @@ service RemoteInterpreterService {
   i32 getProgress(1: string sessionId, 2: string className, 3: RemoteInterpreterContext interpreterContext) throws (1: InterpreterRPCException ex);
   string getFormType(1: string sessionId, 2: string className) throws (1: InterpreterRPCException ex);
   list<InterpreterCompletion> completion(1: string sessionId, 2: string className, 3: string buf, 4: i32 cursor, 5: RemoteInterpreterContext interpreterContext) throws (1: InterpreterRPCException ex);
-  string formatDataset(1: string sessionId, 2: string className, 3: string noteId, 4: string paragraphId 5: string visualizationLibraryName, 6: map<string, string> options) throws (1: InterpreterRPCException ex);
+  string formatDataset(1: string sessionId, 2: string className, 3: string noteId, 4: string paragraphId 5: string visualizationLibraryName, 6: Options options) throws (1: InterpreterRPCException ex);
   void shutdown();
 
   string getStatus(1: string sessionId, 2:string jobId) throws (1: InterpreterRPCException ex);

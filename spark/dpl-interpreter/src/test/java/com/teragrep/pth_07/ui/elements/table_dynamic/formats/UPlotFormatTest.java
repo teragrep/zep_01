@@ -45,8 +45,8 @@
  */
 package com.teragrep.pth_07.ui.elements.table_dynamic.formats;
 
-import com.teragrep.pth_07.ui.elements.table_dynamic.formatOptions.UPlotFormatOptions;
 import com.teragrep.zep_01.interpreter.InterpreterException;
+import com.teragrep.zep_01.interpreter.thrift.UPlotOptions;
 import jakarta.json.JsonObject;
 import org.apache.spark.sql.Dataset;
 import org.apache.spark.sql.Row;
@@ -174,13 +174,9 @@ class UPlotFormatTest {
         final Dataset<Row> resultDataset = sparkSession.createDataFrame(rows,schema).agg(org.apache.spark.sql.functions.max("filesModified"),org.apache.spark.sql.functions.min("filesModified"));
         final int groupByCount = 0;
 
-        // Create a map containing  object to simulate a formatting request received from UI
-        final String graphType = "graph";
-        final HashMap<String,String> optionsMap = new HashMap<>();
-        optionsMap.put("graphType",graphType);
-
         // Create options and Format objects to be tested
-        final UPlotFormatOptions options = new UPlotFormatOptions(optionsMap);
+        final String graphType = "graph";
+        final UPlotOptions options = new UPlotOptions(graphType);
         final UPlotFormat format = new UPlotFormat(resultDataset, options);
 
         final JsonObject formatted = Assertions.assertDoesNotThrow(()-> format.format());
@@ -232,13 +228,11 @@ class UPlotFormatTest {
                 "| stats max(filesModified) min(filesModified) by success";
         final Dataset<Row> resultDataset = sparkSession.createDataFrame(rows,schema).groupBy("success").agg(org.apache.spark.sql.functions.max("filesModified"),org.apache.spark.sql.functions.min("filesModified"));
         final int groupByCount = 1;
-        // Create a map containing  object to simulate a formatting request received from UI
-        final String graphType = "graph";
-        final HashMap<String,String> optionsMap = new HashMap<>();
-        optionsMap.put("graphType",graphType);
+
 
         // Create options and Format objects to be tested
-        final UPlotFormatOptions options = new UPlotFormatOptions(optionsMap);
+        final String graphType = "graph";
+        final UPlotOptions options = new UPlotOptions(graphType);
         final UPlotFormat format = new UPlotFormat(resultDataset, options);
 
         final JsonObject formatted = Assertions.assertDoesNotThrow(()-> format.format());
@@ -290,13 +284,9 @@ class UPlotFormatTest {
         final int groupByCount = 1; // DPL query contains two group by clauses due to usage of 'timechart' command
         final Dataset<Row> resultDataset = sparkSession.createDataFrame(timeChartRows,timeChartSchema).groupBy("_time").agg(org.apache.spark.sql.functions.count("operation"));
 
-        // Create a map containing  object to simulate a formatting request received from UI
-        final String graphType = "graph";
-        final HashMap<String,String> optionsMap = new HashMap<>();
-        optionsMap.put("graphType",graphType);
-
         // Create options and Format objects to be tested
-        final UPlotFormatOptions options = new UPlotFormatOptions(optionsMap);
+        final String graphType = "graph";
+        final UPlotOptions options = new UPlotOptions(graphType);
         final UPlotFormat format = new UPlotFormat(resultDataset, options);
 
         final JsonObject formatted = Assertions.assertDoesNotThrow(()-> format.format());
@@ -347,13 +337,10 @@ class UPlotFormatTest {
                 "| stats count(operation) avg(operation) max(operation) by operation success";
         final Dataset<Row> resultDataset = sparkSession.createDataFrame(rows,schema).groupBy("operation","success").agg(org.apache.spark.sql.functions.count("success"),org.apache.spark.sql.functions.avg("filesModified"),org.apache.spark.sql.functions.max("filesModified"));
         final int groupByCount = 2; //  contains two group by clauses
-        // Create a map containing  object to simulate a formatting request received from UI
-        final String graphType = "graph";
-        final HashMap<String,String> optionsMap = new HashMap<>();
-        optionsMap.put("graphType",graphType);
 
         // Create options and Format objects to be tested
-        final UPlotFormatOptions options = new UPlotFormatOptions(optionsMap);
+        final String graphType = "graph";
+        final UPlotOptions options = new UPlotOptions(graphType);
         final UPlotFormat format = new UPlotFormat(resultDataset, options);
 
         final JsonObject formatted = Assertions.assertDoesNotThrow(()-> format.format());
@@ -401,13 +388,9 @@ class UPlotFormatTest {
         final List<Row> rows = new ArrayList<>();
         final Dataset<Row> resultDataset = sparkSession.createDataFrame(rows,schema);
 
-        // Create a map containing  object to simulate a formatting request received from UI
-        final String graphType = "graph";
-        final HashMap<String,String> optionsMap = new HashMap<>();
-        optionsMap.put("graphType",graphType);
-
         // Create options and Format objects to be tested
-        final UPlotFormatOptions options = new UPlotFormatOptions(optionsMap);
+        final String graphType = "graph";
+        final UPlotOptions options = new UPlotOptions(graphType);
         final UPlotFormat format = new UPlotFormat(resultDataset, options);
 
         Assertions.assertThrows(InterpreterException.class,()->format.format());
@@ -421,13 +404,9 @@ class UPlotFormatTest {
                 "| spath";
         final Dataset<Row> resultDataset = sparkSession.createDataFrame(rows,schema);
 
-        // Create a map containing  object to simulate a formatting request received from UI
-        final String graphType = "graph";
-        final HashMap<String,String> optionsMap = new HashMap<>();
-        optionsMap.put("graphType",graphType);
-
         // Create options and Format objects to be tested
-        final UPlotFormatOptions options = new UPlotFormatOptions(optionsMap);
+        final String graphType = "graph";
+        final UPlotOptions options = new UPlotOptions(graphType);
         final UPlotFormat format = new UPlotFormat(resultDataset, options);
 
         // Trying to display string data (such as operation name: "create") should result in an Exception as uPlot only supports numerical data
@@ -442,13 +421,9 @@ class UPlotFormatTest {
         final Dataset<Row> resultDataset = sparkSession.createDataFrame(rows,schema).select("filesModified");
         final int groupByCount = 0;
 
-        // Create a map containing  object to simulate a formatting request received from UI
-        final String graphType = "graph";
-        final HashMap<String,String> optionsMap = new HashMap<>();
-        optionsMap.put("graphType",graphType);
-
         // Create options and Format objects to be tested
-        final UPlotFormatOptions options = new UPlotFormatOptions(optionsMap);
+        final String graphType = "graph";
+        final UPlotOptions options = new UPlotOptions(graphType);
         final UPlotFormat format = new UPlotFormat(resultDataset, options);
 
         final JsonObject formatted = Assertions.assertDoesNotThrow(()-> format.format());

@@ -47,10 +47,10 @@ package com.teragrep.pth_07.ui.elements.table_dynamic.formats;
 
 import com.teragrep.pth_07.ui.elements.table_dynamic.DTPagination;
 import com.teragrep.pth_07.ui.elements.table_dynamic.DTSearch;
-import com.teragrep.pth_07.ui.elements.table_dynamic.formatOptions.DataTablesFormatOptions;
 import com.teragrep.pth_07.ui.elements.table_dynamic.pojo.Order;
 import com.teragrep.zep_01.interpreter.InterpreterException;
 import com.teragrep.zep_01.interpreter.InterpreterResult;
+import com.teragrep.zep_01.interpreter.thrift.DataTablesOptions;
 import jakarta.json.*;
 import org.apache.spark.sql.Dataset;
 import org.apache.spark.sql.Row;
@@ -68,10 +68,10 @@ import java.util.List;
 public class DataTablesFormat implements  DatasetFormat{
 
     private final Dataset<Row> dataset;
-    private final DataTablesFormatOptions options;
+    private final DataTablesOptions options;
     private static final Logger LOGGER = LoggerFactory.getLogger(DataTablesFormat.class);
 
-    public DataTablesFormat(final Dataset<Row> dataset, final DataTablesFormatOptions options){
+    public DataTablesFormat(final Dataset<Row> dataset, final DataTablesOptions options){
         this.dataset = dataset;
         this.options = options;
     }
@@ -85,7 +85,7 @@ public class DataTablesFormat implements  DatasetFormat{
                 final List<Order> currentOrder = null;
 
                 // searching
-                final List<String> searchedList = dtSearch.search(options.search());
+                final List<String> searchedList = dtSearch.search(options.getSearch().getValue());
 
                 // TODO ordering
                 //DTOrder dtOrder = new DTOrder(searchedList);
@@ -94,7 +94,7 @@ public class DataTablesFormat implements  DatasetFormat{
 
                 // pagination
                 final DTPagination dtPagination = new DTPagination(orderedlist);
-                final List<String> paginatedList = dtPagination.paginate(options.length(), options.start());
+                final List<String> paginatedList = dtPagination.paginate(options.getLength(), options.getStart());
 
                 // ui formatting
                 final JsonArray formated;
@@ -129,7 +129,7 @@ public class DataTablesFormat implements  DatasetFormat{
                 final JsonObjectBuilder dataBuilder = Json.createObjectBuilder();
                 dataBuilder.add("headers",schemaHeadersAsJSON);
                 dataBuilder.add("data", formated);
-                dataBuilder.add("draw", options.draw());
+                dataBuilder.add("draw", options.getDraw());
                 dataBuilder.add("recordsTotal", recordsTotal);
                 dataBuilder.add("recordsFiltered", recordsFiltered);
                 final JsonObject data = dataBuilder.build();

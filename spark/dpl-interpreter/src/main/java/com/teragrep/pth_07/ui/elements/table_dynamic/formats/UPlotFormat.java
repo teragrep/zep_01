@@ -44,9 +44,9 @@
  * a licensee so wish it.
  */
 package com.teragrep.pth_07.ui.elements.table_dynamic.formats;
-import com.teragrep.pth_07.ui.elements.table_dynamic.formatOptions.UPlotFormatOptions;
 import com.teragrep.zep_01.interpreter.InterpreterException;
 import com.teragrep.zep_01.interpreter.InterpreterResult;
+import com.teragrep.zep_01.interpreter.thrift.UPlotOptions;
 import jakarta.json.*;
 import org.apache.spark.sql.*;
 import org.apache.spark.sql.catalyst.expressions.AttributeReference;
@@ -69,10 +69,10 @@ import java.util.stream.Collectors;
 public class UPlotFormat implements  DatasetFormat{
 
     private final Dataset<Row> dataset;
-    private final UPlotFormatOptions options;
+    private final UPlotOptions options;
     private static final Logger LOGGER = LoggerFactory.getLogger(UPlotFormat.class);
 
-    public UPlotFormat(final Dataset<Row> dataset, final UPlotFormatOptions options){
+    public UPlotFormat(final Dataset<Row> dataset, final UPlotOptions options){
         this.dataset = dataset;
         this.options = options;
     }
@@ -146,7 +146,7 @@ public class UPlotFormat implements  DatasetFormat{
         final JsonArrayBuilder data1 = Json.createArrayBuilder();
         final JsonArrayBuilder labels = Json.createArrayBuilder();
         final JsonArrayBuilder series = Json.createArrayBuilder();
-        final String graphType = options.graphType();
+        final String graphType = options.getGraphType();
 
         // Transposition collected all the data into a single row containing a number of lists.
         final Row resultRow = transposed.collectAsList().get(0);

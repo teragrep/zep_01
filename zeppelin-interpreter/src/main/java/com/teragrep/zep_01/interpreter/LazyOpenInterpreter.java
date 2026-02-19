@@ -19,10 +19,10 @@ package com.teragrep.zep_01.interpreter;
 
 import java.net.URL;
 import java.util.List;
-import java.util.Map;
 import java.util.Properties;
 
 import com.teragrep.zep_01.interpreter.thrift.InterpreterCompletion;
+import com.teragrep.zep_01.interpreter.thrift.Options;
 import com.teragrep.zep_01.scheduler.Scheduler;
 
 /**
@@ -213,7 +213,7 @@ public class LazyOpenInterpreter
   }
 
   @Override
-  public String formatDataset(String noteId, String paragraphId, String visualizationLibraryName, Map<String, String> options) throws InterpreterException{
+  public String formatDataset(String noteId, String paragraphId, String visualizationLibraryName, Options options) throws InterpreterException{
     return this.intp.formatDataset(noteId, paragraphId, visualizationLibraryName, options);
   }
 }

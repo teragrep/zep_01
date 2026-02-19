@@ -45,12 +45,12 @@
  */
 package com.teragrep.pth_07.ui.elements.table_dynamic;
 
-import com.teragrep.pth_07.ui.elements.table_dynamic.formatOptions.DataTablesFormatOptions;
 import com.teragrep.pth_07.ui.elements.table_dynamic.formats.DataTablesFormat;
 import com.teragrep.pth_07.ui.elements.table_dynamic.formats.DatasetFormat;
-import com.teragrep.pth_07.ui.elements.table_dynamic.pojo.Order;
 import com.teragrep.pth_07.ui.elements.AbstractUserInterfaceElement;
 import com.teragrep.zep_01.interpreter.InterpreterException;
+import com.teragrep.zep_01.interpreter.thrift.DataTablesOptions;
+import com.teragrep.zep_01.interpreter.thrift.DataTablesSearch;
 import jakarta.json.*;
 import org.apache.spark.sql.Dataset;
 import org.apache.spark.sql.Row;
@@ -59,6 +59,7 @@ import org.apache.spark.storage.StorageLevel;
 
 import java.io.IOException;
 import java.io.StringReader;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -149,12 +150,8 @@ public final class DTTableDatasetNg extends AbstractUserInterfaceElement {
         return dataset;
     }
     public void writeDataUpdate() throws InterpreterException{
-        Map<String, String> defaultOptions = new HashMap<String, String>();
-        defaultOptions.put("draw",Integer.toString(drawCount));
-        defaultOptions.put("start",Integer.toString(0));
-        defaultOptions.put("length",Integer.toString(currentAJAXLength));
-        defaultOptions.put("search","");
-        writeDataUpdate(new DataTablesFormat(dataset,new DataTablesFormatOptions(defaultOptions)));
+        DataTablesOptions defaultOptions = new DataTablesOptions(drawCount,0,currentAJAXLength,new DataTablesSearch("",false,new ArrayList<>()),new ArrayList<>(),new ArrayList<>());
+        writeDataUpdate(new DataTablesFormat(dataset,defaultOptions));
     }
 
     public void writeDataUpdate(DatasetFormat format) throws InterpreterException{
