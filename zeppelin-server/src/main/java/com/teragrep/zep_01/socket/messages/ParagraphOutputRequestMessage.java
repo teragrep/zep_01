@@ -26,45 +26,65 @@ public class ParagraphOutputRequestMessage implements Jsonable {
     }
 
     public String noteId() throws JsonException {
-        if (!json.containsKey("noteId") || !json.get("noteId").getValueType().equals(JsonValue.ValueType.STRING)) {
-            throw new JsonException("Json does not contain a noteId!");
-        } else {
-            return json.getString("noteId");
+        if(!json.containsKey("data") || !json.get("data").getValueType().equals(JsonValue.ValueType.OBJECT)) {
+            JsonObject data = json.getJsonObject("data");
+            if (!data.containsKey("noteId") || !data.get("noteId").getValueType().equals(JsonValue.ValueType.STRING)) {
+                throw new JsonException("Json does not contain a noteId!");
+            } else {
+                return data.getString("noteId");
+            }
         }
-    }
+        else{
+                throw new JsonException("Json does not contain a data object!");
+            }
+        }
 
     public String paragraphId() throws JsonException {
-        if (!json.containsKey("paragraphId") || !json.get("paragraphId").getValueType().equals(JsonValue.ValueType.STRING)) {
-            throw new JsonException("Json does not contain a paragraphId!");
-        } else {
-            return json.getString("paragraphId");
-        }
+            if(!json.containsKey("data") || !json.get("data").getValueType().equals(JsonValue.ValueType.OBJECT)){
+                JsonObject data = json.getJsonObject("data");
+                if (!data.containsKey("paragraphId") || !data.get("paragraphId").getValueType().equals(JsonValue.ValueType.STRING)) {
+                    throw new JsonException("Json does not contain a paragraphId!");
+                } else {
+                    return data.getString("paragraphId");
+                }
+            }
+            else {
+                throw new JsonException("Json does not contain a data object!");
+            }
+
     }
     public String visualizationLibraryName() throws JsonException {
-        if (!json.containsKey("type") || !json.get("type").getValueType().equals(JsonValue.ValueType.STRING)) {
-            throw new JsonException("Json does not contain a type!");
-        } else {
-            return json.getString("type");
+            if(!json.containsKey("data") || !json.get("data").getValueType().equals(JsonValue.ValueType.OBJECT)){
+                JsonObject data = json.getJsonObject("data");
+                if (!data.containsKey("type") || !data.get("type").getValueType().equals(JsonValue.ValueType.STRING)) {
+                    throw new JsonException("Json does not contain a type!");
+                } else {
+                    return data.getString("type");
+                }
+            }
+            else {
+                throw new JsonException("Json does not contain a data object!");
+            }
         }
-    }
 
     public Options options() throws JsonException{
         String type = visualizationLibraryName();
+        JsonObject data = json.getJsonObject("data");
         Options options;
         if(type.equals(InterpreterResult.Type.DATATABLES.label)){
-            if(!json.containsKey("requestOptions") || !json.get("requestOptions").getValueType().equals(JsonValue.ValueType.OBJECT)){
+            if(!data.containsKey("requestOptions") || !data.get("requestOptions").getValueType().equals(JsonValue.ValueType.OBJECT)){
                 throw new JsonException("Json does not contain requestOptions object!");
             }
-            options = Options.dataTablesOptions(dataTablesOptions(json.getJsonObject("requestOptions")));
+            options = Options.dataTablesOptions(dataTablesOptions(data.getJsonObject("requestOptions")));
         }
         else if(type.equals(InterpreterResult.Type.UPLOT.label)){
-            if(!json.containsKey("requestOptions") || !json.get("requestOptions").getValueType().equals(JsonValue.ValueType.OBJECT)){
+            if(!data.containsKey("requestOptions") || !data.get("requestOptions").getValueType().equals(JsonValue.ValueType.OBJECT)){
                 throw new JsonException("Json does not contain requestOptions object!");
             }
-            options = Options.uPlotOptions(uplotOptions(json.getJsonObject("requestOptions")));
+            options = Options.uPlotOptions(uplotOptions(data.getJsonObject("requestOptions")));
         }
         else {
-            throw new JsonException("RequestOptions is in invalid format for DataTables!");
+            throw new JsonException("Given format type is not a supported visualization library!");
         }
         return options;
     }
