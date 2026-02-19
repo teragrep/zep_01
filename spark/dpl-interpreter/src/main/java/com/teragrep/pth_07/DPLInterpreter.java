@@ -48,7 +48,7 @@ package com.teragrep.pth_07;
 
 import com.teragrep.pth_07.stream.BatchHandler;
 import com.teragrep.pth_07.ui.UserInterfaceManager;
-import com.teragrep.pth_07.ui.elements.table_dynamic.DTTableDatasetNg;
+import com.teragrep.pth_07.ui.elements.table_dynamic.DTTableDataset;
 import com.teragrep.pth_15.DPLExecutor;
 import com.teragrep.pth_15.DPLExecutorFactory;
 import com.teragrep.pth_15.DPLExecutorResult;
@@ -176,7 +176,8 @@ public class DPLInterpreter extends AbstractInterpreter {
         // setup batchHandler
         BatchHandler batchHandler = new BatchHandler(
                 userInterfaceManager,
-                getZeppelinContext()
+                getZeppelinContext(),
+                interpreterContext
         );
 
         final String jobGroup = Utils.buildJobGroupId(interpreterContext);
@@ -308,14 +309,14 @@ public class DPLInterpreter extends AbstractInterpreter {
         if(userInterfaceManager == null){
             throw new InterpreterException("DPLInterpreter does not have a UserInterfaceManager for paragraph id "+paragraphId+" within note id "+noteId);
         }
-        DTTableDatasetNg dtTableDatasetNg = userInterfaceManager.getDtTableDatasetNg();
-        if(dtTableDatasetNg == null){
+        DTTableDataset dtTableDatasetNg = userInterfaceManager.getDtTableDatasetNg();
+        if(dtTableDatasetNg.isStub()){
             throw new InterpreterException("UserInterfaceManager for paragraph id "+paragraphId+" does not have a DTTableDatasetNG object!");
         }
-        if(dtTableDatasetNg.getDatasetAsJSON().isEmpty()){
+        if(dtTableDatasetNg.dataset().isEmpty()){
             throw new InterpreterException("Dataset of paragraph "+paragraphId+" within note "+noteId+" is empty!");
         }
-        JsonObject json = dtTableDatasetNg.SearchAndPaginate(draw,start,length,searchString);
+        JsonObject json = dtTableDatasetNg.datatablesFormat(draw,start,length,searchString);
         String dataset = json.toString();
         return dataset;
     }

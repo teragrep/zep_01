@@ -48,13 +48,15 @@ package com.teragrep.pth_07.ui.elements.table_dynamic;
 import java.util.List;
 import java.util.Objects;
 
-final class DTPagination {
+final class DTPagination implements DTTransformation {
 
-    private final List<String> rowList;
-    public DTPagination(List<String> rowList){
-        this.rowList = rowList;
+    private final int pageStart;
+    private final int pageSize;
+    public DTPagination(final int pageStart, final int pageSize){
+        this.pageStart = pageStart;
+        this.pageSize = pageSize;
     }
-    public List<String> paginate(int pageSize, int pageStart) {
+    public List<String> apply(List<String> rowList) {
         // ranges must be greater than 0
         int fromIndex = Math.max(pageStart, 0);
         int toIndex = Math.max(fromIndex + pageSize, 0);
@@ -77,11 +79,11 @@ final class DTPagination {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         DTPagination that = (DTPagination) o;
-        return Objects.equals(rowList, that.rowList);
+        return pageStart == that.pageStart && pageSize == that.pageSize;
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(rowList);
+        return Objects.hash(pageStart, pageSize);
     }
 }
