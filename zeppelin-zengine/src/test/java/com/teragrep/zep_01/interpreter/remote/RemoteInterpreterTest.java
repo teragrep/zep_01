@@ -38,6 +38,7 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -106,7 +107,7 @@ public class RemoteInterpreterTest extends AbstractInterpreterTest {
     // Call InterpreterGroup.close instead of Interpreter.close, otherwise we will have the
     // RemoteInterpreterProcess leakage.
     remoteInterpreter1.getInterpreterGroup().close(remoteInterpreter1.getSessionId());
-    assertNull(remoteInterpreter1.getInterpreterGroup().getRemoteInterpreterProcess());
+    Assertions.assertEquals(StubRemoteInterpreterProcess.class,remoteInterpreter1.getInterpreterGroup().getRemoteInterpreterProcess().getClass());
 
     InterpreterResult result = remoteInterpreter1.interpret("hello", context1);
     assertEquals(Code.ERROR, result.code());
@@ -153,7 +154,7 @@ public class RemoteInterpreterTest extends AbstractInterpreterTest {
     InterpreterResult result = remoteInterpreter2.interpret("hello", context1);
     assertEquals(Code.ERROR, result.code());
     assertEquals("Interpreter process is not running\n", result.message().get(0).getData());
-    assertNull(remoteInterpreter2.getInterpreterGroup().getRemoteInterpreterProcess());
+    Assertions.assertEquals(StubRemoteInterpreterProcess.class,remoteInterpreter2.getInterpreterGroup().getRemoteInterpreterProcess().getClass());
   }
 
   @Test
@@ -182,7 +183,7 @@ public class RemoteInterpreterTest extends AbstractInterpreterTest {
     // Call InterpreterGroup.close instead of Interpreter.close, otherwise we will have the
     // RemoteInterpreterProcess leakage.
     remoteInterpreter1.getInterpreterGroup().close(remoteInterpreter1.getSessionId());
-    assertNull(remoteInterpreter1.getInterpreterGroup().getRemoteInterpreterProcess());
+    Assertions.assertEquals(StubRemoteInterpreterProcess.class,remoteInterpreter1.getInterpreterGroup().getRemoteInterpreterProcess().getClass());
     assertTrue(remoteInterpreter2.getInterpreterGroup().getRemoteInterpreterProcess().isRunning());
 
     InterpreterResult result = remoteInterpreter1.interpret("hello", context1);
@@ -196,7 +197,7 @@ public class RemoteInterpreterTest extends AbstractInterpreterTest {
     assertEquals(Code.ERROR, result.code());
     assertEquals("Interpreter process is not running\n", result.message().get(0).getData());
 
-    assertNull(remoteInterpreter2.getInterpreterGroup().getRemoteInterpreterProcess());
+    Assertions.assertEquals(StubRemoteInterpreterProcess.class,remoteInterpreter2.getInterpreterGroup().getRemoteInterpreterProcess().getClass());
 
   }
 

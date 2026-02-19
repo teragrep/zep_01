@@ -155,6 +155,11 @@ public class ExecRemoteInterpreterProcess extends RemoteInterpreterManagedProces
         : "";
   }
 
+  @Override
+  public boolean isStub() {
+    return false;
+  }
+
   private class InterpreterProcessLauncher extends ProcessLauncher {
 
     public InterpreterProcessLauncher(CommandLine commandLine, Map<String, String> envs) {
