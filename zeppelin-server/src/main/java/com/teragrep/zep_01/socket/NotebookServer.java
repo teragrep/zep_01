@@ -33,6 +33,7 @@ import javax.inject.Provider;
 import javax.servlet.http.HttpServletRequest;
 
 import com.teragrep.zep_01.common.JsonMessage;
+import com.teragrep.zep_01.common.Jsonable;
 import com.teragrep.zep_01.socket.messages.ParagraphOutputRequestMessage;
 import com.teragrep.zep_01.display.*;
 import com.teragrep.zep_01.interpreter.*;
@@ -1132,13 +1133,15 @@ public class NotebookServer extends WebSocketServlet
 
     try{
       String formattedDataset = managedInterpreterGroup.formatDataset(sessionId, interpreter.getClassName(), noteId, paragraphId, visualizationLibraryName, options);
-      Message msg = new Message(Message.OP.PARAGRAPH_OUTPUT)
-              .withMsgId(msgId)
-              .put("result",formattedDataset)
-              .put("type",visualizationLibraryName)
-              .put("noteId", noteId)
-              .put("paragraphId", paragraphId);
-      conn.send(serializeMessage(msg));
+      JsonObject result = Json.createReader(new StringReader(formattedDataset)).readObject();
+      JsonObject messageJson = Json.createObjectBuilder()
+              .add("result",result)
+              .add("type",visualizationLibraryName)
+              .add("noteId",noteId)
+              .add("paragraphId",paragraphId)
+              .build();
+      JsonMessage msg = new JsonMessage(OP.PARAGRAPH_OUTPUT,result);
+      conn.send(msg.asJson().toString());
     } catch (InterpreterException e){
       LOG.error("Failed to retrieve data from Interpreter process for note: {} paragraph: {} cause: {}",noteId,paragraphId,e.getCause(),e);
       HashMap<String,String> errorResult = new HashMap<>();

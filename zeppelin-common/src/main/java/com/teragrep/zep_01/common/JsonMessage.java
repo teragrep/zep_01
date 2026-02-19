@@ -30,7 +30,7 @@ import java.util.*;
 public class JsonMessage implements Jsonable {
 
   private Message.OP op;
-  private Jsonable data;
+  private JsonObject data;
   private String ticket = "anonymous";
   private String principal = "anonymous";
   private String roles = "";
@@ -42,11 +42,14 @@ public class JsonMessage implements Jsonable {
   public String msgId = MSG_ID_NOT_DEFINED;
   public static String MSG_ID_NOT_DEFINED = null;
 
-  public JsonMessage(Message.OP op, Jsonable data){
+  public JsonMessage(Message.OP op, JsonObject data){
     this(op,data,"anonymous","anonymous","");
   }
+  public JsonMessage(Message.OP op, Jsonable data){
+    this(op,data.asJson(),"anonymous","anonymous","");
+  }
 
-  public JsonMessage(Message.OP op, Jsonable data, String ticket, String principal, String roles) {
+  public JsonMessage(Message.OP op, JsonObject data, String ticket, String principal, String roles) {
     this.op = op;
     this.data = data;
     this.ticket = ticket;
@@ -57,7 +60,7 @@ public class JsonMessage implements Jsonable {
   public JsonObject asJson() {
     JsonObject json = Json.createObjectBuilder()
             .add("op",op.toString())
-            .add("data",data.asJson())
+            .add("data",data)
             .add("ticket",ticket)
             .add("principal",principal)
             .add("roles",roles).build();
