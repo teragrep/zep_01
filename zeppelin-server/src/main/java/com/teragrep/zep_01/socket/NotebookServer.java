@@ -1140,7 +1140,7 @@ public class NotebookServer extends WebSocketServlet
               .add("noteId",noteId)
               .add("paragraphId",paragraphId)
               .build();
-      JsonMessage msg = new JsonMessage(OP.PARAGRAPH_OUTPUT,result);
+      JsonMessage msg = new JsonMessage(OP.PARAGRAPH_OUTPUT,messageJson);
       conn.send(msg.asJson().toString());
     } catch (InterpreterException e){
       LOG.error("Failed to retrieve data from Interpreter process for note: {} paragraph: {} cause: {}",noteId,paragraphId,e.getCause(),e);
