@@ -31,16 +31,9 @@ public class JsonMessage implements Jsonable {
 
   private Message.OP op;
   private JsonObject data;
-  private String ticket = "anonymous";
-  private String principal = "anonymous";
-  private String roles = "";
-
-  // Unique id generated from client side. to identify message.
-  // When message from server is response to the client request
-  // includes the msgId in response message, client can pair request and response message.
-  // When server send message that is not response to the client request, set null;
-  public String msgId = MSG_ID_NOT_DEFINED;
-  public static String MSG_ID_NOT_DEFINED = null;
+  private String ticket;
+  private String principal;
+  private String roles;
 
   public JsonMessage(Message.OP op, JsonObject data){
     this(op,data,"anonymous","anonymous","");
