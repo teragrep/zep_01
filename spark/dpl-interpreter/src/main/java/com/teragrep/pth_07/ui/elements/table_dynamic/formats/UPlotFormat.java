@@ -83,11 +83,23 @@ public class UPlotFormat implements  DatasetFormat{
         }
         // Get a list of column names that were used in aggregation
         final List<String> groupByLabels = new ArrayList<>();
-        final LogicalPlan plan = dataset.queryExecution().logical();
-        final boolean aggsUsed;
-        if (plan instanceof Aggregate) {
-            aggsUsed = true;
-            final Aggregate aggPlan = (Aggregate) plan;
+        final boolean aggsUsed = isAggregated(dataset);
+        if (aggsUsed) {
+            final LogicalPlan plan = dataset.queryExecution().logical();
+            final Aggregate aggPlan;
+            if(plan instanceof Aggregate){
+                aggPlan = (Aggregate) plan;
+            }
+            else {
+                // Aggregated plan might be in a child plan.
+                for (LogicalPlan childPlan : JavaConverters.seqAsJavaList(plan.children())) {
+                    if(childPlan instanceof Aggregate){
+                        aggPlan = (Aggregate) childPlan;
+                        break;
+                    }
+                }
+                throw new InterpreterException("Dataset does not contain an Aggregated LogicalPlan!");
+            }
             final List<Expression> expressions = JavaConverters.seqAsJavaList((aggPlan.groupingExpressions().seq()));
             for (final Expression expression: expressions) {
                 if(expression instanceof AttributeReference){
@@ -95,9 +107,6 @@ public class UPlotFormat implements  DatasetFormat{
                     groupByLabels.add(attributeReference.name());
                 }
             }
-        }
-        else {
-            aggsUsed = false;
         }
 
         // Get references to Column objects for each column used in aggregation
@@ -211,6 +220,24 @@ public class UPlotFormat implements  DatasetFormat{
         final JsonObject json = builder.build();
         return json;
     }
+
+
+    private boolean isAggregated(Dataset<Row> dataset) {
+        final LogicalPlan plan = dataset.queryExecution().logical();
+        if (plan instanceof Aggregate) {
+            return true;
+        }
+        else {
+            // It's possible that aggregations were used in the previous steps of the LogicalPlan. We need to check for Aggregates in them too
+            for (LogicalPlan childPlan : JavaConverters.seqAsJavaList(plan.children())) {
+                if (childPlan instanceof Aggregate) {
+                    return true;
+                }
+            }
+            return false;
+        }
+    }
+
 
     @Override
     public String type(){

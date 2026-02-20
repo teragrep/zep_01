@@ -60,11 +60,12 @@ import org.apache.spark.sql.types.StructField;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import scala.collection.Iterator;
+import scala.collection.JavaConverters;
 
 import java.io.StringReader;
 import java.util.List;
 
-public class DataTablesFormat implements  DatasetFormat{
+public class DataTablesFormat implements DatasetFormat{
 
     private final Dataset<Row> dataset;
     private final DataTablesOptions options;
@@ -114,14 +115,8 @@ public class DataTablesFormat implements  DatasetFormat{
                 }
                 final JsonArray schemaHeadersAsJSON = builder.build();
 
-                final LogicalPlan plan = dataset.queryExecution().logical();
-                final boolean aggsUsed;
-                if (plan instanceof Aggregate) {
-                    aggsUsed = true;
-                }
-                else {
-                    aggsUsed = false;
-                }
+                final boolean aggsUsed = isAggregated(dataset);
+
 
                 final int recordsTotal = datasetAsJson.size();
                 final int recordsFiltered = searchedList.size();
@@ -138,6 +133,21 @@ public class DataTablesFormat implements  DatasetFormat{
                 LOGGER.error(e.toString());
                 throw new InterpreterException("Failed to format dataset into DataTables format");
             }
+    }
+    private boolean isAggregated(Dataset<Row> dataset) {
+        final LogicalPlan plan = dataset.queryExecution().logical();
+        if (plan instanceof Aggregate) {
+            return true;
+        }
+        else {
+            // It's possible that aggregations were used in the previous steps of the LogicalPlan. We need to check for Aggregates in them too
+            for (LogicalPlan childPlan : JavaConverters.seqAsJavaList(plan.children())) {
+                if (childPlan instanceof Aggregate) {
+                    return true;
+                }
+            }
+            return false;
+        }
     }
 
     @Override

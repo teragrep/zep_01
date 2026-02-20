@@ -66,7 +66,6 @@ import java.sql.Timestamp;
 import java.time.Instant;
 import java.util.*;
 
-import static org.junit.jupiter.api.Assertions.*;
 
 class DataTablesFormatTest {
     private final SparkSession sparkSession = SparkSession.builder()
