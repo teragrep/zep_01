@@ -18,10 +18,12 @@
 package com.teragrep.zep_01.notebook;
 
 import com.google.common.annotations.VisibleForTesting;
-import com.google.gson.ExclusionStrategy;
-import com.google.gson.FieldAttributes;
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
+import com.google.gson.*;
+import com.teragrep.zep_01.common.Jsonable;
+import jakarta.json.Json;
+import jakarta.json.JsonArrayBuilder;
+import jakarta.json.JsonObject;
+import jakarta.json.JsonObjectBuilder;
 import org.apache.commons.lang3.StringUtils;
 import com.teragrep.zep_01.common.JsonSerializable;
 import com.teragrep.zep_01.conf.ZeppelinConfiguration;
@@ -70,7 +72,7 @@ import java.util.concurrent.CopyOnWriteArrayList;
  * Represent the note of Zeppelin. All the note and its paragraph operations are done
  * via this class.
  */
-public class Note implements JsonSerializable {
+public class Note implements JsonSerializable, Jsonable {
 
   private static final Logger LOGGER = LoggerFactory.getLogger(Note.class);
 
@@ -1107,6 +1109,46 @@ public class Note implements JsonSerializable {
   @Override
   public String toJson() {
     return GSON.toJson(this);
+  }
+
+  @Override
+  public JsonObject asJson(){
+    JsonObjectBuilder builder = Json.createObjectBuilder();
+    if(id != null){
+      builder.add("id",id);
+    }
+    if(name != null){
+      builder.add("name",name);
+    }
+    if(path != null){
+      builder.add("path",path);
+    }
+    if(config != null){
+      NoteConfig noteConfig = new NoteConfig(config);
+      builder.add("config",noteConfig.asJson());
+    }
+    if(defaultInterpreterGroup != null){
+      builder.add("defaultInterpreterGroup",defaultInterpreterGroup);
+    }
+    if(paragraphs != null){
+      JsonArrayBuilder paragraphArrayBuilder = Json.createArrayBuilder();
+      for (Paragraph paragraph:paragraphs) {
+        paragraphArrayBuilder.add(paragraph.asJson());
+      }
+      builder.add("paragraphs",paragraphArrayBuilder.build());
+    }
+    if(angularObjects != null){
+      JsonObjectBuilder angularObjectsBuilder = Json.createObjectBuilder();
+      for (Map.Entry<String,List<AngularObject>> entry: angularObjects.entrySet()) {
+        JsonArrayBuilder angularObjectArrayBuilder = Json.createArrayBuilder();
+        for (AngularObject object: entry.getValue()) {
+          angularObjectArrayBuilder.add(object.asJson());
+        }
+        angularObjectsBuilder.add(entry.getKey(),angularObjectArrayBuilder.build());
+      }
+      builder.add("dynamicBindings",angularObjectsBuilder.build());
+    }
+    return builder.build();
   }
 
   /**

@@ -159,35 +159,6 @@ public class DTTableDatasetNgTest {
         );
     }
 
-    @Test
-    public void testPagination(){
-        // Boilerplate to create an InterpreterContext
-        TestInterpreterOutputListener listener = new TestInterpreterOutputListener();
-        InterpreterOutput testOutput =  new InterpreterOutput(listener);
-        AngularObjectRegistry testRegistry = new AngularObjectRegistry("test", null);
-        InterpreterContext context = InterpreterContext.builder().setInterpreterOut(testOutput).setAngularObjectRegistry(testRegistry).build();
-
-        DTTableDatasetNg dtTableDatasetNg = new DTTableDatasetNg(context);
-
-        // Simulate DPL receiving new data.
-        Assertions.assertDoesNotThrow(()->{
-            dtTableDatasetNg.setParagraphDataset(testDs);
-        });
-
-        // Get first 5 rows of the dataset, check values of first and last field
-        JsonObject page1 = Assertions.assertDoesNotThrow(()->dtTableDatasetNg.SearchAndPaginate(0,0,5,""));
-        Assertions.assertEquals(5,page1.getJsonArray("data").size());
-        Assertions.assertEquals("1970-01-01T00:00:49.000Z",page1.getJsonArray("data").getJsonObject(0).getString("_time"));
-        Assertions.assertEquals("1970-01-01T00:00:45.000Z",page1.getJsonArray("data").getJsonObject(4).getString("_time"));
-
-
-        // Get rows 6-15 of the dataset, check values of first and last field
-        JsonObject page2 = Assertions.assertDoesNotThrow(()->dtTableDatasetNg.SearchAndPaginate(0,5,10,""));
-        Assertions.assertEquals(10,page2.getJsonArray("data").size());
-        Assertions.assertEquals("1970-01-01T00:00:44.000Z",page2.getJsonArray("data").getJsonObject(0).getString("_time"));
-        Assertions.assertEquals("1970-01-01T00:00:35.000Z",page2.getJsonArray("data").getJsonObject(9).getString("_time"));
-    }
-
     // When new data is received, DTTableDatasetNg should not send an empty update to frontend every time InterpreterOutput.clear() is called.
     // Does not include a concrete implementation of InterpreterOutputListener as it's an anonymous class within RemoteInterpreterServer, and instantiating it would require too many dependencies.
     @Test
@@ -203,6 +174,7 @@ public class DTTableDatasetNgTest {
         // Simulate DPL receiving new data.
         Assertions.assertDoesNotThrow(()->{
             dtTableDatasetNg.setParagraphDataset(testDs);
+            dtTableDatasetNg.writeDataUpdate();
         });
         Assertions.assertEquals(1,listener.numberOfUpdateCalls());
         Assertions.assertEquals(0,listener.numberOfResetCalls());
@@ -210,6 +182,7 @@ public class DTTableDatasetNgTest {
         // Simulate DPL receiving another batch of data.
         Assertions.assertDoesNotThrow(()->{
             dtTableDatasetNg.setParagraphDataset(testDs);
+            dtTableDatasetNg.writeDataUpdate();
         });
         Assertions.assertEquals(2,listener.numberOfUpdateCalls());
         Assertions.assertEquals(0,listener.numberOfResetCalls());
@@ -232,6 +205,7 @@ public class DTTableDatasetNgTest {
         // Simulate DPL receiving new data.
         Assertions.assertDoesNotThrow(()->{
             dtTableDatasetNg.setParagraphDataset(testDs);
+            dtTableDatasetNg.writeDataUpdate();
         });
         List<InterpreterResultMessage> messages = Assertions.assertDoesNotThrow(()->testOutput.toInterpreterResultMessage());
         // First message should have draw value of 1
@@ -240,6 +214,7 @@ public class DTTableDatasetNgTest {
         // Simulate DPL receiving another batch of new data without changing schema.
         Assertions.assertDoesNotThrow(()->{
             dtTableDatasetNg.setParagraphDataset(testDs);
+            dtTableDatasetNg.writeDataUpdate();
         });
         List<InterpreterResultMessage> messages2 = Assertions.assertDoesNotThrow(()->testOutput.toInterpreterResultMessage());
         // Second message should have draw value of 2
@@ -248,6 +223,7 @@ public class DTTableDatasetNgTest {
         // Simulate DPL receiving yet another batch of new data but with a changed schema.
         Assertions.assertDoesNotThrow(()->{
             dtTableDatasetNg.setParagraphDataset(smallTestDs);
+            dtTableDatasetNg.writeDataUpdate();
         });
         List<InterpreterResultMessage> messages3 = Assertions.assertDoesNotThrow(()->testOutput.toInterpreterResultMessage());
         // Third message's draw value should be reset to 1

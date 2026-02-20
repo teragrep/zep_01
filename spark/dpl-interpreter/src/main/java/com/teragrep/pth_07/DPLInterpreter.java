@@ -49,12 +49,15 @@ package com.teragrep.pth_07;
 import com.teragrep.pth_07.stream.BatchHandler;
 import com.teragrep.pth_07.ui.UserInterfaceManager;
 import com.teragrep.pth_07.ui.elements.table_dynamic.DTTableDatasetNg;
+import com.teragrep.pth_07.ui.elements.table_dynamic.formats.DataTablesFormat;
+import com.teragrep.pth_07.ui.elements.table_dynamic.formats.DatasetFormat;
+import com.teragrep.pth_07.ui.elements.table_dynamic.formats.UPlotFormat;
 import com.teragrep.pth_15.DPLExecutor;
 import com.teragrep.pth_15.DPLExecutorFactory;
 import com.teragrep.pth_15.DPLExecutorResult;
+import com.teragrep.zep_01.interpreter.thrift.Options;
 import com.typesafe.config.Config;
 import com.typesafe.config.ConfigFactory;
-import jakarta.json.JsonObject;
 import org.apache.spark.SparkContext;
 import com.teragrep.zep_01.interpreter.*;
 import com.teragrep.zep_01.interpreter.InterpreterResult.Code;
@@ -62,6 +65,8 @@ import com.teragrep.zep_01.interpreter.thrift.InterpreterCompletion;
 import com.teragrep.zep_01.scheduler.Scheduler;
 import com.teragrep.zep_01.scheduler.SchedulerFactory;
 import com.teragrep.zep_01.spark.SparkInterpreter;
+import org.apache.spark.sql.Dataset;
+import org.apache.spark.sql.Row;
 import org.apache.spark.sql.SparkSession;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -95,13 +100,13 @@ public class DPLInterpreter extends AbstractInterpreter {
     private final HashMap<String, HashMap<String, UserInterfaceManager>> notebookParagraphUserInterfaceManager;
 
 
-    public DPLInterpreter(Properties properties) {
+    public DPLInterpreter(final Properties properties) {
         super(properties);
         config = ConfigFactory.parseProperties(properties);
         try {
             dplExecutor = new DPLExecutorFactory("com.teragrep.pth_10.executor.DPLExecutorImpl", config).create();
-        } catch (ClassNotFoundException | NoSuchMethodException | InvocationTargetException | InstantiationException |
-                 IllegalAccessException e) {
+        } catch (final ClassNotFoundException | NoSuchMethodException | InvocationTargetException | InstantiationException |
+                       IllegalAccessException e) {
             throw new RuntimeException("Error initializing DPLExecutor implementation", e);
         }
         dplKryo = new DPLKryo();
@@ -136,7 +141,7 @@ public class DPLInterpreter extends AbstractInterpreter {
             LOGGER.info("Closing dplExecutor");
             try {
                 dplExecutor.stop();
-            } catch (TimeoutException e) {
+            } catch (final TimeoutException e) {
                 throw new RuntimeException(e);
             }
         }
@@ -153,7 +158,7 @@ public class DPLInterpreter extends AbstractInterpreter {
     }
 
     @Override
-    public InterpreterResult internalInterpret(String lines, InterpreterContext interpreterContext)
+    public InterpreterResult internalInterpret(final String lines, final InterpreterContext interpreterContext)
             throws InterpreterException {
 
         // clear old output
@@ -161,12 +166,12 @@ public class DPLInterpreter extends AbstractInterpreter {
         // FIXME clear fron NgDPLRenderer too
 
         // setup UserInterfaceManager
-        UserInterfaceManager userInterfaceManager = new UserInterfaceManager(interpreterContext);
+        final UserInterfaceManager userInterfaceManager = new UserInterfaceManager(interpreterContext);
 
         // store UserInterfaceManager
         if (!notebookParagraphUserInterfaceManager.containsKey(interpreterContext.getNoteId())) {
             // notebookId does not exist
-            HashMap<String, UserInterfaceManager> paragraphUserInterfaceManager = new HashMap<>();
+            final HashMap<String, UserInterfaceManager> paragraphUserInterfaceManager = new HashMap<>();
             notebookParagraphUserInterfaceManager.put(interpreterContext.getNoteId(), paragraphUserInterfaceManager);
         }
 
@@ -174,7 +179,7 @@ public class DPLInterpreter extends AbstractInterpreter {
         notebookParagraphUserInterfaceManager.get(interpreterContext.getNoteId()).put(interpreterContext.getParagraphId(), userInterfaceManager);
 
         // setup batchHandler
-        BatchHandler batchHandler = new BatchHandler(
+        final BatchHandler batchHandler = new BatchHandler(
                 userInterfaceManager,
                 getZeppelinContext()
         );
@@ -197,7 +202,7 @@ public class DPLInterpreter extends AbstractInterpreter {
             return new InterpreterResult(Code.SUCCESS);
         }
 
-        ClassLoader originalClassLoader = Thread.currentThread().getContextClassLoader();
+        final ClassLoader originalClassLoader = Thread.currentThread().getContextClassLoader();
 
         if (!sparkInterpreter.isScala212()) {
             // TODO(zjffdu) scala 2.12 still doesn't work for codegen (ZEPPELIN-4627)
@@ -236,7 +241,7 @@ public class DPLInterpreter extends AbstractInterpreter {
 
             output = new InterpreterResult(code, executorResult.message());
             LOGGER.info("Query done, return code: {}", output.code());
-        } catch (TimeoutException e) {
+        } catch (final TimeoutException e) {
             throw new RuntimeException(e);
         }
 
@@ -253,14 +258,14 @@ public class DPLInterpreter extends AbstractInterpreter {
     }
 
     @Override
-    public void cancel(InterpreterContext context) throws InterpreterException {
+    public void cancel(final InterpreterContext context) throws InterpreterException {
         LOGGER.info("CANCEL job id: {}", Utils.buildJobGroupId(context));
         LOGGER.debug("Current session count before canceling: {}", SESSION_NUM);
         // Stop streaming after current batch
         if (dplExecutor != null) {
             try {
                 dplExecutor.stop();
-            } catch (TimeoutException e) {
+            } catch (final TimeoutException e) {
                 throw new RuntimeException(e);
             }
         }
@@ -276,7 +281,7 @@ public class DPLInterpreter extends AbstractInterpreter {
     }
 
     @Override
-    public int getProgress(InterpreterContext context) throws InterpreterException {
+    public int getProgress(final InterpreterContext context) throws InterpreterException {
         if (sparkInterpreter != null) {
             return sparkInterpreter.getProgress(context);
         } else {
@@ -291,32 +296,40 @@ public class DPLInterpreter extends AbstractInterpreter {
     }
 
     @Override
-    public List<InterpreterCompletion> completion(String buf, int cursor, InterpreterContext interpreterContext) {
+    public List<InterpreterCompletion> completion(final String buf, final int cursor, final InterpreterContext interpreterContext) {
         return null;
     }
 
-    @Override
-    public String getDataset(String noteId, String paragraphId, int start, int length, String searchString, int draw) throws InterpreterException{
+    private UserInterfaceManager findUserInterfacemanger(final String noteId, final String paragraphId) throws InterpreterException{
         if(notebookParagraphUserInterfaceManager == null){
             throw new InterpreterException("DPLInterpreter's notebookParagraphUserInterfaceManager map is not instantiated!");
         }
-        Map<String,UserInterfaceManager> notebookUserInterfaceManagers = notebookParagraphUserInterfaceManager.get(noteId);
+        final Map<String,UserInterfaceManager> notebookUserInterfaceManagers = notebookParagraphUserInterfaceManager.get(noteId);
         if(notebookUserInterfaceManagers == null){
             throw new InterpreterException("DPLInterpreter does not have a UserInterfaceManager for note id "+noteId);
         }
-        UserInterfaceManager userInterfaceManager = notebookUserInterfaceManagers.get(paragraphId);
+        final UserInterfaceManager userInterfaceManager = notebookUserInterfaceManagers.get(paragraphId);
         if(userInterfaceManager == null){
             throw new InterpreterException("DPLInterpreter does not have a UserInterfaceManager for paragraph id "+paragraphId+" within note id "+noteId);
         }
-        DTTableDatasetNg dtTableDatasetNg = userInterfaceManager.getDtTableDatasetNg();
-        if(dtTableDatasetNg == null){
-            throw new InterpreterException("UserInterfaceManager for paragraph id "+paragraphId+" does not have a DTTableDatasetNG object!");
+        return userInterfaceManager;
+    }
+
+    @Override
+    public String formatDataset(final String noteId, final String paragraphId, final String visualizationLibraryName, final Options options) throws InterpreterException{
+        final UserInterfaceManager userInterfaceManager = findUserInterfacemanger(noteId,paragraphId);
+
+        final DatasetFormat format;
+        if(visualizationLibraryName.equals(InterpreterResult.Type.UPLOT.label)){
+            final DTTableDatasetNg dtTableDatasetNg = userInterfaceManager.getDtTableDatasetNg();
+            final Dataset<Row> dataset = dtTableDatasetNg.dataset();
+            format = new UPlotFormat(dataset, options.getUPlotOptions());
         }
-        if(dtTableDatasetNg.getDatasetAsJSON().isEmpty()){
-            throw new InterpreterException("Dataset of paragraph "+paragraphId+" within note "+noteId+" is empty!");
+        else {
+            // Default to DataTables
+            final Dataset<Row> dataset = userInterfaceManager.getDtTableDatasetNg().dataset();
+            format = new DataTablesFormat(dataset, options.getDataTablesOptions());
         }
-        JsonObject json = dtTableDatasetNg.SearchAndPaginate(draw,start,length,searchString);
-        String dataset = json.toString();
-        return dataset;
+        return format.format().toString();
     }
 }

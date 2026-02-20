@@ -135,8 +135,9 @@ public class Message implements JsonSerializable {
     PARAGRAPH_CLEAR_OUTPUT,       // [c-s] clear output of paragraph
     PARAGRAPH_CLEAR_ALL_OUTPUT,   // [c-s] clear output of all paragraphs
     PARAGRAPH_APPEND_OUTPUT,      // [s-c] append output
-    PARAGRAPH_UPDATE_OUTPUT,      // [s-c] update (replace) output
+    PARAGRAPH_OUTPUT,      // [s-c] update (replace) output
     PARAGRAPH_UPDATE_RESULT,      // [c-s] request JSONTABLE data using new pagination and search settings
+    PARAGRAPH_OUTPUT_REQUEST,     // [c-s] request dataset in a given format
     PING,
     PONG,
     AUTH_INFO,

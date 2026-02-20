@@ -20,6 +20,7 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.reflect.TypeToken;
 import java.io.IOException;
+import java.io.StringReader;
 import java.lang.reflect.Type;
 import java.net.URISyntaxException;
 import java.net.UnknownHostException;
@@ -31,22 +32,21 @@ import javax.inject.Inject;
 import javax.inject.Provider;
 import javax.servlet.http.HttpServletRequest;
 
-import com.teragrep.zep_01.common.ValidatedMessage;
+import com.teragrep.zep_01.common.JsonMessage;
+import com.teragrep.zep_01.common.Jsonable;
+import com.teragrep.zep_01.socket.messages.ParagraphOutputRequestMessage;
 import com.teragrep.zep_01.display.*;
 import com.teragrep.zep_01.interpreter.*;
 import com.teragrep.zep_01.interpreter.remote.RemoteInterpreter;
+import com.teragrep.zep_01.interpreter.thrift.*;
 import com.teragrep.zep_01.rest.exception.BadRequestException;
-import jakarta.json.Json;
-import jakarta.json.JsonObject;
+import jakarta.json.*;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.apache.thrift.TException;
 import com.teragrep.zep_01.conf.ZeppelinConfiguration;
 import com.teragrep.zep_01.interpreter.remote.RemoteAngularObjectRegistry;
 import com.teragrep.zep_01.interpreter.remote.RemoteInterpreterProcessListener;
-import com.teragrep.zep_01.interpreter.thrift.InterpreterCompletion;
-import com.teragrep.zep_01.interpreter.thrift.ParagraphInfo;
-import com.teragrep.zep_01.interpreter.thrift.ServiceException;
 import com.teragrep.zep_01.notebook.Note;
 import com.teragrep.zep_01.notebook.NoteEventListener;
 import com.teragrep.zep_01.notebook.NoteInfo;
@@ -368,8 +368,11 @@ public class NotebookServer extends WebSocketServlet
         case PARAGRAPH_CLEAR_ALL_OUTPUT:
           clearAllParagraphOutput(conn, context, receivedMessage);
           break;
-        case PARAGRAPH_UPDATE_RESULT:
-          updateParagraphResult(conn, context, receivedMessage);
+        case PARAGRAPH_OUTPUT_REQUEST:
+          // Reading of "msg" should be done at the very top of onMessage, but refactoring every message to use their own object type is out of scope for now
+          JsonObject json = Json.createReader(new StringReader(msg)).readObject();
+          ParagraphOutputRequestMessage message = new ParagraphOutputRequestMessage(json);
+          paragraphOutput(conn, message);
           break;
         case NOTE_UPDATE:
           updateNote(conn, context, receivedMessage);
@@ -586,8 +589,8 @@ public class NotebookServer extends WebSocketServlet
     if (note.isPersonalizedMode()) {
       broadcastParagraphs(p.getUserParagraphMap(), p, msgId);
     } else {
-      Message message = new Message(OP.PARAGRAPH).withMsgId(msgId).put("paragraph", p);
-      getConnectionManager().broadcast(note.getId(), message);
+      JsonObject message = new JsonMessage(OP.PARAGRAPH,p).asJson();
+      getConnectionManager().broadcast(note.getId(),message.toString());
     }
   }
 
@@ -700,7 +703,8 @@ public class NotebookServer extends WebSocketServlet
           @Override
           public void onSuccess(Note note, ServiceContext context) throws IOException {
             getConnectionManager().addNoteConnection(note.getId(), conn);
-            conn.send(serializeMessage(new Message(OP.NOTE).put("note", note)));
+            JsonObject message = new JsonMessage(OP.NOTE,note).asJson();
+            conn.send(message.toString());
             updateAngularObjectRegistry(conn, note);
             sendAllAngularObjects(note, context.getAutheInfo().getUser(), conn);
           }
@@ -873,7 +877,8 @@ public class NotebookServer extends WebSocketServlet
           public void onSuccess(Note note, ServiceContext context) throws IOException {
             super.onSuccess(note, context);
             getConnectionManager().addNoteConnection(note.getId(), conn);
-            conn.send(serializeMessage(new Message(OP.NEW_NOTE).put("note", note)));
+            JsonObject message = new JsonMessage(OP.NEW_NOTE,note).asJson();
+            conn.send(message.toString());
             broadcastNoteList(context.getAutheInfo(), context.getUserAndRoles());
           }
 
@@ -1090,24 +1095,14 @@ public class NotebookServer extends WebSocketServlet
           }
         });
   }
-
-  // Handles a request for paginated or filtered DPL table data.
-
-  private void updateParagraphResult(NotebookSocket conn,
-                                     ServiceContext context,
-                                     Message fromMessage) throws IOException, InterpreterException {
-    ValidatedMessage validatedMessage = new ValidatedMessage(fromMessage);
-    if(!validatedMessage.isValid()) {
-      throw new BadRequestException("Request must contain \"noteId\", \"paragraphId\", \"start\", \"length\", \"draw\" and \"search.value\" parameters!");
-    }
+  private void paragraphOutput(NotebookSocket conn,
+                               ParagraphOutputRequestMessage fromMessage) throws IOException, InterpreterException {
     // Casting is required to get Message parameters in correct format, as GSON parses all numbers as Doubles, and Message.get() returns a generic Object.
-    final String msgId = fromMessage.msgId;
-    final String noteId = (String) fromMessage.get("noteId");
-    final String paragraphId = (String) fromMessage.get("paragraphId");
-    final int start = (int) Double.parseDouble(fromMessage.get("start").toString());
-    final int length = (int) Double.parseDouble(fromMessage.get("length").toString());
-    final String search = (String) ((Map) fromMessage.get("search")).get("value");
-    final int draw = (int) Double.parseDouble(fromMessage.get("draw").toString());
+    final String msgId = fromMessage.messageId();
+    final String noteId = fromMessage.noteId();
+    final String paragraphId = fromMessage.paragraphId();
+    final String visualizationLibraryName = fromMessage.visualizationLibraryName();
+    final Options options = fromMessage.options();
 
     Note note = getNotebook().getNote(noteId);
     if(note == null){
@@ -1126,39 +1121,36 @@ public class NotebookServer extends WebSocketServlet
       throw new BadRequestException("Paragraph "+paragraphId+"'s interpreter has no InterpreterGroup assigned!");
     }
 
+    if(!interpreterGroup.getClass().equals(ManagedInterpreterGroup.class)){
+      throw new BadRequestException("InterpreterGroup is a "+interpreterGroup.getClass()+", and not a ManagedInterpreterGroup!");
+    }
+    ManagedInterpreterGroup managedInterpreterGroup = (ManagedInterpreterGroup) interpreterGroup;
+
     String sessionId = "";
     if (interpreter instanceof RemoteInterpreter){
       sessionId = ((RemoteInterpreter) interpreter).getSessionId();
     }
 
-    // getDataset() Throws an InterpreterException if there is a problem with getting or paginating data. In that case, we send a PARAGRAPH_UPDATE_OUTPUT message as expected by UI.
-    // If any other type of Exception is thrown (indicating some other problem), it will be caught by NotebookServer.onMessage() and result in an ERROR_INFO message.
     try{
-      String dataset = ((ManagedInterpreterGroup)interpreterGroup).getDataset(sessionId,interpreter.getClassName(),noteId,paragraphId,start,length,search,draw);
-      Message msg = new Message(Message.OP.PARAGRAPH_UPDATE_OUTPUT)
+      String formattedDataset = managedInterpreterGroup.formatDataset(sessionId, interpreter.getClassName(), noteId, paragraphId, visualizationLibraryName, options);
+      JsonObject result = Json.createReader(new StringReader(formattedDataset)).readObject();
+      JsonObject messageJson = Json.createObjectBuilder()
+              .add("result",result)
+              .add("type",visualizationLibraryName)
+              .add("noteId",noteId)
+              .add("paragraphId",paragraphId)
+              .build();
+      JsonMessage msg = new JsonMessage(OP.PARAGRAPH_OUTPUT,messageJson);
+      conn.send(msg.asJson().toString());
+    } catch (InterpreterException e){
+      LOG.error("Failed to retrieve data from Interpreter process for note: {} paragraph: {} cause: {}",noteId,paragraphId,e.getCause(),e);
+      HashMap<String,String> errorResult = new HashMap<>();
+      errorResult.put("error","true");
+      errorResult.put("message", "Failed to retrieve data. Please rerun the paragraph and try again or see technical log for details!");
+      Message msg = new Message(OP.PARAGRAPH_OUTPUT) //TODO: change this to ERROR_INFO once UI has a refactored error handling protocol
               .withMsgId(msgId)
-              .put("data",dataset)
-              .put("index",0)
-              .put("noteid",noteId)
-              .put("paragraphId",paragraphId)
-              .put("type",InterpreterResult.Type.JSONTABLE);
-      conn.send(serializeMessage(msg));
-    }
-    catch (InterpreterException exception){
-      // Log the Exception to technical logs, only send a generic error message to UI.
-      LOG.error("Failed to access data from Interpreter process for note: {} paragraph: {} cause: {}",noteId,paragraphId,exception);
-      LinkedHashMap data = new LinkedHashMap();
-      data.put("error",true);
-      data.put("message","Failed to access data from Interpreter process. Please rerun the paragraph or see technical log for details!");
-      data.put("draw",draw);
-      data.put("recordsTotal",0);
-      data.put("recordsFiltered",0);
-      Message msg = new Message(Message.OP.PARAGRAPH_UPDATE_OUTPUT)
-              .withMsgId(msgId)
-              .put("data",data)
-              .put("draw",0)
-              .put("type",InterpreterResult.Type.JSONTABLE.toString())
-              .put("index",0)
+              .put("type",visualizationLibraryName)
+              .put("result",errorResult)
               .put("noteId", noteId)
               .put("paragraphId", paragraphId);
       conn.send(serializeMessage(msg));
@@ -1682,8 +1674,16 @@ public class NotebookServer extends WebSocketServlet
     if (!sendParagraphStatusToFrontend) {
       return;
     }
-    Message msg = new Message(OP.PARAGRAPH_UPDATE_OUTPUT).put("noteId", noteId)
-        .put("paragraphId", paragraphId).put("index", index).put("type", type).put("data", output);
+    // As formatted data is passed as a String via Thrift, we have to parse it into JSON in order to turn it into format expected by UI.
+
+    JsonObject outputJson = Json.createReader(new StringReader(output)).readObject();
+    JsonObject messageData = Json.createObjectBuilder()
+            .add("noteId",noteId)
+            .add("paragraphId",paragraphId)
+            .add("result",outputJson)
+            .add("type",type.label)
+            .build();
+    JsonMessage msg = new JsonMessage(OP.PARAGRAPH_OUTPUT,messageData);
     try {
       Note note = getNotebook().getNote(noteId);
       if (note == null) {
@@ -1695,10 +1695,10 @@ public class NotebookServer extends WebSocketServlet
       if (note.isPersonalizedMode()) {
         String user = note.getParagraph(paragraphId).getUser();
         if (null != user) {
-          getConnectionManager().multicastToUser(user, msg);
+          getConnectionManager().multicastToUser(user, msg.asJson().toString());
         }
       } else {
-        getConnectionManager().broadcast(noteId, msg);
+        getConnectionManager().broadcast(noteId, msg.asJson().toString());
       }
     } catch (IOException e) {
       LOG.warn("Fail to call onOutputUpdated", e);

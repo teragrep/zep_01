@@ -46,6 +46,7 @@
 package com.teragrep.pth_07.stream;
 
 import com.teragrep.pth_07.ui.UserInterfaceManager;
+import com.teragrep.zep_01.interpreter.InterpreterException;
 import org.apache.spark.sql.Dataset;
 import org.apache.spark.sql.Row;
 import com.teragrep.zep_01.interpreter.ZeppelinContext;
@@ -68,16 +69,11 @@ public class BatchHandler implements BiConsumer<Dataset<Row>, Boolean> {
     @Override
     public void accept(final Dataset<Row> rowDataset, final Boolean aggsUsed) {
         LOGGER.error("BatchHandler accept called LOGGER");
-        if (aggsUsed) {
-            // need to check aggregatesUsed from visitor at this point, since it can be updated in sequential mode
-            // after the parallel operations are performed
-
-            // use legacy table
-            userInterfaceManager.getOutputContent().setOutputContent(zeppelinContext.showData(rowDataset));
-        }
-        else {
-            // use DTTableNg
+        try{
             userInterfaceManager.getDtTableDatasetNg().setParagraphDataset(rowDataset);
+            userInterfaceManager.getDtTableDatasetNg().writeDataUpdate();
+        } catch (InterpreterException e){
+            LOGGER.error("BatchHandler failed to write dataset!",e);
         }
     }
 }

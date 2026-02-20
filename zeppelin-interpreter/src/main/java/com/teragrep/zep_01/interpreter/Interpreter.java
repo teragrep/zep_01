@@ -18,6 +18,7 @@
 package com.teragrep.zep_01.interpreter;
 
 
+import com.teragrep.zep_01.interpreter.thrift.Options;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.reflect.FieldUtils;
 import com.teragrep.zep_01.annotation.Experimental;
@@ -467,9 +468,7 @@ public abstract class Interpreter {
     FIFO, PARALLEL
   }
 
-  // Default Interpreter does not have a Dataset available. Support is added by overriding this method.
-  // This would be nicer as an interface, but we've left this as an abstract class so that we don't have to implement this in 30+ inheritors
-  public String getDataset(String noteId, String paragraphId, int start, int length, String searchString, int draw) throws InterpreterException{
+  public String formatDataset(String noteId, String paragraphId, String visualizationLibraryName, Options options) throws InterpreterException{
     throw new InterpreterException("Interpreter "+ getClassName() +" has no dataset!");
   }
 }

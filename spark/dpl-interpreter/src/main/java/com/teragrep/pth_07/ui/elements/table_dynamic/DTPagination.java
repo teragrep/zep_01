@@ -48,9 +48,9 @@ package com.teragrep.pth_07.ui.elements.table_dynamic;
 import java.util.List;
 import java.util.Objects;
 
-final class DTPagination {
+public final class DTPagination {
 
-    private final List<String> rowList;
+    final private List<String> rowList;
     public DTPagination(List<String> rowList){
         this.rowList = rowList;
     }

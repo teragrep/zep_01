@@ -20,6 +20,7 @@ package com.teragrep.zep_01.interpreter;
 
 import com.teragrep.zep_01.conf.ZeppelinConfiguration;
 import com.teragrep.zep_01.interpreter.remote.RemoteInterpreterProcess;
+import com.teragrep.zep_01.interpreter.thrift.Options;
 import com.teragrep.zep_01.scheduler.Job;
 import com.teragrep.zep_01.scheduler.Scheduler;
 import com.teragrep.zep_01.scheduler.SchedulerFactory;
@@ -29,6 +30,7 @@ import org.slf4j.LoggerFactory;
 import java.io.IOException;
 import java.util.Collection;
 import java.util.List;
+import java.util.Map;
 import java.util.Properties;
 import java.util.stream.Collectors;
 
@@ -182,11 +184,11 @@ public class ManagedInterpreterGroup extends InterpreterGroup {
     }
   }
 
-  public String getDataset(String sessionId, String className, String noteId, String paragraphId, int start, int length, String searchString, int draw) throws InterpreterException {
+  public String formatDataset(String sessionId, String classname, String noteId, String paragraphId, String visualizationLibraryName, Options options) throws InterpreterException{
     if(remoteInterpreterProcess == null){
       throw new InterpreterException("InterpreterGroup "+id+" does not have a running Interpreter process!");
     }
-    return remoteInterpreterProcess.getDataset(sessionId,className,noteId,paragraphId,start,length,searchString,draw);
+    return remoteInterpreterProcess.formatDataset(sessionId, classname, noteId, paragraphId, visualizationLibraryName, options);
   }
   public boolean isEmpty() {
     return this.sessions.isEmpty();

@@ -110,6 +110,24 @@ public class InterpreterOutputTest implements InterpreterOutputListener {
     assertEquals(2, numAppendEvent);
     assertEquals(4, numUpdateEvent);
     assertEquals("hello\n", new String(out.getOutputAt(2).toByteArray()));
+
+    // InterpreterOutput type detection is case-sensitive and expects to receive the type name in lowercase.
+    out.write("%"+InterpreterResult.Type.DATATABLES.label.toLowerCase()+" yes hello\n");
+    assertEquals(InterpreterResult.Type.DATATABLES, out.getOutputAt(3).getType());
+    assertEquals(2, numAppendEvent);
+    assertEquals(5, numUpdateEvent);
+    out.flush();
+    assertEquals(6, numUpdateEvent);
+    assertEquals("yes hello\n", new String(out.getOutputAt(3).toByteArray()));
+
+    out.write("%"+InterpreterResult.Type.UPLOT.label.toLowerCase()+" uPlot calling\n");
+    assertEquals(InterpreterResult.Type.UPLOT, out.getOutputAt(4).getType());
+    assertEquals(2, numAppendEvent);
+    assertEquals(7, numUpdateEvent);
+    out.flush();
+    assertEquals(8, numUpdateEvent);
+    assertEquals("uPlot calling\n", new String(out.getOutputAt(4).toByteArray()));
+
   }
 
   @Test

@@ -44,7 +44,7 @@ public abstract class AbstractMessageHandler implements MessageHandler {
       }
 
       switch (messageReceived.op) {
-        case PARAGRAPH_UPDATE_OUTPUT:
+        case PARAGRAPH_OUTPUT:
           String noteId = (String) messageReceived.data.get("noteId");
           String paragraphId = (String) messageReceived.data.get("paragraphId");
           int index = (int) Double.parseDouble(messageReceived.data.get("index").toString());

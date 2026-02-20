@@ -19,18 +19,24 @@ package com.teragrep.zep_01.interpreter;
 
 import com.google.gson.Gson;
 import com.teragrep.zep_01.common.JsonSerializable;
+import com.teragrep.zep_01.common.Jsonable;
+import jakarta.json.Json;
+import jakarta.json.JsonObject;
+import jakarta.json.JsonObjectBuilder;
+import jakarta.json.JsonValue;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.io.Serializable;
+import java.io.StringReader;
 import java.util.LinkedList;
 import java.util.List;
 
 /**
  * Interpreter result template.
  */
-public class InterpreterResult implements Serializable, JsonSerializable {
+public class InterpreterResult implements Serializable, JsonSerializable, Jsonable {
   transient Logger logger = LoggerFactory.getLogger(InterpreterResult.class);
   private static final Gson gson = new Gson();
 
@@ -48,15 +54,22 @@ public class InterpreterResult implements Serializable, JsonSerializable {
    * Type of Data.
    */
   public enum Type {
-    TEXT,
-    HTML,
-    ANGULAR,
-    TABLE,
-    IMG,
-    SVG,
-    NULL,
-    NETWORK,
-    JSONTABLE
+    TEXT("text"),
+    HTML("html"),
+    ANGULAR("angular"),
+    TABLE("table"),
+    IMG("img"),
+    SVG("svg"),
+    NULL("null"),
+    NETWORK("network"),
+    DATATABLES("dataTables"),
+    UPLOT("uPlot");
+
+    public final String label;
+
+    Type(String label) {
+      this.label = label;
+    }
   }
 
   Code code;
@@ -137,5 +150,15 @@ public class InterpreterResult implements Serializable, JsonSerializable {
     }
 
     return sb.toString();
+  }
+  @Override
+  public JsonObject asJson() {
+    if(msg.size() > 0){
+      InterpreterResultMessage resultMessage = msg.get(0); // Result format does not support multiple ResultMessages, so we take the first one.
+      return resultMessage.asJson();
+    }
+    else{
+      return Json.createObjectBuilder().build();
+    }
   }
 }

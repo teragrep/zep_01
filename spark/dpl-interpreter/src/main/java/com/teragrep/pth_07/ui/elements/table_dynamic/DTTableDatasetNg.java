@@ -45,17 +45,24 @@
  */
 package com.teragrep.pth_07.ui.elements.table_dynamic;
 
-import com.teragrep.pth_07.ui.elements.table_dynamic.pojo.Order;
+import com.teragrep.pth_07.ui.elements.table_dynamic.formats.DataTablesFormat;
+import com.teragrep.pth_07.ui.elements.table_dynamic.formats.DatasetFormat;
 import com.teragrep.pth_07.ui.elements.AbstractUserInterfaceElement;
 import com.teragrep.zep_01.interpreter.InterpreterException;
+import com.teragrep.zep_01.interpreter.thrift.DataTablesOptions;
+import com.teragrep.zep_01.interpreter.thrift.DataTablesSearch;
 import jakarta.json.*;
 import org.apache.spark.sql.Dataset;
 import org.apache.spark.sql.Row;
 import com.teragrep.zep_01.interpreter.InterpreterContext;
+import org.apache.spark.storage.StorageLevel;
 
+import java.io.IOException;
 import java.io.StringReader;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
@@ -63,8 +70,8 @@ public final class DTTableDatasetNg extends AbstractUserInterfaceElement {
     // FIXME Exceptions should cause interpreter to stop
 
     private final Lock lock = new ReentrantLock();
-
-    private List<String> datasetAsJSON = null;
+    private Dataset<Row> dataset = null;
+    private Dataset<String> datasetAsJson = null;
     private DTHeader schemaHeaders;
     private int drawCount;
 
@@ -93,7 +100,7 @@ public final class DTTableDatasetNg extends AbstractUserInterfaceElement {
     public void emit() {
     }
 
-    public void setParagraphDataset(Dataset<Row> rowDataset) {
+    public void setParagraphDataset(final Dataset<Row> rowDataset) {
         /*
          TODO check if other presentation can be used than string, for order
          i.e. rowDataset.collectAsList()
@@ -109,102 +116,87 @@ public final class DTTableDatasetNg extends AbstractUserInterfaceElement {
             else {
                 drawCount++;
             }
+
+            // unpersist dataset upon receiving new data
+            if(datasetAsJson != null){
+                datasetAsJson.unpersist();
+            }
+            if(dataset != null){
+                dataset.unpersist();
+            }
             if (rowDataset.schema().nonEmpty()) {
                 // needs to be here as sparkContext might disappear later
+                dataset = rowDataset.persist(StorageLevel.MEMORY_AND_DISK());
+                datasetAsJson = rowDataset.toJSON().persist(StorageLevel.MEMORY_AND_DISK());
                 schemaHeaders = new DTHeader(rowDataset.schema());
-                datasetAsJSON = rowDataset.toJSON().collectAsList();
-                updatePage(0,currentAJAXLength,"", drawCount);
             }
         } finally {
             lock.unlock();
         }
     }
 
-    // Sends a PARAGRAPH_UPDATE_OUTPUT message to UI containing the formatted data received from BatchHandler.
-    private void updatePage(int start, int length, String searchString, int draw){
+    private void write(final String outputContent){
         try {
-            JsonObject response = SearchAndPaginate(draw, start,length,searchString);
-            String outputContent = "%jsontable\n" +
-                    response.toString();
             getInterpreterContext().out().clear(false);
             getInterpreterContext().out().write(outputContent);
             getInterpreterContext().out().flush();
-        }
-        // We catch and log Exceptions here instead of rethrowing because calls to this method come from DPLInterpreter's BatchHandler, which doesn't seem to have easy ways to propagate Exceptions.
-        catch (InterpreterException ie){
-            LOGGER.error("Failed to format dataset to proper datatable format!",ie);
-        }
-        catch (java.io.IOException e) {
+        } catch (final IOException e) {
             LOGGER.error(e.toString());
+            e.printStackTrace();
         }
     }
 
-    public JsonObject SearchAndPaginate(int draw, int start, int length, String searchString) throws InterpreterException {
-        if(datasetAsJSON == null){
-            throw new InterpreterException("Attempting to draw an empty dataset!");
-        }
-        DTSearch dtSearch = new DTSearch(datasetAsJSON);
-        List<Order> currentOrder = null;
-
-        // TODO these all decode the JSON, it refactor therefore to decode only once
-        // searching
-        List<String> searchedList = dtSearch.search(searchString);
-
-        // TODO ordering
-        //DTOrder dtOrder = new DTOrder(searchedList);
-        //List<String> orderedlist = dtOrder.order(searchedList, currentOrder);
-        List<String> orderedlist = searchedList;
-
-        // pagination
-        DTPagination dtPagination = new DTPagination(orderedlist);
-        List<String> paginatedList = dtPagination.paginate(length, start);
-
-        // ui formatting
-        JsonArray formated = dataStreamParser(paginatedList);
-        final JsonArray schemaHeadersAsJSON = schemaHeaders.json();
-        int recordsTotal = datasetAsJSON.size();
-        int recordsFiltered = searchedList.size();
-
-        return DTNetResponse(formated, schemaHeadersAsJSON, draw, recordsTotal,recordsFiltered);
+    public Dataset<Row> dataset(){
+        return dataset;
+    }
+    public void writeDataUpdate() throws InterpreterException{
+        final DataTablesOptions defaultOptions = new DataTablesOptions(drawCount,0,currentAJAXLength,new DataTablesSearch("",false,new ArrayList<>()),new ArrayList<>(),new ArrayList<>());
+        writeDataUpdate(new DataTablesFormat(dataset,defaultOptions));
     }
 
-    static JsonArray dataStreamParser(List<String> data){
+    public void writeDataUpdate(final DatasetFormat format) throws InterpreterException{
+            final JsonObject formatted = format.format();
+            final String outputContent = "%"+format.type().toLowerCase()+"\n" +
+                    formatted.toString();
+            write(outputContent);
+
+    }
+
+    static JsonArray dataStreamParser(final List<String> data){
 
         try{
-            JsonArrayBuilder builder = Json.createArrayBuilder();
+            final JsonArrayBuilder builder = Json.createArrayBuilder();
 
 
-            for (String S : data) {
-                JsonReader reader = Json.createReader(new StringReader(S));
-                JsonObject line = reader.readObject();
+            for (final String S : data) {
+                final JsonReader reader = Json.createReader(new StringReader(S));
+                final JsonObject line = reader.readObject();
                 builder.add(line);
                 reader.close();
             }
             return builder.build();
-        }catch(JsonException|IllegalStateException e){
+        }catch(final JsonException | IllegalStateException e){
             LOGGER.error(e.toString());
             return(Json.createArrayBuilder().build());
         }
     }
 
-    static JsonObject DTNetResponse(JsonArray data, JsonArray schemaHeadersJson, int draw, int recordsTotal, int recordsFiltered){
+    static JsonObject DTNetResponse(final JsonArray data, final JsonArray schemaHeadersJson, final int draw, final int recordsTotal, final int recordsFiltered){
         try{
-            JsonObjectBuilder builder = Json.createObjectBuilder();
+            final JsonObjectBuilder builder = Json.createObjectBuilder();
             builder.add("headers",schemaHeadersJson);
             builder.add("data", data);
             builder.add("draw", draw);
             builder.add("recordsTotal", recordsTotal);
             builder.add("recordsFiltered", recordsFiltered);
             return builder.build();
-        }catch(JsonException|IllegalStateException e){
+        }catch(final JsonException | IllegalStateException e){
             LOGGER.error(e.toString());
             return(Json.createObjectBuilder().build());
         }
     }
+
     public List<String> getDatasetAsJSON(){
-        if(datasetAsJSON == null){
-            return new ArrayList<>();
-        }
-        return datasetAsJSON;
+        return datasetAsJson.collectAsList();
     }
 }
