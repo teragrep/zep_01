@@ -64,7 +64,6 @@ import scala.collection.JavaConverters;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.stream.Collectors;
 
 public class UPlotFormat implements  DatasetFormat{
 
@@ -82,32 +81,9 @@ public class UPlotFormat implements  DatasetFormat{
             throw new InterpreterException("Cannot format an empty Dataset!");
         }
         // Get a list of column names that were used in aggregation
-        final List<String> groupByLabels = new ArrayList<>();
-        final boolean aggsUsed = isAggregated(dataset);
-        if (aggsUsed) {
-            final LogicalPlan plan = dataset.queryExecution().logical();
-            final Aggregate aggPlan;
-            if(plan instanceof Aggregate){
-                aggPlan = (Aggregate) plan;
-            }
-            else {
-                // Aggregated plan might be in a child plan.
-                for (LogicalPlan childPlan : JavaConverters.seqAsJavaList(plan.children())) {
-                    if(childPlan instanceof Aggregate){
-                        aggPlan = (Aggregate) childPlan;
-                        break;
-                    }
-                }
-                throw new InterpreterException("Dataset does not contain an Aggregated LogicalPlan!");
-            }
-            final List<Expression> expressions = JavaConverters.seqAsJavaList((aggPlan.groupingExpressions().seq()));
-            for (final Expression expression: expressions) {
-                if(expression instanceof AttributeReference){
-                    final AttributeReference attributeReference = (AttributeReference)expression;
-                    groupByLabels.add(attributeReference.name());
-                }
-            }
-        }
+        final List<String> groupByLabels = groupByLabels(dataset);
+        // Infer whether aggregates were used by checking if groupByLabels is empty.
+        final boolean aggsUsed = !groupByLabels.isEmpty();
 
         // Get references to Column objects for each column used in aggregation
         final List<Column> groupByColumns = new ArrayList<>();
@@ -222,20 +198,31 @@ public class UPlotFormat implements  DatasetFormat{
     }
 
 
-    private boolean isAggregated(Dataset<Row> dataset) {
+    private List<String> groupByLabels(Dataset<Row> dataset) {
+        List<String> groupByLabels = new ArrayList<>();
         final LogicalPlan plan = dataset.queryExecution().logical();
+        final Aggregate aggPlan;
         if (plan instanceof Aggregate) {
-            return true;
-        }
-        else {
-            // It's possible that aggregations were used in the previous steps of the LogicalPlan. We need to check for Aggregates in them too
+            aggPlan = (Aggregate) plan;
+        } else {
+            // Aggregated plan might be in a child plan.
             for (LogicalPlan childPlan : JavaConverters.seqAsJavaList(plan.children())) {
                 if (childPlan instanceof Aggregate) {
-                    return true;
+                    aggPlan = (Aggregate) childPlan;
+                    break;
                 }
             }
-            return false;
+            // If no aggregated plan can be found, the dataset is not aggregated, and we should return an empty list of labels.
+            return groupByLabels;
         }
+        final List<Expression> expressions = JavaConverters.seqAsJavaList((aggPlan.groupingExpressions().seq()));
+        for (final Expression expression : expressions) {
+            if (expression instanceof AttributeReference) {
+                final AttributeReference attributeReference = (AttributeReference) expression;
+                groupByLabels.add(attributeReference.name());
+            }
+        }
+        return groupByLabels;
     }
 
 

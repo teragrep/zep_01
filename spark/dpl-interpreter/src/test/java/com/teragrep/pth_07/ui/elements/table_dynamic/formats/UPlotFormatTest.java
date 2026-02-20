@@ -216,8 +216,8 @@ class UPlotFormatTest {
         Assertions.assertEquals(formatted.getJsonArray("data").getJsonArray(1).size(), formatted.getJsonObject("options").getJsonArray("series").size());
         Assertions.assertEquals(resultDataset.schema().size()-groupByCount, formatted.getJsonObject("options").getJsonArray("series").size());
 
-        // This dataset is aggregated, so isAggregated should be true
-        Assertions.assertEquals(true,formatted.getBoolean("isAggregated"));
+        // This dataset is aggregated but there are no groups uPlot can plot into a graph, so isAggregated should be false
+        Assertions.assertEquals(false,formatted.getBoolean("isAggregated"));
 
         Assertions.assertEquals(InterpreterResult.Type.UPLOT.label,formatted.getString("type"));
     }
