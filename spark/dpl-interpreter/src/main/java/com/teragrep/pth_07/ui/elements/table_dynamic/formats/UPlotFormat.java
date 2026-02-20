@@ -202,29 +202,35 @@ public class UPlotFormat implements  DatasetFormat{
         List<String> groupByLabels = new ArrayList<>();
         final LogicalPlan plan = dataset.queryExecution().logical();
         final Aggregate aggPlan;
+        try{
+            aggPlan = aggregatePlan(plan);
+            final List<Expression> expressions = JavaConverters.seqAsJavaList((aggPlan.groupingExpressions().seq()));
+            for (final Expression expression : expressions) {
+                if (expression instanceof AttributeReference) {
+                    final AttributeReference attributeReference = (AttributeReference) expression;
+                    groupByLabels.add(attributeReference.name());
+                }
+            }
+            return groupByLabels;
+        }
+        catch (InterpreterException e){
+            return groupByLabels;
+        }
+    }
+
+    private Aggregate aggregatePlan(LogicalPlan plan) throws InterpreterException {
         if (plan instanceof Aggregate) {
-            aggPlan = (Aggregate) plan;
+            return (Aggregate) plan;
         } else {
             // Aggregated plan might be in a child plan.
             for (LogicalPlan childPlan : JavaConverters.seqAsJavaList(plan.children())) {
                 if (childPlan instanceof Aggregate) {
-                    aggPlan = (Aggregate) childPlan;
-                    break;
+                    return (Aggregate) childPlan;
                 }
             }
-            // If no aggregated plan can be found, the dataset is not aggregated, and we should return an empty list of labels.
-            return groupByLabels;
+            throw new InterpreterException("Plan does not contain aggregations!");
         }
-        final List<Expression> expressions = JavaConverters.seqAsJavaList((aggPlan.groupingExpressions().seq()));
-        for (final Expression expression : expressions) {
-            if (expression instanceof AttributeReference) {
-                final AttributeReference attributeReference = (AttributeReference) expression;
-                groupByLabels.add(attributeReference.name());
-            }
-        }
-        return groupByLabels;
     }
-
 
     @Override
     public String type(){
