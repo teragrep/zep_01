@@ -1679,7 +1679,8 @@ public class NotebookServer extends WebSocketServlet
     JsonObjectBuilder result = Json.createObjectBuilder();
     JsonValue data = outputJson.get("data");
     result.add("data",data);
-    result.add("type",type.label);
+    String visualizationType = outputJson.getString("type");
+    result.add("type",visualizationType);
     // Parse optional fields
     if(outputJson.containsKey("isAggregated")){
       boolean isAggregated = outputJson.getBoolean("isAggregated");
@@ -1696,7 +1697,7 @@ public class NotebookServer extends WebSocketServlet
 
 
     Message msg = new Message(OP.PARAGRAPH_OUTPUT).put("noteId", noteId)
-        .put("paragraphId", paragraphId).put("index", index).put("type", type.label).put("result", resultMap);
+        .put("paragraphId", paragraphId).put("index", index).put("type", visualizationType).put("result", resultMap);
     try {
       Note note = getNotebook().getNote(noteId);
       if (note == null) {

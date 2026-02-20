@@ -57,7 +57,6 @@ import org.apache.spark.sql.Row;
 import org.apache.spark.sql.catalyst.plans.logical.Aggregate;
 import org.apache.spark.sql.catalyst.plans.logical.LogicalPlan;
 import org.apache.spark.sql.types.StructField;
-import org.apache.spark.sql.types.StructType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import scala.collection.Iterator;
@@ -133,7 +132,7 @@ public class DataTablesFormat implements  DatasetFormat{
                 dataBuilder.add("recordsTotal", recordsTotal);
                 dataBuilder.add("recordsFiltered", recordsFiltered);
                 final JsonObject data = dataBuilder.build();
-                final JsonObject json = Json.createObjectBuilder().add("data",data).add("isAggregated",aggsUsed).build();
+                final JsonObject json = Json.createObjectBuilder().add("data",data).add("isAggregated",aggsUsed).add("type", InterpreterResult.Type.DATATABLES.label).build();
                 return json;
             }catch(final JsonException | IllegalStateException e){
                 LOGGER.error(e.toString());

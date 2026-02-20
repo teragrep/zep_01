@@ -206,7 +206,8 @@ public class UPlotFormat implements  DatasetFormat{
                         .add("labels",labels)
                         .add("series",series)
                         .add("graphType",graphType))
-                .add("isAggregated",aggsUsed);
+                .add("isAggregated",aggsUsed)
+                .add("type", InterpreterResult.Type.UPLOT.label);
         final JsonObject json = builder.build();
         return json;
     }

@@ -45,8 +45,8 @@
  */
 package com.teragrep.pth_07.ui.elements.table_dynamic.formats;
 
-import com.teragrep.pth_07.ui.elements.table_dynamic.DTHeader;
 import com.teragrep.pth_07.ui.elements.table_dynamic.testdata.TestDPLData;
+import com.teragrep.zep_01.interpreter.InterpreterResult;
 import com.teragrep.zep_01.interpreter.thrift.DataTablesOptions;
 import com.teragrep.zep_01.interpreter.thrift.DataTablesSearch;
 import jakarta.json.JsonArray;
@@ -63,7 +63,6 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
 import java.sql.Timestamp;
-import java.time.Duration;
 import java.time.Instant;
 import java.util.*;
 
@@ -109,7 +108,8 @@ class DataTablesFormatTest {
         final JsonObject data = formatted.getJsonObject("data");
         final JsonArray headers = data.getJsonArray("headers");
         final boolean isAggregated = formatted.getBoolean("isAggregated");
-        Assertions.assertEquals(length,formatted.size());
+        final String type = formatted.getString("type");
+        Assertions.assertEquals(length,data.getJsonArray("data").size());
 
         // Check metadata
         final int rowCount = testDs.collectAsList().size();
@@ -163,6 +163,7 @@ class DataTablesFormatTest {
         Assertions.assertEquals("test data",data.getJsonArray("data").getJsonObject(1).getString("origin"));
 
         Assertions.assertEquals(false,isAggregated);
+        Assertions.assertEquals(InterpreterResult.Type.DATATABLES.label,type);
     }
 
     @Test
@@ -192,7 +193,9 @@ class DataTablesFormatTest {
         final JsonObject formatted = Assertions.assertDoesNotThrow(()->request.format());
 
         final boolean isAggregated = formatted.getBoolean("isAggregated");
+        String type = formatted.getString("type");
         Assertions.assertEquals(true,isAggregated);
+        Assertions.assertEquals(InterpreterResult.Type.DATATABLES.label,type);
     }
 
     @Test

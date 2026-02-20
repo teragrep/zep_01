@@ -46,6 +46,7 @@
 package com.teragrep.pth_07.ui.elements.table_dynamic.formats;
 
 import com.teragrep.zep_01.interpreter.InterpreterException;
+import com.teragrep.zep_01.interpreter.InterpreterResult;
 import com.teragrep.zep_01.interpreter.thrift.UPlotOptions;
 import jakarta.json.JsonObject;
 import org.apache.spark.sql.Dataset;
@@ -185,6 +186,7 @@ class UPlotFormatTest {
         Assertions.assertTrue(formatted.containsKey("data"));
         Assertions.assertTrue(formatted.containsKey("options"));
         Assertions.assertTrue(formatted.containsKey("isAggregated"));
+        Assertions.assertTrue(formatted.containsKey("type"));
 
         // Data must contain at least two arrays
         Assertions.assertTrue(formatted.getJsonArray("data").size() > 1);
@@ -216,6 +218,8 @@ class UPlotFormatTest {
 
         // This dataset is aggregated, so isAggregated should be true
         Assertions.assertEquals(true,formatted.getBoolean("isAggregated"));
+
+        Assertions.assertEquals(InterpreterResult.Type.UPLOT.label,formatted.getString("type"));
     }
 
     @Test
@@ -272,6 +276,8 @@ class UPlotFormatTest {
 
         // This dataset is aggregated, so isAggregated should be true
         Assertions.assertEquals(true,formatted.containsKey("isAggregated"));
+
+        Assertions.assertEquals(InterpreterResult.Type.UPLOT.label,formatted.getString("type"));
     }
 
     @Test
@@ -326,6 +332,8 @@ class UPlotFormatTest {
 
         // This dataset is aggregated, so isAggregated should be true
         Assertions.assertEquals(true,formatted.containsKey("isAggregated"));
+
+        Assertions.assertEquals(InterpreterResult.Type.UPLOT.label,formatted.getString("type"));
     }
 
     @Test
@@ -380,6 +388,8 @@ class UPlotFormatTest {
 
         // This dataset is aggregated, so isAggregated should be true
         Assertions.assertEquals(true,formatted.containsKey("isAggregated"));
+
+        Assertions.assertEquals(InterpreterResult.Type.UPLOT.label,formatted.getString("type"));
     }
 
     @Test
@@ -463,5 +473,7 @@ class UPlotFormatTest {
 
         // This dataset is not, so isAggregated should be false
         Assertions.assertEquals(false,formatted.getBoolean("isAggregated"));
+
+        Assertions.assertEquals(InterpreterResult.Type.UPLOT.label,formatted.getString("type"));
     }
 }
