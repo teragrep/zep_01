@@ -392,6 +392,63 @@ class UPlotFormatTest {
         Assertions.assertEquals(InterpreterResult.Type.UPLOT.label,formatted.getString("type"));
     }
 
+    // If other Spark methods (such as filter) are called during the creation of the Dataset, the first LogicalPlan of the dataset might not be of type Aggregate, even if aggregations were used at some point.
+    // Verify that if the final operation is not a group by, aggregations are still detected and formatting still works.
+    @Test
+    void testPreviouslyAggregatedDatasetFormat() {
+        final Dataset<Row> resultDataset = sparkSession.createDataFrame(rows,schema).groupBy("operation","success")
+                .agg(org.apache.spark.sql.functions.count("success").as("countSuccess")
+                        ,org.apache.spark.sql.functions.avg("filesModified").as("avgModified")
+                        ,org.apache.spark.sql.functions.max("filesModified").as("maxModified"))
+                .filter("countSuccess > 3");
+        final int groupByCount = 2; //  contains two group by clauses
+
+        // Create options and Format objects to be tested
+        final String graphType = "graph";
+        final UPlotOptions options = new UPlotOptions(graphType);
+        final UPlotFormat format = new UPlotFormat(resultDataset, options);
+
+        final JsonObject formatted = Assertions.assertDoesNotThrow(()-> format.format());
+
+        // Object must contain "data" array, "options" object and "isAggregated" boolean
+        Assertions.assertTrue(formatted.containsKey("data"));
+        Assertions.assertTrue(formatted.containsKey("options"));
+        Assertions.assertTrue(formatted.containsKey("isAggregated"));
+
+        // Data must contain at least two arrays
+        Assertions.assertTrue(formatted.getJsonArray("data").size() > 1);
+
+        // First array of Data is the indexes for the series names used for X axis. It's length should be the number of unique combinations you can make with the values of the "group by" clause used.
+        // In cases where aggregations are used, the dataset's size should always equal this number. If no aggregations aren't used, the number should be zero
+        Assertions.assertEquals(resultDataset.count(),formatted.getJsonArray("data").getJsonArray(0).size());
+
+        // Second array of Data must contain one value for each column of data in the result dataset (minus number of group by fields)
+        Assertions.assertEquals(resultDataset.schema().size()-groupByCount,formatted.getJsonArray("data").getJsonArray(1).size());
+
+        // Each sub-array within the second array of Data should contain one value for each row of data in the original dataset
+        Assertions.assertEquals(resultDataset.count(),formatted.getJsonArray("data").getJsonArray(1).getJsonArray(0).size());
+
+        // Options must contain a series array, a labels array and a graphType
+        Assertions.assertTrue(formatted.getJsonObject("options").containsKey("series"));
+        Assertions.assertTrue(formatted.getJsonObject("options").containsKey("labels"));
+        Assertions.assertTrue(formatted.getJsonObject("options").containsKey("graphType"));
+
+        // GraphType must match with what's given in the UI request
+        Assertions.assertEquals(graphType, formatted.getJsonObject("options").getString("graphType"));
+
+        // Labels size must match with size of first array of Data so that each index is mapped to a label.
+        Assertions.assertEquals(formatted.getJsonArray("data").getJsonArray(0).size(), formatted.getJsonObject("options").getJsonArray("labels").size());
+
+        // Series size must match with the size of second array of Data and the number of columns in the result dataset schema (minus number of group by fields used)
+        Assertions.assertEquals(formatted.getJsonArray("data").getJsonArray(1).size(), formatted.getJsonObject("options").getJsonArray("series").size());
+        Assertions.assertEquals(resultDataset.schema().size()-groupByCount, formatted.getJsonObject("options").getJsonArray("series").size());
+
+        // This dataset is aggregated, so isAggregated should be true
+        Assertions.assertEquals(true,formatted.containsKey("isAggregated"));
+
+        Assertions.assertEquals(InterpreterResult.Type.UPLOT.label,formatted.getString("type"));
+    }
+
     @Test
     public void testEmptyDataFrame(){
         final StructType schema = new StructType();

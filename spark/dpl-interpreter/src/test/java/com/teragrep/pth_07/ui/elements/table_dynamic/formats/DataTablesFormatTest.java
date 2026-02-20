@@ -165,8 +165,10 @@ class DataTablesFormatTest {
         Assertions.assertEquals(InterpreterResult.Type.DATATABLES.label,type);
     }
 
+    // If other Spark methods (such as filter) are called during the creation of the Dataset, the first LogicalPlan of the dataset might not be of type Aggregate, even if aggregations were used at some point.
+    // Verify that if the final operation is not a group by, aggregations are still detected and formatting still works.
     @Test
-    void testAggregation(){
+    void testAggregatedDatasetFormat(){
         final StructType aggSchema = new StructType(
                 new StructField[] {
                         new StructField("_time", DataTypes.TimestampType, false, new MetadataBuilder().build()),
@@ -181,6 +183,39 @@ class DataTablesFormatTest {
         rows.add(RowFactory.create(Instant.ofEpochSecond(120000),1));
         final Dataset aggDataset = sparkSession.createDataFrame(rows,aggSchema).groupBy("_time").agg(org.apache.spark.sql.functions.avg("deletion"));
 
+
+        final int draw = 3;
+        final int start = 3;
+        final int length = 2;
+        final String searchString = "";
+        final DataTablesOptions options = new DataTablesOptions(draw,start,length,new DataTablesSearch(searchString,false,new ArrayList<>()),new ArrayList<>(), new ArrayList<>());
+
+        final DataTablesFormat request = new DataTablesFormat(aggDataset,options);
+        final JsonObject formatted = Assertions.assertDoesNotThrow(()->request.format());
+
+        final boolean isAggregated = formatted.getBoolean("isAggregated");
+        String type = formatted.getString("type");
+        Assertions.assertEquals(true,isAggregated);
+        Assertions.assertEquals(InterpreterResult.Type.DATATABLES.label,type);
+    }
+
+    @Test
+    void testPreviouslyAggregatedDatasetFormat(){
+        final StructType aggSchema = new StructType(
+                new StructField[] {
+                        new StructField("_time", DataTypes.TimestampType, false, new MetadataBuilder().build()),
+                        new StructField("deletion", DataTypes.IntegerType, false, new MetadataBuilder().build()),
+                }
+        );
+        final List<Row> rows = new ArrayList<>();
+        rows.add(RowFactory.create(Instant.ofEpochSecond(100000),10));
+        rows.add(RowFactory.create(Instant.ofEpochSecond(100000),5));
+        rows.add(RowFactory.create(Instant.ofEpochSecond(110000),10));
+        rows.add(RowFactory.create(Instant.ofEpochSecond(110000),20));
+        rows.add(RowFactory.create(Instant.ofEpochSecond(120000),1));
+        final Dataset aggDataset = sparkSession.createDataFrame(rows,aggSchema).groupBy("_time")
+                .agg(org.apache.spark.sql.functions.avg("deletion").as("averageDeletion"))
+                .filter("averageDeletion > 5");
 
         final int draw = 3;
         final int start = 3;
