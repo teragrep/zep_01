@@ -100,7 +100,7 @@ public final class DTTableDatasetNg extends AbstractUserInterfaceElement {
     public void emit() {
     }
 
-    public void setParagraphDataset(Dataset<Row> rowDataset) {
+    public void setParagraphDataset(final Dataset<Row> rowDataset) {
         /*
          TODO check if other presentation can be used than string, for order
          i.e. rowDataset.collectAsList()
@@ -135,12 +135,12 @@ public final class DTTableDatasetNg extends AbstractUserInterfaceElement {
         }
     }
 
-    private void write(String outputContent){
+    private void write(final String outputContent){
         try {
             getInterpreterContext().out().clear(false);
             getInterpreterContext().out().write(outputContent);
             getInterpreterContext().out().flush();
-        } catch (IOException e) {
+        } catch (final IOException e) {
             LOGGER.error(e.toString());
             e.printStackTrace();
         }
@@ -150,47 +150,47 @@ public final class DTTableDatasetNg extends AbstractUserInterfaceElement {
         return dataset;
     }
     public void writeDataUpdate() throws InterpreterException{
-        DataTablesOptions defaultOptions = new DataTablesOptions(drawCount,0,currentAJAXLength,new DataTablesSearch("",false,new ArrayList<>()),new ArrayList<>(),new ArrayList<>());
+        final DataTablesOptions defaultOptions = new DataTablesOptions(drawCount,0,currentAJAXLength,new DataTablesSearch("",false,new ArrayList<>()),new ArrayList<>(),new ArrayList<>());
         writeDataUpdate(new DataTablesFormat(dataset,defaultOptions));
     }
 
-    public void writeDataUpdate(DatasetFormat format) throws InterpreterException{
-            JsonObject formatted = format.format();
-            String outputContent = "%"+format.type().toLowerCase()+"\n" +
+    public void writeDataUpdate(final DatasetFormat format) throws InterpreterException{
+            final JsonObject formatted = format.format();
+            final String outputContent = "%"+format.type().toLowerCase()+"\n" +
                     formatted.toString();
             write(outputContent);
 
     }
 
-    static JsonArray dataStreamParser(List<String> data){
+    static JsonArray dataStreamParser(final List<String> data){
 
         try{
-            JsonArrayBuilder builder = Json.createArrayBuilder();
+            final JsonArrayBuilder builder = Json.createArrayBuilder();
 
 
-            for (String S : data) {
-                JsonReader reader = Json.createReader(new StringReader(S));
-                JsonObject line = reader.readObject();
+            for (final String S : data) {
+                final JsonReader reader = Json.createReader(new StringReader(S));
+                final JsonObject line = reader.readObject();
                 builder.add(line);
                 reader.close();
             }
             return builder.build();
-        }catch(JsonException|IllegalStateException e){
+        }catch(final JsonException | IllegalStateException e){
             LOGGER.error(e.toString());
             return(Json.createArrayBuilder().build());
         }
     }
 
-    static JsonObject DTNetResponse(JsonArray data, JsonArray schemaHeadersJson, int draw, int recordsTotal, int recordsFiltered){
+    static JsonObject DTNetResponse(final JsonArray data, final JsonArray schemaHeadersJson, final int draw, final int recordsTotal, final int recordsFiltered){
         try{
-            JsonObjectBuilder builder = Json.createObjectBuilder();
+            final JsonObjectBuilder builder = Json.createObjectBuilder();
             builder.add("headers",schemaHeadersJson);
             builder.add("data", data);
             builder.add("draw", draw);
             builder.add("recordsTotal", recordsTotal);
             builder.add("recordsFiltered", recordsFiltered);
             return builder.build();
-        }catch(JsonException|IllegalStateException e){
+        }catch(final JsonException | IllegalStateException e){
             LOGGER.error(e.toString());
             return(Json.createObjectBuilder().build());
         }
