@@ -351,9 +351,28 @@ public class ConnectionManager {
     }
   }
 
+  public void multicastToUser(String user, String m) {
+    if (!userSocketMap.containsKey(user)) {
+      LOGGER.warn("Multicasting to user {} that is not in connections map", user);
+      return;
+    }
+
+    for (NotebookSocket conn : userSocketMap.get(user)) {
+      unicast(m, conn);
+    }
+  }
+
   public void unicast(Message m, NotebookSocket conn) {
     try {
       conn.send(serializeMessage(m));
+    } catch (IOException | WebSocketException e) {
+      LOGGER.error("socket error", e);
+    }
+    broadcastToWatchers(StringUtils.EMPTY, StringUtils.EMPTY, m);
+  }
+  public void unicast(String m, NotebookSocket conn) {
+    try {
+      conn.send(m);
     } catch (IOException | WebSocketException e) {
       LOGGER.error("socket error", e);
     }

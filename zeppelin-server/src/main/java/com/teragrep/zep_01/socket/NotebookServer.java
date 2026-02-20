@@ -1675,29 +1675,15 @@ public class NotebookServer extends WebSocketServlet
       return;
     }
     // As formatted data is passed as a String via Thrift, we have to parse it into JSON in order to turn it into format expected by UI.
+
     JsonObject outputJson = Json.createReader(new StringReader(output)).readObject();
-    JsonObjectBuilder result = Json.createObjectBuilder();
-    JsonValue data = outputJson.get("data");
-    result.add("data",data);
-    String visualizationType = outputJson.getString("type");
-    result.add("type",visualizationType);
-    // Parse optional fields
-    if(outputJson.containsKey("isAggregated")){
-      boolean isAggregated = outputJson.getBoolean("isAggregated");
-      result.add("isAggregated",isAggregated);
-    }
-    if(outputJson.containsKey("options")){
-      JsonValue options = outputJson.get("options");
-      result.add("options",options);
-    }
-
-    // As ConnectionManager.send() uses Gson.toJson() to serialize the Message object into a Json string, we cannot pass JsonObjectImpl objects to it, as they include metadata which messes up the Json format.
-    // Gson.toJson() provides correct Json when the passed objects are primitive Java types, so we must turn the "result" JsonObject into a Map<String,Object>
-    Map<String,Object> resultMap = (Map<String, Object>) jsonValueAsObject(result.build());
-
-
-    Message msg = new Message(OP.PARAGRAPH_OUTPUT).put("noteId", noteId)
-        .put("paragraphId", paragraphId).put("index", index).put("type", visualizationType).put("result", resultMap);
+    JsonObject messageData = Json.createObjectBuilder()
+            .add("noteId",noteId)
+            .add("paragraphId",paragraphId)
+            .add("result",outputJson)
+            .add("type",type.label)
+            .build();
+    JsonMessage msg = new JsonMessage(OP.PARAGRAPH_OUTPUT,messageData);
     try {
       Note note = getNotebook().getNote(noteId);
       if (note == null) {
@@ -1709,10 +1695,10 @@ public class NotebookServer extends WebSocketServlet
       if (note.isPersonalizedMode()) {
         String user = note.getParagraph(paragraphId).getUser();
         if (null != user) {
-          getConnectionManager().multicastToUser(user, msg);
+          getConnectionManager().multicastToUser(user, msg.asJson().toString());
         }
       } else {
-        getConnectionManager().broadcast(noteId, msg);
+        getConnectionManager().broadcast(noteId, msg.asJson().toString());
       }
     } catch (IOException e) {
       LOG.warn("Fail to call onOutputUpdated", e);
@@ -2217,47 +2203,6 @@ public class NotebookServer extends WebSocketServlet
     userAndRoles.addAll(authInfo.getRoles());
     return new ServiceContext(authInfo, userAndRoles);
   }
-
-  // Turns any of Jakarta's JsonValues into a standard Java Object.
-  private Object jsonValueAsObject(JsonValue value){
-    JsonValue.ValueType type = value.getValueType();
-    if(type.equals(JsonValue.ValueType.STRING)){
-      JsonString jsonString = (JsonString) value;
-      return jsonString.getString();
-    } else if (type.equals(JsonValue.ValueType.TRUE)) {
-      return true;
-    } else if (type.equals(JsonValue.ValueType.FALSE)) {
-      return false;
-    } else if (type.equals(JsonValue.ValueType.NUMBER)) {
-      JsonNumber numberValue = (JsonNumber) value;
-      if(numberValue.isIntegral()){
-        return numberValue.longValue();
-      }
-      else{
-        return numberValue.doubleValue();
-      }
-    } else if (type.equals(JsonValue.ValueType.NULL)) {
-      return null;
-    } else if (type.equals(JsonValue.ValueType.OBJECT)) {
-      JsonObject jsonObjectValue = value.asJsonObject();
-      Map<String, Object> objectMap = new HashMap<>();
-      for (Map.Entry<String,JsonValue> entry:jsonObjectValue.entrySet()) {
-        objectMap.put(entry.getKey(),jsonValueAsObject(entry.getValue()));
-      }
-      return objectMap;
-    } else if (type.equals(JsonValue.ValueType.ARRAY)) {
-      JsonArray jsonArrayValue = value.asJsonArray();
-      ArrayList<Object> arrayValue = new ArrayList<>();
-      for (JsonValue entry:jsonArrayValue) {
-        arrayValue.add(jsonValueAsObject(entry));
-      }
-      return arrayValue;
-    }
-    else {
-      throw new IllegalStateException("JsonValue does not correspond to any defined ValueType!");
-    }
-  }
-
 
   public class WebSocketServiceCallback<T> extends SimpleServiceCallback<T> {
 
