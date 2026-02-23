@@ -220,7 +220,7 @@ public class UPlotFormat implements  DatasetFormat{
 
     private Aggregate aggregatePlan(LogicalPlan plan) throws InterpreterException {
         //TODO: Remove debug
-        LOGGER.debug("LogicalPlan is of class {}, it still has {} children",plan.getClass().getName(),plan.children().size());
+        LOGGER.warn("LogicalPlan is of class {}, it still has {} children",plan.getClass().getName(),plan.children().size());
         if (plan instanceof Aggregate) {
             return (Aggregate) plan;
         } else {

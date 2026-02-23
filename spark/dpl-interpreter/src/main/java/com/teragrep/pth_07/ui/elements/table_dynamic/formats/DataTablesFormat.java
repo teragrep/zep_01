@@ -136,7 +136,7 @@ public class DataTablesFormat implements DatasetFormat{
     }
     private boolean isAggregated(LogicalPlan plan) {
         //TODO: Remove debug
-        LOGGER.debug("LogicalPlan is of class {}, it still has {} children",plan.getClass().getName(),plan.children().size());
+        LOGGER.warn("LogicalPlan is of class {}, it still has {} children",plan.getClass().getName(),plan.children().size());
         if (plan instanceof Aggregate) {
             return true;
         }
