@@ -215,7 +215,8 @@ class DataTablesFormatTest {
         rows.add(RowFactory.create(Instant.ofEpochSecond(120000),1));
         final Dataset aggDataset = sparkSession.createDataFrame(rows,aggSchema).groupBy("_time")
                 .agg(org.apache.spark.sql.functions.avg("deletion").as("averageDeletion"))
-                .filter("averageDeletion > 5");
+                .filter("averageDeletion > 5")
+                .distinct();
 
         final int draw = 3;
         final int start = 3;

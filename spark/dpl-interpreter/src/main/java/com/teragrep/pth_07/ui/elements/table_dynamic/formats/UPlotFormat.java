@@ -224,9 +224,7 @@ public class UPlotFormat implements  DatasetFormat{
         } else {
             // Aggregated plan might be in a child plan.
             for (LogicalPlan childPlan : JavaConverters.seqAsJavaList(plan.children())) {
-                if (childPlan instanceof Aggregate) {
-                    return (Aggregate) childPlan;
-                }
+                return aggregatePlan(childPlan);
             }
             throw new InterpreterException("Plan does not contain aggregations!");
         }

@@ -114,8 +114,8 @@ public class DataTablesFormat implements DatasetFormat{
                     builder.add(column.name());
                 }
                 final JsonArray schemaHeadersAsJSON = builder.build();
-
-                final boolean aggsUsed = isAggregated(dataset);
+                LogicalPlan plan = dataset.queryExecution().logical();
+                final boolean aggsUsed = isAggregated(plan);
 
 
                 final int recordsTotal = datasetAsJson.size();
@@ -134,17 +134,14 @@ public class DataTablesFormat implements DatasetFormat{
                 throw new InterpreterException("Failed to format dataset into DataTables format");
             }
     }
-    private boolean isAggregated(Dataset<Row> dataset) {
-        final LogicalPlan plan = dataset.queryExecution().logical();
+    private boolean isAggregated(LogicalPlan plan) {
         if (plan instanceof Aggregate) {
             return true;
         }
         else {
             // It's possible that aggregations were used in the previous steps of the LogicalPlan. We need to check for Aggregates in them too
             for (LogicalPlan childPlan : JavaConverters.seqAsJavaList(plan.children())) {
-                if (childPlan instanceof Aggregate) {
-                    return true;
-                }
+                return isAggregated(childPlan);
             }
             return false;
         }

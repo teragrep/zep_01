@@ -400,7 +400,8 @@ class UPlotFormatTest {
                 .agg(org.apache.spark.sql.functions.count("success").as("countSuccess")
                         ,org.apache.spark.sql.functions.avg("filesModified").as("avgModified")
                         ,org.apache.spark.sql.functions.max("filesModified").as("maxModified"))
-                .filter("countSuccess > 3");
+                .filter("countSuccess > 3")
+                .distinct();
         final int groupByCount = 2; //  contains two group by clauses
 
         // Create options and Format objects to be tested
