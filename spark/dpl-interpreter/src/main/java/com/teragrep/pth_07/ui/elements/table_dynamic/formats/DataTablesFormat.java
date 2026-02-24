@@ -57,6 +57,7 @@ import org.apache.spark.sql.Row;
 import org.apache.spark.sql.catalyst.plans.logical.Aggregate;
 import org.apache.spark.sql.catalyst.plans.logical.LogicalPlan;
 import org.apache.spark.sql.types.StructField;
+import org.apache.spark.sql.types.StructType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import scala.collection.Iterator;
@@ -114,8 +115,8 @@ public class DataTablesFormat implements DatasetFormat{
                     builder.add(column.name());
                 }
                 final JsonArray schemaHeadersAsJSON = builder.build();
-                LogicalPlan plan = dataset.queryExecution().logical();
-                final boolean aggsUsed = isAggregated(plan);
+                StructType schema = dataset.schema();
+                final boolean aggsUsed = isAggregated(schema);
 
 
                 final int recordsTotal = datasetAsJson.size();
@@ -134,19 +135,13 @@ public class DataTablesFormat implements DatasetFormat{
                 throw new InterpreterException("Failed to format dataset into DataTables format");
             }
     }
-    private boolean isAggregated(LogicalPlan plan) {
-        //TODO: Remove debug
-        LOGGER.warn("LogicalPlan is of class {}, it still has {} children",plan.getClass().getName(),plan.children().size());
-        if (plan instanceof Aggregate) {
-            return true;
-        }
-        else {
-            // It's possible that aggregations were used in the previous steps of the LogicalPlan. We need to check for Aggregates in them too
-            for (LogicalPlan childPlan : JavaConverters.seqAsJavaList(plan.children())) {
-                return isAggregated(childPlan);
+    private boolean isAggregated(StructType schema) {
+        for (StructField field:schema.fields()) {
+            if(field.metadata().contains("dpl_internal_isGroupByColumn")){
+                return true;
             }
-            return false;
         }
+        return false;
     }
 
     @Override

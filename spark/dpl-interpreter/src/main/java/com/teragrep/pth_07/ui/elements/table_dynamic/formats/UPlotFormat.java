@@ -53,10 +53,7 @@ import org.apache.spark.sql.catalyst.expressions.AttributeReference;
 import org.apache.spark.sql.catalyst.expressions.Expression;
 import org.apache.spark.sql.catalyst.plans.logical.Aggregate;
 import org.apache.spark.sql.catalyst.plans.logical.LogicalPlan;
-import org.apache.spark.sql.types.ArrayType;
-import org.apache.spark.sql.types.DataType;
-import org.apache.spark.sql.types.DataTypes;
-import org.apache.spark.sql.types.StructField;
+import org.apache.spark.sql.types.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import scala.collection.JavaConverters;
@@ -81,7 +78,8 @@ public class UPlotFormat implements  DatasetFormat{
             throw new InterpreterException("Cannot format an empty Dataset!");
         }
         // Get a list of column names that were used in aggregation
-        final List<String> groupByLabels = groupByLabels(dataset);
+        StructType schema = dataset.schema();
+        final List<String> groupByLabels = groupByLabels(schema);
         // Infer whether aggregates were used by checking if groupByLabels is empty.
         final boolean aggsUsed = !groupByLabels.isEmpty();
 
@@ -198,24 +196,14 @@ public class UPlotFormat implements  DatasetFormat{
     }
 
 
-    private List<String> groupByLabels(Dataset<Row> dataset) {
+    private List<String> groupByLabels(StructType schema) {
         List<String> groupByLabels = new ArrayList<>();
-        final LogicalPlan plan = dataset.queryExecution().logical();
-        final Aggregate aggPlan;
-        try{
-            aggPlan = aggregatePlan(plan);
-            final List<Expression> expressions = JavaConverters.seqAsJavaList((aggPlan.groupingExpressions().seq()));
-            for (final Expression expression : expressions) {
-                if (expression instanceof AttributeReference) {
-                    final AttributeReference attributeReference = (AttributeReference) expression;
-                    groupByLabels.add(attributeReference.name());
-                }
+        for (StructField field:schema.fields()) {
+            if(field.metadata().contains("dpl_internal_isGroupByColumn")){
+                groupByLabels.add(field.name());
             }
-            return groupByLabels;
         }
-        catch (InterpreterException e){
-            return groupByLabels;
-        }
+        return groupByLabels;
     }
 
     private Aggregate aggregatePlan(LogicalPlan plan) throws InterpreterException {

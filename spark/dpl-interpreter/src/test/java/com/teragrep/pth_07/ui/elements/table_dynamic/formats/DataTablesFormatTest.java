@@ -181,7 +181,10 @@ class DataTablesFormatTest {
         rows.add(RowFactory.create(Instant.ofEpochSecond(110000),10));
         rows.add(RowFactory.create(Instant.ofEpochSecond(110000),20));
         rows.add(RowFactory.create(Instant.ofEpochSecond(120000),1));
-        final Dataset aggDataset = sparkSession.createDataFrame(rows,aggSchema).groupBy("_time").agg(org.apache.spark.sql.functions.avg("deletion"));
+        final Dataset aggDataset = sparkSession.createDataFrame(rows,aggSchema)
+                .groupBy("_time")
+                .agg(org.apache.spark.sql.functions.avg("deletion"))
+                .withMetadata("_time",new MetadataBuilder().putBoolean("dpl_internal_isGroupByColumn",true).build());;
 
 
         final int draw = 3;
@@ -216,7 +219,8 @@ class DataTablesFormatTest {
         final Dataset aggDataset = sparkSession.createDataFrame(rows,aggSchema).groupBy("_time")
                 .agg(org.apache.spark.sql.functions.avg("deletion").as("averageDeletion"))
                 .filter("averageDeletion > 5")
-                .distinct();
+                .distinct()
+                .withMetadata("_time",new MetadataBuilder().putBoolean("dpl_internal_isGroupByColumn",true).build());
 
         final int draw = 3;
         final int start = 3;

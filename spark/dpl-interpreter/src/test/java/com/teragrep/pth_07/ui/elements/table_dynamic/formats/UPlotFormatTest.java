@@ -172,7 +172,8 @@ class UPlotFormatTest {
                 "index=test\n" +
                 "| spath\n" +
                 "| stats max(filesModified) min(filesModified)";
-        final Dataset<Row> resultDataset = sparkSession.createDataFrame(rows,schema).agg(org.apache.spark.sql.functions.max("filesModified"),org.apache.spark.sql.functions.min("filesModified"));
+        final Dataset<Row> resultDataset = sparkSession.createDataFrame(rows,schema)
+                .agg(org.apache.spark.sql.functions.max("filesModified"),org.apache.spark.sql.functions.min("filesModified"));
         final int groupByCount = 0;
 
         // Create options and Format objects to be tested
@@ -230,7 +231,10 @@ class UPlotFormatTest {
                 "index=test\n" +
                 "| spath\n" +
                 "| stats max(filesModified) min(filesModified) by success";
-        final Dataset<Row> resultDataset = sparkSession.createDataFrame(rows,schema).groupBy("success").agg(org.apache.spark.sql.functions.max("filesModified"),org.apache.spark.sql.functions.min("filesModified"));
+        final Dataset<Row> resultDataset = sparkSession.createDataFrame(rows,schema)
+                .groupBy("success")
+                .agg(org.apache.spark.sql.functions.max("filesModified"),org.apache.spark.sql.functions.min("filesModified"))
+                .withMetadata("success", new MetadataBuilder().putBoolean("dpl_internal_isGroupByColumn",true).build());
         final int groupByCount = 1;
 
 
@@ -288,7 +292,10 @@ class UPlotFormatTest {
                 "| spath\n" +
                 "| timechart count(operation) avg(operation) max(operation)";
         final int groupByCount = 1; // DPL query contains two group by clauses due to usage of 'timechart' command
-        final Dataset<Row> resultDataset = sparkSession.createDataFrame(timeChartRows,timeChartSchema).groupBy("_time").agg(org.apache.spark.sql.functions.count("operation"));
+        final Dataset<Row> resultDataset = sparkSession.createDataFrame(timeChartRows,timeChartSchema)
+                .groupBy("_time")
+                .agg(org.apache.spark.sql.functions.count("operation"))
+                .withMetadata("_time", new MetadataBuilder().putBoolean("dpl_internal_isGroupByColumn",true).build());;
 
         // Create options and Format objects to be tested
         final String graphType = "graph";
@@ -343,7 +350,11 @@ class UPlotFormatTest {
                 "index=test earliest=-5y\n" +
                 "| spath\n" +
                 "| stats count(operation) avg(operation) max(operation) by operation success";
-        final Dataset<Row> resultDataset = sparkSession.createDataFrame(rows,schema).groupBy("operation","success").agg(org.apache.spark.sql.functions.count("success"),org.apache.spark.sql.functions.avg("filesModified"),org.apache.spark.sql.functions.max("filesModified"));
+        final Dataset<Row> resultDataset = sparkSession.createDataFrame(rows,schema)
+                .groupBy("operation","success")
+                .agg(org.apache.spark.sql.functions.count("success"),org.apache.spark.sql.functions.avg("filesModified"),org.apache.spark.sql.functions.max("filesModified"))
+                .withMetadata("success", new MetadataBuilder().putBoolean("dpl_internal_isGroupByColumn",true).build())
+                .withMetadata("operation", new MetadataBuilder().putBoolean("dpl_internal_isGroupByColumn",true).build());
         final int groupByCount = 2; //  contains two group by clauses
 
         // Create options and Format objects to be tested
@@ -401,7 +412,9 @@ class UPlotFormatTest {
                         ,org.apache.spark.sql.functions.avg("filesModified").as("avgModified")
                         ,org.apache.spark.sql.functions.max("filesModified").as("maxModified"))
                 .filter("countSuccess > 3")
-                .distinct();
+                .distinct()
+                .withMetadata("success", new MetadataBuilder().putBoolean("dpl_internal_isGroupByColumn",true).build())
+                .withMetadata("operation", new MetadataBuilder().putBoolean("dpl_internal_isGroupByColumn",true).build());
         final int groupByCount = 2; //  contains two group by clauses
 
         // Create options and Format objects to be tested
