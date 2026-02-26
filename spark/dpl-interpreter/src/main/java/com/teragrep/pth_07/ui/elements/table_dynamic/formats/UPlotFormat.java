@@ -174,6 +174,16 @@ public class UPlotFormat implements  DatasetFormat{
                             subArray.add((Float) value);
                         }
                     }
+                    else if(elementType.equals(DataTypes.StringType)){
+                        for (final Object value:values){
+                            try{
+                                Double doubleValue = Double.parseDouble((String)value);
+                                subArray.add(doubleValue);
+                            } catch (NumberFormatException exception){
+                                throw new InterpreterException("uPlot format only supports numerical data, but encountered non-numerical string "+value.toString()+" in column "+ schemaField.name() +"!");
+                            }
+                        }
+                    }
                     else{
                         throw new InterpreterException("uPlot format only supports numerical data, tried to format data of type "+elementType+" in column "+ schemaField.name() +"!");
                     }
