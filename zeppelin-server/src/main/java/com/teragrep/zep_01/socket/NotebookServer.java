@@ -1097,13 +1097,14 @@ public class NotebookServer extends WebSocketServlet
   }
   private void paragraphOutput(NotebookSocket conn,
                                ParagraphOutputRequestMessage fromMessage) throws IOException, InterpreterException {
-    // Casting is required to get Message parameters in correct format, as GSON parses all numbers as Doubles, and Message.get() returns a generic Object.
+    // Get required data from received message
     final String msgId = fromMessage.messageId();
     final String noteId = fromMessage.noteId();
     final String paragraphId = fromMessage.paragraphId();
     final String visualizationLibraryName = fromMessage.visualizationLibraryName();
     final Options options = fromMessage.options();
 
+    // Get interpreterGroup
     Note note = getNotebook().getNote(noteId);
     if(note == null){
       throw new BadRequestException("No such note: "+noteId);
@@ -1132,7 +1133,10 @@ public class NotebookServer extends WebSocketServlet
     }
 
     try{
+      // Get formatted dataset as a String via Thrift
       String formattedDataset = managedInterpreterGroup.formatDataset(sessionId, interpreter.getClassName(), noteId, paragraphId, visualizationLibraryName, options);
+
+      // Build response
       JsonObject result = Json.createReader(new StringReader(formattedDataset)).readObject();
       JsonObject messageJson = Json.createObjectBuilder()
               .add("result",result)
@@ -1143,17 +1147,13 @@ public class NotebookServer extends WebSocketServlet
       JsonMessage msg = new JsonMessage(OP.PARAGRAPH_OUTPUT,messageJson);
       conn.send(msg.asJson().toString());
     } catch (InterpreterException e){
+      // If an error occurs, send an ERROR_INFO message
       LOG.error("Failed to retrieve data from Interpreter process for note: {} paragraph: {} cause: {}",noteId,paragraphId,e.getCause(),e);
-      HashMap<String,String> errorResult = new HashMap<>();
-      errorResult.put("error","true");
-      errorResult.put("message", "Failed to retrieve data. Please rerun the paragraph and try again or see technical log for details!");
-      Message msg = new Message(OP.PARAGRAPH_OUTPUT) //TODO: change this to ERROR_INFO once UI has a refactored error handling protocol
-              .withMsgId(msgId)
-              .put("type",visualizationLibraryName)
-              .put("result",errorResult)
-              .put("noteId", noteId)
-              .put("paragraphId", paragraphId);
-      conn.send(serializeMessage(msg));
+      JsonObject errorJson = Json.createObjectBuilder()
+              .add("message","Failed to retrieve data. Please rerun the paragraph and try again or see technical log for details!")
+              .build();
+      JsonMessage msg = new JsonMessage(OP.ERROR_INFO,errorJson);
+      conn.send(msg.asJson().toString());
     }
   }
 
