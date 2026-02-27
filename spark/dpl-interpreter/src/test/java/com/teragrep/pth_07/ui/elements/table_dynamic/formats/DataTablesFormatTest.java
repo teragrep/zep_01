@@ -45,7 +45,6 @@
  */
 package com.teragrep.pth_07.ui.elements.table_dynamic.formats;
 
-import com.teragrep.pth_07.ui.elements.table_dynamic.testdata.TestDPLData;
 import com.teragrep.zep_01.interpreter.InterpreterResult;
 import com.teragrep.zep_01.interpreter.thrift.DataTablesOptions;
 import com.teragrep.zep_01.interpreter.thrift.DataTablesSearch;
@@ -53,44 +52,33 @@ import jakarta.json.JsonArray;
 import jakarta.json.JsonObject;
 import org.apache.spark.sql.Dataset;
 import org.apache.spark.sql.Row;
-import org.apache.spark.sql.RowFactory;
 import org.apache.spark.sql.SparkSession;
-import org.apache.spark.sql.types.DataTypes;
-import org.apache.spark.sql.types.MetadataBuilder;
-import org.apache.spark.sql.types.StructField;
-import org.apache.spark.sql.types.StructType;
+import org.apache.spark.sql.types.*;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
-import java.sql.Timestamp;
-import java.time.Instant;
 import java.util.*;
 
 
 class DataTablesFormatTest {
+
+    private final String sourceDataFile = "src/test/resources/formatTestSourceData.csv";
     private final SparkSession sparkSession = SparkSession.builder()
             .master("local[*]")
             .config("spark.cleaner.referenceTracking.cleanCheckpoints", "true")
             .config("checkpointLocation","/tmp/pth_10/test/StackTest/checkpoints/" + UUID.randomUUID() + "/")
             .config("spark.sql.session.timeZone", "UTC")
             .getOrCreate();
-    private final StructType testSchema = new StructType(
+
+    StructType schema = new StructType(
             new StructField[] {
                     new StructField("_time", DataTypes.TimestampType, false, new MetadataBuilder().build()),
-                    new StructField("id", DataTypes.LongType, false, new MetadataBuilder().build()),
-                    new StructField("_raw", DataTypes.StringType, false, new MetadataBuilder().build()),
-                    new StructField("index", DataTypes.StringType, false, new MetadataBuilder().build()),
-                    new StructField("sourcetype", DataTypes.StringType, false, new MetadataBuilder().build()),
-                    new StructField("host", DataTypes.StringType, false, new MetadataBuilder().build()),
-                    new StructField("source", DataTypes.StringType, false, new MetadataBuilder().build()),
-                    new StructField("partition", DataTypes.StringType, false, new MetadataBuilder().build()),
-                    new StructField("offset", DataTypes.LongType, false, new MetadataBuilder().build()),
-                    new StructField("origin", DataTypes.StringType, false, new MetadataBuilder().build())
+                    new StructField("operation", DataTypes.StringType, false, new MetadataBuilder().build()),
+                    new StructField("success", DataTypes.BooleanType, false, new MetadataBuilder().build()),
+                    new StructField("filesModified", DataTypes.IntegerType, false, new MetadataBuilder().build())
             }
     );
-    private final TestDPLData testDataset = new TestDPLData(sparkSession, testSchema);
-    private final Dataset<Row> testDs = testDataset.createDataset(49, Timestamp.from(Instant.ofEpochSecond(0)),0L,"data data","index_A","stream","host","input",String.valueOf(0),0L,"test data");
-
+    private final Dataset<Row> sourceData = sparkSession.read().option("header",true).schema(schema).csv(sourceDataFile);
 
     @Test
     void testFormat() {
@@ -102,8 +90,8 @@ class DataTablesFormatTest {
         final DataTablesOptions options = new DataTablesOptions(draw,start,length,new DataTablesSearch(searchString,false,new ArrayList<>()),new ArrayList<>(), new ArrayList<>());
 
         // Get rows 3-5 of the dataset, check that every value is present
-        final DataTablesFormat request1 = new DataTablesFormat(testDs,options);
-        final JsonObject formatted = Assertions.assertDoesNotThrow(()->request1.format());
+        final DataTablesFormat format = new DataTablesFormat(sourceData,options);
+        final JsonObject formatted = Assertions.assertDoesNotThrow(()->format.format());
         final JsonObject data = formatted.getJsonObject("data");
         final JsonArray headers = data.getJsonArray("headers");
         final boolean isAggregated = formatted.getBoolean("isAggregated");
@@ -111,55 +99,31 @@ class DataTablesFormatTest {
         Assertions.assertEquals(length,data.getJsonArray("data").size());
 
         // Check metadata
-        final int rowCount = testDs.collectAsList().size();
+        final int rowCount = sourceData.collectAsList().size();
         Assertions.assertEquals(draw,data.getInt("draw"));
         Assertions.assertEquals(rowCount,data.getInt("recordsTotal"));
         Assertions.assertEquals(rowCount,data.getInt("recordsFiltered"));
 
         // Check headers
-        Assertions.assertEquals(testSchema.size(),data.getJsonArray("headers").size());
+        Assertions.assertEquals(schema.size(),data.getJsonArray("headers").size());
 
-        Assertions.assertEquals(testSchema.fieldNames()[0],headers.getString(0));
-        Assertions.assertEquals(testSchema.fieldNames()[1],headers.getString(1));
-        Assertions.assertEquals(testSchema.fieldNames()[2],headers.getString(2));
-        Assertions.assertEquals(testSchema.fieldNames()[3],headers.getString(3));
-        Assertions.assertEquals(testSchema.fieldNames()[4],headers.getString(4));
-        Assertions.assertEquals(testSchema.fieldNames()[5],headers.getString(5));
-        Assertions.assertEquals(testSchema.fieldNames()[6],headers.getString(6));
-        Assertions.assertEquals(testSchema.fieldNames()[7],headers.getString(7));
-        Assertions.assertEquals(testSchema.fieldNames()[8],headers.getString(8));
-        Assertions.assertEquals(testSchema.fieldNames()[9],headers.getString(9));
+        Assertions.assertEquals(schema.fieldNames()[0],headers.getString(0));
+        Assertions.assertEquals(schema.fieldNames()[1],headers.getString(1));
+        Assertions.assertEquals(schema.fieldNames()[2],headers.getString(2));
+        Assertions.assertEquals(schema.fieldNames()[3],headers.getString(3));
 
         // Check data
-        Assertions.assertEquals("1970-01-01T00:00:46.000Z",data.getJsonArray("data").getJsonObject(0).getString("_time"));
-        Assertions.assertEquals("1970-01-01T00:00:45.000Z",data.getJsonArray("data").getJsonObject(1).getString("_time"));
+        Assertions.assertEquals("2025-01-01T12:00:00.000Z",data.getJsonArray("data").getJsonObject(0).getString("_time"));
+        Assertions.assertEquals("2025-01-01T12:00:00.000Z",data.getJsonArray("data").getJsonObject(1).getString("_time"));
 
-        Assertions.assertEquals(0,data.getJsonArray("data").getJsonObject(0).getInt("id"));
-        Assertions.assertEquals(0,data.getJsonArray("data").getJsonObject(1).getInt("id"));
+        Assertions.assertEquals("create",data.getJsonArray("data").getJsonObject(0).getString("operation"));
+        Assertions.assertEquals("delete",data.getJsonArray("data").getJsonObject(1).getString("operation"));
 
-        Assertions.assertEquals("index_A",data.getJsonArray("data").getJsonObject(0).getString("index"));
-        Assertions.assertEquals("index_A",data.getJsonArray("data").getJsonObject(1).getString("index"));
+        Assertions.assertEquals(true,data.getJsonArray("data").getJsonObject(0).getBoolean("success"));
+        Assertions.assertEquals(true,data.getJsonArray("data").getJsonObject(1).getBoolean("success"));
 
-        Assertions.assertEquals("data data",data.getJsonArray("data").getJsonObject(0).getString("_raw"));
-        Assertions.assertEquals("data data",data.getJsonArray("data").getJsonObject(1).getString("_raw"));
-
-        Assertions.assertEquals("stream",data.getJsonArray("data").getJsonObject(0).getString("sourcetype"));
-        Assertions.assertEquals("stream",data.getJsonArray("data").getJsonObject(1).getString("sourcetype"));
-
-        Assertions.assertEquals("host",data.getJsonArray("data").getJsonObject(0).getString("host"));
-        Assertions.assertEquals("host",data.getJsonArray("data").getJsonObject(1).getString("host"));
-
-        Assertions.assertEquals("input",data.getJsonArray("data").getJsonObject(0).getString("source"));
-        Assertions.assertEquals("input",data.getJsonArray("data").getJsonObject(1).getString("source"));
-
-        Assertions.assertEquals("0",data.getJsonArray("data").getJsonObject(0).getString("partition"));
-        Assertions.assertEquals("0",data.getJsonArray("data").getJsonObject(1).getString("partition"));
-
-        Assertions.assertEquals(0,data.getJsonArray("data").getJsonObject(0).getInt("offset"));
-        Assertions.assertEquals(0,data.getJsonArray("data").getJsonObject(1).getInt("offset"));
-
-        Assertions.assertEquals("test data",data.getJsonArray("data").getJsonObject(0).getString("origin"));
-        Assertions.assertEquals("test data",data.getJsonArray("data").getJsonObject(1).getString("origin"));
+        Assertions.assertEquals(1,data.getJsonArray("data").getJsonObject(0).getInt("filesModified"));
+        Assertions.assertEquals(1,data.getJsonArray("data").getJsonObject(1).getInt("filesModified"));
 
         Assertions.assertEquals(false,isAggregated);
         Assertions.assertEquals(InterpreterResult.Type.DATATABLES.label,type);
@@ -172,32 +136,48 @@ class DataTablesFormatTest {
         final StructType aggSchema = new StructType(
                 new StructField[] {
                         new StructField("_time", DataTypes.TimestampType, false, new MetadataBuilder().build()),
-                        new StructField("deletion", DataTypes.IntegerType, false, new MetadataBuilder().build()),
+                        new StructField("avg", DataTypes.IntegerType, false, new MetadataBuilder().build()),
                 }
         );
-        final List<Row> rows = new ArrayList<>();
-        rows.add(RowFactory.create(Instant.ofEpochSecond(100000),10));
-        rows.add(RowFactory.create(Instant.ofEpochSecond(100000),5));
-        rows.add(RowFactory.create(Instant.ofEpochSecond(110000),10));
-        rows.add(RowFactory.create(Instant.ofEpochSecond(110000),20));
-        rows.add(RowFactory.create(Instant.ofEpochSecond(120000),1));
-        final Dataset aggDataset = sparkSession.createDataFrame(rows,aggSchema)
+        final Dataset aggDataset = sourceData
                 .groupBy("_time")
-                .agg(org.apache.spark.sql.functions.avg("deletion"))
+                .agg(org.apache.spark.sql.functions.avg("filesModified").as("avg"))
                 .withMetadata("_time",new MetadataBuilder().putBoolean("dpl_internal_isGroupByColumn",true).build());;
 
 
         final int draw = 3;
-        final int start = 3;
+        final int start = 2;
         final int length = 2;
         final String searchString = "";
         final DataTablesOptions options = new DataTablesOptions(draw,start,length,new DataTablesSearch(searchString,false,new ArrayList<>()),new ArrayList<>(), new ArrayList<>());
 
-        final DataTablesFormat request = new DataTablesFormat(aggDataset,options);
-        final JsonObject formatted = Assertions.assertDoesNotThrow(()->request.format());
-
+        final DataTablesFormat format = new DataTablesFormat(aggDataset,options);
+        final JsonObject formatted = Assertions.assertDoesNotThrow(()->format.format());
+        final JsonObject data = formatted.getJsonObject("data");
+        final JsonArray headers = data.getJsonArray("headers");
         final boolean isAggregated = formatted.getBoolean("isAggregated");
-        String type = formatted.getString("type");
+        final String type = formatted.getString("type");
+
+
+        // Check metadata
+        final int rowCount = aggDataset.collectAsList().size();
+        Assertions.assertEquals(draw,data.getInt("draw"));
+        Assertions.assertEquals(rowCount,data.getInt("recordsTotal"));
+        Assertions.assertEquals(rowCount,data.getInt("recordsFiltered"));
+
+        // Check headers
+        Assertions.assertEquals(aggSchema.size(),data.getJsonArray("headers").size());
+
+        Assertions.assertEquals(aggSchema.fieldNames()[0],headers.getString(0));
+        Assertions.assertEquals(aggSchema.fieldNames()[1],headers.getString(1));
+
+        // Check data
+        Assertions.assertEquals("2025-01-02T12:00:00.000Z",data.getJsonArray("data").getJsonObject(0).getString("_time"));
+        Assertions.assertEquals("2025-01-03T12:00:00.000Z",data.getJsonArray("data").getJsonObject(1).getString("_time"));
+
+        Assertions.assertEquals(2.4,data.getJsonArray("data").getJsonObject(0).getJsonNumber("avg").doubleValue());
+        Assertions.assertEquals(1.0,data.getJsonArray("data").getJsonObject(1).getJsonNumber("avg").doubleValue());
+
         Assertions.assertEquals(true,isAggregated);
         Assertions.assertEquals(InterpreterResult.Type.DATATABLES.label,type);
     }
@@ -207,20 +187,19 @@ class DataTablesFormatTest {
         final StructType aggSchema = new StructType(
                 new StructField[] {
                         new StructField("_time", DataTypes.TimestampType, false, new MetadataBuilder().build()),
-                        new StructField("deletion", DataTypes.IntegerType, false, new MetadataBuilder().build()),
+                        new StructField("avg", DataTypes.DoubleType, false, new MetadataBuilder().build()),
+                        new StructField("max", DataTypes.IntegerType, false, new MetadataBuilder().build())
                 }
         );
-        final List<Row> rows = new ArrayList<>();
-        rows.add(RowFactory.create(Instant.ofEpochSecond(100000),10));
-        rows.add(RowFactory.create(Instant.ofEpochSecond(100000),5));
-        rows.add(RowFactory.create(Instant.ofEpochSecond(110000),10));
-        rows.add(RowFactory.create(Instant.ofEpochSecond(110000),20));
-        rows.add(RowFactory.create(Instant.ofEpochSecond(120000),1));
-        final Dataset aggDataset = sparkSession.createDataFrame(rows,aggSchema).groupBy("_time")
-                .agg(org.apache.spark.sql.functions.avg("deletion").as("averageDeletion"))
-                .filter("averageDeletion > 5")
-                .distinct()
-                .withMetadata("_time",new MetadataBuilder().putBoolean("dpl_internal_isGroupByColumn",true).build());
+        // use multiple group bys
+        final Dataset aggDataset = sourceData.groupBy("_time")
+                .agg(org.apache.spark.sql.functions.avg("filesModified").as("avg"),
+                        org.apache.spark.sql.functions.sum("filesModified").as("sum"),
+                        org.apache.spark.sql.functions.max("filesModified").as("max"))
+                .groupBy("_time","avg")
+                .agg(org.apache.spark.sql.functions.sum("max").as("max"))
+                .withMetadata("_time",new MetadataBuilder().putBoolean("dpl_internal_isGroupByColumn",true).build())
+                .withMetadata("avg",new MetadataBuilder().putBoolean("dpl_internal_isGroupByColumn",true).build());
 
         final int draw = 3;
         final int start = 3;
@@ -228,43 +207,115 @@ class DataTablesFormatTest {
         final String searchString = "";
         final DataTablesOptions options = new DataTablesOptions(draw,start,length,new DataTablesSearch(searchString,false,new ArrayList<>()),new ArrayList<>(), new ArrayList<>());
 
-        final DataTablesFormat request = new DataTablesFormat(aggDataset,options);
-        final JsonObject formatted = Assertions.assertDoesNotThrow(()->request.format());
-
+        final DataTablesFormat format = new DataTablesFormat(aggDataset,options);
+        final JsonObject formatted = Assertions.assertDoesNotThrow(()->format.format());
+        final JsonObject data = formatted.getJsonObject("data");
+        final JsonArray headers = data.getJsonArray("headers");
         final boolean isAggregated = formatted.getBoolean("isAggregated");
-        String type = formatted.getString("type");
+        final String type = formatted.getString("type");
+
+        // Check metadata
+        final int rowCount = aggDataset.collectAsList().size();
+        Assertions.assertEquals(draw,data.getInt("draw"));
+        Assertions.assertEquals(rowCount,data.getInt("recordsTotal"));
+        Assertions.assertEquals(rowCount,data.getInt("recordsFiltered"));
+
+        // Check headers
+        Assertions.assertEquals(aggSchema.size(),data.getJsonArray("headers").size());
+
+        Assertions.assertEquals(aggSchema.fieldNames()[0],headers.getString(0));
+        Assertions.assertEquals(aggSchema.fieldNames()[1],headers.getString(1));
+        Assertions.assertEquals(aggSchema.fieldNames()[2],headers.getString(2));
+
+        // Check data
+        Assertions.assertEquals("2025-01-03T12:00:00.000Z",data.getJsonArray("data").getJsonObject(0).getString("_time"));
+        Assertions.assertEquals("2025-01-14T12:00:00.000Z",data.getJsonArray("data").getJsonObject(1).getString("_time"));
+
+        Assertions.assertEquals(1.0,data.getJsonArray("data").getJsonObject(0).getJsonNumber("avg").doubleValue());
+        Assertions.assertEquals(1.0,data.getJsonArray("data").getJsonObject(1).getJsonNumber("avg").doubleValue());
+
+        Assertions.assertEquals(1,data.getJsonArray("data").getJsonObject(0).getInt("max"));
+        Assertions.assertEquals(1,data.getJsonArray("data").getJsonObject(1).getInt("max"));
+
         Assertions.assertEquals(true,isAggregated);
         Assertions.assertEquals(InterpreterResult.Type.DATATABLES.label,type);
     }
 
     @Test
     void testPagination() {
-        // Get first 5 rows of the dataset, check values of first and last field
+        // Get first 5 rows of the dataset,
         int draw1 = 0;
         int start1 = 0;
         int length1 = 5;
         String searchString1 = "";
         final DataTablesOptions options1 = new DataTablesOptions(draw1,start1,length1,new DataTablesSearch(searchString1,false,new ArrayList<>()),new ArrayList<>(), new ArrayList<>());
 
+        final DataTablesFormat format1 = new DataTablesFormat(sourceData,options1);
+        final JsonObject formatted1 = Assertions.assertDoesNotThrow(()->format1.format().getJsonObject("data"));
+        Assertions.assertEquals(5,formatted1.getJsonArray("data").size());
 
-        final DataTablesFormat request1 = new DataTablesFormat(testDs,options1);
-        final JsonObject response1 = Assertions.assertDoesNotThrow(()->request1.format().getJsonObject("data"));
-        Assertions.assertEquals(5,response1.getJsonArray("data").size());
-        Assertions.assertEquals("1970-01-01T00:00:49.000Z",response1.getJsonArray("data").getJsonObject(0).getString("_time"));
-        Assertions.assertEquals("1970-01-01T00:00:45.000Z",response1.getJsonArray("data").getJsonObject(4).getString("_time"));
+        Assertions.assertEquals("2025-01-01T12:00:00.000Z",formatted1.getJsonArray("data").getJsonObject(0).getString("_time"));
+        Assertions.assertEquals("2025-01-01T12:00:00.000Z",formatted1.getJsonArray("data").getJsonObject(1).getString("_time"));
+        Assertions.assertEquals("2025-01-01T12:00:00.000Z",formatted1.getJsonArray("data").getJsonObject(2).getString("_time"));
+        Assertions.assertEquals("2025-01-01T12:00:00.000Z",formatted1.getJsonArray("data").getJsonObject(3).getString("_time"));
+        Assertions.assertEquals("2025-01-01T12:00:00.000Z",formatted1.getJsonArray("data").getJsonObject(4).getString("_time"));
 
 
-        // Get rows 6-15 of the dataset, check values of first and last field
+        Assertions.assertEquals("create",formatted1.getJsonArray("data").getJsonObject(0).getString("operation"));
+        Assertions.assertEquals("delete",formatted1.getJsonArray("data").getJsonObject(1).getString("operation"));
+        Assertions.assertEquals("update",formatted1.getJsonArray("data").getJsonObject(2).getString("operation"));
+        Assertions.assertEquals("create",formatted1.getJsonArray("data").getJsonObject(3).getString("operation"));
+        Assertions.assertEquals("delete",formatted1.getJsonArray("data").getJsonObject(4).getString("operation"));
+
+        Assertions.assertEquals(true,formatted1.getJsonArray("data").getJsonObject(0).getBoolean("success"));
+        Assertions.assertEquals(true,formatted1.getJsonArray("data").getJsonObject(1).getBoolean("success"));
+        Assertions.assertEquals(true,formatted1.getJsonArray("data").getJsonObject(2).getBoolean("success"));
+        Assertions.assertEquals(true,formatted1.getJsonArray("data").getJsonObject(3).getBoolean("success"));
+        Assertions.assertEquals(true,formatted1.getJsonArray("data").getJsonObject(4).getBoolean("success"));
+
+
+        Assertions.assertEquals(1,formatted1.getJsonArray("data").getJsonObject(0).getInt("filesModified"));
+        Assertions.assertEquals(2,formatted1.getJsonArray("data").getJsonObject(1).getInt("filesModified"));
+        Assertions.assertEquals(1,formatted1.getJsonArray("data").getJsonObject(2).getInt("filesModified"));
+        Assertions.assertEquals(1,formatted1.getJsonArray("data").getJsonObject(3).getInt("filesModified"));
+        Assertions.assertEquals(1,formatted1.getJsonArray("data").getJsonObject(4).getInt("filesModified"));
+
+        // Get rows 10-15 of the dataset
         int draw2 = 1;
-        int start2 = 5;
-        int length2 = 10;
+        int start2 = 9;
+        int length2 = 5;
         String searchString2 = "";
         final DataTablesOptions options2 = new DataTablesOptions(draw2,start2,length2,new DataTablesSearch(searchString2,false,new ArrayList<>()),new ArrayList<>(), new ArrayList<>());
 
-        final DataTablesFormat request2 = new DataTablesFormat(testDs,options2);
-        final JsonObject response2 = Assertions.assertDoesNotThrow(()->request2.format().getJsonObject("data"));
-        Assertions.assertEquals(10,response2.getJsonArray("data").size());
-        Assertions.assertEquals("1970-01-01T00:00:44.000Z",response2.getJsonArray("data").getJsonObject(0).getString("_time"));
-        Assertions.assertEquals("1970-01-01T00:00:35.000Z",response2.getJsonArray("data").getJsonObject(9).getString("_time"));
+        final DataTablesFormat format2 = new DataTablesFormat(sourceData,options2);
+        final JsonObject formatted2 = Assertions.assertDoesNotThrow(()->format2.format().getJsonObject("data"));
+
+        Assertions.assertEquals(5,formatted2.getJsonArray("data").size());
+
+        Assertions.assertEquals("2025-01-02T12:00:00.000Z",formatted2.getJsonArray("data").getJsonObject(0).getString("_time"));
+        Assertions.assertEquals("2025-01-02T12:00:00.000Z",formatted2.getJsonArray("data").getJsonObject(1).getString("_time"));
+        Assertions.assertEquals("2025-01-03T12:00:00.000Z",formatted2.getJsonArray("data").getJsonObject(2).getString("_time"));
+        Assertions.assertEquals("2025-01-04T12:00:00.000Z",formatted2.getJsonArray("data").getJsonObject(3).getString("_time"));
+        Assertions.assertEquals("2025-01-05T12:00:00.000Z",formatted2.getJsonArray("data").getJsonObject(4).getString("_time"));
+
+
+        Assertions.assertEquals("delete",formatted2.getJsonArray("data").getJsonObject(0).getString("operation"));
+        Assertions.assertEquals("update",formatted2.getJsonArray("data").getJsonObject(1).getString("operation"));
+        Assertions.assertEquals("update",formatted2.getJsonArray("data").getJsonObject(2).getString("operation"));
+        Assertions.assertEquals("delete",formatted2.getJsonArray("data").getJsonObject(3).getString("operation"));
+        Assertions.assertEquals("update",formatted2.getJsonArray("data").getJsonObject(4).getString("operation"));
+
+        Assertions.assertEquals(false,formatted2.getJsonArray("data").getJsonObject(0).getBoolean("success"));
+        Assertions.assertEquals(true,formatted2.getJsonArray("data").getJsonObject(1).getBoolean("success"));
+        Assertions.assertEquals(false,formatted2.getJsonArray("data").getJsonObject(2).getBoolean("success"));
+        Assertions.assertEquals(false,formatted2.getJsonArray("data").getJsonObject(3).getBoolean("success"));
+        Assertions.assertEquals(true,formatted2.getJsonArray("data").getJsonObject(4).getBoolean("success"));
+
+
+        Assertions.assertEquals(1,formatted2.getJsonArray("data").getJsonObject(0).getInt("filesModified"));
+        Assertions.assertEquals(1,formatted2.getJsonArray("data").getJsonObject(1).getInt("filesModified"));
+        Assertions.assertEquals(1,formatted2.getJsonArray("data").getJsonObject(2).getInt("filesModified"));
+        Assertions.assertEquals(4,formatted2.getJsonArray("data").getJsonObject(3).getInt("filesModified"));
+        Assertions.assertEquals(1,formatted2.getJsonArray("data").getJsonObject(4).getInt("filesModified"));
     }
 }

@@ -51,7 +51,6 @@ import com.teragrep.zep_01.interpreter.thrift.UPlotOptions;
 import jakarta.json.JsonObject;
 import org.apache.spark.sql.Dataset;
 import org.apache.spark.sql.Row;
-import org.apache.spark.sql.RowFactory;
 import org.apache.spark.sql.SparkSession;
 import org.apache.spark.sql.types.DataTypes;
 import org.apache.spark.sql.types.MetadataBuilder;
@@ -59,112 +58,27 @@ import org.apache.spark.sql.types.StructField;
 import org.apache.spark.sql.types.StructType;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
-import java.time.Instant;
+
 import java.util.*;
 
 class UPlotFormatTest {
-    final SparkSession sparkSession;
-    final StructType schema;
-    final List<Row> rows;
-    final StructType timeChartSchema;
-    final List<Row> timeChartRows;
-    public UPlotFormatTest() {
-        sparkSession = SparkSession.builder()
-                .master("local[*]")
+    private final String sourceDataFile = "src/test/resources/formatTestSourceData.csv";
+    private final SparkSession sparkSession = SparkSession.builder()
+            .master("local[*]")
                 .config("spark.cleaner.referenceTracking.cleanCheckpoints", "true")
                 .config("checkpointLocation","/tmp/pth_10/test/StackTest/checkpoints/" + UUID.randomUUID() + "/")
-                .config("spark.sql.session.timeZone", "UTC")
+            .config("spark.sql.session.timeZone", "UTC")
                 .getOrCreate();
 
-        schema = new StructType(
+    StructType schema = new StructType(
                 new StructField[] {
-                        new StructField("operation", DataTypes.StringType, false, new MetadataBuilder().build()),
-                        new StructField("success", DataTypes.BooleanType, false, new MetadataBuilder().build()),
-                        new StructField("filesModified", DataTypes.IntegerType, false, new MetadataBuilder().build())
-                }
-        );
-
-        rows = new ArrayList<>();
-        rows.add(RowFactory.create("create",true,1));
-        rows.add(RowFactory.create("create",true,1));
-        rows.add(RowFactory.create("create",true,1));
-        rows.add(RowFactory.create("create",true,1));
-        rows.add(RowFactory.create("delete",true,1));
-        rows.add(RowFactory.create("delete",false,4));
-        rows.add(RowFactory.create("delete",false,5));
-        rows.add(RowFactory.create("delete",false,2));
-        rows.add(RowFactory.create("delete",false,3));
-        rows.add(RowFactory.create("delete",false,1));
-        rows.add(RowFactory.create("update",true,1));
-        rows.add(RowFactory.create("update",false,1));
-        rows.add(RowFactory.create("delete",false,4));
-        rows.add(RowFactory.create("update",true,1));
-        rows.add(RowFactory.create("update",false,1));
-        rows.add(RowFactory.create("create",true,1));
-        rows.add(RowFactory.create("create",true,1));
-        rows.add(RowFactory.create("create",true,1));
-        rows.add(RowFactory.create("create",true,1));
-        rows.add(RowFactory.create("delete",true,1));
-        rows.add(RowFactory.create("delete",false,1));
-        rows.add(RowFactory.create("delete",false,1));
-        rows.add(RowFactory.create("delete",false,1));
-        rows.add(RowFactory.create("delete",false,1));
-        rows.add(RowFactory.create("delete",false,1));
-        rows.add(RowFactory.create("update",true,1));
-        rows.add(RowFactory.create("update",false,1));
-        rows.add(RowFactory.create("delete",false,1));
-        rows.add(RowFactory.create("update",true,1));
-        rows.add(RowFactory.create("update",false,1));
-
-        timeChartSchema = new StructType(
-                new StructField[] {
-                        new StructField("_time", DataTypes.TimestampType, false, new MetadataBuilder().build()),
-                        new StructField("success", DataTypes.BooleanType, false, new MetadataBuilder().build()),
-                        new StructField("operation", DataTypes.StringType, false, new MetadataBuilder().build()),
-                }
-        );
-        timeChartRows = new ArrayList<>();
-        timeChartRows.add(RowFactory.create(Instant.ofEpochSecond(1777777771),true,"create"));
-        timeChartRows.add(RowFactory.create(Instant.ofEpochSecond(1777777772),false,"create"));
-        timeChartRows.add(RowFactory.create(Instant.ofEpochSecond(1777777773),true,"create"));
-        timeChartRows.add(RowFactory.create(Instant.ofEpochSecond(1777777774),false,"create"));
-        timeChartRows.add(RowFactory.create(Instant.ofEpochSecond(1777777775),true,"create"));
-        timeChartRows.add(RowFactory.create(Instant.ofEpochSecond(1777777776),false,"create"));
-        timeChartRows.add(RowFactory.create(Instant.ofEpochSecond(1777777777),true,"create"));
-        timeChartRows.add(RowFactory.create(Instant.ofEpochSecond(1777777778),false,"create"));
-        timeChartRows.add(RowFactory.create(Instant.ofEpochSecond(1777777779),true,"create"));
-        timeChartRows.add(RowFactory.create(Instant.ofEpochSecond(1777777780),false,"create"));
-        timeChartRows.add(RowFactory.create(Instant.ofEpochSecond(1777777781),true,"create"));
-        timeChartRows.add(RowFactory.create(Instant.ofEpochSecond(1777777782),false,"create"));
-        timeChartRows.add(RowFactory.create(Instant.ofEpochSecond(1777777783),true,"create"));
-        timeChartRows.add(RowFactory.create(Instant.ofEpochSecond(1777777784),false,"create"));
-        timeChartRows.add(RowFactory.create(Instant.ofEpochSecond(1777777785),true,"update"));
-        timeChartRows.add(RowFactory.create(Instant.ofEpochSecond(1777777786),false,"update"));
-        timeChartRows.add(RowFactory.create(Instant.ofEpochSecond(1777777787),true,"update"));
-        timeChartRows.add(RowFactory.create(Instant.ofEpochSecond(1777777788),false,"update"));
-        timeChartRows.add(RowFactory.create(Instant.ofEpochSecond(1777777789),true,"update"));
-        timeChartRows.add(RowFactory.create(Instant.ofEpochSecond(1777777790),false,"update"));
-        timeChartRows.add(RowFactory.create(Instant.ofEpochSecond(1777777791),true,"update"));
-        timeChartRows.add(RowFactory.create(Instant.ofEpochSecond(1777777792),false,"update"));
-        timeChartRows.add(RowFactory.create(Instant.ofEpochSecond(1777777793),true,"update"));
-        timeChartRows.add(RowFactory.create(Instant.ofEpochSecond(1777777794),false,"update"));
-        timeChartRows.add(RowFactory.create(Instant.ofEpochSecond(1777777790),true,"delete"));
-        timeChartRows.add(RowFactory.create(Instant.ofEpochSecond(1777777791),false,"delete"));
-        timeChartRows.add(RowFactory.create(Instant.ofEpochSecond(1777777792),true,"delete"));
-        timeChartRows.add(RowFactory.create(Instant.ofEpochSecond(1777777793),false,"delete"));
-        timeChartRows.add(RowFactory.create(Instant.ofEpochSecond(1777777794),true,"delete"));
-        timeChartRows.add(RowFactory.create(Instant.ofEpochSecond(1777777795),false,"delete"));
-        timeChartRows.add(RowFactory.create(Instant.ofEpochSecond(1777777796),true,"delete"));
-        timeChartRows.add(RowFactory.create(Instant.ofEpochSecond(1777777797),false,"delete"));
-        timeChartRows.add(RowFactory.create(Instant.ofEpochSecond(1777777798),true,"delete"));
-        timeChartRows.add(RowFactory.create(Instant.ofEpochSecond(1777777799),false,"delete"));
-        timeChartRows.add(RowFactory.create(Instant.ofEpochSecond(1777777790),true,"delete"));
-        timeChartRows.add(RowFactory.create(Instant.ofEpochSecond(1777777791),false,"delete"));
-        timeChartRows.add(RowFactory.create(Instant.ofEpochSecond(1777777792),true,"delete"));
-        timeChartRows.add(RowFactory.create(Instant.ofEpochSecond(1777777793),false,"delete"));
-        timeChartRows.add(RowFactory.create(Instant.ofEpochSecond(1777777794),true,"delete"));
-        timeChartRows.add(RowFactory.create(Instant.ofEpochSecond(1777777795),false,"delete"));
+        new StructField("_time", DataTypes.TimestampType, false, new MetadataBuilder().build()),
+                new StructField("operation", DataTypes.StringType, false, new MetadataBuilder().build()),
+                new StructField("success", DataTypes.BooleanType, false, new MetadataBuilder().build()),
+                new StructField("filesModified", DataTypes.IntegerType, false, new MetadataBuilder().build())
     }
+        );
+    private final Dataset<Row> sourceData = sparkSession.read().option("header",true).schema(schema).csv(sourceDataFile);
     @Test
     void testSingleRowAggregationFormat() {
         // Create test dataset and a query string to simulate most recent dataset received from DPL
@@ -172,7 +86,7 @@ class UPlotFormatTest {
                 "index=test\n" +
                 "| spath\n" +
                 "| stats max(filesModified) min(filesModified)";
-        final Dataset<Row> resultDataset = sparkSession.createDataFrame(rows,schema)
+        final Dataset<Row> resultDataset = sourceData
                 .agg(org.apache.spark.sql.functions.max("filesModified"),org.apache.spark.sql.functions.min("filesModified"));
         final int groupByCount = 0;
 
@@ -231,7 +145,7 @@ class UPlotFormatTest {
                 "index=test\n" +
                 "| spath\n" +
                 "| stats max(filesModified) min(filesModified) by success";
-        final Dataset<Row> resultDataset = sparkSession.createDataFrame(rows,schema)
+        final Dataset<Row> resultDataset = sourceData
                 .groupBy("success")
                 .agg(org.apache.spark.sql.functions.max("filesModified"),org.apache.spark.sql.functions.min("filesModified"))
                 .withMetadata("success", new MetadataBuilder().putBoolean("dpl_internal_isGroupByColumn",true).build());
@@ -292,7 +206,7 @@ class UPlotFormatTest {
                 "| spath\n" +
                 "| timechart count(operation) avg(operation) max(operation)";
         final int groupByCount = 1; // DPL query contains two group by clauses due to usage of 'timechart' command
-        final Dataset<Row> resultDataset = sparkSession.createDataFrame(timeChartRows,timeChartSchema)
+        final Dataset<Row> resultDataset = sourceData
                 .groupBy("_time")
                 .agg(org.apache.spark.sql.functions.count("operation"))
                 .withMetadata("_time", new MetadataBuilder().putBoolean("dpl_internal_isGroupByColumn",true).build());;
@@ -350,7 +264,7 @@ class UPlotFormatTest {
                 "index=test earliest=-5y\n" +
                 "| spath\n" +
                 "| stats count(operation) avg(operation) max(operation) by operation success";
-        final Dataset<Row> resultDataset = sparkSession.createDataFrame(rows,schema)
+        final Dataset<Row> resultDataset = sourceData
                 .groupBy("operation","success")
                 .agg(org.apache.spark.sql.functions.count("success"),org.apache.spark.sql.functions.avg("filesModified"),org.apache.spark.sql.functions.max("filesModified"))
                 .withMetadata("success", new MetadataBuilder().putBoolean("dpl_internal_isGroupByColumn",true).build())
@@ -407,7 +321,7 @@ class UPlotFormatTest {
     // Verify that if the final operation is not a group by, aggregations are still detected and formatting still works.
     @Test
     void testPreviouslyAggregatedDatasetFormat() {
-        final Dataset<Row> resultDataset = sparkSession.createDataFrame(rows,schema).groupBy("operation","success")
+        final Dataset<Row> resultDataset = sourceData.groupBy("operation","success")
                 .agg(org.apache.spark.sql.functions.count("success").as("countSuccess")
                         ,org.apache.spark.sql.functions.avg("filesModified").as("avgModified")
                         ,org.apache.spark.sql.functions.max("filesModified").as("maxModified"))
@@ -483,7 +397,7 @@ class UPlotFormatTest {
         final String dplQuery = "%dpl\n" +
                 "index=test\n" +
                 "| spath";
-        final Dataset<Row> resultDataset = sparkSession.createDataFrame(rows,schema);
+        final Dataset<Row> resultDataset = sparkSession.read().option("header",true).schema(schema).csv(sourceDataFile);
 
         // Create options and Format objects to be tested
         final String graphType = "graph";
@@ -499,7 +413,7 @@ class UPlotFormatTest {
         final String dplQuery = "%dpl\n" +
                 "index=test\n" +
                 "| spath";
-        final Dataset<Row> resultDataset = sparkSession.createDataFrame(rows,schema).select("filesModified");
+        final Dataset<Row> resultDataset = sourceData.select("filesModified");
         final int groupByCount = 0;
 
         // Create options and Format objects to be tested
