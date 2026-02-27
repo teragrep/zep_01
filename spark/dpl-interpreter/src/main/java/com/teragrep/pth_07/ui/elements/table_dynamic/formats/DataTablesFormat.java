@@ -45,26 +45,18 @@
  */
 package com.teragrep.pth_07.ui.elements.table_dynamic.formats;
 
-import com.teragrep.pth_07.ui.elements.table_dynamic.DTPagination;
-import com.teragrep.pth_07.ui.elements.table_dynamic.DTSearch;
-import com.teragrep.pth_07.ui.elements.table_dynamic.pojo.Order;
 import com.teragrep.zep_01.interpreter.InterpreterException;
 import com.teragrep.zep_01.interpreter.InterpreterResult;
 import com.teragrep.zep_01.interpreter.thrift.DataTablesOptions;
 import jakarta.json.*;
 import org.apache.spark.sql.Dataset;
 import org.apache.spark.sql.Row;
-import org.apache.spark.sql.catalyst.plans.logical.Aggregate;
-import org.apache.spark.sql.catalyst.plans.logical.LogicalPlan;
 import org.apache.spark.sql.types.StructField;
 import org.apache.spark.sql.types.StructType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import scala.collection.Iterator;
-import scala.collection.JavaConverters;
 
 import java.io.StringReader;
-import java.util.List;
 
 public class DataTablesFormat implements DatasetFormat{
 
@@ -77,63 +69,52 @@ public class DataTablesFormat implements DatasetFormat{
         this.options = options;
     }
     public JsonObject format() throws InterpreterException{
-            if(dataset == null){
-                throw new InterpreterException("Attempting to draw an empty dataset!");
-            }
-            try{
-                final List<String> datasetAsJson = dataset.toJSON().collectAsList();
-                final DTSearch dtSearch = new DTSearch(datasetAsJson);
-                final List<Order> currentOrder = null;
+        if(dataset == null){
+            throw new InterpreterException("Attempting to draw an empty dataset!");
+        }
 
-                // searching
-                final List<String> searchedList = dtSearch.search(options.getSearch().getValue());
+        // headers
+        JsonArrayBuilder headersBuilder = Json.createArrayBuilder();
+        for (StructField header:dataset.schema().fields()) {
+            headersBuilder.add(header.name());
+        }
+        JsonArray headers = headersBuilder.build();
 
-                // TODO ordering
-                //DTOrder dtOrder = new DTOrder(searchedList);
-                //List<String> orderedlist = dtOrder.order(searchedList, currentOrder);
-                final List<String> orderedlist = searchedList;
+        // search
+        final Dataset<Row> searched;
+        if(!options.getSearch().getValue().isEmpty()){
+            searched = dataset.filter(org.apache.spark.sql.functions.col("_raw"));
+        }
+        else {
+            searched = dataset;
+        }
 
-                // pagination
-                final DTPagination dtPagination = new DTPagination(orderedlist);
-                final List<String> paginatedList = dtPagination.paginate(options.getLength(), options.getStart());
+        // paginate
+        final Dataset<Row> paginated;
+        paginated = searched.offset(options.getStart()).limit(options.getLength());
 
-                // ui formatting
-                final JsonArray formated;
-                final JsonArrayBuilder arrayBuilder = Json.createArrayBuilder();
-                for (final String row : paginatedList) {
-                    final JsonReader reader = Json.createReader(new StringReader(row));
-                    final JsonObject line = reader.readObject();
-                    arrayBuilder.add(line);
-                    reader.close();
-                }
-                formated = arrayBuilder.build();
+        // json
+        JsonArrayBuilder dataBuilder = Json.createArrayBuilder();
+        for (String jsonRow:paginated.toJSON().collectAsList()) {
+            dataBuilder.add(Json.createReader(new StringReader(jsonRow)).readObject());
+        }
+        JsonArray data = dataBuilder.build();
+        long recordsTotal = dataset.count();
+        long recordsFiltered = searched.count();
+        boolean isAggregated = isAggregated(dataset.schema());
 
-                final JsonArrayBuilder builder = Json.createArrayBuilder();
-                final Iterator<StructField> it = dataset.schema().iterator();
-                while(it.hasNext()) {
-                    final StructField column = it.next();
-                    builder.add(column.name());
-                }
-                final JsonArray schemaHeadersAsJSON = builder.build();
-                StructType schema = dataset.schema();
-                final boolean aggsUsed = isAggregated(schema);
-
-
-                final int recordsTotal = datasetAsJson.size();
-                final int recordsFiltered = searchedList.size();
-                final JsonObjectBuilder dataBuilder = Json.createObjectBuilder();
-                dataBuilder.add("headers",schemaHeadersAsJSON);
-                dataBuilder.add("data", formated);
-                dataBuilder.add("draw", options.getDraw());
-                dataBuilder.add("recordsTotal", recordsTotal);
-                dataBuilder.add("recordsFiltered", recordsFiltered);
-                final JsonObject data = dataBuilder.build();
-                final JsonObject json = Json.createObjectBuilder().add("data",data).add("isAggregated",aggsUsed).add("type", InterpreterResult.Type.DATATABLES.label).build();
-                return json;
-            }catch(final JsonException | IllegalStateException e){
-                LOGGER.error(e.toString());
-                throw new InterpreterException("Failed to format dataset into DataTables format");
-            }
+        JsonObject json = Json.createObjectBuilder()
+                .add("data",Json.createObjectBuilder()
+                        .add("headers",headers)
+                        .add("data", data)
+                        .add("draw", options.getDraw())
+                        .add("recordsTotal", recordsTotal)
+                        .add("recordsFiltered", recordsFiltered)
+                        .build())
+                .add("isAggregated",isAggregated)
+                .add("type",InterpreterResult.Type.DATATABLES.label)
+                .build();
+        return json;
     }
     private boolean isAggregated(StructType schema) {
         for (StructField field:schema.fields()) {

@@ -48,10 +48,6 @@ package com.teragrep.pth_07.ui.elements.table_dynamic;
 import com.teragrep.pth_07.ui.elements.table_dynamic.testdata.TestDPLData;
 import com.teragrep.zep_01.display.AngularObjectRegistry;
 import com.teragrep.zep_01.interpreter.*;
-import jakarta.json.Json;
-import jakarta.json.JsonArray;
-import jakarta.json.JsonArrayBuilder;
-import jakarta.json.JsonObject;
 import org.apache.spark.sql.Dataset;
 import org.apache.spark.sql.Row;
 import org.apache.spark.sql.SparkSession;
@@ -63,11 +59,9 @@ import org.slf4j.LoggerFactory;
 
 import java.sql.Timestamp;
 import java.time.Instant;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class DTTableDatasetNgTest {
     private static final Logger LOGGER = LoggerFactory.getLogger(DTTableDatasetNgTest.class);
@@ -104,60 +98,6 @@ public class DTTableDatasetNgTest {
     );
     private final TestDPLData smallTestDataset = new TestDPLData(sparkSession, smallTestSchema);
     private final Dataset<Row> smallTestDs = smallTestDataset.createDataset(49,Timestamp.from(Instant.ofEpochSecond(0)),0L,"data data");
-
-    @Test
-    public void testAJAXResponse() {
-        List<String> datasetAsJSON = testDs.toJSON().collectAsList();
-
-        List<String> subList = datasetAsJSON.subList(0, 5);
-
-        JsonArray formated = DTTableDatasetNg.dataStreamParser(subList);
-
-        DTHeader dtHeader = new DTHeader(testSchema);
-        JsonArray headers = dtHeader.json();
-        JsonObject response = DTTableDatasetNg.DTNetResponse(formated, headers, 1, datasetAsJSON.size(),formated.size());
-
-        ArrayList<String> timestamps = new ArrayList<>();
-        timestamps.add("1970-01-01T00:00:49.000Z");
-        timestamps.add("1970-01-01T00:00:48.000Z");
-        timestamps.add("1970-01-01T00:00:47.000Z");
-        timestamps.add("1970-01-01T00:00:46.000Z");
-        timestamps.add("1970-01-01T00:00:45.000Z");
-
-        JsonArrayBuilder dataBuilder = Json.createArrayBuilder();
-        for (String timestamp:timestamps
-             ) {
-            JsonObject rowJson = Json.createObjectBuilder()
-                    .add("_time",timestamp)
-                    .add("id",0)
-                    .add("_raw","data data")
-                    .add("index","index_A")
-                    .add("sourcetype","stream")
-                    .add("host","host")
-                    .add("source","input")
-                    .add("partition","0")
-                    .add("offset",0)
-                    .add("origin","test data")
-                    .build();
-            dataBuilder.add(rowJson);
-        }
-        JsonArray data = dataBuilder.build();
-
-        // Ensure that data field has the correct number of rows.
-        Assertions.assertEquals(5,data.size());
-
-        JsonObject expectedJson = Json.createObjectBuilder()
-                .add("headers",headers)
-                .add("data", data)
-                .add("draw",1)
-                .add("recordsTotal",49)
-                .add("recordsFiltered",5)
-                .build();
-
-        assertEquals(expectedJson.toString()
-                , response.toString()
-        );
-    }
 
     // When new data is received, DTTableDatasetNg should not send an empty update to frontend every time InterpreterOutput.clear() is called.
     // Does not include a concrete implementation of InterpreterOutputListener as it's an anonymous class within RemoteInterpreterServer, and instantiating it would require too many dependencies.

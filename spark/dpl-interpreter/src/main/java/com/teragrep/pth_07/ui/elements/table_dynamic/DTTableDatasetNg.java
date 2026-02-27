@@ -55,14 +55,11 @@ import jakarta.json.*;
 import org.apache.spark.sql.Dataset;
 import org.apache.spark.sql.Row;
 import com.teragrep.zep_01.interpreter.InterpreterContext;
+import org.apache.spark.sql.types.StructType;
 import org.apache.spark.storage.StorageLevel;
 
 import java.io.IOException;
-import java.io.StringReader;
 import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
@@ -71,8 +68,7 @@ public final class DTTableDatasetNg extends AbstractUserInterfaceElement {
 
     private final Lock lock = new ReentrantLock();
     private Dataset<Row> dataset = null;
-    private Dataset<String> datasetAsJson = null;
-    private DTHeader schemaHeaders;
+    private StructType schema;
     private int drawCount;
 
     /*
@@ -84,12 +80,12 @@ public final class DTTableDatasetNg extends AbstractUserInterfaceElement {
     private int currentAJAXLength = 50;
 
     public DTTableDatasetNg(final InterpreterContext interpreterContext) {
-        this(interpreterContext, new DTHeader(), 1);
+        this(interpreterContext, new StructType(), 1);
     }
 
-    public DTTableDatasetNg(final InterpreterContext interpreterContext, final DTHeader schemaHeaders, final int drawCount){
+    public DTTableDatasetNg(final InterpreterContext interpreterContext, final StructType schema, final int drawCount){
         super(interpreterContext);
-        this.schemaHeaders = schemaHeaders;
+        this.schema = schema;
         this.drawCount = drawCount;
     }
     @Override
@@ -109,7 +105,7 @@ public final class DTTableDatasetNg extends AbstractUserInterfaceElement {
         try {
             lock.lock();
             // Reset draw when schema changes
-            if(!schemaHeaders.schema().equals(rowDataset.schema())){
+            if(!schema.equals(rowDataset.schema())){
                 drawCount = 1;
             }
             // Increment draw when schema has not changed.
@@ -118,17 +114,13 @@ public final class DTTableDatasetNg extends AbstractUserInterfaceElement {
             }
 
             // unpersist dataset upon receiving new data
-            if(datasetAsJson != null){
-                datasetAsJson.unpersist();
-            }
             if(dataset != null){
                 dataset.unpersist();
             }
             if (rowDataset.schema().nonEmpty()) {
                 // needs to be here as sparkContext might disappear later
                 dataset = rowDataset.persist(StorageLevel.MEMORY_AND_DISK());
-                datasetAsJson = rowDataset.toJSON().persist(StorageLevel.MEMORY_AND_DISK());
-                schemaHeaders = new DTHeader(rowDataset.schema());
+                schema = rowDataset.schema();
             }
         } finally {
             lock.unlock();
@@ -149,54 +141,18 @@ public final class DTTableDatasetNg extends AbstractUserInterfaceElement {
     public Dataset<Row> dataset(){
         return dataset;
     }
+
+    // Set default format and options
     public void writeDataUpdate() throws InterpreterException{
         final DataTablesOptions defaultOptions = new DataTablesOptions(drawCount,0,currentAJAXLength,new DataTablesSearch("",false,new ArrayList<>()),new ArrayList<>(),new ArrayList<>());
         writeDataUpdate(new DataTablesFormat(dataset,defaultOptions));
     }
 
-    public void writeDataUpdate(final DatasetFormat format) throws InterpreterException{
+    private void writeDataUpdate(final DatasetFormat format) throws InterpreterException{
             final JsonObject formatted = format.format();
             final String outputContent = "%"+format.type().toLowerCase()+"\n" +
                     formatted.toString();
             write(outputContent);
 
-    }
-
-    static JsonArray dataStreamParser(final List<String> data){
-
-        try{
-            final JsonArrayBuilder builder = Json.createArrayBuilder();
-
-
-            for (final String S : data) {
-                final JsonReader reader = Json.createReader(new StringReader(S));
-                final JsonObject line = reader.readObject();
-                builder.add(line);
-                reader.close();
-            }
-            return builder.build();
-        }catch(final JsonException | IllegalStateException e){
-            LOGGER.error(e.toString());
-            return(Json.createArrayBuilder().build());
-        }
-    }
-
-    static JsonObject DTNetResponse(final JsonArray data, final JsonArray schemaHeadersJson, final int draw, final int recordsTotal, final int recordsFiltered){
-        try{
-            final JsonObjectBuilder builder = Json.createObjectBuilder();
-            builder.add("headers",schemaHeadersJson);
-            builder.add("data", data);
-            builder.add("draw", draw);
-            builder.add("recordsTotal", recordsTotal);
-            builder.add("recordsFiltered", recordsFiltered);
-            return builder.build();
-        }catch(final JsonException | IllegalStateException e){
-            LOGGER.error(e.toString());
-            return(Json.createObjectBuilder().build());
-        }
-    }
-
-    public List<String> getDatasetAsJSON(){
-        return datasetAsJson.collectAsList();
     }
 }
