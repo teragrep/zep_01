@@ -105,33 +105,46 @@ public class ParagraphOutputRequestMessage implements Jsonable {
         }
         int length = json.getInt("length");
 
-        if(!json.containsKey("search") || !json.get("search").getValueType().equals(JsonValue.ValueType.OBJECT)){
-            throw new JsonException("Json does not contain a search object!");
+        final DataTablesSearch search;
+        // Search is an optional field, so if it is omitted, we default to an empty search object.
+        if(!json.containsKey("search")) {
+            search = new DataTablesSearch("", false, new ArrayList<>());
         }
-        DataTablesSearch search = dataTablesSearch(json.getJsonObject("search"));
+        else{
+            if (!json.get("search").getValueType().equals(JsonValue.ValueType.OBJECT)) {
+                throw new JsonException("Json contains a malformed search object!");
+            }
+            else {
+                search = dataTablesSearch(json.getJsonObject("search"));
+            }
+        }
 
+        final List<String> order = new ArrayList<>();
         if(!json.containsKey("order") || !json.get("order").getValueType().equals(JsonValue.ValueType.ARRAY)){
-            throw new JsonException("Json does not contain a order array!");
+            // Order is an optional field, so if it is omitted, we continue with the empty order list.
         }
-        JsonArray orderJson = json.getJsonArray("order");
-        List<String> order = new ArrayList<>();
-        for (int i = 0; i < orderJson.size(); i++) {
-            if(!orderJson.get(i).getValueType().equals(JsonValue.ValueType.STRING)){
-                throw new JsonException("Order array does not contain only Strings!");
+        else {
+            JsonArray orderJson = json.getJsonArray("order");
+            for (int i = 0; i < orderJson.size(); i++) {
+                if(!orderJson.get(i).getValueType().equals(JsonValue.ValueType.STRING)){
+                    throw new JsonException("Order array does not contain only Strings!");
+                }
+                order.add(orderJson.getString(i));
             }
-            order.add(orderJson.getString(i));
         }
 
+        final List<DataTablesColumns> columns = new ArrayList<>();
         if(!json.containsKey("columns") || !json.get("columns").getValueType().equals(JsonValue.ValueType.ARRAY)){
-            throw new JsonException("Json does not contain a columns array!");
+            // Columns is an optional field, so if it is omitted, we continue with the empty coolumns list.
         }
-        JsonArray columnsJson = json.getJsonArray("columns");
-        List<DataTablesColumns> columns = new ArrayList<>();
-        for (int i = 0; i < columnsJson.size(); i++) {
-            if(!columnsJson.get(i).getValueType().equals(JsonValue.ValueType.OBJECT)){
-                throw new JsonException("Columns array does not contain only Objects!");
+        else {
+            JsonArray columnsJson = json.getJsonArray("columns");
+            for (int i = 0; i < columnsJson.size(); i++) {
+                if(!columnsJson.get(i).getValueType().equals(JsonValue.ValueType.OBJECT)){
+                    throw new JsonException("Columns array does not contain only Objects!");
+                }
+                columns.add(dataTablesColumns(columnsJson.getJsonObject(i)));
             }
-            columns.add(dataTablesColumns(columnsJson.getJsonObject(i)));
         }
         DataTablesOptions dataTablesOptions = new DataTablesOptions(draw,start,length,search,order,columns);
         return dataTablesOptions;
