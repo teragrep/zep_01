@@ -49,17 +49,11 @@ import com.teragrep.zep_01.interpreter.InterpreterResult;
 import com.teragrep.zep_01.interpreter.thrift.UPlotOptions;
 import jakarta.json.*;
 import org.apache.spark.sql.*;
-import org.apache.spark.sql.catalyst.expressions.AttributeReference;
-import org.apache.spark.sql.catalyst.expressions.Expression;
-import org.apache.spark.sql.catalyst.plans.logical.Aggregate;
-import org.apache.spark.sql.catalyst.plans.logical.LogicalPlan;
 import org.apache.spark.sql.types.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import scala.collection.JavaConverters;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 public class UPlotFormat implements  DatasetFormat{
@@ -77,157 +71,144 @@ public class UPlotFormat implements  DatasetFormat{
         if(dataset.isEmpty()){
             throw new InterpreterException("Cannot format an empty Dataset!");
         }
-        // Get a list of column names that were used in aggregation
-        StructType schema = dataset.schema();
-        final List<String> groupByLabels = groupByLabels(schema);
-        // Infer whether aggregates were used by checking if groupByLabels is empty.
-        final boolean aggsUsed = !groupByLabels.isEmpty();
-
-        // Get references to Column objects for each column used in aggregation
-        final List<Column> groupByColumns = new ArrayList<>();
-        for (final String columnName:groupByLabels) {
-            groupByColumns.add(dataset.col(columnName));
-        }
-
-        // Turn both lists into Arrays
-        final String[] groupByLabelsArray = groupByLabels.toArray(new String[0]);
-        final Column[] groupByColumnArray = groupByColumns.toArray(new Column[0]);
-        final Dataset<Row> concatenatedDataset;
-        final StringBuilder concatenatedGroupByLabel = new StringBuilder();
-
-        // If there are more than one label used in grouping data, the names must be concatenated into a single column. eg: "group1|group2|group3"
-        if(groupByLabels.size() > 1){
-            for (int i = 0; i < groupByLabels.size(); i++) {
-                concatenatedGroupByLabel.append(groupByLabels.get(i));
-                if(i < groupByLabels.size()-1){
-                    concatenatedGroupByLabel.append("|");
-                }
-            }
-            concatenatedDataset = dataset.withColumn(concatenatedGroupByLabel.toString(),functions.concat_ws("|",groupByColumnArray)).drop(groupByLabelsArray);
-        }
-        else if(groupByLabels.size() == 1){
-            concatenatedGroupByLabel.append(groupByLabels.get(0));
-            concatenatedDataset = dataset;
-        }
-        else {
-            concatenatedDataset = dataset;
-        }
-
-        // Transpose the dataset containing the concatenated column created above.
-        // As Spark does not support columnar data, this is accomplished by collecting all the data under each column into a list and generating a Dataset with a single row containing those lists as its data.
-        final List<Column> columns = new ArrayList<Column>();
-        for (final String columnName : concatenatedDataset.columns()) {
-            columns.add(org.apache.spark.sql.functions.collect_list(columnName).as(columnName));
-        }
-        final Column[] columnArray = columns.toArray(new Column[0]); //We need to separate the first column from the others to satisfy the parameters of Dataset.agg(Column, Column...)
-        final Column firstColumn = columnArray[0];
-        final Column[] additionalColumns = Arrays.copyOfRange(columnArray,1,columnArray.length);
-        final Dataset<Row> transposed = concatenatedDataset.agg(firstColumn,additionalColumns);
-
-        // Finally, create a JSON object as expected by uPlot.
-        final JsonArrayBuilder data0 = Json.createArrayBuilder();
-        final JsonArrayBuilder data1 = Json.createArrayBuilder();
-        final JsonArrayBuilder labels = Json.createArrayBuilder();
-        final JsonArrayBuilder series = Json.createArrayBuilder();
-        final String graphType = options.getGraphType();
-
-        // Transposition collected all the data into a single row containing a number of lists.
-        final Row resultRow = transposed.collectAsList().get(0);
-        for (int i = 0; i < resultRow.schema().size(); i++) {
-            final StructField schemaField = resultRow.schema().fields()[i];
-            // Aggregated data labels should be added to options.labels, as well as their indexes in the first sub-array of the data object.
-            if(schemaField.name().equals(concatenatedGroupByLabel.toString())){
-                final List<Object> values = resultRow.getList(i);
-                int valueIndex = 0;
-                for (final Object value:values) {
-                    data0.add(valueIndex); // Is data[0] necessary to have? aggregated data should never have duplicated labels for aggregation group names so you could just use options.labels for this information
-                    labels.add(value.toString());
-                    valueIndex++;
-                }
-            }
-            // Standard data must be cast into a numerical type based on the Schema. uPlot does not support displaying non-numerical data at all.
-            else {
-                final List<Object> values = resultRow.getList(i);
-                final JsonArrayBuilder subArray = Json.createArrayBuilder();
-                final DataType elementType = ((ArrayType)(schemaField).dataType()).elementType();
-                    if(elementType.equals(DataTypes.IntegerType)){
-                        for (final Object value:values) {
-                            subArray.add((int) value);
-                        }
-                    } else if (elementType.equals(DataTypes.LongType)) {
-                        for (final Object value:values) {
-                            subArray.add((Long) value);
-                        }
-                    }
-                    else if (elementType.equals(DataTypes.ShortType)) {
-                        for (final Object value:values) {
-                            subArray.add((Short) value);
-                        }
-                    }
-                    else if (elementType.equals(DataTypes.DoubleType)) {
-                        for (final Object value:values) {
-                            subArray.add((Double) value);
-                        }
-                    }
-                    else if (elementType.equals(DataTypes.FloatType)) {
-                        for (final Object value:values) {
-                            subArray.add((Float) value);
-                        }
-                    }
-                    else if(elementType.equals(DataTypes.StringType)){
-                        for (final Object value:values){
-                            try{
-                                Double doubleValue = Double.parseDouble((String)value);
-                                subArray.add(doubleValue);
-                            } catch (NumberFormatException exception){
-                                throw new InterpreterException("uPlot format only supports numerical data, but encountered non-numerical string "+value.toString()+" in column "+ schemaField.name() +"!");
-                            }
-                        }
-                    }
-                    else{
-                        throw new InterpreterException("uPlot format only supports numerical data, tried to format data of type "+elementType+" in column "+ schemaField.name() +"!");
-                    }
-                data1.add(subArray.build());
-                series.add(schemaField.name());
+        final StructType schema = dataset.schema();
+        boolean aggsUsed = false;
+        final List<String> groupByColumnNames = new ArrayList<>();
+        String delimiter = "";
+        final StringBuilder concatenatedGroupByColumnName = new StringBuilder();
+        for (final StructField field:schema.fields()) {
+            if (field.metadata().contains("dpl_internal_isGroupByColumn")) {
+                aggsUsed = true;
+                concatenatedGroupByColumnName.append(delimiter);
+                delimiter = "|";
+                concatenatedGroupByColumnName.append(field.name());
+                groupByColumnNames.add(field.name());
             }
         }
+        final Dataset<Row> concatenatedDataset = concatenateColumns(dataset,groupByColumnNames,concatenatedGroupByColumnName.toString());
+        final List<Row> collectedData = concatenatedDataset.collectAsList();
+
+
+        final JsonArray series = series(concatenatedDataset.schema());
+        final JsonArray labels = labels(collectedData, aggsUsed);
+
+        final JsonArray xAxis = xAxis(collectedData, aggsUsed);
+        final JsonArray yAxis = yAxis(collectedData);
+
         final JsonObjectBuilder builder = Json.createObjectBuilder()
                 .add("data",Json.createArrayBuilder()
-                        .add(data0)
-                        .add(data1))
+                        .add(xAxis)
+                        .add(yAxis))
                 .add("options",Json.createObjectBuilder()
                         .add("labels",labels)
                         .add("series",series)
-                        .add("graphType",graphType))
+                        .add("graphType",options.getGraphType()))
                 .add("isAggregated",aggsUsed)
                 .add("type", InterpreterResult.Type.UPLOT.label);
         final JsonObject json = builder.build();
         return json;
     }
 
-
-    private List<String> groupByLabels(StructType schema) {
-        List<String> groupByLabels = new ArrayList<>();
-        for (StructField field:schema.fields()) {
-            if(field.metadata().contains("dpl_internal_isGroupByColumn")){
-                groupByLabels.add(field.name());
+    private JsonArray xAxis(final List<Row> rows, final boolean aggsUsed){
+        final JsonArrayBuilder builder = Json.createArrayBuilder();
+        if(aggsUsed){
+            for (int i = 0; i < rows.size(); i++) {
+                builder.add(i);
             }
         }
-        return groupByLabels;
+        return builder.build();
+    }
+    private JsonArray yAxis(final List<Row> rows) throws InterpreterException {
+        final JsonArrayBuilder builder = Json.createArrayBuilder();
+        final StructType schema = rows.get(0).schema();
+            for (int i = 0; i < schema.fields().length; i++) {
+                final StructField field = schema.fields()[i];
+                if(!field.metadata().contains("dpl_internal_isGroupByColumn")){
+                    final JsonArrayBuilder subArrayBuilder = Json.createArrayBuilder();
+                    for (final Row row:rows) {
+                        final DataType type = field.dataType();
+                        final Object value = row.get(i);
+                        if(type.equals(DataTypes.StringType)){
+                            // If string data is encountered, try to parse into Double
+                            try{
+                                final Double doubleValue = Double.parseDouble((String)value);
+                                subArrayBuilder.add(doubleValue);
+                            }
+                            catch (final NumberFormatException exception){
+                                throw new InterpreterException("uPlot format only supports numerical data, but encountered unparseable string in column "+field.name()+" !");
+                            }
+                        }
+                        else if (type.equals(DataTypes.LongType)){
+                            final Long longValue = (Long) value;
+                            subArrayBuilder.add(longValue);
+                        }
+                        else if (type.equals(DataTypes.IntegerType)){
+                            final Integer intValue = (Integer) value;
+                            subArrayBuilder.add(intValue);
+                        }
+                        else if (type.equals(DataTypes.DoubleType)){
+                            final Double doubleValue = (Double) value;
+                            subArrayBuilder.add(doubleValue);
+                        }
+                        else if (type.equals(DataTypes.FloatType)){
+                            final Float floatValue = (Float) value;
+                            subArrayBuilder.add(floatValue);
+                        }
+                        else if (type.equals(DataTypes.ShortType)){
+                            final Short shortValue = (Short) value;
+                            subArrayBuilder.add(shortValue);
+                        }
+                        else {
+                            throw new InterpreterException("uPlot format only supports numerical data, but encountered "+type.typeName()+" in column "+ field.name() +"!");
+                        }
+                    }
+                    builder.add(subArrayBuilder.build());
+                }
+        }
+        return builder.build();
     }
 
-    private Aggregate aggregatePlan(LogicalPlan plan) throws InterpreterException {
-        //TODO: Remove debug
-        LOGGER.warn("LogicalPlan is of class {}, it still has {} children",plan.getClass().getName(),plan.children().size());
-        if (plan instanceof Aggregate) {
-            return (Aggregate) plan;
-        } else {
-            // Aggregated plan might be in a child plan.
-            for (LogicalPlan childPlan : JavaConverters.seqAsJavaList(plan.children())) {
-                return aggregatePlan(childPlan);
+    private JsonArray labels(final List<Row> rows, final boolean aggsUsed) {
+        final JsonArrayBuilder builder = Json.createArrayBuilder();
+        final StructType schema = rows.get(0).schema();
+        if(aggsUsed){
+            for (final Row row:rows) {
+                for (final StructField field:schema.fields()) {
+                    if(field.metadata().contains("dpl_internal_isGroupByColumn")){
+                        builder.add(row.get(row.fieldIndex(field.name())).toString());
+                    }
+                }
             }
-            throw new InterpreterException("Plan does not contain aggregations!");
         }
+        return builder.build();
+    }
+    private JsonArray series(final StructType schema){
+        final JsonArrayBuilder builder = Json.createArrayBuilder();
+        for (final StructField field:schema.fields()) {
+            if(! field.metadata().contains("dpl_internal_isGroupByColumn")){
+                builder.add(field.name());
+            }
+        }
+        return builder.build();
+    }
+
+
+    private Dataset<Row> concatenateColumns(final Dataset<Row> dataset, final List<String> columnNamesToConcatenate, final String concatenatedColumnName){
+        // If trying to concatenate less than two columns, we don't need to do any transformations to the data,
+        if(columnNamesToConcatenate.size() < 2){
+            return dataset;
+        }
+        // Get columns that were used in grouping of data. These will be concatenated to a new column and then dropped.
+        final List<Column> groupByColumns = new ArrayList<>();
+        for (final String columnName:columnNamesToConcatenate) {
+            groupByColumns.add(dataset.col(columnName));
+        }
+
+        // Create a Dataset containing the concatenated groupBy column.
+        final Dataset<Row> concatenatedDataset = dataset.withColumn(concatenatedColumnName,functions.concat_ws(".",groupByColumns.toArray(new Column[]{})))
+                .drop(columnNamesToConcatenate.toArray(new String[0]))
+                .withMetadata(concatenatedColumnName,new MetadataBuilder().putBoolean("dpl_internal_isGroupByColumn",true).build());
+        return concatenatedDataset;
     }
 
     @Override
