@@ -90,8 +90,8 @@ class DataTablesFormatTest {
         final DataTablesOptions options = new DataTablesOptions(draw,start,length,new DataTablesSearch(searchString,false,new ArrayList<>()),new ArrayList<>(), new ArrayList<>());
 
         // Get rows 3-5 of the dataset, check that every value is present
-        final DataTablesFormat format = new DataTablesFormat(sourceData,options);
-        final JsonObject formatted = Assertions.assertDoesNotThrow(()->format.format());
+        final DataTablesFormat format = new DataTablesFormat(options);
+        final JsonObject formatted = Assertions.assertDoesNotThrow(()->format.format(sourceData));
         final JsonObject data = formatted.getJsonObject("data");
         final JsonArray headers = data.getJsonArray("headers");
         final boolean isAggregated = formatted.getBoolean("isAggregated");
@@ -151,8 +151,8 @@ class DataTablesFormatTest {
         final String searchString = "";
         final DataTablesOptions options = new DataTablesOptions(draw,start,length,new DataTablesSearch(searchString,false,new ArrayList<>()),new ArrayList<>(), new ArrayList<>());
 
-        final DataTablesFormat format = new DataTablesFormat(aggDataset,options);
-        final JsonObject formatted = Assertions.assertDoesNotThrow(()->format.format());
+        final DataTablesFormat format = new DataTablesFormat(options);
+        final JsonObject formatted = Assertions.assertDoesNotThrow(()->format.format(aggDataset));
         final JsonObject data = formatted.getJsonObject("data");
         final JsonArray headers = data.getJsonArray("headers");
         final boolean isAggregated = formatted.getBoolean("isAggregated");
@@ -207,8 +207,8 @@ class DataTablesFormatTest {
         final String searchString = "";
         final DataTablesOptions options = new DataTablesOptions(draw,start,length,new DataTablesSearch(searchString,false,new ArrayList<>()),new ArrayList<>(), new ArrayList<>());
 
-        final DataTablesFormat format = new DataTablesFormat(aggDataset,options);
-        final JsonObject formatted = Assertions.assertDoesNotThrow(()->format.format());
+        final DataTablesFormat format = new DataTablesFormat(options);
+        final JsonObject formatted = Assertions.assertDoesNotThrow(()->format.format(aggDataset));
         final JsonObject data = formatted.getJsonObject("data");
         final JsonArray headers = data.getJsonArray("headers");
         final boolean isAggregated = formatted.getBoolean("isAggregated");
@@ -250,8 +250,8 @@ class DataTablesFormatTest {
         String searchString1 = "";
         final DataTablesOptions options1 = new DataTablesOptions(draw1,start1,length1,new DataTablesSearch(searchString1,false,new ArrayList<>()),new ArrayList<>(), new ArrayList<>());
 
-        final DataTablesFormat format1 = new DataTablesFormat(sourceData,options1);
-        final JsonObject formatted1 = Assertions.assertDoesNotThrow(()->format1.format().getJsonObject("data"));
+        final DataTablesFormat format1 = new DataTablesFormat(options1);
+        final JsonObject formatted1 = Assertions.assertDoesNotThrow(()->format1.format(sourceData).getJsonObject("data"));
         Assertions.assertEquals(5,formatted1.getJsonArray("data").size());
 
         Assertions.assertEquals("2025-01-01T12:00:00.000Z",formatted1.getJsonArray("data").getJsonObject(0).getString("_time"));
@@ -287,8 +287,8 @@ class DataTablesFormatTest {
         String searchString2 = "";
         final DataTablesOptions options2 = new DataTablesOptions(draw2,start2,length2,new DataTablesSearch(searchString2,false,new ArrayList<>()),new ArrayList<>(), new ArrayList<>());
 
-        final DataTablesFormat format2 = new DataTablesFormat(sourceData,options2);
-        final JsonObject formatted2 = Assertions.assertDoesNotThrow(()->format2.format().getJsonObject("data"));
+        final DataTablesFormat format2 = new DataTablesFormat(options2);
+        final JsonObject formatted2 = Assertions.assertDoesNotThrow(()->format2.format(sourceData).getJsonObject("data"));
 
         Assertions.assertEquals(5,formatted2.getJsonArray("data").size());
 

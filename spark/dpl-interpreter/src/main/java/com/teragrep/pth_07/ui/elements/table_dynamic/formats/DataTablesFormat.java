@@ -59,16 +59,14 @@ import org.slf4j.LoggerFactory;
 import java.io.StringReader;
 
 public class DataTablesFormat implements DatasetFormat{
-
-    private final Dataset<Row> dataset;
     private final DataTablesOptions options;
     private static final Logger LOGGER = LoggerFactory.getLogger(DataTablesFormat.class);
 
-    public DataTablesFormat(final Dataset<Row> dataset, final DataTablesOptions options){
-        this.dataset = dataset;
+    public DataTablesFormat(final DataTablesOptions options){
         this.options = options;
     }
-    public JsonObject format() throws InterpreterException{
+
+    public JsonObject format(Dataset<Row> dataset) throws InterpreterException{
         if(dataset == null){
             throw new InterpreterException("Attempting to draw an empty dataset!");
         }

@@ -58,16 +58,14 @@ import java.util.List;
 
 public class UPlotFormat implements  DatasetFormat{
 
-    private final Dataset<Row> dataset;
     private final UPlotOptions options;
     private static final Logger LOGGER = LoggerFactory.getLogger(UPlotFormat.class);
 
-    public UPlotFormat(final Dataset<Row> dataset, final UPlotOptions options){
-        this.dataset = dataset;
+    public UPlotFormat(final UPlotOptions options){
         this.options = options;
     }
 
-    public JsonObject format() throws InterpreterException{
+    public JsonObject format(Dataset<Row> dataset) throws InterpreterException{
         if(dataset.isEmpty()){
             throw new InterpreterException("Cannot format an empty Dataset!");
         }

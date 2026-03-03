@@ -318,18 +318,15 @@ public class DPLInterpreter extends AbstractInterpreter {
     @Override
     public String formatDataset(final String noteId, final String paragraphId, final String visualizationLibraryName, final Options options) throws InterpreterException{
         final UserInterfaceManager userInterfaceManager = findUserInterfacemanger(noteId,paragraphId);
-
         final DatasetFormat format;
         if(visualizationLibraryName.equals(InterpreterResult.Type.UPLOT.label)){
-            final DTTableDatasetNg dtTableDatasetNg = userInterfaceManager.getDtTableDatasetNg();
-            final Dataset<Row> dataset = dtTableDatasetNg.dataset();
-            format = new UPlotFormat(dataset, options.getUPlotOptions());
+            format = new UPlotFormat(options.getUPlotOptions());
         }
         else {
             // Default to DataTables
-            final Dataset<Row> dataset = userInterfaceManager.getDtTableDatasetNg().dataset();
-            format = new DataTablesFormat(dataset, options.getDataTablesOptions());
+            format = new DataTablesFormat(options.getDataTablesOptions());
         }
-        return format.format().toString();
+        final Dataset<Row> dataset = userInterfaceManager.getDtTableDatasetNg().dataset();
+        return format.format(dataset).toString();
     }
 }

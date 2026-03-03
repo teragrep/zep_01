@@ -145,11 +145,11 @@ public final class DTTableDatasetNg extends AbstractUserInterfaceElement {
     // Set default format and options
     public void writeDataUpdate() throws InterpreterException{
         final DataTablesOptions defaultOptions = new DataTablesOptions(drawCount,0,currentAJAXLength,new DataTablesSearch("",false,new ArrayList<>()),new ArrayList<>(),new ArrayList<>());
-        writeDataUpdate(new DataTablesFormat(dataset,defaultOptions));
+        writeDataUpdate(new DataTablesFormat(defaultOptions));
     }
 
     private void writeDataUpdate(final DatasetFormat format) throws InterpreterException{
-            final JsonObject formatted = format.format();
+            final JsonObject formatted = format.format(dataset);
             final String outputContent = "%"+format.type().toLowerCase()+"\n" +
                     formatted.toString();
             write(outputContent);
