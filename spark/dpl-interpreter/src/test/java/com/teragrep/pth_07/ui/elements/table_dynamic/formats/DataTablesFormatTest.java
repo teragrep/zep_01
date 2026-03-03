@@ -48,6 +48,7 @@ package com.teragrep.pth_07.ui.elements.table_dynamic.formats;
 import com.teragrep.zep_01.interpreter.InterpreterResult;
 import com.teragrep.zep_01.interpreter.thrift.DataTablesOptions;
 import com.teragrep.zep_01.interpreter.thrift.DataTablesSearch;
+import com.teragrep.zep_01.interpreter.thrift.Options;
 import jakarta.json.JsonArray;
 import jakarta.json.JsonObject;
 import org.apache.spark.sql.Dataset;
@@ -83,15 +84,15 @@ class DataTablesFormatTest {
     @Test
     void testFormat() {
 
-        final int draw = 3;
+        final int draw = 1;
         final int start = 3;
         final int length = 2;
         final String searchString = "";
         final DataTablesOptions options = new DataTablesOptions(draw,start,length,new DataTablesSearch(searchString,false,new ArrayList<>()),new ArrayList<>(), new ArrayList<>());
 
         // Get rows 3-5 of the dataset, check that every value is present
-        final DataTablesFormat format = new DataTablesFormat(options);
-        final JsonObject formatted = Assertions.assertDoesNotThrow(()->format.format(sourceData));
+        final DataTablesFormat format = new DataTablesFormat();
+        final JsonObject formatted = Assertions.assertDoesNotThrow(()->format.format(sourceData, Options.dataTablesOptions(options)));
         final JsonObject data = formatted.getJsonObject("data");
         final JsonArray headers = data.getJsonArray("headers");
         final boolean isAggregated = formatted.getBoolean("isAggregated");
@@ -145,14 +146,14 @@ class DataTablesFormatTest {
                 .withMetadata("_time",new MetadataBuilder().putBoolean("dpl_internal_isGroupByColumn",true).build());;
 
 
-        final int draw = 3;
+        final int draw = 1;
         final int start = 2;
         final int length = 2;
         final String searchString = "";
         final DataTablesOptions options = new DataTablesOptions(draw,start,length,new DataTablesSearch(searchString,false,new ArrayList<>()),new ArrayList<>(), new ArrayList<>());
 
-        final DataTablesFormat format = new DataTablesFormat(options);
-        final JsonObject formatted = Assertions.assertDoesNotThrow(()->format.format(aggDataset));
+        final DataTablesFormat format = new DataTablesFormat();
+        final JsonObject formatted = Assertions.assertDoesNotThrow(()->format.format(aggDataset, Options.dataTablesOptions(options)));
         final JsonObject data = formatted.getJsonObject("data");
         final JsonArray headers = data.getJsonArray("headers");
         final boolean isAggregated = formatted.getBoolean("isAggregated");
@@ -201,14 +202,14 @@ class DataTablesFormatTest {
                 .withMetadata("_time",new MetadataBuilder().putBoolean("dpl_internal_isGroupByColumn",true).build())
                 .withMetadata("avg",new MetadataBuilder().putBoolean("dpl_internal_isGroupByColumn",true).build());
 
-        final int draw = 3;
+        final int draw = 1;
         final int start = 3;
         final int length = 2;
         final String searchString = "";
         final DataTablesOptions options = new DataTablesOptions(draw,start,length,new DataTablesSearch(searchString,false,new ArrayList<>()),new ArrayList<>(), new ArrayList<>());
 
-        final DataTablesFormat format = new DataTablesFormat(options);
-        final JsonObject formatted = Assertions.assertDoesNotThrow(()->format.format(aggDataset));
+        final DataTablesFormat format = new DataTablesFormat();
+        final JsonObject formatted = Assertions.assertDoesNotThrow(()->format.format(aggDataset, Options.dataTablesOptions(options)));
         final JsonObject data = formatted.getJsonObject("data");
         final JsonArray headers = data.getJsonArray("headers");
         final boolean isAggregated = formatted.getBoolean("isAggregated");
@@ -250,8 +251,8 @@ class DataTablesFormatTest {
         String searchString1 = "";
         final DataTablesOptions options1 = new DataTablesOptions(draw1,start1,length1,new DataTablesSearch(searchString1,false,new ArrayList<>()),new ArrayList<>(), new ArrayList<>());
 
-        final DataTablesFormat format1 = new DataTablesFormat(options1);
-        final JsonObject formatted1 = Assertions.assertDoesNotThrow(()->format1.format(sourceData).getJsonObject("data"));
+        final DataTablesFormat format1 = new DataTablesFormat();
+        final JsonObject formatted1 = Assertions.assertDoesNotThrow(()->format1.format(sourceData, Options.dataTablesOptions(options1)).getJsonObject("data"));
         Assertions.assertEquals(5,formatted1.getJsonArray("data").size());
 
         Assertions.assertEquals("2025-01-01T12:00:00.000Z",formatted1.getJsonArray("data").getJsonObject(0).getString("_time"));
@@ -279,6 +280,7 @@ class DataTablesFormatTest {
         Assertions.assertEquals(1,formatted1.getJsonArray("data").getJsonObject(2).getInt("filesModified"));
         Assertions.assertEquals(1,formatted1.getJsonArray("data").getJsonObject(3).getInt("filesModified"));
         Assertions.assertEquals(1,formatted1.getJsonArray("data").getJsonObject(4).getInt("filesModified"));
+        Assertions.assertEquals(1,formatted1.getInt("draw"));
 
         // Get rows 10-15 of the dataset
         int draw2 = 1;
@@ -287,8 +289,7 @@ class DataTablesFormatTest {
         String searchString2 = "";
         final DataTablesOptions options2 = new DataTablesOptions(draw2,start2,length2,new DataTablesSearch(searchString2,false,new ArrayList<>()),new ArrayList<>(), new ArrayList<>());
 
-        final DataTablesFormat format2 = new DataTablesFormat(options2);
-        final JsonObject formatted2 = Assertions.assertDoesNotThrow(()->format2.format(sourceData).getJsonObject("data"));
+        final JsonObject formatted2 = Assertions.assertDoesNotThrow(()->format1.format(sourceData, Options.dataTablesOptions(options2)).getJsonObject("data"));
 
         Assertions.assertEquals(5,formatted2.getJsonArray("data").size());
 
@@ -317,5 +318,7 @@ class DataTablesFormatTest {
         Assertions.assertEquals(1,formatted2.getJsonArray("data").getJsonObject(2).getInt("filesModified"));
         Assertions.assertEquals(4,formatted2.getJsonArray("data").getJsonObject(3).getInt("filesModified"));
         Assertions.assertEquals(1,formatted2.getJsonArray("data").getJsonObject(4).getInt("filesModified"));
+
+        Assertions.assertEquals(2,formatted2.getInt("draw"));
     }
 }

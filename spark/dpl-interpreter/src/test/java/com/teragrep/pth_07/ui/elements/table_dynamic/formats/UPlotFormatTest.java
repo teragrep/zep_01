@@ -47,6 +47,7 @@ package com.teragrep.pth_07.ui.elements.table_dynamic.formats;
 
 import com.teragrep.zep_01.interpreter.InterpreterException;
 import com.teragrep.zep_01.interpreter.InterpreterResult;
+import com.teragrep.zep_01.interpreter.thrift.Options;
 import com.teragrep.zep_01.interpreter.thrift.UPlotOptions;
 import jakarta.json.JsonObject;
 import org.apache.spark.sql.Dataset;
@@ -93,9 +94,9 @@ class UPlotFormatTest {
         // Create options and Format objects to be tested
         final String graphType = "graph";
         final UPlotOptions options = new UPlotOptions(graphType);
-        final UPlotFormat format = new UPlotFormat(options);
+        final UPlotFormat format = new UPlotFormat();
 
-        final JsonObject formatted = Assertions.assertDoesNotThrow(()-> format.format(resultDataset));
+        final JsonObject formatted = Assertions.assertDoesNotThrow(()-> format.format(resultDataset, Options.uPlotOptions(options)));
 
         // Object must contain "data" array, "options" object and "isAggregated" boolean
         Assertions.assertTrue(formatted.containsKey("data"));
@@ -155,9 +156,9 @@ class UPlotFormatTest {
         // Create options and Format objects to be tested
         final String graphType = "graph";
         final UPlotOptions options = new UPlotOptions(graphType);
-        final UPlotFormat format = new UPlotFormat(options);
+        final UPlotFormat format = new UPlotFormat();
 
-        final JsonObject formatted = Assertions.assertDoesNotThrow(()-> format.format(resultDataset));
+        final JsonObject formatted = Assertions.assertDoesNotThrow(()-> format.format(resultDataset, Options.uPlotOptions(options)));
 
         // Object must contain "data" array, "options" object and "isAggregated" boolean
         Assertions.assertTrue(formatted.containsKey("data"));
@@ -214,9 +215,9 @@ class UPlotFormatTest {
         // Create options and Format objects to be tested
         final String graphType = "graph";
         final UPlotOptions options = new UPlotOptions(graphType);
-        final UPlotFormat format = new UPlotFormat(options);
+        final UPlotFormat format = new UPlotFormat();
 
-        final JsonObject formatted = Assertions.assertDoesNotThrow(()-> format.format(resultDataset));
+        final JsonObject formatted = Assertions.assertDoesNotThrow(()-> format.format(resultDataset, Options.uPlotOptions(options)));
 
         // Object must contain "data" array, "options" object and "isAggregated" boolean
         Assertions.assertTrue(formatted.containsKey("data"));
@@ -274,9 +275,9 @@ class UPlotFormatTest {
         // Create options and Format objects to be tested
         final String graphType = "graph";
         final UPlotOptions options = new UPlotOptions(graphType);
-        final UPlotFormat format = new UPlotFormat(options);
+        final UPlotFormat format = new UPlotFormat();
 
-        final JsonObject formatted = Assertions.assertDoesNotThrow(()-> format.format(resultDataset));
+        final JsonObject formatted = Assertions.assertDoesNotThrow(()-> format.format(resultDataset, Options.uPlotOptions(options)));
 
         // Object must contain "data" array, "options" object and "isAggregated" boolean
         Assertions.assertTrue(formatted.containsKey("data"));
@@ -334,9 +335,9 @@ class UPlotFormatTest {
         // Create options and Format objects to be tested
         final String graphType = "graph";
         final UPlotOptions options = new UPlotOptions(graphType);
-        final UPlotFormat format = new UPlotFormat(options);
+        final UPlotFormat format = new UPlotFormat();
 
-        final JsonObject formatted = Assertions.assertDoesNotThrow(()-> format.format(resultDataset));
+        final JsonObject formatted = Assertions.assertDoesNotThrow(()-> format.format(resultDataset, Options.uPlotOptions(options)));
 
         // Object must contain "data" array, "options" object and "isAggregated" boolean
         Assertions.assertTrue(formatted.containsKey("data"));
@@ -386,9 +387,9 @@ class UPlotFormatTest {
         // Create options and Format objects to be tested
         final String graphType = "graph";
         final UPlotOptions options = new UPlotOptions(graphType);
-        final UPlotFormat format = new UPlotFormat(options);
+        final UPlotFormat format = new UPlotFormat();
 
-        Assertions.assertThrows(InterpreterException.class,()->format.format(resultDataset));
+        Assertions.assertThrows(InterpreterException.class,()->format.format(resultDataset, Options.uPlotOptions(options)));
     }
 
     @Test
@@ -402,10 +403,10 @@ class UPlotFormatTest {
         // Create options and Format objects to be tested
         final String graphType = "graph";
         final UPlotOptions options = new UPlotOptions(graphType);
-        final UPlotFormat format = new UPlotFormat(options);
+        final UPlotFormat format = new UPlotFormat();
 
         // Trying to display string data (such as operation name: "create") should result in an Exception as uPlot only supports numerical data
-        Assertions.assertThrows(InterpreterException.class,()-> format.format(resultDataset));
+        Assertions.assertThrows(InterpreterException.class,()-> format.format(resultDataset, Options.uPlotOptions(options)));
     }
     @Test
     void testUnaggregatedFormat() {
@@ -419,9 +420,9 @@ class UPlotFormatTest {
         // Create options and Format objects to be tested
         final String graphType = "graph";
         final UPlotOptions options = new UPlotOptions(graphType);
-        final UPlotFormat format = new UPlotFormat(options);
+        final UPlotFormat format = new UPlotFormat();
 
-        final JsonObject formatted = Assertions.assertDoesNotThrow(()-> format.format(resultDataset));
+        final JsonObject formatted = Assertions.assertDoesNotThrow(()-> format.format(resultDataset, Options.uPlotOptions(options)));
 
         // Object must contain "data" array, "options" object and "isAggregated" boolean
         Assertions.assertTrue(formatted.containsKey("data"));

@@ -46,11 +46,12 @@
 package com.teragrep.pth_07.ui.elements.table_dynamic.formats;
 
 import com.teragrep.zep_01.interpreter.InterpreterException;
+import com.teragrep.zep_01.interpreter.thrift.Options;
 import jakarta.json.JsonObject;
 import org.apache.spark.sql.Dataset;
 import org.apache.spark.sql.Row;
 
 public interface DatasetFormat {
-    public abstract JsonObject format(Dataset<Row> dataset) throws InterpreterException;
+    public abstract JsonObject format(Dataset<Row> dataset, Options options) throws InterpreterException;
     public abstract String type();
 }

@@ -51,6 +51,7 @@ import com.teragrep.pth_07.ui.elements.AbstractUserInterfaceElement;
 import com.teragrep.zep_01.interpreter.InterpreterException;
 import com.teragrep.zep_01.interpreter.thrift.DataTablesOptions;
 import com.teragrep.zep_01.interpreter.thrift.DataTablesSearch;
+import com.teragrep.zep_01.interpreter.thrift.Options;
 import jakarta.json.*;
 import org.apache.spark.sql.Dataset;
 import org.apache.spark.sql.Row;
@@ -78,6 +79,7 @@ public final class DTTableDatasetNg extends AbstractUserInterfaceElement {
     the size?
      */
     private int currentAJAXLength = 50;
+    private DatasetFormat previousFormat;
 
     public DTTableDatasetNg(final InterpreterContext interpreterContext) {
         this(interpreterContext, new StructType(), 1);
@@ -87,6 +89,7 @@ public final class DTTableDatasetNg extends AbstractUserInterfaceElement {
         super(interpreterContext);
         this.schema = schema;
         this.drawCount = drawCount;
+        this.previousFormat = new DataTablesFormat();
     }
     @Override
     public void draw() {
@@ -104,15 +107,6 @@ public final class DTTableDatasetNg extends AbstractUserInterfaceElement {
 
         try {
             lock.lock();
-            // Reset draw when schema changes
-            if(!schema.equals(rowDataset.schema())){
-                drawCount = 1;
-            }
-            // Increment draw when schema has not changed.
-            else {
-                drawCount++;
-            }
-
             // unpersist dataset upon receiving new data
             if(dataset != null){
                 dataset.unpersist();
@@ -144,15 +138,15 @@ public final class DTTableDatasetNg extends AbstractUserInterfaceElement {
 
     // Set default format and options
     public void writeDataUpdate() throws InterpreterException{
-        final DataTablesOptions defaultOptions = new DataTablesOptions(drawCount,0,currentAJAXLength,new DataTablesSearch("",false,new ArrayList<>()),new ArrayList<>(),new ArrayList<>());
-        writeDataUpdate(new DataTablesFormat(defaultOptions));
+        writeDataUpdate(previousFormat);
     }
 
     private void writeDataUpdate(final DatasetFormat format) throws InterpreterException{
-            final JsonObject formatted = format.format(dataset);
-            final String outputContent = "%"+format.type().toLowerCase()+"\n" +
-                    formatted.toString();
-            write(outputContent);
-
+        final DataTablesOptions dataTablesOptions = new DataTablesOptions(drawCount,0,currentAJAXLength,new DataTablesSearch("",false,new ArrayList<>()),new ArrayList<>(),new ArrayList<>());
+        // Options.dataTablesOptions is a Thrift limitation. Normally DataTablesOptions would implement interface Options, but Thrift cannot generate those kinds of objects, instead offering this static method
+        final JsonObject formatted = format.format(dataset,Options.dataTablesOptions(dataTablesOptions));
+        final String outputContent = "%"+format.type().toLowerCase()+"\n" +
+                formatted.toString();
+        write(outputContent);
     }
 }
