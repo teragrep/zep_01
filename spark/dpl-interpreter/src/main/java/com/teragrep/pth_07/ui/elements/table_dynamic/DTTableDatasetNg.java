@@ -80,6 +80,7 @@ public final class DTTableDatasetNg extends AbstractUserInterfaceElement {
      */
     private int currentAJAXLength = 50;
     private DatasetFormat previousFormat;
+    private Options previousOptions;
 
     public DTTableDatasetNg(final InterpreterContext interpreterContext) {
         this(interpreterContext, new StructType(), 1);
@@ -90,6 +91,7 @@ public final class DTTableDatasetNg extends AbstractUserInterfaceElement {
         this.schema = schema;
         this.drawCount = drawCount;
         this.previousFormat = new DataTablesFormat();
+        this.previousOptions = Options.dataTablesOptions(new DataTablesOptions(0,0,50,new DataTablesSearch("",false,new ArrayList<>()),new ArrayList<>(),new ArrayList<>()));
     }
     @Override
     public void draw() {
@@ -141,15 +143,20 @@ public final class DTTableDatasetNg extends AbstractUserInterfaceElement {
 
     // Set default format and options
     public void writeDataUpdate() throws InterpreterException{
-        writeDataUpdate(previousFormat);
+        writeDataUpdate(previousFormat, previousOptions);
     }
 
-    private void writeDataUpdate(final DatasetFormat format) throws InterpreterException{
-        final DataTablesOptions dataTablesOptions = new DataTablesOptions(drawCount,0,currentAJAXLength,new DataTablesSearch("",false,new ArrayList<>()),new ArrayList<>(),new ArrayList<>());
-        // Options.dataTablesOptions is a Thrift limitation. Normally DataTablesOptions would implement interface Options, but Thrift cannot generate those kinds of objects, instead offering this static method
-        final JsonObject formatted = format.format(dataset,Options.dataTablesOptions(dataTablesOptions));
-        final String outputContent = "%"+format.type().toLowerCase()+"\n" +
-                formatted.toString();
-        write(outputContent);
+    public void writeDataUpdate(final DatasetFormat format, Options options) throws InterpreterException{
+        try{
+            lock.lock();
+            final JsonObject formatted = format.format(dataset,options);
+            final String outputContent = "%"+format.type().toLowerCase()+"\n" +
+                    formatted.toString();
+            write(outputContent);
+            previousFormat = format;
+            previousOptions = options;
+        }finally {
+            lock.unlock();
+        }
     }
 }

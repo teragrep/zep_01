@@ -1133,19 +1133,8 @@ public class NotebookServer extends WebSocketServlet
     }
 
     try{
-      // Get formatted dataset as a String via Thrift
-      String formattedDataset = managedInterpreterGroup.formatDataset(sessionId, interpreter.getClassName(), noteId, paragraphId, visualizationLibraryName, options);
-
-      // Build response
-      JsonObject result = Json.createReader(new StringReader(formattedDataset)).readObject();
-      JsonObject messageJson = Json.createObjectBuilder()
-              .add("result",result)
-              .add("type",visualizationLibraryName)
-              .add("noteId",noteId)
-              .add("paragraphId",paragraphId)
-              .build();
-      JsonMessage msg = new JsonMessage(OP.PARAGRAPH_OUTPUT,messageJson);
-      conn.send(msg.asJson().toString());
+      // Call to formatDataset responds via InterpreterOutput --> NotebookServer.onOutputUpdated(), same as with batch updates.
+      managedInterpreterGroup.formatDataset(sessionId, interpreter.getClassName(), noteId, paragraphId, visualizationLibraryName, options);
     } catch (InterpreterException e){
       // If an error occurs, send an ERROR_INFO message
       LOG.error("Failed to retrieve data from Interpreter process for note: {} paragraph: {} cause: {}",noteId,paragraphId,e.getCause(),e);

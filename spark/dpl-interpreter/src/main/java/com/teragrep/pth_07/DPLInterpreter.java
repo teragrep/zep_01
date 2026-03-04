@@ -316,12 +316,11 @@ public class DPLInterpreter extends AbstractInterpreter {
     }
 
     @Override
-    public String formatDataset(final String noteId, final String paragraphId, final String visualizationLibraryName, final Options options) throws InterpreterException{
+    public void formatDataset(final String noteId, final String paragraphId, final String visualizationLibraryName, final Options options) throws InterpreterException{
         final UserInterfaceManager userInterfaceManager = findUserInterfacemanger(noteId,paragraphId);
         final DTTableDatasetNg dtTableDatasetNg = userInterfaceManager.getDtTableDatasetNg();
         final Dataset<Row> dataset = dtTableDatasetNg.dataset();
         DatasetFormat format;
-
         DatasetFormat previousFormat = dtTableDatasetNg.previousFormat();
         // If using the same format as previously, don't create new objects, as for example DataTablesFormat keeps an internal draw counter, which would be reset on new object creation
         if(previousFormat.type().equals(visualizationLibraryName)){
@@ -336,6 +335,6 @@ public class DPLInterpreter extends AbstractInterpreter {
                 format = new DataTablesFormat();
             }
         }
-        return format.format(dataset,options).toString();
+        dtTableDatasetNg.writeDataUpdate(format, options);
     }
 }
