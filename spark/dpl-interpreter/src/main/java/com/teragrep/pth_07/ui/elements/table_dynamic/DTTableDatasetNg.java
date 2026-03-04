@@ -135,6 +135,9 @@ public final class DTTableDatasetNg extends AbstractUserInterfaceElement {
     public Dataset<Row> dataset(){
         return dataset;
     }
+    public DatasetFormat previousFormat(){
+        return previousFormat;
+    }
 
     // Set default format and options
     public void writeDataUpdate() throws InterpreterException{
