@@ -46,7 +46,6 @@
 package com.teragrep.pth_07.ui.elements.table_dynamic.formats;
 import com.teragrep.zep_01.interpreter.InterpreterException;
 import com.teragrep.zep_01.interpreter.InterpreterResult;
-import com.teragrep.zep_01.interpreter.thrift.DataTablesOptions;
 import com.teragrep.zep_01.interpreter.thrift.Options;
 import com.teragrep.zep_01.interpreter.thrift.UPlotOptions;
 import jakarta.json.*;
@@ -96,12 +95,17 @@ public class UPlotFormat implements  DatasetFormat{
         final JsonArray labels = labels(collectedData, aggsUsed);
 
         final JsonArray xAxis = xAxis(collectedData, aggsUsed);
-        final JsonArray yAxis = yAxis(collectedData);
+        final List<JsonArray> yAxisArray = yAxis(collectedData);
+
+        final JsonArrayBuilder dataBuilder = Json.createArrayBuilder();
+        dataBuilder.add(xAxis);
+        for (JsonArray array:yAxisArray) {
+            dataBuilder.add(array);
+        }
+        final JsonArray data = dataBuilder.build();
 
         final JsonObjectBuilder builder = Json.createObjectBuilder()
-                .add("data",Json.createArrayBuilder()
-                        .add(xAxis)
-                        .add(yAxis))
+                .add("data",data)
                 .add("options",Json.createObjectBuilder()
                         .add("labels",labels)
                         .add("series",series)
@@ -121,13 +125,13 @@ public class UPlotFormat implements  DatasetFormat{
         }
         return builder.build();
     }
-    private JsonArray yAxis(final List<Row> rows) throws InterpreterException {
-        final JsonArrayBuilder builder = Json.createArrayBuilder();
+    private List<JsonArray> yAxis(final List<Row> rows) throws InterpreterException {
+        final List<JsonArray> yAxis = new ArrayList<>();
         final StructType schema = rows.get(0).schema();
             for (int i = 0; i < schema.fields().length; i++) {
+                final JsonArrayBuilder arrayBuilder = Json.createArrayBuilder();
                 final StructField field = schema.fields()[i];
                 if(!field.metadata().contains("dpl_internal_isGroupByColumn")){
-                    final JsonArrayBuilder subArrayBuilder = Json.createArrayBuilder();
                     for (final Row row:rows) {
                         final DataType type = field.dataType();
                         final Object value = row.get(i);
@@ -135,7 +139,7 @@ public class UPlotFormat implements  DatasetFormat{
                             // If string data is encountered, try to parse into Double
                             try{
                                 final Double doubleValue = Double.parseDouble((String)value);
-                                subArrayBuilder.add(doubleValue);
+                                arrayBuilder.add(doubleValue);
                             }
                             catch (final NumberFormatException exception){
                                 throw new InterpreterException("uPlot format only supports numerical data, but encountered unparseable string in column "+field.name()+" !");
@@ -143,32 +147,33 @@ public class UPlotFormat implements  DatasetFormat{
                         }
                         else if (type.equals(DataTypes.LongType)){
                             final Long longValue = (Long) value;
-                            subArrayBuilder.add(longValue);
+                            arrayBuilder.add(longValue);
                         }
                         else if (type.equals(DataTypes.IntegerType)){
                             final Integer intValue = (Integer) value;
-                            subArrayBuilder.add(intValue);
+                            arrayBuilder.add(intValue);
                         }
                         else if (type.equals(DataTypes.DoubleType)){
                             final Double doubleValue = (Double) value;
-                            subArrayBuilder.add(doubleValue);
+                            arrayBuilder.add(doubleValue);
                         }
                         else if (type.equals(DataTypes.FloatType)){
                             final Float floatValue = (Float) value;
-                            subArrayBuilder.add(floatValue);
+                            arrayBuilder.add(floatValue);
                         }
                         else if (type.equals(DataTypes.ShortType)){
                             final Short shortValue = (Short) value;
-                            subArrayBuilder.add(shortValue);
+                            arrayBuilder.add(shortValue);
                         }
                         else {
                             throw new InterpreterException("uPlot format only supports numerical data, but encountered "+type.typeName()+" in column "+ field.name() +"!");
                         }
                     }
-                    builder.add(subArrayBuilder.build());
+                    JsonArray array = arrayBuilder.build();
+                    yAxis.add(array);
                 }
         }
-        return builder.build();
+        return yAxis;
     }
 
     private JsonArray labels(final List<Row> rows, final boolean aggsUsed) {
