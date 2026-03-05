@@ -113,53 +113,10 @@ public class DataTablesFormat implements DatasetFormat{
         JsonArray headers = headersBuilder.build();
 
         // search
-        List<String> searchedRows = new ArrayList<>();
-        String searchString = dtOptions.getSearch().getValue();
-        if (!"".equals(searchString)) {
-            try {
-                for (String row : cachedRows) {
-                    JsonReader reader = Json.createReader(new StringReader(row));
-                    JsonObject line = reader.readObject();
-
-                    // NOTE hard coded to _raw column
-                    JsonString _raw = line.getJsonString("_raw");
-                    if (_raw != null) {
-                        String _rawString = _raw.getString();
-                        if (_rawString != null) {
-                            if (_rawString.contains(searchString)) {
-                                // _raw matches, add whole row to result set
-                                searchedRows.add(row);
-                            }
-                        }
-                    }
-                    reader.close();
-                }
-            } catch (JsonException | IllegalStateException e) {
-                LOGGER.error(e.toString());
-            }
-        }
-        else {
-            searchedRows = cachedRows;
-        }
+        List<String> searchedRows = search(cachedRows, dtOptions.getSearch().getValue());
 
         // paginate
-        int pageStart = dtOptions.getStart();
-        int pageSize = dtOptions.getLength();
-        // ranges must be greater than 0
-        int fromIndex = Math.max(pageStart, 0);
-        int toIndex = Math.max(fromIndex + pageSize, 0);
-
-        // list must end at the maximum size
-        if (toIndex > searchedRows.size()) {
-            toIndex = searchedRows.size();
-        }
-
-        // list range must be positive
-        if (fromIndex > toIndex) {
-            fromIndex = toIndex;
-        }
-
-        List<String> paginatedRows = searchedRows.subList(fromIndex, toIndex);
+        List<String> paginatedRows = paginate(searchedRows, dtOptions.getStart(), dtOptions.getLength());
 
         // json
         JsonArrayBuilder dataBuilder = Json.createArrayBuilder();
@@ -196,5 +153,55 @@ public class DataTablesFormat implements DatasetFormat{
     @Override
     public String type(){
         return InterpreterResult.Type.DATATABLES.label;
+    }
+
+    private List<String> search(List<String> rows, String searchString){
+        List<String> searchedRows = new ArrayList<>();
+        if (!"".equals(searchString)) {
+            try {
+                for (String row : rows) {
+                    JsonReader reader = Json.createReader(new StringReader(row));
+                    JsonObject line = reader.readObject();
+
+                    // NOTE hard coded to _raw column
+                    JsonString _raw = line.getJsonString("_raw");
+                    if (_raw != null) {
+                        String _rawString = _raw.getString();
+                        if (_rawString != null) {
+                            if (_rawString.contains(searchString)) {
+                                // _raw matches, add whole row to result set
+                                searchedRows.add(row);
+                            }
+                        }
+                    }
+                    reader.close();
+                }
+            } catch (JsonException | IllegalStateException e) {
+                LOGGER.error(e.toString());
+            }
+        }
+        else {
+            searchedRows = rows;
+        }
+        return searchedRows;
+    }
+
+    private List<String> paginate(List<String> rows, int pageStart, int pageSize){
+        // ranges must be greater than 0
+        int fromIndex = Math.max(pageStart, 0);
+        int toIndex = Math.max(fromIndex + pageSize, 0);
+
+        // list must end at the maximum size
+        if (toIndex > rows.size()) {
+            toIndex = rows.size();
+        }
+
+        // list range must be positive
+        if (fromIndex > toIndex) {
+            fromIndex = toIndex;
+        }
+
+        List<String> paginatedRows = rows.subList(fromIndex, toIndex);
+        return paginatedRows;
     }
 }
