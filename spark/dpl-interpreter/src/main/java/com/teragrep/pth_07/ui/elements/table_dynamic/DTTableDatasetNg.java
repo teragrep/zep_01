@@ -117,8 +117,6 @@ public final class DTTableDatasetNg extends AbstractUserInterfaceElement {
                 // needs to be here as sparkContext might disappear later
                 dataset = rowDataset.persist(StorageLevel.MEMORY_AND_DISK());
                 schema = rowDataset.schema();
-                // trigger an action immediately to  TODO: might want to remove this
-                dataset.count();
             }
         } finally {
             lock.unlock();
