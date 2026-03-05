@@ -178,8 +178,8 @@ public class UPlotFormat implements  DatasetFormat{
 
     private JsonArray labels(final List<Row> rows, final boolean aggsUsed) {
         final JsonArrayBuilder builder = Json.createArrayBuilder();
-        final StructType schema = rows.get(0).schema();
-        if(aggsUsed){
+        if(!rows.isEmpty() && aggsUsed){
+            final StructType schema = rows.get(0).schema();
             for (final Row row:rows) {
                 for (final StructField field:schema.fields()) {
                     if(field.metadata().contains("dpl_internal_isGroupByColumn")){
