@@ -60,14 +60,15 @@ import org.slf4j.LoggerFactory;
 
 import java.io.StringReader;
 import java.util.ArrayList;
+import java.util.List;
 
 public class DataTablesFormat implements DatasetFormat{
     private static final Logger LOGGER = LoggerFactory.getLogger(DataTablesFormat.class);
-    private StructType previousSchema;
+    private Dataset<Row> currentDataset;
+    private List<String> cachedRows = new ArrayList<>();
     private int draw;
 
     public DataTablesFormat(){
-        this.previousSchema = new StructType();
     }
 
     public JsonObject format(Dataset<Row> dataset) throws InterpreterException{
@@ -85,47 +86,90 @@ public class DataTablesFormat implements DatasetFormat{
             throw new InterpreterException("Attempting to draw an empty dataset!");
         }
 
-        StructType schema = dataset.schema();
-
-        // reset draw when schema changes
-        if(!schema.equals(previousSchema)){
+        if(currentDataset == null){
             draw = 1;
+            cachedRows = dataset.toJSON().collectAsList();
         }
-        // ncrement draw when schema has not changed.
         else {
-            draw++;
+            if(currentDataset.schema().equals(dataset.schema())){
+                draw++;
+            }
+            else {
+                draw = 1;
+            }
+            // If the provided dataset has different data as previously formatted dataset, update the cached rows.
+            // If data is the same, we can avoid an unnecessary call to collectAsList()
+            if(!currentDataset.equals(dataset)){
+                cachedRows = dataset.toJSON().collectAsList();
+            }
         }
-        previousSchema = schema;
+        currentDataset = dataset;
 
         // headers
         JsonArrayBuilder headersBuilder = Json.createArrayBuilder();
-        for (StructField header:dataset.schema().fields()) {
+        for (StructField header:currentDataset.schema().fields()) {
             headersBuilder.add(header.name());
         }
         JsonArray headers = headersBuilder.build();
 
         // search
-        final Dataset<Row> searched;
-        if(!dtOptions.getSearch().getValue().isEmpty()){
-            searched = dataset.filter(org.apache.spark.sql.functions.col("_raw"));
+        List<String> searchedRows = new ArrayList<>();
+        String searchString = dtOptions.getSearch().getValue();
+        if (!"".equals(searchString)) {
+            try {
+                for (String row : cachedRows) {
+                    JsonReader reader = Json.createReader(new StringReader(row));
+                    JsonObject line = reader.readObject();
+
+                    // NOTE hard coded to _raw column
+                    JsonString _raw = line.getJsonString("_raw");
+                    if (_raw != null) {
+                        String _rawString = _raw.getString();
+                        if (_rawString != null) {
+                            if (_rawString.contains(searchString)) {
+                                // _raw matches, add whole row to result set
+                                searchedRows.add(row);
+                            }
+                        }
+                    }
+                    reader.close();
+                }
+            } catch (JsonException | IllegalStateException e) {
+                LOGGER.error(e.toString());
+            }
         }
         else {
-            searched = dataset;
+            searchedRows = cachedRows;
         }
 
         // paginate
-        final Dataset<Row> paginated;
-        paginated = searched.offset(dtOptions.getStart()).limit(dtOptions.getLength());
+        int pageStart = dtOptions.getStart();
+        int pageSize = dtOptions.getLength();
+        // ranges must be greater than 0
+        int fromIndex = Math.max(pageStart, 0);
+        int toIndex = Math.max(fromIndex + pageSize, 0);
+
+        // list must end at the maximum size
+        if (toIndex > searchedRows.size()) {
+            toIndex = searchedRows.size();
+        }
+
+        // list range must be positive
+        if (fromIndex > toIndex) {
+            fromIndex = toIndex;
+        }
+
+        List<String> paginatedRows = searchedRows.subList(fromIndex, toIndex);
 
         // json
         JsonArrayBuilder dataBuilder = Json.createArrayBuilder();
-        for (String jsonRow:paginated.toJSON().collectAsList()) {
+        for (String jsonRow:paginatedRows) {
             dataBuilder.add(Json.createReader(new StringReader(jsonRow)).readObject());
         }
         JsonArray data = dataBuilder.build();
-        long recordsTotal = dataset.count();
-        long recordsFiltered = searched.count();
-        boolean isAggregated = isAggregated(dataset.schema());
+        long recordsTotal = cachedRows.size();
+        long recordsFiltered = searchedRows.size();
+        boolean isAggregated = isAggregated(currentDataset.schema());
 
         JsonObject json = Json.createObjectBuilder()
                 .add("data",Json.createObjectBuilder()
