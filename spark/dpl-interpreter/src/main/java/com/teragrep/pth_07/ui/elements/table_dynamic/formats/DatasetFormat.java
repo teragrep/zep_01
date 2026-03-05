@@ -52,7 +52,6 @@ import org.apache.spark.sql.Dataset;
 import org.apache.spark.sql.Row;
 
 public interface DatasetFormat {
-    public abstract JsonObject format(Dataset<Row> dataset) throws InterpreterException;
     public abstract JsonObject format(Dataset<Row> dataset, Options options) throws InterpreterException;
     public abstract String type();
 }
