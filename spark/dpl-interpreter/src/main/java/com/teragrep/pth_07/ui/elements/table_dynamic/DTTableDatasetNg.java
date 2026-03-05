@@ -56,7 +56,6 @@ import jakarta.json.*;
 import org.apache.spark.sql.Dataset;
 import org.apache.spark.sql.Row;
 import com.teragrep.zep_01.interpreter.InterpreterContext;
-import org.apache.spark.sql.types.StructType;
 import org.apache.spark.storage.StorageLevel;
 
 import java.io.IOException;
@@ -68,28 +67,13 @@ public final class DTTableDatasetNg extends AbstractUserInterfaceElement {
     // FIXME Exceptions should cause interpreter to stop
 
     private final Lock lock = new ReentrantLock();
-    private Dataset<Row> dataset = null;
-    private StructType schema;
-    private int drawCount;
-
-    /*
-    currentAJAXLength is shared between all the clients when server refreshes
-    perhaps we could just let the clients know that there is an update and
-    that they would each request their own copy and the request would contain
-    the size?
-     */
-    private int currentAJAXLength = 50;
+    private Dataset<Row> dataset = null; // Using null here to represent absence of a Dataset since creating empty Datasets requires a SparkSession and causes overhead.
     private DatasetFormat previousFormat;
     private Options previousOptions;
 
-    public DTTableDatasetNg(final InterpreterContext interpreterContext) {
-        this(interpreterContext, new StructType(), 1);
-    }
-
-    public DTTableDatasetNg(final InterpreterContext interpreterContext, final StructType schema, final int drawCount){
+    public DTTableDatasetNg(final InterpreterContext interpreterContext){
         super(interpreterContext);
-        this.schema = schema;
-        this.drawCount = drawCount;
+        // Default format is DataTables with page size of 50
         this.previousFormat = new DataTablesFormat();
         this.previousOptions = Options.dataTablesOptions(new DataTablesOptions(0,0,50,new DataTablesSearch("",false,new ArrayList<>()),new ArrayList<>(),new ArrayList<>()));
     }
@@ -116,7 +100,6 @@ public final class DTTableDatasetNg extends AbstractUserInterfaceElement {
             if (rowDataset.schema().nonEmpty()) {
                 // needs to be here as sparkContext might disappear later
                 dataset = rowDataset.persist(StorageLevel.MEMORY_AND_DISK());
-                schema = rowDataset.schema();
             }
         } finally {
             lock.unlock();
@@ -133,21 +116,20 @@ public final class DTTableDatasetNg extends AbstractUserInterfaceElement {
             e.printStackTrace();
         }
     }
-
-    public Dataset<Row> dataset(){
-        return dataset;
-    }
     public DatasetFormat previousFormat(){
         return previousFormat;
     }
 
-    // Set default format and options
+    // If given no format or options, default both to whichever was used last.
+    // This way if UI requests a different format while a query is running, subsequently received updates from BatchHandler won't override the formatting back to default DataTables.
     public void writeDataUpdate() throws InterpreterException{
         writeDataUpdate(previousFormat, previousOptions);
     }
-
     public void writeDataUpdate(final DatasetFormat format, Options options) throws InterpreterException{
         try{
+            // Calls to this method might come concurrently from both DPLInterpreter (UI requesting a formatting change) and from BatchHandler (receiving a new batch of data from a running query)
+            // We acquire the lock here to avoid concurrent calls to write(), as well as concurrent assignments to previousFormat and Options.
+            // TODO: perhaps the saving of previously used format and options could be done in an immutable fashion?
             lock.lock();
             final JsonObject formatted = format.format(dataset,options);
             final String outputContent = "%"+format.type().toLowerCase()+"\n" +
