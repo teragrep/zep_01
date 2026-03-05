@@ -63,6 +63,9 @@ import java.util.ArrayList;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
+/**
+ * DTTableDatasetNG is responsible for writing an output String created from a Dataset to an InterpreterOutput using a given DatasetFormat and Options.
+ */
 public final class DTTableDatasetNg extends AbstractUserInterfaceElement {
     // FIXME Exceptions should cause interpreter to stop
 
@@ -73,7 +76,6 @@ public final class DTTableDatasetNg extends AbstractUserInterfaceElement {
 
     public DTTableDatasetNg(final InterpreterContext interpreterContext){
         super(interpreterContext);
-        // Default format is DataTables with page size of 50
         this.previousFormat = new DataTablesFormat();
         this.previousOptions = Options.dataTablesOptions(new DataTablesOptions(0,0,50,new DataTablesSearch("",false,new ArrayList<>()),new ArrayList<>(),new ArrayList<>()));
     }
@@ -85,6 +87,11 @@ public final class DTTableDatasetNg extends AbstractUserInterfaceElement {
     public void emit() {
     }
 
+    /**
+     * Set a new Dataset which will be used in subsequent formatting requests.
+     * The given Dataset will be persisted when this method is called, and any previously set Datasets will be unpersisted.
+     * @param rowDataset the new Dataset
+     */
     public void setParagraphDataset(final Dataset<Row> rowDataset) {
         /*
          TODO check if other presentation can be used than string, for order
@@ -106,6 +113,11 @@ public final class DTTableDatasetNg extends AbstractUserInterfaceElement {
         }
     }
 
+    /**
+     * Writes the given String to the InterpreterOutput within InterpreterContext.
+     * @param outputContent Output to write
+     */
+
     private void write(final String outputContent){
         try {
             getInterpreterContext().out().clear(false);
@@ -116,15 +128,32 @@ public final class DTTableDatasetNg extends AbstractUserInterfaceElement {
             e.printStackTrace();
         }
     }
+
+    /**
+     * Returns the most recently used DatasetFormat. If no formatting has been done, returns the default DatasetFormat.
+     * @return Most recently used DatasetFormat
+     */
     public DatasetFormat previousFormat(){
         return previousFormat;
     }
 
-    // If given no format or options, default both to whichever was used last.
-    // This way if UI requests a different format while a query is running, subsequently received updates from BatchHandler won't override the formatting back to default DataTables.
+    /**
+     * Format the current Dataset with the most recently used DatasetFormat and write the output to InterpreterOutput. If no formatting has been done previously, default formatting will be used.
+     * This method can be called repeatedly without overriding previously given formatting options.
+     * @throws InterpreterException
+     */
+    // This method is called when receiving batch updates from BatchHandler. This way if UI requests a different format while a query is running, subsequently received updates from BatchHandler won't override the formatting back to default DataTables.
     public void writeDataUpdate() throws InterpreterException{
         writeDataUpdate(previousFormat, previousOptions);
     }
+
+    /**
+     * Format the current Dataset with the given DatasetFormat and Options and write the output to InterpreterOutput.
+     * The given DatasetFormat and Options will be stored as the most recently used formatting, and will be used by subsequent calls to writeDataUpdate()
+     * @param format DatasetFormat to be used in formatting of the Dataset
+     * @param options Options containing parameters needed by the DatasetFormat
+     * @throws InterpreterException An error occurred during formatting.
+     */
     public void writeDataUpdate(final DatasetFormat format, Options options) throws InterpreterException{
         try{
             // Calls to this method might come concurrently from both DPLInterpreter (UI requesting a formatting change) and from BatchHandler (receiving a new batch of data from a running query)
