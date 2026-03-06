@@ -212,11 +212,11 @@ public class GUI implements Serializable, Jsonable {
 
   @Override
   public JsonObject asJson() {
-    JsonObjectBuilder builder = Json.createObjectBuilder();
+    final JsonObjectBuilder builder = Json.createObjectBuilder();
     if(params != null){
-      JsonObjectBuilder paramsBuilder = Json.createObjectBuilder();
+      final JsonObjectBuilder paramsBuilder = Json.createObjectBuilder();
       for (Map.Entry<String,Object> entry : params.entrySet()) {
-        Object value = entry.getValue();
+        final Object value = entry.getValue();
         // We support only String values for now. Any other kind of object is added as their toString() implementations
         if(value instanceof String){
           paramsBuilder.add(entry.getKey(),(String) value);
@@ -228,7 +228,7 @@ public class GUI implements Serializable, Jsonable {
       builder.add("params",paramsBuilder.build());
     }
     if(forms != null){
-      JsonObjectBuilder formsBuilder = Json.createObjectBuilder();
+      final JsonObjectBuilder formsBuilder = Json.createObjectBuilder();
       for (Map.Entry<String,Input> entry : forms.entrySet()){
         formsBuilder.add(entry.getKey(),entry.getValue().asJson());
       }

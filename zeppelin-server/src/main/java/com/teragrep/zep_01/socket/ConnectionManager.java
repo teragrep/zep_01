@@ -228,11 +228,11 @@ public class ConnectionManager {
     }
   }
 
-  public void broadcast(String noteId, String message){
+  public void broadcast(final String noteId, final String message){
     List<NotebookSocket> socketsToBroadcast = Collections.emptyList();
     synchronized (noteSocketMap) {
       broadcastToWatchers(noteId, StringUtils.EMPTY, message);
-      List<NotebookSocket> socketLists = noteSocketMap.get(noteId);
+      final List<NotebookSocket> socketLists = noteSocketMap.get(noteId);
       if (socketLists == null || socketLists.size() == 0) {
         return;
       }
@@ -264,7 +264,7 @@ public class ConnectionManager {
     }
   }
 
-  private void broadcastToWatchers(String noteId, String subject, String message) {
+  private void broadcastToWatchers(final String noteId, final String subject, final String message) {
     synchronized (watcherSockets) {
       for (NotebookSocket watcher : watcherSockets) {
         try {
@@ -348,7 +348,7 @@ public class ConnectionManager {
     }
   }
 
-  public void multicastToUser(String user, String m) {
+  public void multicastToUser(final String user, final String m) {
     if (!userSocketMap.containsKey(user)) {
       LOGGER.warn("Multicasting to user {} that is not in connections map", user);
       return;
@@ -367,7 +367,7 @@ public class ConnectionManager {
     }
     broadcastToWatchers(StringUtils.EMPTY, StringUtils.EMPTY, m);
   }
-  public void unicast(String m, NotebookSocket conn) {
+  public void unicast(final String m, final NotebookSocket conn) {
     try {
       conn.send(m);
     } catch (IOException | WebSocketException e) {

@@ -272,7 +272,7 @@ public class AngularObject<T> implements JsonSerializable, Jsonable {
 
   @Override
   public JsonObject asJson() {
-    JsonObjectBuilder builder = Json.createObjectBuilder();
+    final JsonObjectBuilder builder = Json.createObjectBuilder();
     if(name != null){
       builder.add("name",name);
     }

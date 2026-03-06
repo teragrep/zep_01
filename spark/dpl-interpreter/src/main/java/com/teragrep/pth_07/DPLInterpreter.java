@@ -317,8 +317,8 @@ public class DPLInterpreter extends AbstractInterpreter {
     public void formatDataset(final String noteId, final String paragraphId, final String visualizationLibraryName, final Options options) throws InterpreterException{
         final UserInterfaceManager userInterfaceManager = findUserInterfacemanger(noteId,paragraphId);
         final DTTableDatasetNg dtTableDatasetNg = userInterfaceManager.getDtTableDatasetNg();
-        DatasetFormat format;
-        DatasetFormat previousFormat = dtTableDatasetNg.previousFormat();
+        final DatasetFormat format;
+        final DatasetFormat previousFormat = dtTableDatasetNg.previousFormat();
         // If using the same format as previously, don't create new objects, as for example DataTablesFormat keeps an internal draw counter, which would be reset on new object creation
         if(previousFormat.type().equals(visualizationLibraryName)){
             format = previousFormat;

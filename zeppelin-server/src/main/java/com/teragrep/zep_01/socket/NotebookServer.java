@@ -369,8 +369,8 @@ public class NotebookServer extends WebSocketServlet
           break;
         case PARAGRAPH_OUTPUT_REQUEST:
           // Reading of "msg" should be done at the very top of onMessage, but refactoring every message to use their own object type is out of scope for now
-          JsonObject json = Json.createReader(new StringReader(msg)).readObject();
-          ParagraphOutputRequestMessage message = new ParagraphOutputRequestMessage(json);
+          final JsonObject json = Json.createReader(new StringReader(msg)).readObject();
+          final ParagraphOutputRequestMessage message = new ParagraphOutputRequestMessage(json);
           paragraphOutput(conn, message);
           break;
         case NOTE_UPDATE:
@@ -589,14 +589,14 @@ public class NotebookServer extends WebSocketServlet
       broadcastParagraphs(p.getUserParagraphMap(), p, msgId);
     } else {
       // msgId might be null, leading to a NullPointerException, so we need to check it here. Will need to completely remove the old Message object and replace it with JsonMessages.
-      MessageId messageId;
+      final MessageId messageId;
       if(msgId == null){
         messageId = new StubMessageId();
       }
       else {
         messageId = new SimpleMessageId(msgId);
       }
-      JsonObject message = new JsonMessage(messageId,OP.PARAGRAPH,p).asJson();
+      final JsonObject message = new JsonMessage(messageId,OP.PARAGRAPH,p).asJson();
       getConnectionManager().broadcast(note.getId(),message.toString());
     }
   }
@@ -710,7 +710,7 @@ public class NotebookServer extends WebSocketServlet
           @Override
           public void onSuccess(Note note, ServiceContext context) throws IOException {
             getConnectionManager().addNoteConnection(note.getId(), conn);
-            JsonObject message = new JsonMessage(OP.NOTE,note).asJson();
+            final JsonObject message = new JsonMessage(OP.NOTE,note).asJson();
             conn.send(message.toString());
             updateAngularObjectRegistry(conn, note);
             sendAllAngularObjects(note, context.getAutheInfo().getUser(), conn);
@@ -884,7 +884,7 @@ public class NotebookServer extends WebSocketServlet
           public void onSuccess(Note note, ServiceContext context) throws IOException {
             super.onSuccess(note, context);
             getConnectionManager().addNoteConnection(note.getId(), conn);
-            JsonObject message = new JsonMessage(OP.NEW_NOTE,note).asJson();
+            final JsonObject message = new JsonMessage(OP.NEW_NOTE,note).asJson();
             conn.send(message.toString());
             broadcastNoteList(context.getAutheInfo(), context.getUserAndRoles());
           }
@@ -1132,7 +1132,7 @@ public class NotebookServer extends WebSocketServlet
     if(!interpreterGroup.getClass().equals(ManagedInterpreterGroup.class)){
       throw new BadRequestException("InterpreterGroup is a "+interpreterGroup.getClass()+", and not a ManagedInterpreterGroup!");
     }
-    ManagedInterpreterGroup managedInterpreterGroup = (ManagedInterpreterGroup) interpreterGroup;
+    final ManagedInterpreterGroup managedInterpreterGroup = (ManagedInterpreterGroup) interpreterGroup;
 
     String sessionId = "";
     if (interpreter instanceof RemoteInterpreter){
@@ -1145,10 +1145,10 @@ public class NotebookServer extends WebSocketServlet
     } catch (InterpreterException e){
       // If an error occurs, send an ERROR_INFO message
       LOG.error("Failed to retrieve data from Interpreter process for note: {} paragraph: {} cause: {}",noteId,paragraphId,e.getCause(),e);
-      JsonObject errorJson = Json.createObjectBuilder()
+      final JsonObject errorJson = Json.createObjectBuilder()
               .add("message","Failed to retrieve data. Please rerun the paragraph and try again or see technical log for details!")
               .build();
-      JsonMessage msg = new JsonMessage(new SimpleMessageId(msgId),OP.ERROR_INFO,errorJson);
+      final JsonMessage msg = new JsonMessage(new SimpleMessageId(msgId),OP.ERROR_INFO,errorJson);
       conn.send(msg.asJson().toString());
     }
   }
@@ -1671,14 +1671,14 @@ public class NotebookServer extends WebSocketServlet
       return;
     }
     // As formatted data is passed as a String via Thrift, we have to parse it with JsonReader to make sure the data types are represented correctly.
-    JsonObject outputJson = Json.createReader(new StringReader(output)).readObject();
-    JsonObject messageData = Json.createObjectBuilder()
+    final JsonObject outputJson = Json.createReader(new StringReader(output)).readObject();
+    final JsonObject messageData = Json.createObjectBuilder()
             .add("noteId",noteId)
             .add("paragraphId",paragraphId)
             .add("result",outputJson)
             .add("type",type.label)
             .build();
-    JsonMessage msg = new JsonMessage(OP.PARAGRAPH_OUTPUT,messageData);
+    final JsonMessage msg = new JsonMessage(OP.PARAGRAPH_OUTPUT,messageData);
     try {
       Note note = getNotebook().getNote(noteId);
       if (note == null) {

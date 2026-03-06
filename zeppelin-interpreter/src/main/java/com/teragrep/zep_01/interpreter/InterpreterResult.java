@@ -151,7 +151,7 @@ public class InterpreterResult implements Serializable, JsonSerializable, Jsonab
   @Override
   public JsonObject asJson() {
     if(msg.size() > 0){
-      InterpreterResultMessage resultMessage = msg.get(0); // Result format does not support multiple ResultMessages, so we take the first one.
+      final InterpreterResultMessage resultMessage = msg.get(0); // Result format does not support multiple ResultMessages, so we take the first one.
       return resultMessage.asJson();
     }
     else{

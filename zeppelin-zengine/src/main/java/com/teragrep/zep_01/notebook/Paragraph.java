@@ -133,7 +133,7 @@ public class Paragraph extends JobWithProgressPoller<InterpreterResult> implemen
 
 
   public JsonObject asJson(){
-    JsonObjectBuilder builder = Json.createObjectBuilder();
+    final JsonObjectBuilder builder = Json.createObjectBuilder();
     if(title != null){
       builder.add("title",title);
     }
@@ -150,33 +150,33 @@ public class Paragraph extends JobWithProgressPoller<InterpreterResult> implemen
       builder.add("jobName",getJobName());
     }
 
-    String dateFormatPattern = "yyyy-MM-dd'T'HH:mm:ssZ"; // This should really be configured somewhere else. Previously this format was hardcoded into ConnectionManagers and NotebookServers Gson initialization.
+    final String dateFormatPattern = "yyyy-MM-dd'T'HH:mm:ssZ"; // This should really be configured somewhere else. Previously this format was hardcoded into ConnectionManagers and NotebookServers Gson initialization.
     if(dateUpdated != null){
-      String dateUpdated = new SimpleDateFormat(dateFormatPattern).format(this.dateUpdated);
+      final String dateUpdated = new SimpleDateFormat(dateFormatPattern).format(this.dateUpdated);
       builder.add("dateUpdated",dateUpdated);
     }
     if(getDateStarted() != null){
-      String dateStarted  = new SimpleDateFormat(dateFormatPattern).format(getDateStarted());
+      final String dateStarted  = new SimpleDateFormat(dateFormatPattern).format(getDateStarted());
       builder.add("dateStarted",dateStarted);
     }
     if(getDateCreated() != null){
-      String dateCreated  = new SimpleDateFormat(dateFormatPattern).format(getDateCreated());
+      final String dateCreated  = new SimpleDateFormat(dateFormatPattern).format(getDateCreated());
       builder.add("dateCreated",dateCreated);
     }
     if(getDateFinished() != null){
-      String dateFinished = new SimpleDateFormat(dateFormatPattern).format(getDateFinished());
+      final String dateFinished = new SimpleDateFormat(dateFormatPattern).format(getDateFinished());
       builder.add("dateFinished",dateFinished);
     }
     if(runtimeInfos != null){
-      JsonObject runtimeInfosJson = new ParagraphRuntimeInfos(runtimeInfos).asJson();
+      final JsonObject runtimeInfosJson = new ParagraphRuntimeInfos(runtimeInfos).asJson();
       builder.add("runtimeInfos",runtimeInfosJson);
     }
     if(results != null){
-      JsonObject resultJson = results.asJson();
+      final JsonObject resultJson = results.asJson();
       builder.add("result",resultJson);
     }
     if(config != null){
-      JsonObject configJson = new ParagraphConfig(config).asJson();
+      final JsonObject configJson = new ParagraphConfig(config).asJson();
       builder.add("config",configJson);
     }
     if(status != null){

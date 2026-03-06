@@ -51,11 +51,11 @@ public class ParagraphRuntimeInfo implements Jsonable {
 
   @Override
   public JsonObject asJson() {
-    JsonObjectBuilder runtimeInfo = Json.createObjectBuilder();
-    JsonArrayBuilder valuesArrayBuilder = Json.createArrayBuilder();
+    final JsonObjectBuilder runtimeInfo = Json.createObjectBuilder();
+    final JsonArrayBuilder valuesArrayBuilder = Json.createArrayBuilder();
     for (Map<String,String> valueMap : values) {
       if(valueMap != null){
-        JsonObjectBuilder valueJson = Json.createObjectBuilder();
+        final JsonObjectBuilder valueJson = Json.createObjectBuilder();
         for (Map.Entry<String,String> entry: valueMap.entrySet()) {
           if(entry.getKey() != null && entry.getValue() != null){
             valueJson.add(entry.getKey(),entry.getValue());
@@ -64,7 +64,7 @@ public class ParagraphRuntimeInfo implements Jsonable {
         valuesArrayBuilder.add(valueJson.build());
       }
     }
-    JsonArray valuesArray = valuesArrayBuilder.build();
+    final JsonArray valuesArray = valuesArrayBuilder.build();
     runtimeInfo.add("values",valuesArray);
     if(propertyName != null){
       runtimeInfo.add("propertyName",propertyName);

@@ -9,12 +9,12 @@ import java.util.Map;
 
 public class NoteConfig implements Jsonable {
     private final Map<String,Object> configMap;
-    public NoteConfig(Map<String,Object> configMap){
+    public NoteConfig(final Map<String,Object> configMap){
         this.configMap = configMap;
     }
     @Override
     public JsonObject asJson() {
-        JsonObjectBuilder configJson = Json.createObjectBuilder();
+        final JsonObjectBuilder configJson = Json.createObjectBuilder();
         if(configMap.containsKey("bodyClassName") && configMap.get("bodyClassName") instanceof String){
             configJson.add("bodyClassName",(String) configMap.get("bodyClassName"));
         }

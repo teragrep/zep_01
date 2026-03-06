@@ -54,7 +54,7 @@ public class InterpreterResultMessage implements Serializable, Jsonable {
     }
     // If the data is some other type, there is no guarantee that the data is even in JSON format, so we build a response assuming that data is a simple String.
     else {
-      JsonObjectBuilder resultBuilder = Json.createObjectBuilder();
+      final JsonObjectBuilder resultBuilder = Json.createObjectBuilder();
       resultBuilder.add("data",data);
       resultBuilder.add("isAggregated",false);
       if(type != null){

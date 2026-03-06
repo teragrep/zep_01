@@ -154,7 +154,7 @@ public final class DTTableDatasetNg extends AbstractUserInterfaceElement {
      * @param options Options containing parameters needed by the DatasetFormat
      * @throws InterpreterException An error occurred during formatting.
      */
-    public void writeDataUpdate(final DatasetFormat format, Options options) throws InterpreterException{
+    public void writeDataUpdate(final DatasetFormat format, final Options options) throws InterpreterException{
         try{
             // Calls to this method might come concurrently from both DPLInterpreter (UI requesting a formatting change) and from BatchHandler (receiving a new batch of data from a running query)
             // We acquire the lock here to avoid concurrent calls to write(), as well as concurrent assignments to previousFormat and Options.

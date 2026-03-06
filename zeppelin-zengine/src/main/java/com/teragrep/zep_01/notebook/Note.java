@@ -1116,7 +1116,7 @@ public class Note implements JsonSerializable, Jsonable {
 
   @Override
   public JsonObject asJson(){
-    JsonObjectBuilder builder = Json.createObjectBuilder();
+    final JsonObjectBuilder builder = Json.createObjectBuilder();
     if(id != null){
       builder.add("id",id);
     }
@@ -1127,21 +1127,21 @@ public class Note implements JsonSerializable, Jsonable {
       builder.add("path",path);
     }
     if(config != null){
-      NoteConfig noteConfig = new NoteConfig(config);
+      final NoteConfig noteConfig = new NoteConfig(config);
       builder.add("config",noteConfig.asJson());
     }
     if(defaultInterpreterGroup != null){
       builder.add("defaultInterpreterGroup",defaultInterpreterGroup);
     }
     if(paragraphs != null){
-      JsonArrayBuilder paragraphArrayBuilder = Json.createArrayBuilder();
+      final JsonArrayBuilder paragraphArrayBuilder = Json.createArrayBuilder();
       for (Paragraph paragraph:paragraphs) {
         paragraphArrayBuilder.add(paragraph.asJson());
       }
       builder.add("paragraphs",paragraphArrayBuilder.build());
     }
     if(angularObjects != null){
-      JsonObjectBuilder angularObjectsBuilder = Json.createObjectBuilder();
+      final JsonObjectBuilder angularObjectsBuilder = Json.createObjectBuilder();
       for (Map.Entry<String,List<AngularObject>> entry: angularObjects.entrySet()) {
         JsonArrayBuilder angularObjectArrayBuilder = Json.createArrayBuilder();
         for (AngularObject object: entry.getValue()) {
