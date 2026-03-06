@@ -183,23 +183,23 @@ public class GUITest {
 
   @Test
   public void testJson(){
-    GUI gui = new GUI();
-    Map<String, Object> params = new HashMap<>();
+    final GUI gui = new GUI();
+    final Map<String, Object> params = new HashMap<>();
     params.put("paramString","stringValue");
     params.put("paramBoolean",true);
-    Map<String, Input> forms = new HashMap<>();
+    final Map<String, Input> forms = new HashMap<>();
     forms.put("checkBox",new CheckBox());
     forms.put("input",new Input());
     gui.setParams(params);
     gui.setForms(forms);
-    JsonObject json = gui.asJson();
+    final JsonObject json = gui.asJson();
 
     // Check that all GUI-related keys are added and that they contain the proper number of items
     Assertions.assertTrue(json.containsKey("params"));
     Assertions.assertTrue(json.containsKey("forms"));
-    JsonObject paramsJson = json.getJsonObject("params");
+    final JsonObject paramsJson = json.getJsonObject("params");
     Assertions.assertEquals(2,paramsJson.size());
-    JsonObject formsJson = json.getJsonObject("forms");
+    final JsonObject formsJson = json.getJsonObject("forms");
     Assertions.assertEquals(2,formsJson.size());
   }
 }

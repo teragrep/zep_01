@@ -12,19 +12,19 @@ class EditorSettingTest {
 
     @Test
     void asJson() {
-        String language = "test";
-        String completionKey = "TAB";
-        boolean completionSupport = true;
-        boolean editOnDoubleClick = true;
+        final String language = "test";
+        final String completionKey = "TAB";
+        final boolean completionSupport = true;
+        final boolean editOnDoubleClick = true;
 
-        Map<String,Object> editorSettings = new HashMap<>();
+        final Map<String,Object> editorSettings = new HashMap<>();
         editorSettings.put("language",language);
         editorSettings.put("completionKey",completionKey);
         editorSettings.put("completionSupport",completionSupport);
         editorSettings.put("editOnDoubleClick",editOnDoubleClick);
 
-        EditorSetting editorSetting = new EditorSetting(editorSettings);
-        JsonObject json = editorSetting.asJson();
+        final EditorSetting editorSetting = new EditorSetting(editorSettings);
+        final JsonObject json = editorSetting.asJson();
 
         Assertions.assertEquals(language, json.getString("language"));
         Assertions.assertEquals(completionKey, json.getString("completionKey"));

@@ -11,13 +11,13 @@ class ParagraphOutputRequestMessageTest {
 
     @Test
     public void uPlotOutputRequestTest(){
-        String msgId = "testMsgId";
-        String noteId = "testNoteId";
-        String paragraphId = "testParaId";
-        String visualizationLibraryName = "uPlot";
+        final String msgId = "testMsgId";
+        final String noteId = "testNoteId";
+        final String paragraphId = "testParaId";
+        final String visualizationLibraryName = "uPlot";
 
-        String graphType = "bar";
-        JsonObject messageJson = Json.createObjectBuilder()
+        final String graphType = "bar";
+        final JsonObject messageJson = Json.createObjectBuilder()
                 .add("msgId",msgId)
                 .add("data",Json.createObjectBuilder()
                         .add("noteId",noteId)
@@ -28,31 +28,31 @@ class ParagraphOutputRequestMessageTest {
                                 .build())
                         .build())
                 .build();
-        ParagraphOutputRequestMessage message = new ParagraphOutputRequestMessage(messageJson);
+        final ParagraphOutputRequestMessage message = new ParagraphOutputRequestMessage(messageJson);
         // Json is valid, so no method should throw an Exception.
         Assertions.assertEquals(msgId, message.messageId());
         Assertions.assertEquals(noteId, message.noteId());
         Assertions.assertEquals(paragraphId, message.paragraphId());
         Assertions.assertEquals(visualizationLibraryName, message.visualizationLibraryName());
-        UPlotOptions options = Assertions.assertDoesNotThrow(()->message.options().getUPlotOptions());
+        final UPlotOptions options = Assertions.assertDoesNotThrow(()->message.options().getUPlotOptions());
         Assertions.assertEquals(graphType,options.getGraphType());
     }
 
     @Test
     public void dataTablesOutputRequestTest(){
-        String msgId = "testMsgId";
-        String noteId = "testNoteId";
-        String paragraphId = "testParaId";
-        String visualizationLibraryName = "dataTables";
+        final String msgId = "testMsgId";
+        final String noteId = "testNoteId";
+        final String paragraphId = "testParaId";
+        final String visualizationLibraryName = "dataTables";
 
-        String searchString = "";
+        final String searchString = "";
 
         //fields for options
-        int draw = 0;
-        int start = 0;
-        int length = 25;
+        final int draw = 0;
+        final int start = 0;
+        final int length = 25;
 
-        JsonObject messageJson = Json.createObjectBuilder()
+        final JsonObject messageJson = Json.createObjectBuilder()
                 .add("msgId",msgId)
                 .add("data",Json.createObjectBuilder()
                     .add("noteId",noteId)
@@ -99,13 +99,13 @@ class ParagraphOutputRequestMessageTest {
                             .build())
                         .build())
                 .build();
-        ParagraphOutputRequestMessage message = new ParagraphOutputRequestMessage(messageJson);
+        final ParagraphOutputRequestMessage message = new ParagraphOutputRequestMessage(messageJson);
         // Json is valid, so no method should throw an Exception.
         Assertions.assertEquals(msgId, message.messageId());
         Assertions.assertEquals(noteId, message.noteId());
         Assertions.assertEquals(paragraphId, message.paragraphId());
         Assertions.assertEquals(visualizationLibraryName, message.visualizationLibraryName());
-        DataTablesOptions options = Assertions.assertDoesNotThrow(()->message.options().getDataTablesOptions());
+        final DataTablesOptions options = Assertions.assertDoesNotThrow(()->message.options().getDataTablesOptions());
         Assertions.assertEquals(draw,options.getDraw());
         Assertions.assertEquals(start,options.getStart());
         Assertions.assertEquals(length,options.getLength());

@@ -135,12 +135,12 @@ public class AngularObjectTest {
 
   @Test
   public void testJson(){
-    String name = "name";
-    String value = "value";
-    String noteId = "note1";
-    String paragraphId = "paragraph1";
-    AngularObject ao = new AngularObject(name,value,noteId,paragraphId, null);
-    JsonObject json = ao.asJson();
+    final String name = "name";
+    final String value = "value";
+    final String noteId = "note1";
+    final String paragraphId = "paragraph1";
+    final AngularObject ao = new AngularObject(name,value,noteId,paragraphId, null);
+    final JsonObject json = ao.asJson();
 
     Assertions.assertTrue(json.containsKey("name"));
     Assertions.assertTrue(json.containsKey("noteId"));

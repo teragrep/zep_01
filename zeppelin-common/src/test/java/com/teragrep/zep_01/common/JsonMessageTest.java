@@ -5,17 +5,15 @@ import jakarta.json.JsonObject;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
-import static org.junit.jupiter.api.Assertions.*;
-
 class JsonMessageTest {
 
     @Test
     public void asJsonTest() {
-        Message.OP op = Message.OP.ERROR_INFO;
-        JsonObject json = Json.createObjectBuilder().add("message","Something went wrong").build();
-        JsonMessage message = new JsonMessage(op,json);
+        final Message.OP op = Message.OP.ERROR_INFO;
+        final JsonObject json = Json.createObjectBuilder().add("message","Something went wrong").build();
+        final JsonMessage message = new JsonMessage(op,json);
 
-        JsonObject expectedJson = Json.createObjectBuilder()
+        final JsonObject expectedJson = Json.createObjectBuilder()
                 .add("op","ERROR_INFO")
                 .add("data",json)
                 .add("ticket","anonymous")
@@ -27,13 +25,13 @@ class JsonMessageTest {
 
     @Test
     public void withMessageIdTest() {
-        Message.OP op = Message.OP.ERROR_INFO;
-        JsonObject json = Json.createObjectBuilder().add("message","Something went wrong").build();
-        String messageId = "testId";
-        SimpleMessageId id = new SimpleMessageId(messageId);
-        JsonMessage message = new JsonMessage(id,op,json);
+        final Message.OP op = Message.OP.ERROR_INFO;
+        final JsonObject json = Json.createObjectBuilder().add("message","Something went wrong").build();
+        final String messageId = "testId";
+        final SimpleMessageId id = new SimpleMessageId(messageId);
+        final JsonMessage message = new JsonMessage(id,op,json);
 
-        JsonObject expectedJson = Json.createObjectBuilder()
+        final JsonObject expectedJson = Json.createObjectBuilder()
                 .add("op","ERROR_INFO")
                 .add("data",json)
                 .add("ticket","anonymous")
@@ -46,11 +44,11 @@ class JsonMessageTest {
 
     @Test
     public void jsonableAsJsonTest() {
-        Message.OP op = Message.OP.ERROR_INFO;
-        Jsonable jsonable = new JsonMessage(Message.OP.PARAGRAPH,Json.createObjectBuilder().build());
-        JsonMessage message = new JsonMessage(op,jsonable);
+        final Message.OP op = Message.OP.ERROR_INFO;
+        final Jsonable jsonable = new JsonMessage(Message.OP.PARAGRAPH,Json.createObjectBuilder().build());
+        final JsonMessage message = new JsonMessage(op,jsonable);
 
-        JsonObject expectedJson = Json.createObjectBuilder()
+        final JsonObject expectedJson = Json.createObjectBuilder()
                 .add("op","ERROR_INFO")
                 .add("data",jsonable.asJson())
                 .add("ticket","anonymous")
@@ -62,13 +60,13 @@ class JsonMessageTest {
 
     @Test
     public void jsonableWithMessageIdTest() {
-        Message.OP op = Message.OP.ERROR_INFO;
-        Jsonable jsonable = new JsonMessage(Message.OP.PARAGRAPH,Json.createObjectBuilder().build());
-                String messageId = "testId";
-        SimpleMessageId id = new SimpleMessageId(messageId);
-        JsonMessage message = new JsonMessage(id,op,jsonable);
+        final Message.OP op = Message.OP.ERROR_INFO;
+        final Jsonable jsonable = new JsonMessage(Message.OP.PARAGRAPH,Json.createObjectBuilder().build());
+                final String messageId = "testId";
+        final SimpleMessageId id = new SimpleMessageId(messageId);
+        final JsonMessage message = new JsonMessage(id,op,jsonable);
 
-        JsonObject expectedJson = Json.createObjectBuilder()
+        final JsonObject expectedJson = Json.createObjectBuilder()
                 .add("op","ERROR_INFO")
                 .add("data",jsonable.asJson())
                 .add("ticket","anonymous")

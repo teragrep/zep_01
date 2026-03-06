@@ -213,19 +213,19 @@ public class NoteTest {
 
   @Test
   public void testAsJson(){
-    Note note = new Note("test", "", interpreterFactory, interpreterSettingManager, paragraphJobListener, credentials, noteEventListener);
+    final Note note = new Note("test", "", interpreterFactory, interpreterSettingManager, paragraphJobListener, credentials, noteEventListener);
     note.setName("test_note");
     note.getConfig().put("config_1", "value_1");
     note.getInfo().put("info_1", "value_1");
-    String pText = "%spark sc.version";
-    Paragraph p = note.addNewParagraph(AuthenticationInfo.ANONYMOUS);
+    final String pText = "%spark sc.version";
+    final Paragraph p = note.addNewParagraph(AuthenticationInfo.ANONYMOUS);
     p.setText(pText);
     p.setResult(new InterpreterResult(InterpreterResult.Code.SUCCESS, "1.6.2"));
     p.settings.getForms().put("textbox_1", new TextBox("name", "default_name"));
     p.settings.getParams().put("textbox_1", "my_name");
     note.getAngularObjects().put("ao_1", Arrays.asList(new AngularObject("name_1", "value_1", note.getId(), p.getId(), null)));
 
-    JsonObject noteJson = note.asJson();
+    final JsonObject noteJson = note.asJson();
 
     // Assert that keys exist
     Assertions.assertTrue(noteJson.containsKey("id"));

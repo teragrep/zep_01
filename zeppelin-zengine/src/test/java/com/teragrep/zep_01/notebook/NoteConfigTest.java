@@ -12,20 +12,20 @@ public class NoteConfigTest {
 
     @Test
     public void asJson(){
-        String bodyClassName = "testName";
-        String cronInput = "testCron";
-        boolean cronEnabled = true;
-        String looknfeel = "testLookNFeel";
-        String personalizedMode = "testPersonalizedMode";
-        Map<String, Object> configMap = new HashMap<>();
+        final String bodyClassName = "testName";
+        final String cronInput = "testCron";
+        final boolean cronEnabled = true;
+        final String looknfeel = "testLookNFeel";
+        final String personalizedMode = "testPersonalizedMode";
+        final Map<String, Object> configMap = new HashMap<>();
         configMap.put("bodyClassName", bodyClassName);
         configMap.put("cronInput", cronInput);
         configMap.put("isZeppelinNotebookCronEnable", cronEnabled);
         configMap.put("looknfeel", looknfeel);
         configMap.put("personalizedMode", personalizedMode);
 
-        NoteConfig config = new NoteConfig(configMap);
-        JsonObject json = config.asJson();
+        final NoteConfig config = new NoteConfig(configMap);
+        final JsonObject json = config.asJson();
         Assertions.assertEquals(5, json.size());
         Assertions.assertEquals(bodyClassName,json.getString("bodyClassName"));
         Assertions.assertEquals(cronInput,json.getString("cronInput"));

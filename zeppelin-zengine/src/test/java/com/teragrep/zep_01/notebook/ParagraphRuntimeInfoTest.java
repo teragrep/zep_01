@@ -8,13 +8,13 @@ class ParagraphRuntimeInfoTest {
 
     @Test
     void asJson() {
-        String propertyName = "testPropertyName";
-        String label = "testLabel";
-        String tooltip = "testTooltip";
-        String group = "testGroup";
-        String intpSettingId = "testIntpSettingId";
-        ParagraphRuntimeInfo info = new ParagraphRuntimeInfo(propertyName,label,tooltip,group,intpSettingId);
-        JsonObject json = info.asJson();
+        final String propertyName = "testPropertyName";
+        final String label = "testLabel";
+        final String tooltip = "testTooltip";
+        final String group = "testGroup";
+        final String intpSettingId = "testIntpSettingId";
+        final ParagraphRuntimeInfo info = new ParagraphRuntimeInfo(propertyName,label,tooltip,group,intpSettingId);
+        final JsonObject json = info.asJson();
 
         Assertions.assertEquals(propertyName,json.getString("propertyName"));
         Assertions.assertEquals(tooltip,json.getString("tooltip"));

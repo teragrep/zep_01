@@ -245,10 +245,10 @@ class DataTablesFormatTest {
     @Test
     void testPagination() {
         // Get first 5 rows of the dataset,
-        int draw1 = 0;
-        int start1 = 0;
-        int length1 = 5;
-        String searchString1 = "";
+        final int draw1 = 0;
+        final int start1 = 0;
+        final int length1 = 5;
+        final String searchString1 = "";
         final DataTablesOptions options1 = new DataTablesOptions(draw1,start1,length1,new DataTablesSearch(searchString1,false,new ArrayList<>()),new ArrayList<>(), new ArrayList<>());
 
         final DataTablesFormat format1 = new DataTablesFormat();
@@ -283,10 +283,10 @@ class DataTablesFormatTest {
         Assertions.assertEquals(1,formatted1.getInt("draw"));
 
         // Get rows 10-15 of the dataset
-        int draw2 = 1;
-        int start2 = 9;
-        int length2 = 5;
-        String searchString2 = "";
+        final int draw2 = 1;
+        final int start2 = 9;
+        final int length2 = 5;
+        final String searchString2 = "";
         final DataTablesOptions options2 = new DataTablesOptions(draw2,start2,length2,new DataTablesSearch(searchString2,false,new ArrayList<>()),new ArrayList<>(), new ArrayList<>());
 
         final JsonObject formatted2 = Assertions.assertDoesNotThrow(()->format1.format(sourceData, Options.dataTablesOptions(options2)).getJsonObject("data"));

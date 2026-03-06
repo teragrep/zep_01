@@ -12,25 +12,25 @@ class ParagraphRuntimeInfosTest {
 
     @Test
     void asJson() {
-        Map<String,ParagraphRuntimeInfo> infoMap = new HashMap<>();
-        String propertyName = "testPropertyName";
-        String label = "testLabel";
-        String tooltip = "testTooltip";
-        String group = "testGroup";
-        String intpSettingId = "testIntpSettingId";
-        ParagraphRuntimeInfo info = new ParagraphRuntimeInfo(propertyName,label,tooltip,group,intpSettingId);
+        final Map<String,ParagraphRuntimeInfo> infoMap = new HashMap<>();
+        final String propertyName = "testPropertyName";
+        final String label = "testLabel";
+        final String tooltip = "testTooltip";
+        final String group = "testGroup";
+        final String intpSettingId = "testIntpSettingId";
+        final ParagraphRuntimeInfo info = new ParagraphRuntimeInfo(propertyName,label,tooltip,group,intpSettingId);
         infoMap.put("info1",info);
 
-        String propertyName2 = "testPropertyName2";
-        String label2 = "testLabel2";
-        String tooltip2 = "testTooltip2";
-        String group2 = "testGroup2";
-        String intpSettingId2 = "testIntpSettingId2";
-        ParagraphRuntimeInfo info2 = new ParagraphRuntimeInfo(propertyName2,label2,tooltip2,group2,intpSettingId2);
+        final String propertyName2 = "testPropertyName2";
+        final String label2 = "testLabel2";
+        final String tooltip2 = "testTooltip2";
+        final String group2 = "testGroup2";
+        final String intpSettingId2 = "testIntpSettingId2";
+        final ParagraphRuntimeInfo info2 = new ParagraphRuntimeInfo(propertyName2,label2,tooltip2,group2,intpSettingId2);
         infoMap.put("info2",info2);
 
-        ParagraphRuntimeInfos runtimeInfos = new ParagraphRuntimeInfos(infoMap);
-        JsonObject json = runtimeInfos.asJson();
+        final ParagraphRuntimeInfos runtimeInfos = new ParagraphRuntimeInfos(infoMap);
+        final JsonObject json = runtimeInfos.asJson();
 
         Assertions.assertEquals(2,json.size());
         Assertions.assertTrue(json.containsKey("info1"));
