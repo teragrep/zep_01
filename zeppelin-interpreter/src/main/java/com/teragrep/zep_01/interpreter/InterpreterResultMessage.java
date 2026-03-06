@@ -49,7 +49,7 @@ public class InterpreterResultMessage implements Serializable, Jsonable {
   @Override
   public JsonObject asJson() {
     // If the data within this resultMessage is in a JSON formatted type, simply return the data object itself.
-    if(type.equals(InterpreterResult.Type.DATATABLES) || type.equals(InterpreterResult.Type.UPLOT)){
+    if(type != null && (type.equals(InterpreterResult.Type.DATATABLES) || type.equals(InterpreterResult.Type.UPLOT))){
       return Json.createReader(new StringReader(data)).readObject();
     }
     // If the data is some other type, there is no guarantee that the data is even in JSON format, so we build a response assuming that data is a simple String.
@@ -57,7 +57,9 @@ public class InterpreterResultMessage implements Serializable, Jsonable {
       JsonObjectBuilder resultBuilder = Json.createObjectBuilder();
       resultBuilder.add("data",data);
       resultBuilder.add("isAggregated",false);
-      resultBuilder.add("type",type.label);
+      if(type != null){
+        resultBuilder.add("type",type.label);
+      }
       return resultBuilder.build();
     }
   }
