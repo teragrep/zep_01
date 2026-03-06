@@ -32,8 +32,7 @@ import javax.inject.Inject;
 import javax.inject.Provider;
 import javax.servlet.http.HttpServletRequest;
 
-import com.teragrep.zep_01.common.JsonMessage;
-import com.teragrep.zep_01.common.SimpleMessageId;
+import com.teragrep.zep_01.common.*;
 import com.teragrep.zep_01.socket.messages.ParagraphOutputRequestMessage;
 import com.teragrep.zep_01.display.*;
 import com.teragrep.zep_01.interpreter.*;
@@ -57,7 +56,6 @@ import com.teragrep.zep_01.notebook.Paragraph;
 import com.teragrep.zep_01.notebook.ParagraphJobListener;
 import com.teragrep.zep_01.notebook.AuthorizationService;
 import com.teragrep.zep_01.notebook.repo.NotebookRepoWithVersionControl.Revision;
-import com.teragrep.zep_01.common.Message;
 import com.teragrep.zep_01.common.Message.OP;
 import com.teragrep.zep_01.rest.exception.ForbiddenException;
 import com.teragrep.zep_01.scheduler.Job.Status;
@@ -590,7 +588,15 @@ public class NotebookServer extends WebSocketServlet
     if (note.isPersonalizedMode()) {
       broadcastParagraphs(p.getUserParagraphMap(), p, msgId);
     } else {
-      JsonObject message = new JsonMessage(new SimpleMessageId(msgId),OP.PARAGRAPH,p).asJson();
+      // msgId might be null, leading to a NullPointerException, so we need to check it here. Will need to completely remove the old Message object and replace it with JsonMessages.
+      MessageId messageId;
+      if(msgId == null){
+        messageId = new StubMessageId();
+      }
+      else {
+        messageId = new SimpleMessageId(msgId);
+      }
+      JsonObject message = new JsonMessage(messageId,OP.PARAGRAPH,p).asJson();
       getConnectionManager().broadcast(note.getId(),message.toString());
     }
   }
