@@ -458,7 +458,7 @@ public class ParagraphTest extends AbstractInterpreterTest {
     paragraph.setDateFinished(dateFinished);
 
     InterpreterResult result = new InterpreterResult(Code.SUCCESS);
-    String resultJsonString = "{\"data\":{\"headers\":[\"_time\",\"operation\",\"count\"],\"data\":[{\"_time\":\"2021-02-24T02:00:00.000+02:00\",\"operation\":\"create\",\"count\":722},{\"_time\":\"2021-03-26T02:00:00.000+02:00\",\"operation\":\"create\",\"count\":693},{\"_time\":\"2021-03-27T02:00:00.000+02:00\",\"operation\":\"create\",\"count\":673}],\"draw\":1,\"recordsTotal\":10,\"recordsFiltered\":3},\"isAggregated\":false}";
+    String resultJsonString = "{\"type\":\"dataTables\",\"data\":{\"headers\":[\"_time\",\"operation\",\"count\"],\"data\":[{\"_time\":\"2021-02-24T02:00:00.000+02:00\",\"operation\":\"create\",\"count\":722},{\"_time\":\"2021-03-26T02:00:00.000+02:00\",\"operation\":\"create\",\"count\":693},{\"_time\":\"2021-03-27T02:00:00.000+02:00\",\"operation\":\"create\",\"count\":673}],\"draw\":1,\"recordsTotal\":10,\"recordsFiltered\":3},\"isAggregated\":false}";
     result.add(new InterpreterResultMessage(Type.DATATABLES,resultJsonString));
     paragraph.setResult(result);
 

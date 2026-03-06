@@ -48,28 +48,17 @@ public class InterpreterResultMessage implements Serializable, Jsonable {
 
   @Override
   public JsonObject asJson() {
-    JsonObjectBuilder resultBuilder = Json.createObjectBuilder();
-    if(type != null){
-      resultBuilder.add("type",type.label);
+    // If the data within this resultMessage is in a JSON formatted type, simply return the data object itself.
+    if(type.equals(InterpreterResult.Type.DATATABLES) || type.equals(InterpreterResult.Type.UPLOT)){
+      return Json.createReader(new StringReader(data)).readObject();
     }
-    // If the result is a valid JSON object, parse its contents into proper format.
-    try{
-      JsonObject messageAsJson = Json.createReader(new StringReader(data)).readObject();
-      if(messageAsJson.containsKey("isAggregated")){
-        JsonValue.ValueType isAggregatedType = messageAsJson.get("isAggregated").getValueType();
-        if(isAggregatedType.equals(JsonValue.ValueType.TRUE) || isAggregatedType.equals(JsonValue.ValueType.FALSE)){
-          boolean isAggregated = messageAsJson.getBoolean("isAggregated");
-          resultBuilder.add("isAggregated",isAggregated);
-        }
-      }
-      if(messageAsJson.containsKey("data")){
-        resultBuilder.add("data",messageAsJson.get("data"));
-      }
-    }
-    // Results are not always valid json, for example in cases where a stack trace is printed. In that case the data is simply added as a String.
-    catch (JsonException jsonException){
+    // If the data is some other type, there is no guarantee that the data is even in JSON format, so we build a response assuming that data is a simple String.
+    else {
+      JsonObjectBuilder resultBuilder = Json.createObjectBuilder();
       resultBuilder.add("data",data);
+      resultBuilder.add("isAggregated",false);
+      resultBuilder.add("type",type.label);
+      return resultBuilder.build();
     }
-    return resultBuilder.build();
   }
 }
