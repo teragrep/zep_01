@@ -48,6 +48,28 @@ public class InterpreterResultMessage implements Serializable, Jsonable {
 
   @Override
   public JsonObject asJson() {
-    return Json.createReader(new StringReader(data)).readObject();
+    JsonObjectBuilder resultBuilder = Json.createObjectBuilder();
+    if(type != null){
+      resultBuilder.add("type",type.label);
+    }
+    // If the result is a valid JSON object, parse its contents into proper format.
+    try{
+      JsonObject messageAsJson = Json.createReader(new StringReader(data)).readObject();
+      if(messageAsJson.containsKey("isAggregated")){
+        JsonValue.ValueType isAggregatedType = messageAsJson.get("isAggregated").getValueType();
+        if(isAggregatedType.equals(JsonValue.ValueType.TRUE) || isAggregatedType.equals(JsonValue.ValueType.FALSE)){
+          boolean isAggregated = messageAsJson.getBoolean("isAggregated");
+          resultBuilder.add("isAggregated",isAggregated);
+        }
+      }
+      if(messageAsJson.containsKey("data")){
+        resultBuilder.add("data",messageAsJson.get("data"));
+      }
+    }
+    // Results are not always valid json, for example in cases where a stack trace is printed. In that case the data is simply added as a String.
+    catch (JsonException jsonException){
+      resultBuilder.add("data",data);
+    }
+    return resultBuilder.build();
   }
 }
