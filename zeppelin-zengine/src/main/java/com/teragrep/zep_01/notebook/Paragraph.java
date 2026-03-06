@@ -81,7 +81,7 @@ public class Paragraph extends JobWithProgressPoller<InterpreterResult> implemen
   private Date dateUpdated;
   private int progress;
   // paragraph configs like isOpen, colWidth, etc
-  private Map<String, Object> config = new HashMap<>(); // We could replace this with ParagraphConfig object, but use of GSON would cause changes in saved file contents.
+  private Map<String, Object> config = new HashMap<>();
   // form and parameter settings
   public GUI settings = new GUI();
   private InterpreterResult results;
@@ -98,7 +98,7 @@ public class Paragraph extends JobWithProgressPoller<InterpreterResult> implemen
   private transient Map<String, Paragraph> userParagraphMap = new HashMap<>();
   private transient Map<String, String> localProperties = new HashMap<>();
 
-  private Map<String, ParagraphRuntimeInfo> runtimeInfos = new HashMap<>(); // We could replace this with ParagraphRuntimeInfos object, but use of GSON would cause changes in saved file contents.
+  private Map<String, ParagraphRuntimeInfo> runtimeInfos = new HashMap<>();
   private transient List<InterpreterResultMessage> outputBuffer = new ArrayList<>();
 
 

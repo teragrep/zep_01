@@ -33,14 +33,14 @@ import javax.inject.Provider;
 import javax.servlet.http.HttpServletRequest;
 
 import com.teragrep.zep_01.common.JsonMessage;
-import com.teragrep.zep_01.common.Jsonable;
 import com.teragrep.zep_01.socket.messages.ParagraphOutputRequestMessage;
 import com.teragrep.zep_01.display.*;
 import com.teragrep.zep_01.interpreter.*;
 import com.teragrep.zep_01.interpreter.remote.RemoteInterpreter;
 import com.teragrep.zep_01.interpreter.thrift.*;
 import com.teragrep.zep_01.rest.exception.BadRequestException;
-import jakarta.json.*;
+import jakarta.json.Json;
+import jakarta.json.JsonObject;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.apache.thrift.TException;
@@ -1663,8 +1663,7 @@ public class NotebookServer extends WebSocketServlet
     if (!sendParagraphStatusToFrontend) {
       return;
     }
-    // As formatted data is passed as a String via Thrift, we have to parse it into JSON in order to turn it into format expected by UI.
-
+    // As formatted data is passed as a String via Thrift, we have to parse it with JsonReader to make sure the data types are represented correctly.
     JsonObject outputJson = Json.createReader(new StringReader(output)).readObject();
     JsonObject messageData = Json.createObjectBuilder()
             .add("noteId",noteId)

@@ -158,7 +158,6 @@ public final class DTTableDatasetNg extends AbstractUserInterfaceElement {
         try{
             // Calls to this method might come concurrently from both DPLInterpreter (UI requesting a formatting change) and from BatchHandler (receiving a new batch of data from a running query)
             // We acquire the lock here to avoid concurrent calls to write(), as well as concurrent assignments to previousFormat and Options.
-            // TODO: perhaps the saving of previously used format and options could be done in an immutable fashion?
             lock.lock();
             final JsonObject formatted = format.format(dataset,options);
             final String outputContent = "%"+format.type().toLowerCase()+"\n" +

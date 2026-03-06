@@ -20,9 +20,6 @@ package com.teragrep.zep_01.socket;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
-import com.teragrep.zep_01.common.JsonMessage;
-import jakarta.json.Json;
-import jakarta.json.JsonObject;
 import org.apache.commons.lang3.StringUtils;
 import com.teragrep.zep_01.conf.ZeppelinConfiguration;
 import com.teragrep.zep_01.display.GUI;
