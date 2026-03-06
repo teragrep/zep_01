@@ -17,32 +17,38 @@
 
 package com.teragrep.zep_01.common;
 
-import com.google.gson.Gson;
 import jakarta.json.Json;
 import jakarta.json.JsonObject;
-import org.slf4j.Logger;
+import jakarta.json.JsonObjectBuilder;
 
-import java.util.*;
 
 /**
- * A Message that contains a single Jsonable as it's data.
+ * A Message that contains a single Jsonable as its data.
  */
 public class JsonMessage implements Jsonable {
 
-  private Message.OP op;
-  private JsonObject data;
-  private String ticket;
-  private String principal;
-  private String roles;
+  private final MessageId id;
+  private final Message.OP op;
+  private final JsonObject data;
+  private final String ticket;
+  private final String principal;
+  private final String roles;
 
   public JsonMessage(Message.OP op, JsonObject data){
-    this(op,data,"anonymous","anonymous","");
+    this(new StubMessageId(), op,data,"anonymous","anonymous","");
+  }
+  public JsonMessage(MessageId id, Message.OP op, JsonObject data){
+    this(id, op,data,"anonymous","anonymous","");
   }
   public JsonMessage(Message.OP op, Jsonable data){
-    this(op,data.asJson(),"anonymous","anonymous","");
+    this(new StubMessageId(), op,data.asJson(),"anonymous","anonymous","");
+  }
+  public JsonMessage(MessageId id, Message.OP op, Jsonable data){
+    this(id, op,data.asJson(),"anonymous","anonymous","");
   }
 
-  public JsonMessage(Message.OP op, JsonObject data, String ticket, String principal, String roles) {
+  public JsonMessage(MessageId id, Message.OP op, JsonObject data, String ticket, String principal, String roles) {
+    this.id = id;
     this.op = op;
     this.data = data;
     this.ticket = ticket;
@@ -51,12 +57,15 @@ public class JsonMessage implements Jsonable {
   }
   @Override
   public JsonObject asJson() {
-    JsonObject json = Json.createObjectBuilder()
-            .add("op",op.toString())
-            .add("data",data)
-            .add("ticket",ticket)
-            .add("principal",principal)
-            .add("roles",roles).build();
-    return json;
+    JsonObjectBuilder json = Json.createObjectBuilder();
+    if(!id.isStub()){
+      json.add("msgId",id.asJson());
+    }
+    json.add("op",op.toString());
+    json.add("data",data);
+    json.add("ticket",ticket);
+    json.add("principal",principal);
+    json.add("roles",roles);
+    return json.build();
   }
 }

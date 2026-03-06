@@ -33,6 +33,7 @@ import javax.inject.Provider;
 import javax.servlet.http.HttpServletRequest;
 
 import com.teragrep.zep_01.common.JsonMessage;
+import com.teragrep.zep_01.common.SimpleMessageId;
 import com.teragrep.zep_01.socket.messages.ParagraphOutputRequestMessage;
 import com.teragrep.zep_01.display.*;
 import com.teragrep.zep_01.interpreter.*;
@@ -589,7 +590,7 @@ public class NotebookServer extends WebSocketServlet
     if (note.isPersonalizedMode()) {
       broadcastParagraphs(p.getUserParagraphMap(), p, msgId);
     } else {
-      JsonObject message = new JsonMessage(OP.PARAGRAPH,p).asJson();
+      JsonObject message = new JsonMessage(new SimpleMessageId(msgId),OP.PARAGRAPH,p).asJson();
       getConnectionManager().broadcast(note.getId(),message.toString());
     }
   }
@@ -1141,7 +1142,7 @@ public class NotebookServer extends WebSocketServlet
       JsonObject errorJson = Json.createObjectBuilder()
               .add("message","Failed to retrieve data. Please rerun the paragraph and try again or see technical log for details!")
               .build();
-      JsonMessage msg = new JsonMessage(OP.ERROR_INFO,errorJson);
+      JsonMessage msg = new JsonMessage(new SimpleMessageId(msgId),OP.ERROR_INFO,errorJson);
       conn.send(msg.asJson().toString());
     }
   }
