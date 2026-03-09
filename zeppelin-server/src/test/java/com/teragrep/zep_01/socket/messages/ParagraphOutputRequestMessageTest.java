@@ -3,6 +3,7 @@ package com.teragrep.zep_01.socket.messages;
 import com.teragrep.zep_01.interpreter.thrift.DataTablesOptions;
 import com.teragrep.zep_01.interpreter.thrift.UPlotOptions;
 import jakarta.json.Json;
+import jakarta.json.JsonException;
 import jakarta.json.JsonObject;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
@@ -110,5 +111,36 @@ class ParagraphOutputRequestMessageTest {
         Assertions.assertEquals(start,options.getStart());
         Assertions.assertEquals(length,options.getLength());
         Assertions.assertEquals(searchString,options.getSearch().getValue());
+    }
+
+    @Test
+    public void invalidRequestMessageTest(){
+
+        // Given JsonObject does not contain any of the required fields.
+        final JsonObject messageJson = Json.createObjectBuilder()
+                .build();
+        final ParagraphOutputRequestMessage message = new ParagraphOutputRequestMessage(messageJson);
+        // Should throw an error when trying to retrieve any of the parameters
+        Assertions.assertThrows(JsonException.class,()-> message.paragraphId());
+        Assertions.assertThrows(JsonException.class,()-> message.messageId());
+        Assertions.assertThrows(JsonException.class,()-> message.noteId());
+        Assertions.assertThrows(JsonException.class,()-> message.options());
+        Assertions.assertThrows(JsonException.class,()-> message.visualizationLibraryName());
+    }
+
+    @Test
+    public void invalidOptionsRequestTest(){
+        final String visualizationLibraryName = "dataTables";
+        // JsonObject contains an options, but it does not have any of the required values.
+        final JsonObject messageJson = Json.createObjectBuilder()
+                .add("data",Json.createObjectBuilder()
+                        .add("type",visualizationLibraryName)
+                        .add("requestOptions",Json.createObjectBuilder()
+                                        .build())
+                        .build())
+                .build();
+        final ParagraphOutputRequestMessage message = new ParagraphOutputRequestMessage(messageJson);
+        // Should throw an error when trying to retrieve the options
+        Assertions.assertThrows(JsonException.class,()-> message.options());
     }
 }
