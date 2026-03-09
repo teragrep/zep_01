@@ -17,14 +17,13 @@
 
 package com.teragrep.zep_01.common;
 
-import jakarta.json.JsonObject;
+import jakarta.json.JsonValue;
 
 /**
  * Can turn itself into a Jakarta JsonObject
  */
 
-// TODO: this could be renamed to SaveableJson
 public interface Jsonable {
 
-  JsonObject asJson();
+  JsonValue asJson();
 }

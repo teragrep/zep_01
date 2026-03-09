@@ -20,6 +20,7 @@ package com.teragrep.zep_01.common;
 import jakarta.json.Json;
 import jakarta.json.JsonObject;
 import jakarta.json.JsonObjectBuilder;
+import jakarta.json.JsonValue;
 
 
 /**
@@ -29,15 +30,15 @@ public class JsonMessage implements Jsonable {
 
   private final MessageId id;
   private final Message.OP op;
-  private final JsonObject data;
+  private final JsonValue data;
   private final String ticket;
   private final String principal;
   private final String roles;
 
-  public JsonMessage(Message.OP op, JsonObject data){
+  public JsonMessage(Message.OP op, JsonValue data){
     this(new StubMessageId(), op,data,"anonymous","anonymous","");
   }
-  public JsonMessage(MessageId id, Message.OP op, JsonObject data){
+  public JsonMessage(MessageId id, Message.OP op, JsonValue data){
     this(id, op,data,"anonymous","anonymous","");
   }
   public JsonMessage(Message.OP op, Jsonable data){
@@ -47,7 +48,7 @@ public class JsonMessage implements Jsonable {
     this(id, op,data.asJson(),"anonymous","anonymous","");
   }
 
-  public JsonMessage(MessageId id, Message.OP op, JsonObject data, String ticket, String principal, String roles) {
+  public JsonMessage(MessageId id, Message.OP op, JsonValue data, String ticket, String principal, String roles) {
     this.id = id;
     this.op = op;
     this.data = data;
