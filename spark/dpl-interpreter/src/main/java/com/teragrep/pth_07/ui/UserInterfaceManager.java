@@ -46,7 +46,6 @@
 package com.teragrep.pth_07.ui;
 
 import com.teragrep.pth_07.ui.elements.MessageLog;
-import com.teragrep.pth_07.ui.elements.OutputContent;
 import com.teragrep.pth_07.ui.elements.PerformanceIndicator;
 import com.teragrep.pth_07.ui.elements.table_dynamic.DTTableDatasetNg;
 import com.teragrep.zep_01.interpreter.InterpreterContext;
@@ -59,13 +58,11 @@ public class UserInterfaceManager {
     private final DTTableDatasetNg dtTableDatasetNg;
     private final PerformanceIndicator performanceIndicator;
     private final MessageLog messageLog;
-    private final OutputContent outputContent;
 
     public UserInterfaceManager(InterpreterContext interpreterContext) {
         dtTableDatasetNg = new DTTableDatasetNg(interpreterContext);
         performanceIndicator = new PerformanceIndicator(interpreterContext);
         messageLog = new MessageLog(interpreterContext);
-        outputContent = new OutputContent(interpreterContext);
     }
 
     public DTTableDatasetNg getDtTableDatasetNg() {
@@ -80,7 +77,4 @@ public class UserInterfaceManager {
         return messageLog;
     }
 
-    public OutputContent getOutputContent() {
-        return outputContent;
-    }
 }
