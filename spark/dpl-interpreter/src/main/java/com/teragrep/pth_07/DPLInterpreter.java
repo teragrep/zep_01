@@ -48,7 +48,7 @@ package com.teragrep.pth_07;
 
 import com.teragrep.pth_07.stream.BatchHandler;
 import com.teragrep.pth_07.ui.UserInterfaceManager;
-import com.teragrep.pth_07.ui.elements.table_dynamic.DTTableDatasetNg;
+import com.teragrep.pth_07.ui.elements.table_dynamic.DatasetState;
 import com.teragrep.pth_07.ui.elements.table_dynamic.formats.DataTablesFormat;
 import com.teragrep.pth_07.ui.elements.table_dynamic.formats.DatasetFormat;
 import com.teragrep.pth_07.ui.elements.table_dynamic.formats.UPlotFormat;
@@ -316,22 +316,7 @@ public class DPLInterpreter extends AbstractInterpreter {
     @Override
     public void formatDataset(final String noteId, final String paragraphId, final String visualizationLibraryName, final Options options) throws InterpreterException{
         final UserInterfaceManager userInterfaceManager = findUserInterfacemanger(noteId,paragraphId);
-        final DTTableDatasetNg dtTableDatasetNg = userInterfaceManager.getDtTableDatasetNg();
-        final DatasetFormat format;
-        final DatasetFormat previousFormat = dtTableDatasetNg.previousFormat();
-        // If using the same format as previously, don't create new objects, as for example DataTablesFormat keeps an internal draw counter, which would be reset on new object creation
-        if(previousFormat.type().equals(visualizationLibraryName)){
-            format = previousFormat;
-        }
-        else {
-            if(visualizationLibraryName.equals(InterpreterResult.Type.UPLOT.label)){
-                format = new UPlotFormat();
-            }
-            else {
-                // Default to DataTables
-                format = new DataTablesFormat();
-            }
-        }
-        dtTableDatasetNg.writeDataUpdate(format, options);
+        // set new options only.
+        userInterfaceManager.updateDataset(options);
     }
 }

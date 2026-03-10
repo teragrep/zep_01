@@ -47,25 +47,31 @@ package com.teragrep.pth_07.ui;
 
 import com.teragrep.pth_07.ui.elements.MessageLog;
 import com.teragrep.pth_07.ui.elements.PerformanceIndicator;
-import com.teragrep.pth_07.ui.elements.table_dynamic.DTTableDatasetNg;
+import com.teragrep.pth_07.ui.elements.table_dynamic.DatasetState;
 import com.teragrep.zep_01.interpreter.InterpreterContext;
+import com.teragrep.zep_01.interpreter.InterpreterException;
+import com.teragrep.zep_01.interpreter.thrift.Options;
+import org.apache.spark.sql.Dataset;
+import org.apache.spark.sql.Row;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.concurrent.locks.ReentrantLock;
+
 public class UserInterfaceManager {
     private static final Logger LOGGER = LoggerFactory.getLogger(UserInterfaceManager.class);
-
-    private final DTTableDatasetNg dtTableDatasetNg;
+    private final ReentrantLock lock = new ReentrantLock();
+    private DatasetState dtTableDatasetNg;
     private final PerformanceIndicator performanceIndicator;
     private final MessageLog messageLog;
 
     public UserInterfaceManager(InterpreterContext interpreterContext) {
-        dtTableDatasetNg = new DTTableDatasetNg(interpreterContext.out());
+        dtTableDatasetNg = new DatasetState(interpreterContext.out());
         performanceIndicator = new PerformanceIndicator(interpreterContext);
         messageLog = new MessageLog(interpreterContext);
     }
 
-    public DTTableDatasetNg getDtTableDatasetNg() {
+    public DatasetState getDtTableDatasetNg() {
         return dtTableDatasetNg;
     }
 
@@ -75,6 +81,36 @@ public class UserInterfaceManager {
 
     public MessageLog getMessageLog() {
         return messageLog;
+    }
+
+    /**
+     * Updates DatasetState to use a new Dataset, and writes the output to InterpreterOutput. A lock is acquired to avoid concurrent writes.
+     * @param dataset The dataset containing updated data
+     * @throws InterpreterException Thrown if an error occurs during formatting of data.
+     */
+    public void updateDataset(Dataset<Row> dataset) throws InterpreterException {
+        try{
+            lock.lock();
+            dtTableDatasetNg = dtTableDatasetNg.withDataset(dataset);
+            dtTableDatasetNg.writeDataUpdate();
+        } finally {
+            lock.unlock();
+        }
+    }
+
+    /**
+     * Updates DatasetState to use a new set of formatting Options, and writes the output to InterpreterOutput. A lock is acquired to avoid concurrent writes.
+     * @param options The Options object containing updated formatting options
+     * @throws InterpreterException Thrown if an error occurs during formatting of data.
+     */
+    public void updateDataset(Options options) throws InterpreterException{
+        try{
+            lock.lock();
+            dtTableDatasetNg = dtTableDatasetNg.withOptions(options);
+            dtTableDatasetNg.writeDataUpdate();
+        } finally {
+            lock.unlock();
+        }
     }
 
 }

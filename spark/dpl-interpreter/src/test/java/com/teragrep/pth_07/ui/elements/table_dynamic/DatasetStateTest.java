@@ -46,7 +46,6 @@
 package com.teragrep.pth_07.ui.elements.table_dynamic;
 
 import com.teragrep.pth_07.ui.elements.table_dynamic.testdata.TestDPLData;
-import com.teragrep.zep_01.display.AngularObjectRegistry;
 import com.teragrep.zep_01.interpreter.*;
 import org.apache.spark.sql.Dataset;
 import org.apache.spark.sql.Row;
@@ -63,8 +62,8 @@ import java.util.List;
 import java.util.UUID;
 
 
-public class DTTableDatasetNgTest {
-    private static final Logger LOGGER = LoggerFactory.getLogger(DTTableDatasetNgTest.class);
+public class DatasetStateTest {
+    private static final Logger LOGGER = LoggerFactory.getLogger(DatasetStateTest.class);
     private final SparkSession sparkSession = SparkSession.builder()
             .master("local[*]")
             .config("spark.cleaner.referenceTracking.cleanCheckpoints", "true")
@@ -107,20 +106,18 @@ public class DTTableDatasetNgTest {
         TestInterpreterOutputListener listener = new TestInterpreterOutputListener();
         InterpreterOutput testOutput =  new InterpreterOutput(listener);
 
-        DTTableDatasetNg dtTableDatasetNg = new DTTableDatasetNg(testOutput);
+        DatasetState dtTableDatasetNg = new DatasetState(testOutput);
 
         // Simulate DPL receiving new data.
         Assertions.assertDoesNotThrow(()->{
-            dtTableDatasetNg.setParagraphDataset(testDs);
-            dtTableDatasetNg.writeDataUpdate();
+            dtTableDatasetNg.withDataset(testDs).writeDataUpdate();
         });
         Assertions.assertEquals(1,listener.numberOfUpdateCalls());
         Assertions.assertEquals(0,listener.numberOfResetCalls());
 
         // Simulate DPL receiving another batch of data.
         Assertions.assertDoesNotThrow(()->{
-            dtTableDatasetNg.setParagraphDataset(testDs);
-            dtTableDatasetNg.writeDataUpdate();
+            dtTableDatasetNg.withDataset(testDs).writeDataUpdate();
         });
         Assertions.assertEquals(2,listener.numberOfUpdateCalls());
         Assertions.assertEquals(0,listener.numberOfResetCalls());
@@ -136,12 +133,11 @@ public class DTTableDatasetNgTest {
         TestInterpreterOutputListener listener = new TestInterpreterOutputListener();
         InterpreterOutput testOutput =  new InterpreterOutput(listener);
 
-        DTTableDatasetNg dtTableDatasetNg = new DTTableDatasetNg(testOutput);
+        DatasetState dtTableDatasetNg = new DatasetState(testOutput);
 
         // Simulate DPL receiving new data.
         Assertions.assertDoesNotThrow(()->{
-            dtTableDatasetNg.setParagraphDataset(testDs);
-            dtTableDatasetNg.writeDataUpdate();
+            dtTableDatasetNg.withDataset(testDs).writeDataUpdate();
         });
         List<InterpreterResultMessage> messages = Assertions.assertDoesNotThrow(()->testOutput.toInterpreterResultMessage());
         // First message should have draw value of 1
@@ -149,8 +145,7 @@ public class DTTableDatasetNgTest {
 
         // Simulate DPL receiving another batch of new data without changing schema.
         Assertions.assertDoesNotThrow(()->{
-            dtTableDatasetNg.setParagraphDataset(testDs);
-            dtTableDatasetNg.writeDataUpdate();
+            dtTableDatasetNg.withDataset(testDs).writeDataUpdate();
         });
         List<InterpreterResultMessage> messages2 = Assertions.assertDoesNotThrow(()->testOutput.toInterpreterResultMessage());
         // Second message should have draw value of 2
@@ -158,8 +153,7 @@ public class DTTableDatasetNgTest {
 
         // Simulate DPL receiving yet another batch of new data but with a changed schema.
         Assertions.assertDoesNotThrow(()->{
-            dtTableDatasetNg.setParagraphDataset(smallTestDs);
-            dtTableDatasetNg.writeDataUpdate();
+            dtTableDatasetNg.withDataset(smallTestDs).writeDataUpdate();
         });
         List<InterpreterResultMessage> messages3 = Assertions.assertDoesNotThrow(()->testOutput.toInterpreterResultMessage());
         // Third message's draw value should be reset to 1

@@ -70,8 +70,8 @@ public class BatchHandler implements BiConsumer<Dataset<Row>, Boolean> {
     public void accept(final Dataset<Row> rowDataset, final Boolean aggsUsed) {
         LOGGER.error("BatchHandler accept called LOGGER");
         try{
-            userInterfaceManager.getDtTableDatasetNg().setParagraphDataset(rowDataset);
-            userInterfaceManager.getDtTableDatasetNg().writeDataUpdate();
+            // Update dataset only, keep previous formatting options.
+            userInterfaceManager.updateDataset(rowDataset);
         } catch (InterpreterException e){
             LOGGER.error("BatchHandler failed to write dataset!",e);
         }
