@@ -60,7 +60,7 @@ public class UserInterfaceManager {
     private final MessageLog messageLog;
 
     public UserInterfaceManager(InterpreterContext interpreterContext) {
-        dtTableDatasetNg = new DTTableDatasetNg(interpreterContext);
+        dtTableDatasetNg = new DTTableDatasetNg(interpreterContext.out());
         performanceIndicator = new PerformanceIndicator(interpreterContext);
         messageLog = new MessageLog(interpreterContext);
     }

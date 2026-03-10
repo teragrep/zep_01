@@ -107,9 +107,7 @@ public class DTTableDatasetNgTest {
         TestInterpreterOutputListener listener = new TestInterpreterOutputListener();
         InterpreterOutput testOutput =  new InterpreterOutput(listener);
 
-        AngularObjectRegistry testRegistry = new AngularObjectRegistry("test", null);
-        InterpreterContext context = InterpreterContext.builder().setInterpreterOut(testOutput).setAngularObjectRegistry(testRegistry).build();
-        DTTableDatasetNg dtTableDatasetNg = new DTTableDatasetNg(context);
+        DTTableDatasetNg dtTableDatasetNg = new DTTableDatasetNg(testOutput);
 
         // Simulate DPL receiving new data.
         Assertions.assertDoesNotThrow(()->{
@@ -138,9 +136,7 @@ public class DTTableDatasetNgTest {
         TestInterpreterOutputListener listener = new TestInterpreterOutputListener();
         InterpreterOutput testOutput =  new InterpreterOutput(listener);
 
-        AngularObjectRegistry testRegistry = new AngularObjectRegistry("test", null);
-        InterpreterContext context = InterpreterContext.builder().setInterpreterOut(testOutput).setAngularObjectRegistry(testRegistry).build();
-        DTTableDatasetNg dtTableDatasetNg = new DTTableDatasetNg(context);
+        DTTableDatasetNg dtTableDatasetNg = new DTTableDatasetNg(testOutput);
 
         // Simulate DPL receiving new data.
         Assertions.assertDoesNotThrow(()->{

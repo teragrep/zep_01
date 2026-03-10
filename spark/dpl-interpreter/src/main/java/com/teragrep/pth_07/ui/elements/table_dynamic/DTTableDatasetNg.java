@@ -47,16 +47,17 @@ package com.teragrep.pth_07.ui.elements.table_dynamic;
 
 import com.teragrep.pth_07.ui.elements.table_dynamic.formats.DataTablesFormat;
 import com.teragrep.pth_07.ui.elements.table_dynamic.formats.DatasetFormat;
-import com.teragrep.pth_07.ui.elements.AbstractUserInterfaceElement;
 import com.teragrep.zep_01.interpreter.InterpreterException;
+import com.teragrep.zep_01.interpreter.InterpreterOutput;
 import com.teragrep.zep_01.interpreter.thrift.DataTablesOptions;
 import com.teragrep.zep_01.interpreter.thrift.DataTablesSearch;
 import com.teragrep.zep_01.interpreter.thrift.Options;
 import jakarta.json.*;
 import org.apache.spark.sql.Dataset;
 import org.apache.spark.sql.Row;
-import com.teragrep.zep_01.interpreter.InterpreterContext;
 import org.apache.spark.storage.StorageLevel;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -66,25 +67,20 @@ import java.util.concurrent.locks.ReentrantLock;
 /**
  * DTTableDatasetNG is responsible for writing an output String created from a Dataset to an InterpreterOutput using a given DatasetFormat and Options.
  */
-public final class DTTableDatasetNg extends AbstractUserInterfaceElement {
+public final class DTTableDatasetNg {
     // FIXME Exceptions should cause interpreter to stop
 
     private final Lock lock = new ReentrantLock();
     private Dataset<Row> dataset = null; // Using null here to represent absence of a Dataset since creating empty Datasets requires a SparkSession and causes overhead.
     private DatasetFormat previousFormat;
     private Options previousOptions;
+    private final InterpreterOutput output;
+    private static final Logger LOGGER = LoggerFactory.getLogger(DTTableDatasetNg.class);
 
-    public DTTableDatasetNg(final InterpreterContext interpreterContext){
-        super(interpreterContext);
+    public DTTableDatasetNg(final InterpreterOutput output){
+        this.output = output;
         this.previousFormat = new DataTablesFormat();
         this.previousOptions = Options.dataTablesOptions(new DataTablesOptions(0,0,50,new DataTablesSearch("",false,new ArrayList<>()),new ArrayList<>(),new ArrayList<>()));
-    }
-    @Override
-    public void draw() {
-    }
-
-    @Override
-    public void emit() {
     }
 
     /**
@@ -120,9 +116,9 @@ public final class DTTableDatasetNg extends AbstractUserInterfaceElement {
 
     private void write(final String outputContent){
         try {
-            getInterpreterContext().out().clear(false);
-            getInterpreterContext().out().write(outputContent);
-            getInterpreterContext().out().flush();
+            output.clear(false);
+            output.write(outputContent);
+            output.flush();
         } catch (final IOException e) {
             LOGGER.error(e.toString());
             e.printStackTrace();
