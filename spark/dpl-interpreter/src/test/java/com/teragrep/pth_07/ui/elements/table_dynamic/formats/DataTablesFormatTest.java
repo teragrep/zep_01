@@ -94,8 +94,7 @@ class DataTablesFormatTest {
         final DataTablesFormat format = new DataTablesFormat();
         final JsonObject formatted = Assertions.assertDoesNotThrow(()->format.format(sourceData, Options.dataTablesOptions(options)));
         final JsonObject data = formatted.getJsonObject("data");
-        final JsonObject responseOptions = formatted.getJsonObject("options");
-        final JsonArray headers = responseOptions.getJsonArray("headers");
+        final JsonArray headers = data.getJsonArray("headers");
         final boolean isAggregated = formatted.getBoolean("isAggregated");
         final String type = formatted.getString("type");
         Assertions.assertEquals(length,data.getJsonArray("data").size());
@@ -107,7 +106,7 @@ class DataTablesFormatTest {
         Assertions.assertEquals(rowCount,data.getInt("recordsFiltered"));
 
         // Check headers
-        Assertions.assertEquals(schema.size(),headers.size());
+        Assertions.assertEquals(schema.size(),data.getJsonArray("headers").size());
 
         Assertions.assertEquals(schema.fieldNames()[0],headers.getString(0));
         Assertions.assertEquals(schema.fieldNames()[1],headers.getString(1));
@@ -156,8 +155,7 @@ class DataTablesFormatTest {
         final DataTablesFormat format = new DataTablesFormat();
         final JsonObject formatted = Assertions.assertDoesNotThrow(()->format.format(aggDataset, Options.dataTablesOptions(options)));
         final JsonObject data = formatted.getJsonObject("data");
-        final JsonObject responseOptions = formatted.getJsonObject("options");
-        final JsonArray headers = responseOptions.getJsonArray("headers");
+        final JsonArray headers = data.getJsonArray("headers");
         final boolean isAggregated = formatted.getBoolean("isAggregated");
         final String type = formatted.getString("type");
 
@@ -169,7 +167,7 @@ class DataTablesFormatTest {
         Assertions.assertEquals(rowCount,data.getInt("recordsFiltered"));
 
         // Check headers
-        Assertions.assertEquals(aggSchema.size(),headers.size());
+        Assertions.assertEquals(aggSchema.size(),data.getJsonArray("headers").size());
 
         Assertions.assertEquals(aggSchema.fieldNames()[0],headers.getString(0));
         Assertions.assertEquals(aggSchema.fieldNames()[1],headers.getString(1));
@@ -213,8 +211,7 @@ class DataTablesFormatTest {
         final DataTablesFormat format = new DataTablesFormat();
         final JsonObject formatted = Assertions.assertDoesNotThrow(()->format.format(aggDataset, Options.dataTablesOptions(options)));
         final JsonObject data = formatted.getJsonObject("data");
-        final JsonObject responseOptions = formatted.getJsonObject("options");
-        final JsonArray headers = responseOptions.getJsonArray("headers");
+        final JsonArray headers = data.getJsonArray("headers");
         final boolean isAggregated = formatted.getBoolean("isAggregated");
         final String type = formatted.getString("type");
 
@@ -225,7 +222,7 @@ class DataTablesFormatTest {
         Assertions.assertEquals(rowCount,data.getInt("recordsFiltered"));
 
         // Check headers
-        Assertions.assertEquals(aggSchema.size(),headers.size());
+        Assertions.assertEquals(aggSchema.size(),data.getJsonArray("headers").size());
 
         Assertions.assertEquals(aggSchema.fieldNames()[0],headers.getString(0));
         Assertions.assertEquals(aggSchema.fieldNames()[1],headers.getString(1));
