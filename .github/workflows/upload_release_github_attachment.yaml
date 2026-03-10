@@ -56,7 +56,7 @@ jobs:
           deploy_key: ${{ secrets.PKG_01_DEPLOY_KEY }}
           files: target/rpm/com.teragrep-zep_01/RPMS/x86_64/com.teragrep-zep_01-*.x86_64.rpm
           gpg_public_key: "${{ secrets.RPM_SIGNING_PUBLIC_KEY }}"
-          repo_baseurl: "${{ vars.PKG_01_BASEURL }}"
+          repo_baseurl: "${{ vars.PKG_01_CENTRAL_BASEURL }}"
           location_prefix: "${{ vars.PKG_01_LOCATION_PREFIX }}"
         env:
           has_deploy_key: ${{ secrets.PKG_01_DEPLOY_KEY != '' }}
