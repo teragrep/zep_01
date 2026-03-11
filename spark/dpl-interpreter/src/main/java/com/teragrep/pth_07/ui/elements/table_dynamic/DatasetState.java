@@ -50,6 +50,7 @@ import com.teragrep.pth_07.ui.elements.table_dynamic.formats.DatasetFormat;
 import com.teragrep.pth_07.ui.elements.table_dynamic.formats.UPlotFormat;
 import com.teragrep.zep_01.interpreter.InterpreterException;
 import com.teragrep.zep_01.interpreter.InterpreterOutput;
+import com.teragrep.zep_01.interpreter.InterpreterResult;
 import com.teragrep.zep_01.interpreter.thrift.DataTablesOptions;
 import com.teragrep.zep_01.interpreter.thrift.DataTablesSearch;
 import com.teragrep.zep_01.interpreter.thrift.Options;
@@ -115,7 +116,14 @@ public final class DatasetState {
     public DatasetState withOptions(final Options options) throws InterpreterException {
         DatasetFormat newFormat;
         if(options.isSetDataTablesOptions()){
-            newFormat = new DataTablesFormat();
+            // If the current format already is of the correct type, we don't need to create a new instance (which would reset DataTablesFromat's draw counter)
+            if(format.type().equals(InterpreterResult.Type.DATATABLES.label)){
+                newFormat = format;
+            }
+            // If the format changes, a fresh instance is required.
+            else {
+                newFormat = new DataTablesFormat();
+            }
         }
         else if (options.isSetUPlotOptions()){
             newFormat = new UPlotFormat();
