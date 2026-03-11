@@ -54,14 +54,14 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
-public final class DTSearch {
+public final class DTSearch implements DTTransformation{
     protected static final Logger LOGGER = LoggerFactory.getLogger(DTSearch.class);
-    private final List<String> rowList;
+    private final String searchString;
 
-    public DTSearch(List<String> rowList){
-        this.rowList = rowList;
+    public DTSearch(String searchString){
+        this.searchString = searchString;
     }
-    public List<String> search(String searchString){
+    public List<String> apply(List<String> rowList){
         List<String> searchedList = new ArrayList<>();
         if (!"".equals(searchString)) {
             try {
@@ -99,11 +99,11 @@ public final class DTSearch {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         DTSearch dtSearch = (DTSearch) o;
-        return Objects.equals(rowList, dtSearch.rowList);
+        return Objects.equals(searchString, dtSearch.searchString);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(rowList);
+        return Objects.hash(searchString);
     }
 }

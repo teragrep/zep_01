@@ -43,49 +43,28 @@
  * Teragrep, the applicable Commercial License may apply to this file if you as
  * a licensee so wish it.
  */
-package com.teragrep.pth_07.ui;
+package com.teragrep.pth_07.ui.elements.table_dynamic;
 
-import com.teragrep.pth_07.ui.elements.MessageLog;
-import com.teragrep.pth_07.ui.elements.OutputContent;
-import com.teragrep.pth_07.ui.elements.PerformanceIndicator;
-import com.teragrep.pth_07.ui.elements.table_dynamic.DTTableDataset;
-import com.teragrep.pth_07.ui.elements.table_dynamic.DTTableDatasetNg;
-import com.teragrep.pth_07.ui.elements.table_dynamic.StubDTTableDatasetNg;
-import com.teragrep.zep_01.interpreter.InterpreterContext;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import jakarta.json.*;
 
-public class UserInterfaceManager {
-    private static final Logger LOGGER = LoggerFactory.getLogger(UserInterfaceManager.class);
+import java.io.StringReader;
+import java.util.List;
 
-    private DTTableDataset dtTableDatasetNg;
-    private final PerformanceIndicator performanceIndicator;
-    private final MessageLog messageLog;
-    private final OutputContent outputContent;
+public class DTData {
+    private final List<String> rowList;
 
-    public UserInterfaceManager(InterpreterContext interpreterContext) {
-        dtTableDatasetNg = new StubDTTableDatasetNg();
-        performanceIndicator = new PerformanceIndicator(interpreterContext);
-        messageLog = new MessageLog(interpreterContext);
-        outputContent = new OutputContent(interpreterContext);
+    public DTData(List<String> rowList){
+        this.rowList = rowList;
     }
 
-    public DTTableDataset getDtTableDatasetNg() {
-        return dtTableDatasetNg;
-    }
-    public void setDtTableDatasetNg(DTTableDatasetNg dtTableDatasetNg) {
-        this.dtTableDatasetNg = dtTableDatasetNg;
-    }
-
-    public PerformanceIndicator getPerformanceIndicator() {
-        return performanceIndicator;
-    }
-
-    public MessageLog getMessageLog() {
-        return messageLog;
-    }
-
-    public OutputContent getOutputContent() {
-        return outputContent;
+    public JsonArray json(){
+        JsonArrayBuilder dataBuilder = Json.createArrayBuilder();
+        for (String S : rowList) {
+            JsonReader reader = Json.createReader(new StringReader(S));
+            JsonObject line = reader.readObject();
+            dataBuilder.add(line);
+            reader.close();
+        }
+        return dataBuilder.build();
     }
 }

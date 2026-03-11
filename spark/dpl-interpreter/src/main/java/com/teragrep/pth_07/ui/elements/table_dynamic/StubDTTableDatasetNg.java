@@ -43,49 +43,51 @@
  * Teragrep, the applicable Commercial License may apply to this file if you as
  * a licensee so wish it.
  */
-package com.teragrep.pth_07.ui;
+package com.teragrep.pth_07.ui.elements.table_dynamic;
 
-import com.teragrep.pth_07.ui.elements.MessageLog;
-import com.teragrep.pth_07.ui.elements.OutputContent;
-import com.teragrep.pth_07.ui.elements.PerformanceIndicator;
-import com.teragrep.pth_07.ui.elements.table_dynamic.DTTableDataset;
-import com.teragrep.pth_07.ui.elements.table_dynamic.DTTableDatasetNg;
-import com.teragrep.pth_07.ui.elements.table_dynamic.StubDTTableDatasetNg;
-import com.teragrep.zep_01.interpreter.InterpreterContext;
+import jakarta.json.*;
+import org.apache.spark.sql.types.StructType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class UserInterfaceManager {
-    private static final Logger LOGGER = LoggerFactory.getLogger(UserInterfaceManager.class);
+import java.util.List;
 
-    private DTTableDataset dtTableDatasetNg;
-    private final PerformanceIndicator performanceIndicator;
-    private final MessageLog messageLog;
-    private final OutputContent outputContent;
+public final class StubDTTableDatasetNg implements DTTableDataset{
+    static Logger LOGGER = LoggerFactory.getLogger(StubDTTableDatasetNg.class);
 
-    public UserInterfaceManager(InterpreterContext interpreterContext) {
-        dtTableDatasetNg = new StubDTTableDatasetNg();
-        performanceIndicator = new PerformanceIndicator(interpreterContext);
-        messageLog = new MessageLog(interpreterContext);
-        outputContent = new OutputContent(interpreterContext);
+    public StubDTTableDatasetNg() {
+
     }
 
-    public DTTableDataset getDtTableDatasetNg() {
-        return dtTableDatasetNg;
-    }
-    public void setDtTableDatasetNg(DTTableDatasetNg dtTableDatasetNg) {
-        this.dtTableDatasetNg = dtTableDatasetNg;
+    @Override
+    public String interpreterOutputFormat(int drawCount){
+        throw new UnsupportedOperationException("DTTableDataset is a stub!");
     }
 
-    public PerformanceIndicator getPerformanceIndicator() {
-        return performanceIndicator;
+    @Override
+    public String interpreterOutputFormat(int drawCount, int start, int length, String searchString) {
+        throw new UnsupportedOperationException("DTTableDataset is a stub!");
+    }
+    @Override
+    public JsonObject datatablesFormat(int drawCount) {
+        throw new UnsupportedOperationException("DTTableDataset is a stub!");
+    }
+    @Override
+    public JsonObject datatablesFormat(int drawCount, int start, int length, String searchString) {
+        throw new UnsupportedOperationException("DTTableDataset is a stub!");
+    }
+    @Override
+    public List<String> dataset(){
+        throw new UnsupportedOperationException("DTTableDataset is a stub!");
     }
 
-    public MessageLog getMessageLog() {
-        return messageLog;
+    @Override
+    public StructType schema() {
+        throw new UnsupportedOperationException("DTTableDataset is a stub!");
     }
 
-    public OutputContent getOutputContent() {
-        return outputContent;
+    @Override
+    public boolean isStub() {
+        return true;
     }
 }
