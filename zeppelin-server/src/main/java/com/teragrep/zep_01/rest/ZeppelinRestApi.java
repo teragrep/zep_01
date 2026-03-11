@@ -17,9 +17,13 @@
 package com.teragrep.zep_01.rest;
 
 import javax.inject.Singleton;
+import com.teragrep.zep_01.conf.ZeppelinConfiguration;
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -34,6 +38,7 @@ import javax.ws.rs.core.Response;
 import com.teragrep.zep_01.annotation.ZeppelinApi;
 import com.teragrep.zep_01.server.JsonResponse;
 import com.teragrep.zep_01.util.Util;
+import org.slf4j.LoggerFactory;
 
 /**
  * Zeppelin root rest api endpoint.
@@ -43,6 +48,8 @@ import com.teragrep.zep_01.util.Util;
 @Path("/")
 @Singleton
 public class ZeppelinRestApi {
+
+  private static final org.slf4j.Logger LOGGER = LoggerFactory.getLogger(ZeppelinRestApi.class);
 
   /**
    * Get the root endpoint Return always 200.
@@ -62,8 +69,56 @@ public class ZeppelinRestApi {
     versionInfo.put("version", Util.getVersion());
     versionInfo.put("git-commit-id", Util.getGitCommitId());
     versionInfo.put("git-timestamp", Util.getGitTimestamp());
-
     return new JsonResponse<>(Response.Status.OK, "Zeppelin version", versionInfo).build();
+  }
+
+  /**
+   * Gets the most recent announcement text.
+   *
+   * @return Most recent Announcement text, prioritizing values from Environment variables (set in zeppelin-env.sh), secondarily from System properties (set in zeppelin-site.xml)
+   */
+  @GET
+  @Path("announcement")
+  @ZeppelinApi
+  public Response getAnnouncement() {
+    final Map<String, String> json = new HashMap<>();
+    // Searches first from Environment variables, if a match is not found, searches from zeppelin-site.xml, if a match is not found, returns a default value.
+    final ZeppelinConfiguration conf = ZeppelinConfiguration.create();
+    final String announcementText = conf.getString(ZeppelinConfiguration.ConfVars.ZEPPELIN_ANNOUNCEMENT);
+    json.put("announcement", announcementText);
+    return new JsonResponse<>(Response.Status.OK, json).build();
+  }
+
+  /**
+   * Set a new value for announcement text. Does not override announcement texts from Environment variables (set via zeppelin-env.sh)
+   *
+   * @param request Request should contain a payload in its body. Payload content will be set as the announcement text.
+   * @return Responds with a message indicating whether the operation resulted in an updated announcement text or not.
+   */
+  @PUT
+  @Path("announcement")
+  public Response putAnnouncement(@Context final HttpServletRequest request) {
+    Response response;
+    final String envAnnouncement = System.getenv(ZeppelinConfiguration.ConfVars.ZEPPELIN_ANNOUNCEMENT.getVarName());
+    try(final BufferedReader reader = new BufferedReader(new InputStreamReader(request.getInputStream()))){
+      if(envAnnouncement == null){
+        final StringBuilder body = new StringBuilder();
+          String line;
+          while ((line = reader.readLine()) != null){
+            body.append(line);
+          }
+          System.setProperty(ZeppelinConfiguration.ConfVars.ZEPPELIN_ANNOUNCEMENT.getVarName(),body.toString());
+          response = new JsonResponse<>(Response.Status.OK,"Announcement text set successfully").build();
+        }
+        else {
+          response = new JsonResponse<>(Response.Status.BAD_REQUEST,"Announcement already set via environment variable!").build();
+        }
+    }
+    catch (IOException e) {
+      LOGGER.error("Error while setting announcement text!",e);
+      response = new JsonResponse<>(Response.Status.INTERNAL_SERVER_ERROR).build();
+    }
+    return response;
   }
 
   /**
