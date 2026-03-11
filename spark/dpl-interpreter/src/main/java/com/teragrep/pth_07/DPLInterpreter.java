@@ -48,10 +48,6 @@ package com.teragrep.pth_07;
 
 import com.teragrep.pth_07.stream.BatchHandler;
 import com.teragrep.pth_07.ui.UserInterfaceManager;
-import com.teragrep.pth_07.ui.elements.table_dynamic.DatasetState;
-import com.teragrep.pth_07.ui.elements.table_dynamic.formats.DataTablesFormat;
-import com.teragrep.pth_07.ui.elements.table_dynamic.formats.DatasetFormat;
-import com.teragrep.pth_07.ui.elements.table_dynamic.formats.UPlotFormat;
 import com.teragrep.pth_15.DPLExecutor;
 import com.teragrep.pth_15.DPLExecutorFactory;
 import com.teragrep.pth_15.DPLExecutorResult;

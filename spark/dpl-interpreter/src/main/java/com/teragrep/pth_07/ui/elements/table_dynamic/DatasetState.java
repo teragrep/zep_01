@@ -65,8 +65,8 @@ import java.io.IOException;
 import java.util.ArrayList;
 
 /**
- * Snapshot of a paragraph's Dataset. Can switch between formats and new Datasets by creating a modified copy of itself.
- * Responsible for writing a JSON formatted representation of the data in some DatasetFormat to an InterpreterOutput
+ * Snapshot of a paragraph's Dataset, its selected format and formatting options. Can switch between formatting options and new Datasets by creating a modified copy of itself.
+ * Responsible for writing a formatted representation of the dataset in some DatasetFormat to it's defined InterpreterOutput.
  */
 public final class DatasetState {
     private final Dataset<Row> dataset;
@@ -91,7 +91,7 @@ public final class DatasetState {
     /**
      * Creates a new DatasetState object with an updated Dataset. Unpersists the previous dataset and persists the newly given dataset into memory.
      * @param rowDataset The updated Dataset
-     * @return A new instance of DatasetState, containing the existing updated Dataset as well as the previously existing Options.
+     * @return A new instance of DatasetState, containing the updated Dataset as well as previously existing Options.
      */
     public DatasetState withDataset(final Dataset<Row> rowDataset) {
         Dataset<Row> currentDataset = dataset;
@@ -110,13 +110,13 @@ public final class DatasetState {
     /**
      * Creates a new DatasetState with an updated DatasetFormat corresponding to the type of Options received.
      * @param options A Thrift union object containing a supported formatting options object
-     * @return A new DatasetState instance with an updated DatasetFormat and Options based on the given options parameter.
+     * @return A new DatasetState instance with updated Options based on the options object provided. If given Options require a different instance of DatasetFormat, it will also be created.
      * @throws InterpreterException When an unsupported Options object is provided
      */
     public DatasetState withOptions(final Options options) throws InterpreterException {
         DatasetFormat newFormat;
         if(options.isSetDataTablesOptions()){
-            // If the current format already is of the correct type, we don't need to create a new instance (which would reset DataTablesFromat's draw counter)
+            // If the current format already is of the correct type, we don't need to create a new instance (which would reset DataTablesFormat's draw counter)
             if(format.type().equals(InterpreterResult.Type.DATATABLES.label)){
                 newFormat = format;
             }
@@ -151,7 +151,7 @@ public final class DatasetState {
     }
 
     /**
-     * Format the current Dataset with the current DatasetFormat and write the output to InterpreterOutput.
+     * Format the current Dataset with the current DatasetFormat and formatting options, then write the output to InterpreterOutput.
      * @throws InterpreterException
      */
      public void writeDataUpdate() throws InterpreterException{

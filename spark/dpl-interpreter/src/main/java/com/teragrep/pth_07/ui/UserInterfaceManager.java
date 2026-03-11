@@ -58,21 +58,22 @@ import org.slf4j.LoggerFactory;
 
 import java.util.concurrent.locks.ReentrantLock;
 
+
+/**
+ * Holds the state of the Dataset, PerformanceIndicator and MessageLog of a single Paragraph.
+ * Responsible for passing new Datasets and formatting requests to DatasetState and triggering the writing of the DatasetState to UI.
+ */
 public class UserInterfaceManager {
     private static final Logger LOGGER = LoggerFactory.getLogger(UserInterfaceManager.class);
     private final ReentrantLock lock = new ReentrantLock();
-    private DatasetState dtTableDatasetNg;
+    private DatasetState datasetState; // This variable is mutable, as an immutable implementation would require a larger refactoring of DPLInterpreter
     private final PerformanceIndicator performanceIndicator;
     private final MessageLog messageLog;
 
     public UserInterfaceManager(InterpreterContext interpreterContext) {
-        dtTableDatasetNg = new DatasetState(interpreterContext.out());
+        datasetState = new DatasetState(interpreterContext.out());
         performanceIndicator = new PerformanceIndicator(interpreterContext);
         messageLog = new MessageLog(interpreterContext);
-    }
-
-    public DatasetState getDtTableDatasetNg() {
-        return dtTableDatasetNg;
     }
 
     public PerformanceIndicator getPerformanceIndicator() {
@@ -91,8 +92,8 @@ public class UserInterfaceManager {
     public void updateDataset(Dataset<Row> dataset) throws InterpreterException {
         try{
             lock.lock();
-            dtTableDatasetNg = dtTableDatasetNg.withDataset(dataset);
-            dtTableDatasetNg.writeDataUpdate();
+            datasetState = datasetState.withDataset(dataset);
+            datasetState.writeDataUpdate();
         } finally {
             lock.unlock();
         }
@@ -106,8 +107,8 @@ public class UserInterfaceManager {
     public void updateDataset(Options options) throws InterpreterException{
         try{
             lock.lock();
-            dtTableDatasetNg = dtTableDatasetNg.withOptions(options);
-            dtTableDatasetNg.writeDataUpdate();
+            datasetState = datasetState.withOptions(options);
+            datasetState.writeDataUpdate();
         } finally {
             lock.unlock();
         }
