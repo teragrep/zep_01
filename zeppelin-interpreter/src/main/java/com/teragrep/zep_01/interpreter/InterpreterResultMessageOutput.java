@@ -40,7 +40,6 @@ public class InterpreterResultMessageOutput extends OutputStream {
   ByteArrayOutputStream buffer = new ByteArrayOutputStream();
 
   private final List<Object> outList = new LinkedList<>();
-  private InterpreterOutputChangeWatcher watcher;
   private final InterpreterResultMessageOutputListener flushListener;
   private InterpreterResult.Type type = InterpreterResult.Type.TEXT;
   private boolean firstWrite = true;
@@ -51,16 +50,6 @@ public class InterpreterResultMessageOutput extends OutputStream {
       InterpreterResultMessageOutputListener listener) {
     this.type = type;
     this.flushListener = listener;
-  }
-
-  public InterpreterResultMessageOutput(
-      InterpreterResult.Type type,
-      InterpreterResultMessageOutputListener flushListener,
-      InterpreterOutputChangeListener listener) throws IOException {
-    this.type = type;
-    this.flushListener = flushListener;
-    watcher = new InterpreterOutputChangeWatcher(listener);
-    watcher.start();
   }
 
   public void setEnableTableAppend(boolean enableTableAppend) {
@@ -90,9 +79,6 @@ public class InterpreterResultMessageOutput extends OutputStream {
     synchronized (outList) {
       buffer.reset();
       outList.clear();
-      if (watcher != null) {
-        watcher.clear();
-      }
 
       if (flushListener != null && sendUpdateToFrontend) {
         flushListener.onUpdate(this);
@@ -101,7 +87,7 @@ public class InterpreterResultMessageOutput extends OutputStream {
   }
 
   @Override
-  public void write(int b) throws IOException {
+  public void write(int b) {
     synchronized (outList) {
       buffer.write(b);
       if (b == NEW_LINE_CHAR) {
@@ -122,12 +108,12 @@ public class InterpreterResultMessageOutput extends OutputStream {
   }
 
   @Override
-  public void write(byte [] b) throws IOException {
+  public void write(byte [] b) {
     write(b, 0, b.length);
   }
 
   @Override
-  public void write(byte [] b, int off, int len) throws IOException {
+  public void write(byte [] b, int off, int len) {
     synchronized (outList) {
       for (int i = off; i < len; i++) {
         write(b[i]);
@@ -142,9 +128,6 @@ public class InterpreterResultMessageOutput extends OutputStream {
    */
   public void write(File file) throws IOException {
     outList.add(file);
-    if (watcher != null) {
-      watcher.watch(file);
-    }
   }
 
   public void write(String string) throws IOException {
@@ -220,9 +203,8 @@ public class InterpreterResultMessageOutput extends OutputStream {
     return new InterpreterResultMessage(type, new String(toByteArray()));
   }
 
-  private void flush(boolean append) throws IOException {
+  private void flush(boolean append) {
     synchronized (outList) {
-      buffer.flush();
       byte[] bytes = buffer.toByteArray();
       if (bytes != null && bytes.length > 0) {
         outList.add(bytes);
@@ -240,7 +222,7 @@ public class InterpreterResultMessageOutput extends OutputStream {
     }
   }
 
-  public void flush() throws IOException {
+  public void flush() {
     flush(isAppendSupported());
   }
 
@@ -265,10 +247,6 @@ public class InterpreterResultMessageOutput extends OutputStream {
   @Override
   public void close() throws IOException {
     flush();
-    if (watcher != null) {
-      watcher.clear();
-      watcher.shutdown();
-    }
   }
 
   public String toString() {
