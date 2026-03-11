@@ -160,6 +160,11 @@ public class YarnRemoteInterpreterProcess extends RemoteInterpreterProcess {
   }
 
   @Override
+  public boolean isStub() {
+    return false;
+  }
+
+  @Override
   public String getInterpreterGroupId() {
     return launchContext.getInterpreterGroupId();
   }

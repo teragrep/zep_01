@@ -20,6 +20,7 @@ package com.teragrep.zep_01.interpreter;
 
 import com.teragrep.zep_01.conf.ZeppelinConfiguration;
 import com.teragrep.zep_01.interpreter.remote.RemoteInterpreterProcess;
+import com.teragrep.zep_01.interpreter.remote.StubRemoteInterpreterProcess;
 import com.teragrep.zep_01.scheduler.Job;
 import com.teragrep.zep_01.scheduler.Scheduler;
 import com.teragrep.zep_01.scheduler.SchedulerFactory;
@@ -40,7 +41,7 @@ public class ManagedInterpreterGroup extends InterpreterGroup {
   private static final Logger LOGGER = LoggerFactory.getLogger(ManagedInterpreterGroup.class);
 
   private InterpreterSetting interpreterSetting;
-  private RemoteInterpreterProcess remoteInterpreterProcess; // attached remote interpreter process
+  private RemoteInterpreterProcess remoteInterpreterProcess = new StubRemoteInterpreterProcess(); // attached remote interpreter process
   private Object interpreterProcessCreationLock = new Object();
 
   /**
@@ -61,7 +62,7 @@ public class ManagedInterpreterGroup extends InterpreterGroup {
                                                                 Properties properties)
       throws IOException {
     synchronized (interpreterProcessCreationLock) {
-      if (remoteInterpreterProcess == null) {
+      if (remoteInterpreterProcess.isStub()) {
         LOGGER.info("Create InterpreterProcess for InterpreterGroup: {}", getId());
         remoteInterpreterProcess = interpreterSetting.createInterpreterProcess(id, userName,
                 properties);
@@ -105,7 +106,7 @@ public class ManagedInterpreterGroup extends InterpreterGroup {
     if (sessions.isEmpty() && interpreterSetting != null) {
       LOGGER.info("Remove this InterpreterGroup: {} as all the sessions are closed", id);
       interpreterSetting.removeInterpreterGroup(id);
-      if (remoteInterpreterProcess != null) {
+      if (!remoteInterpreterProcess.isStub()) {
         LOGGER.info("Kill RemoteInterpreterProcess");
         remoteInterpreterProcess.stop();
         try {
@@ -113,7 +114,7 @@ public class ManagedInterpreterGroup extends InterpreterGroup {
         } catch (IOException e) {
           LOGGER.error("Fail to store recovery data", e);
         }
-        remoteInterpreterProcess = null;
+        remoteInterpreterProcess = new StubRemoteInterpreterProcess();
       }
     }
   }
@@ -183,7 +184,7 @@ public class ManagedInterpreterGroup extends InterpreterGroup {
   }
 
   public String getDataset(String sessionId, String className, String noteId, String paragraphId, int start, int length, String searchString, int draw) throws InterpreterException {
-    if(remoteInterpreterProcess == null){
+    if(remoteInterpreterProcess.isStub()){
       throw new InterpreterException("InterpreterGroup "+id+" does not have a running Interpreter process!");
     }
     return remoteInterpreterProcess.getDataset(sessionId,className,noteId,paragraphId,start,length,searchString,draw);

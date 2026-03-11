@@ -860,7 +860,7 @@ public class InterpreterSetting {
     for (List<Interpreter> session : interpreterGroup.sessions.values()) {
       for (Interpreter intp : session) {
         if (!intp.getProperties().equals(properties) &&
-            interpreterGroup.getRemoteInterpreterProcess() != null &&
+            !interpreterGroup.getRemoteInterpreterProcess().isStub() &&
             interpreterGroup.getRemoteInterpreterProcess().isRunning()) {
           throw new IOException("Can not change interpreter properties when interpreter process " +
               "has already been launched");

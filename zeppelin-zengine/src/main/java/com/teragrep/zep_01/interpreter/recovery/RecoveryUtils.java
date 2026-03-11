@@ -53,7 +53,7 @@ public class RecoveryUtils {
     if (interpreterSetting != null) {
       for (ManagedInterpreterGroup interpreterGroup : interpreterSetting.getAllInterpreterGroups()) {
         RemoteInterpreterProcess interpreterProcess = interpreterGroup.getInterpreterProcess();
-        if (interpreterProcess != null && interpreterProcess.isRunning()) {
+        if (!interpreterProcess.isStub() && interpreterProcess.isRunning()) {
           recoveryData.add(interpreterGroup.getId() + "\t" + interpreterProcess.getHost() + ":" +
                   interpreterProcess.getPort());
         }

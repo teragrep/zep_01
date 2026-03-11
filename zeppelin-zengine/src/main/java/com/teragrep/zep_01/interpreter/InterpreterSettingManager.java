@@ -651,7 +651,7 @@ public class InterpreterSettingManager implements NoteEventListener {
       }
 
       RemoteInterpreterProcess remoteInterpreterProcess = intpGroup.getRemoteInterpreterProcess();
-      if (remoteInterpreterProcess == null) {
+      if (remoteInterpreterProcess.isStub()) {
         ResourcePool localPool = intpGroup.getResourcePool();
         if (localPool != null) {
           resourceSet.addAll(localPool.getAll());
@@ -676,7 +676,7 @@ public class InterpreterSettingManager implements NoteEventListener {
     for (ManagedInterpreterGroup intpGroup : getAllInterpreterGroup()) {
       ResourceSet resourceSet = new ResourceSet();
       RemoteInterpreterProcess remoteInterpreterProcess = intpGroup.getRemoteInterpreterProcess();
-      if (remoteInterpreterProcess == null) {
+      if (remoteInterpreterProcess.isStub()) {
         ResourcePool localPool = intpGroup.getResourcePool();
         if (localPool != null) {
           resourceSet.addAll(localPool.getAll());
@@ -1003,7 +1003,7 @@ public class InterpreterSettingManager implements NoteEventListener {
     Set<String> runningInterpreters = new HashSet<>();
     for (Map.Entry<String, InterpreterSetting> entry : interpreterSettings.entrySet()) {
       for (ManagedInterpreterGroup mig : entry.getValue().getAllInterpreterGroups()) {
-        if (null != mig.getRemoteInterpreterProcess()) {
+        if (!mig.getRemoteInterpreterProcess().isRunning()) {
           runningInterpreters.add(entry.getKey());
         }
       }

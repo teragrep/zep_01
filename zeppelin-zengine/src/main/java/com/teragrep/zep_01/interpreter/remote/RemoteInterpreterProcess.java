@@ -142,4 +142,6 @@ public abstract class RemoteInterpreterProcess implements InterpreterClient, Aut
   public abstract void processStarted(int port, String host);
 
   public abstract String getErrorMessage();
+
+  public abstract boolean isStub();
 }

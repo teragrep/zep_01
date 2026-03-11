@@ -163,7 +163,7 @@ public class SessionManagerService {
     if (interpreterGroup != null) {
       RemoteInterpreterProcess remoteInterpreterProcess =
               interpreterGroup.getRemoteInterpreterProcess();
-      if (remoteInterpreterProcess == null) {
+      if (remoteInterpreterProcess.isStub()) {
         sessionInfo.setState(SessionState.READY.name());
       } else {
         sessionInfo.setStartTime(remoteInterpreterProcess.getStartTime());
