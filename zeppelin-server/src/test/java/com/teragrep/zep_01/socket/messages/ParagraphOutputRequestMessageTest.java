@@ -15,7 +15,7 @@ class ParagraphOutputRequestMessageTest {
         final String msgId = "testMsgId";
         final String noteId = "testNoteId";
         final String paragraphId = "testParaId";
-        final String visualizationLibraryName = "uPlot";
+        final String type = "uPlot";
 
         final String graphType = "bar";
         final JsonObject messageJson = Json.createObjectBuilder()
@@ -23,7 +23,7 @@ class ParagraphOutputRequestMessageTest {
                 .add("data",Json.createObjectBuilder()
                         .add("noteId",noteId)
                         .add("paragraphId",paragraphId)
-                        .add("type",visualizationLibraryName)
+                        .add("type",type)
                         .add("requestOptions",Json.createObjectBuilder()
                                 .add("graphType",graphType)
                                 .build())
@@ -34,7 +34,7 @@ class ParagraphOutputRequestMessageTest {
         Assertions.assertEquals(msgId, message.messageId());
         Assertions.assertEquals(noteId, message.noteId());
         Assertions.assertEquals(paragraphId, message.paragraphId());
-        Assertions.assertEquals(visualizationLibraryName, message.visualizationLibraryName());
+        Assertions.assertEquals(type, message.type());
         final UPlotOptions options = Assertions.assertDoesNotThrow(()->message.options().getUPlotOptions());
         Assertions.assertEquals(graphType,options.getGraphType());
     }
@@ -44,7 +44,7 @@ class ParagraphOutputRequestMessageTest {
         final String msgId = "testMsgId";
         final String noteId = "testNoteId";
         final String paragraphId = "testParaId";
-        final String visualizationLibraryName = "dataTables";
+        final String type = "dataTables";
 
         final String searchString = "";
 
@@ -58,7 +58,7 @@ class ParagraphOutputRequestMessageTest {
                 .add("data",Json.createObjectBuilder()
                     .add("noteId",noteId)
                     .add("paragraphId",paragraphId)
-                    .add("type",visualizationLibraryName)
+                    .add("type",type)
                     .add("requestOptions",Json.createObjectBuilder()
                             .add("draw",draw)
                             .add("start",start)
@@ -105,7 +105,7 @@ class ParagraphOutputRequestMessageTest {
         Assertions.assertEquals(msgId, message.messageId());
         Assertions.assertEquals(noteId, message.noteId());
         Assertions.assertEquals(paragraphId, message.paragraphId());
-        Assertions.assertEquals(visualizationLibraryName, message.visualizationLibraryName());
+        Assertions.assertEquals(type, message.type());
         final DataTablesOptions options = Assertions.assertDoesNotThrow(()->message.options().getDataTablesOptions());
         Assertions.assertEquals(draw,options.getDraw());
         Assertions.assertEquals(start,options.getStart());
@@ -125,16 +125,16 @@ class ParagraphOutputRequestMessageTest {
         Assertions.assertThrows(JsonException.class,()-> message.messageId());
         Assertions.assertThrows(JsonException.class,()-> message.noteId());
         Assertions.assertThrows(JsonException.class,()-> message.options());
-        Assertions.assertThrows(JsonException.class,()-> message.visualizationLibraryName());
+        Assertions.assertThrows(JsonException.class,()-> message.type());
     }
 
     @Test
     public void invalidOptionsRequestTest(){
-        final String visualizationLibraryName = "dataTables";
+        final String type = "dataTables";
         // JsonObject contains an options, but it does not have any of the required values.
         final JsonObject messageJson = Json.createObjectBuilder()
                 .add("data",Json.createObjectBuilder()
-                        .add("type",visualizationLibraryName)
+                        .add("type",type)
                         .add("requestOptions",Json.createObjectBuilder()
                                         .build())
                         .build())

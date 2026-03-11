@@ -1108,7 +1108,6 @@ public class NotebookServer extends WebSocketServlet
     final String msgId = fromMessage.messageId();
     final String noteId = fromMessage.noteId();
     final String paragraphId = fromMessage.paragraphId();
-    final String visualizationLibraryName = fromMessage.visualizationLibraryName();
     final Options options = fromMessage.options();
 
     // Get interpreterGroup
@@ -1141,7 +1140,7 @@ public class NotebookServer extends WebSocketServlet
 
     try{
       // Call to formatDataset responds via InterpreterOutput --> NotebookServer.onOutputUpdated(), same as with batch updates.
-      managedInterpreterGroup.formatDataset(sessionId, interpreter.getClassName(), noteId, paragraphId, visualizationLibraryName, options);
+      managedInterpreterGroup.formatDataset(sessionId, interpreter.getClassName(), noteId, paragraphId, options);
     } catch (InterpreterException e){
       // If an error occurs, send an ERROR_INFO message
       LOG.error("Failed to retrieve data from Interpreter process for note: {} paragraph: {} cause: {}",noteId,paragraphId,e.getCause(),e);

@@ -109,10 +109,10 @@ public abstract class RemoteInterpreterProcess implements InterpreterClient, Aut
     });
   }
 
-  public void formatDataset(String sessionId, String classname, String noteId, String paragraphId, String visualizationLibraryName, Options options) throws InterpreterException{
+  public void formatDataset(String sessionId, String classname, String noteId, String paragraphId, Options options) throws InterpreterException{
     try{
       callRemoteFunction(client -> {
-        client.formatDataset(sessionId, classname, noteId, paragraphId, visualizationLibraryName, options);
+        client.formatDataset(sessionId, classname, noteId, paragraphId, options);
         return null;
       });
     } catch (Exception e){

@@ -373,10 +373,10 @@ public class RemoteInterpreterServer extends Thread
   }
 
   @Override
-  public void formatDataset(String sessionId, String className, String noteId, String paragraphId, String visualizationLibraryName, Options options) throws InterpreterRPCException, TException {
+  public void formatDataset(String sessionId, String className, String noteId, String paragraphId, Options options) throws InterpreterRPCException, TException {
     try{
       Interpreter intp = getInterpreter(sessionId, className);
-      intp.formatDataset(noteId, paragraphId, visualizationLibraryName, options);
+      intp.formatDataset(noteId, paragraphId, options);
       // Thrift only declares InterpreterRPCException that has a single string as a paraemeter, so we have to wrap the underlying Exception as a String with an InterpreterRPCException to pass Exceptions through Thrift.
       // RemoteInterpreterServers can have their own log files, so it's best to also log the Exception there before we stringify and send it further.
     } catch (InterpreterException e){

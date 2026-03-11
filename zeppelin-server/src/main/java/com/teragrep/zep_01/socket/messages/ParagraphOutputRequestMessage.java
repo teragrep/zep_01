@@ -52,7 +52,7 @@ public class ParagraphOutputRequestMessage implements Jsonable {
                 }
             }
     }
-    public String visualizationLibraryName() throws JsonException {
+    public String type() throws JsonException {
             if(!json.containsKey("data") || !json.get("data").getValueType().equals(JsonValue.ValueType.OBJECT)){
                 throw new JsonException("Json does not contain a data object!");
             }
@@ -67,7 +67,7 @@ public class ParagraphOutputRequestMessage implements Jsonable {
         }
 
     public Options options() throws JsonException{
-        String type = visualizationLibraryName();
+        String type = type();
         JsonObject data = json.getJsonObject("data");
         Options options;
         if(type.equals(InterpreterResult.Type.DATATABLES.label)){

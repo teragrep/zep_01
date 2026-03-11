@@ -468,7 +468,7 @@ public abstract class Interpreter {
     FIFO, PARALLEL
   }
 
-  public void formatDataset(final String noteId, final String paragraphId, final String visualizationLibraryName, final Options options) throws InterpreterException{
+  public void formatDataset(final String noteId, final String paragraphId, final Options options) throws InterpreterException{
     throw new InterpreterException("Interpreter "+ getClassName() +" has no dataset!");
   }
 }
