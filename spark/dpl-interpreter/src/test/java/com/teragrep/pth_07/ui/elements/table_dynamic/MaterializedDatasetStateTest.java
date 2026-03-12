@@ -62,8 +62,8 @@ import java.util.List;
 import java.util.UUID;
 
 
-public class DatasetStateTest {
-    private static final Logger LOGGER = LoggerFactory.getLogger(DatasetStateTest.class);
+public class MaterializedDatasetStateTest {
+    private static final Logger LOGGER = LoggerFactory.getLogger(MaterializedDatasetStateTest.class);
     private final SparkSession sparkSession = SparkSession.builder()
             .master("local[*]")
             .config("spark.cleaner.referenceTracking.cleanCheckpoints", "true")
@@ -106,7 +106,7 @@ public class DatasetStateTest {
         TestInterpreterOutputListener listener = new TestInterpreterOutputListener();
         InterpreterOutput testOutput =  new InterpreterOutput(listener);
 
-        DatasetState dtTableDatasetNg = new DatasetState(testOutput);
+        DatasetState dtTableDatasetNg = new StubDatasetState(testOutput);
 
         // Simulate DPL receiving new data.
         Assertions.assertDoesNotThrow(()->{
@@ -133,11 +133,11 @@ public class DatasetStateTest {
         TestInterpreterOutputListener listener = new TestInterpreterOutputListener();
         InterpreterOutput testOutput =  new InterpreterOutput(listener);
 
-        DatasetState dtTableDatasetNg = new DatasetState(testOutput);
+        DatasetState initialState = new StubDatasetState(testOutput);
 
         // Simulate DPL receiving new data.
 
-        DatasetState state1 = dtTableDatasetNg.withDataset(testDs);
+        DatasetState state1 = initialState.withDataset(testDs);
         Assertions.assertDoesNotThrow(()->state1.writeDataUpdate());
         List<InterpreterResultMessage> messages = Assertions.assertDoesNotThrow(()->testOutput.toInterpreterResultMessage());
         // First message should have draw value of 1

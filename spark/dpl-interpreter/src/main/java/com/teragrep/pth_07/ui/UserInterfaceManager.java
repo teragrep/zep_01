@@ -48,6 +48,7 @@ package com.teragrep.pth_07.ui;
 import com.teragrep.pth_07.ui.elements.MessageLog;
 import com.teragrep.pth_07.ui.elements.PerformanceIndicator;
 import com.teragrep.pth_07.ui.elements.table_dynamic.DatasetState;
+import com.teragrep.pth_07.ui.elements.table_dynamic.StubDatasetState;
 import com.teragrep.zep_01.interpreter.InterpreterContext;
 import com.teragrep.zep_01.interpreter.InterpreterException;
 import com.teragrep.zep_01.interpreter.thrift.Options;
@@ -72,7 +73,7 @@ public class UserInterfaceManager {
     private final MessageLog messageLog;
 
     public UserInterfaceManager(InterpreterContext interpreterContext) {
-        datasetState = new DatasetState(interpreterContext.out());
+        datasetState = new StubDatasetState(interpreterContext.out());
         performanceIndicator = new PerformanceIndicator(interpreterContext);
         messageLog = new MessageLog(interpreterContext);
     }

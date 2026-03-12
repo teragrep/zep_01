@@ -72,13 +72,7 @@ public class DataTablesFormat{
     private final List<String> cachedRows;
     private final int draw;
 
-    public DataTablesFormat(){
-        this.previousDataset = null;
-        this.cachedRows = new ArrayList<>();
-        this.draw = 1;
-    }
-
-    private DataTablesFormat(Dataset<Row> previousDataset, List<String> cachedRows, int draw){
+    public DataTablesFormat(Dataset<Row> previousDataset, List<String> cachedRows, int draw){
         this.previousDataset = previousDataset;
         this.cachedRows = cachedRows;
         this.draw = draw;
@@ -93,30 +87,17 @@ public class DataTablesFormat{
     public DataTablesFormat withDataset(Dataset<Row> dataset) {
         final int updatedDraw;
         final List<String> updatedCache;
-        if(dataset == null){
-            updatedDraw = 1;
-            updatedCache = new ArrayList<>();
+        if(previousDataset.schema().equals(dataset.schema())){
+            updatedDraw = draw +1;
         }
         else {
-            //TODO: deal with nulls
-            if(previousDataset == null){
-                updatedDraw = 1;
-                updatedCache = dataset.toJSON().collectAsList();
-            }
-            else {
-                if(previousDataset.schema().equals(dataset.schema())){
-                    updatedDraw = draw +1;
-                }
-                else {
-                    updatedDraw = 1;
-                }
-                if(this.previousDataset.equals(dataset)){
-                    updatedCache = cachedRows;
-                }
-                else {
-                    updatedCache = dataset.toJSON().collectAsList();
-                }
-            }
+            updatedDraw = 1;
+        }
+        if(this.previousDataset.equals(dataset)){
+            updatedCache = cachedRows;
+        }
+        else {
+            updatedCache = dataset.toJSON().collectAsList();
         }
         return new DataTablesFormat(dataset, updatedCache, updatedDraw);
     }

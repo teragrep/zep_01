@@ -45,14 +45,42 @@
  */
 package com.teragrep.pth_07.ui.elements.table_dynamic;
 
+import com.teragrep.pth_07.ui.elements.table_dynamic.formats.DataTablesFormat;
+import com.teragrep.pth_07.ui.elements.table_dynamic.formats.UPlotFormat;
 import com.teragrep.zep_01.interpreter.InterpreterException;
+import com.teragrep.zep_01.interpreter.InterpreterOutput;
+import com.teragrep.zep_01.interpreter.thrift.DataTablesOptions;
+import com.teragrep.zep_01.interpreter.thrift.DataTablesSearch;
 import com.teragrep.zep_01.interpreter.thrift.Options;
 import jakarta.json.JsonObject;
 import org.apache.spark.sql.Dataset;
 import org.apache.spark.sql.Row;
 
-public interface DatasetState {
-    public abstract DatasetState withDataset(final Dataset<Row> rowDataset);
-    public abstract JsonObject formatDataset(final Options options) throws InterpreterException;
-    public abstract void writeDataUpdate() throws InterpreterException;
+import java.util.ArrayList;
+
+public class StubDatasetState implements DatasetState{
+    private final InterpreterOutput output;
+    public StubDatasetState(InterpreterOutput output){
+        this.output = output;
+    }
+
+    /**
+     * Use this method to turn a StubDatasetState into a MaterializedDatasetState using the given Dataset.
+     * @param rowDataset The Dataset to use
+     * @return A new MaterializedDatasetState that contains the same InterpreterOutput as this StubDatasetState, the given Dataset.
+     */
+    @Override
+    public DatasetState withDataset(Dataset<Row> rowDataset){
+        return new MaterializedDatasetState(rowDataset,output,new DataTablesFormat(rowDataset, new ArrayList<String>(),1),new UPlotFormat());
+    }
+
+    @Override
+    public JsonObject formatDataset(Options options) throws InterpreterException {
+        throw new InterpreterException("Attempting to format an empty dataset!");
+    }
+
+    @Override
+    public void writeDataUpdate() throws InterpreterException {
+        throw new InterpreterException("Attempting to write an empty dataset!");
+    }
 }

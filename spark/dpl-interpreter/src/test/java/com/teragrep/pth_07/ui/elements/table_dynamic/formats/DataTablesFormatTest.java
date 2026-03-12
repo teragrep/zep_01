@@ -79,6 +79,7 @@ class DataTablesFormatTest {
                     new StructField("filesModified", DataTypes.IntegerType, false, new MetadataBuilder().build())
             }
     );
+    private final Dataset<Row> initialData = sparkSession.emptyDataFrame();
     private final Dataset<Row> sourceData = sparkSession.read().option("header",true).schema(schema).csv(sourceDataFile);
 
     @Test
@@ -91,7 +92,7 @@ class DataTablesFormatTest {
         final DataTablesOptions options = new DataTablesOptions(draw,start,length,new DataTablesSearch(searchString,false,new ArrayList<>()),new ArrayList<>(), new ArrayList<>());
 
         // Get rows 3-5 of the dataset, check that every value is present
-        final DataTablesFormat format = new DataTablesFormat().withDataset(sourceData);
+        final DataTablesFormat format = new DataTablesFormat(initialData,new ArrayList<>(),1).withDataset(sourceData);
         final JsonObject formatted = Assertions.assertDoesNotThrow(()->format.format(options));
         final JsonObject data = formatted.getJsonObject("data");
         final JsonArray headers = data.getJsonArray("headers");
@@ -152,7 +153,7 @@ class DataTablesFormatTest {
         final String searchString = "";
         final DataTablesOptions options = new DataTablesOptions(draw,start,length,new DataTablesSearch(searchString,false,new ArrayList<>()),new ArrayList<>(), new ArrayList<>());
 
-        final DataTablesFormat format = new DataTablesFormat().withDataset(aggDataset);
+        final DataTablesFormat format = new DataTablesFormat(initialData,new ArrayList<>(),1).withDataset(aggDataset);
         final JsonObject formatted = Assertions.assertDoesNotThrow(()->format.format(options));
         final JsonObject data = formatted.getJsonObject("data");
         final JsonArray headers = data.getJsonArray("headers");
@@ -208,7 +209,7 @@ class DataTablesFormatTest {
         final String searchString = "";
         final DataTablesOptions options = new DataTablesOptions(draw,start,length,new DataTablesSearch(searchString,false,new ArrayList<>()),new ArrayList<>(), new ArrayList<>());
 
-        final DataTablesFormat format = new DataTablesFormat().withDataset(aggDataset);
+        final DataTablesFormat format = new DataTablesFormat(initialData,new ArrayList<>(),1).withDataset(aggDataset);
         final JsonObject formatted = Assertions.assertDoesNotThrow(()->format.format(options));
         final JsonObject data = formatted.getJsonObject("data");
         final JsonArray headers = data.getJsonArray("headers");
@@ -251,7 +252,7 @@ class DataTablesFormatTest {
         final String searchString1 = "";
         final DataTablesOptions options1 = new DataTablesOptions(draw1,start1,length1,new DataTablesSearch(searchString1,false,new ArrayList<>()),new ArrayList<>(), new ArrayList<>());
 
-        final DataTablesFormat format1 = new DataTablesFormat().withDataset(sourceData);
+        final DataTablesFormat format1 = new DataTablesFormat(initialData,new ArrayList<>(),1).withDataset(sourceData);
         final JsonObject formatted1 = Assertions.assertDoesNotThrow(()->format1.format(options1).getJsonObject("data"));
         Assertions.assertEquals(5,formatted1.getJsonArray("data").size());
 
