@@ -91,8 +91,8 @@ class DataTablesFormatTest {
         final DataTablesOptions options = new DataTablesOptions(draw,start,length,new DataTablesSearch(searchString,false,new ArrayList<>()),new ArrayList<>(), new ArrayList<>());
 
         // Get rows 3-5 of the dataset, check that every value is present
-        final DataTablesFormat format = new DataTablesFormat();
-        final JsonObject formatted = Assertions.assertDoesNotThrow(()->format.format(sourceData, Options.dataTablesOptions(options)));
+        final DataTablesFormat format = new DataTablesFormat().withDataset(sourceData);
+        final JsonObject formatted = Assertions.assertDoesNotThrow(()->format.format(options));
         final JsonObject data = formatted.getJsonObject("data");
         final JsonArray headers = data.getJsonArray("headers");
         final boolean isAggregated = formatted.getBoolean("isAggregated");
@@ -152,8 +152,8 @@ class DataTablesFormatTest {
         final String searchString = "";
         final DataTablesOptions options = new DataTablesOptions(draw,start,length,new DataTablesSearch(searchString,false,new ArrayList<>()),new ArrayList<>(), new ArrayList<>());
 
-        final DataTablesFormat format = new DataTablesFormat();
-        final JsonObject formatted = Assertions.assertDoesNotThrow(()->format.format(aggDataset, Options.dataTablesOptions(options)));
+        final DataTablesFormat format = new DataTablesFormat().withDataset(aggDataset);
+        final JsonObject formatted = Assertions.assertDoesNotThrow(()->format.format(options));
         final JsonObject data = formatted.getJsonObject("data");
         final JsonArray headers = data.getJsonArray("headers");
         final boolean isAggregated = formatted.getBoolean("isAggregated");
@@ -208,8 +208,8 @@ class DataTablesFormatTest {
         final String searchString = "";
         final DataTablesOptions options = new DataTablesOptions(draw,start,length,new DataTablesSearch(searchString,false,new ArrayList<>()),new ArrayList<>(), new ArrayList<>());
 
-        final DataTablesFormat format = new DataTablesFormat();
-        final JsonObject formatted = Assertions.assertDoesNotThrow(()->format.format(aggDataset, Options.dataTablesOptions(options)));
+        final DataTablesFormat format = new DataTablesFormat().withDataset(aggDataset);
+        final JsonObject formatted = Assertions.assertDoesNotThrow(()->format.format(options));
         final JsonObject data = formatted.getJsonObject("data");
         final JsonArray headers = data.getJsonArray("headers");
         final boolean isAggregated = formatted.getBoolean("isAggregated");
@@ -245,14 +245,14 @@ class DataTablesFormatTest {
     @Test
     void testPagination() {
         // Get first 5 rows of the dataset,
-        final int draw1 = 0;
+        final int draw1 = 1;
         final int start1 = 0;
         final int length1 = 5;
         final String searchString1 = "";
         final DataTablesOptions options1 = new DataTablesOptions(draw1,start1,length1,new DataTablesSearch(searchString1,false,new ArrayList<>()),new ArrayList<>(), new ArrayList<>());
 
-        final DataTablesFormat format1 = new DataTablesFormat();
-        final JsonObject formatted1 = Assertions.assertDoesNotThrow(()->format1.format(sourceData, Options.dataTablesOptions(options1)).getJsonObject("data"));
+        final DataTablesFormat format1 = new DataTablesFormat().withDataset(sourceData);
+        final JsonObject formatted1 = Assertions.assertDoesNotThrow(()->format1.format(options1).getJsonObject("data"));
         Assertions.assertEquals(5,formatted1.getJsonArray("data").size());
 
         Assertions.assertEquals("2025-01-01T12:00:00.000Z",formatted1.getJsonArray("data").getJsonObject(0).getString("_time"));
@@ -283,13 +283,13 @@ class DataTablesFormatTest {
         Assertions.assertEquals(1,formatted1.getInt("draw"));
 
         // Get rows 10-15 of the dataset
-        final int draw2 = 1;
+        final int draw2 = 2;
         final int start2 = 9;
         final int length2 = 5;
         final String searchString2 = "";
         final DataTablesOptions options2 = new DataTablesOptions(draw2,start2,length2,new DataTablesSearch(searchString2,false,new ArrayList<>()),new ArrayList<>(), new ArrayList<>());
 
-        final JsonObject formatted2 = Assertions.assertDoesNotThrow(()->format1.format(sourceData, Options.dataTablesOptions(options2)).getJsonObject("data"));
+        final JsonObject formatted2 = Assertions.assertDoesNotThrow(()->format1.format(options2).getJsonObject("data"));
 
         Assertions.assertEquals(5,formatted2.getJsonArray("data").size());
 

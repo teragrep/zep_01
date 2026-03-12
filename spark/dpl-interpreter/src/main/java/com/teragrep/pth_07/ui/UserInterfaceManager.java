@@ -51,6 +51,7 @@ import com.teragrep.pth_07.ui.elements.table_dynamic.DatasetState;
 import com.teragrep.zep_01.interpreter.InterpreterContext;
 import com.teragrep.zep_01.interpreter.InterpreterException;
 import com.teragrep.zep_01.interpreter.thrift.Options;
+import jakarta.json.JsonObject;
 import org.apache.spark.sql.Dataset;
 import org.apache.spark.sql.Row;
 import org.slf4j.Logger;
@@ -99,19 +100,16 @@ public class UserInterfaceManager {
         }
     }
 
+
     /**
-     * Updates DatasetState to use a new set of formatting Options, and writes the output to InterpreterOutput. A lock is acquired to avoid concurrent writes.
-     * @param options The Options object containing updated formatting options
+     * Formats the current dataset with given formatting options.
+     * @param options Thrift union object containing the wanted formatting options.
+     * @return String representing the formatted dataset.
      * @throws InterpreterException Thrown if an error occurs during formatting of data.
      */
-    public void updateDataset(Options options) throws InterpreterException{
-        try{
-            lock.lock();
-            datasetState = datasetState.withOptions(options);
-            datasetState.writeDataUpdate();
-        } finally {
-            lock.unlock();
-        }
+    public String formatDataset(Options options) throws InterpreterException{
+            JsonObject formattedDataset = datasetState.formatDataset(options);
+            return formattedDataset.toString();
     }
 
 }

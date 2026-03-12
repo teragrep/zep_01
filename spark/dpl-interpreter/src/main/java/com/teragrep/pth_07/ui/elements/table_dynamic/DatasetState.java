@@ -46,11 +46,9 @@
 package com.teragrep.pth_07.ui.elements.table_dynamic;
 
 import com.teragrep.pth_07.ui.elements.table_dynamic.formats.DataTablesFormat;
-import com.teragrep.pth_07.ui.elements.table_dynamic.formats.DatasetFormat;
 import com.teragrep.pth_07.ui.elements.table_dynamic.formats.UPlotFormat;
 import com.teragrep.zep_01.interpreter.InterpreterException;
 import com.teragrep.zep_01.interpreter.InterpreterOutput;
-import com.teragrep.zep_01.interpreter.InterpreterResult;
 import com.teragrep.zep_01.interpreter.thrift.DataTablesOptions;
 import com.teragrep.zep_01.interpreter.thrift.DataTablesSearch;
 import com.teragrep.zep_01.interpreter.thrift.Options;
@@ -70,26 +68,30 @@ import java.util.ArrayList;
  */
 public final class DatasetState {
     private final Dataset<Row> dataset;
-    private final DatasetFormat format;
-    private final Options options;
+    private final DataTablesFormat dataTablesFormat;
+    private final UPlotFormat uPlotFormat;
+    private final Options formattingOptions;
     private final InterpreterOutput output;
     private static final Logger LOGGER = LoggerFactory.getLogger(DatasetState.class);
 
     // Constructor for initializing an empty DatasetState. Null is used to represent absence of Dataset, as creating an empty dataset requires a SparkSession and would cause overhead. Stubbing is also infeasible due to Dataset not implementing any interface
+    //TODO: deal with nulls
     public DatasetState(final InterpreterOutput output){
-        this(null, output,new DataTablesFormat(), Options.dataTablesOptions(new DataTablesOptions(0,0,50,new DataTablesSearch("",false,new ArrayList<>()),new ArrayList<>(),new ArrayList<>())));
+        this(null, output,new DataTablesFormat(), new UPlotFormat(), Options.dataTablesOptions(new DataTablesOptions(0,0,50,new DataTablesSearch("",false,new ArrayList<>()),new ArrayList<>(),new ArrayList<>())));
     }
 
-    public DatasetState(final Dataset<Row> dataset, final InterpreterOutput output, final DatasetFormat format, Options options){
+    public DatasetState(final Dataset<Row> dataset, final InterpreterOutput output, final DataTablesFormat dataTablesFormat, final UPlotFormat uPlotFormat, final Options formattingOptions){
         this.dataset = dataset;
         this.output = output;
-        this.format = format;
-        this.options = options;
+        this.dataTablesFormat = dataTablesFormat;
+        this.uPlotFormat = uPlotFormat;
+        this.formattingOptions = formattingOptions;
     }
 
 
     /**
      * Creates a new DatasetState object with an updated Dataset. Unpersists the previous dataset and persists the newly given dataset into memory.
+     * This method is called when a new batch of data is received from a DPL query.
      * @param rowDataset The updated Dataset
      * @return A new instance of DatasetState, containing the updated Dataset as well as previously existing Options.
      */
@@ -103,7 +105,9 @@ public final class DatasetState {
             }
             currentDataset = rowDataset.persist(StorageLevel.MEMORY_AND_DISK());
         }
-        return new DatasetState(currentDataset,output,format,options);
+        DataTablesFormat newDataTablesFormat = dataTablesFormat.withDataset(currentDataset);
+        UPlotFormat newUPlotFormat = uPlotFormat.withDataset(currentDataset);
+        return new DatasetState(currentDataset,output,newDataTablesFormat,newUPlotFormat, formattingOptions);
     }
 
 
@@ -113,25 +117,18 @@ public final class DatasetState {
      * @return A new DatasetState instance with updated Options based on the options object provided. If given Options require a different instance of DatasetFormat, it will also be created.
      * @throws InterpreterException When an unsupported Options object is provided
      */
-    public DatasetState withOptions(final Options options) throws InterpreterException {
-        DatasetFormat newFormat;
+    public JsonObject formatDataset(final Options options) throws InterpreterException {
+        JsonObject formatted;
         if(options.isSetDataTablesOptions()){
-            // If the current format already is of the correct type, we don't need to create a new instance (which would reset DataTablesFormat's draw counter)
-            if(format.type().equals(InterpreterResult.Type.DATATABLES.label)){
-                newFormat = format;
-            }
-            // If the format changes, a fresh instance is required.
-            else {
-                newFormat = new DataTablesFormat();
-            }
+            formatted = dataTablesFormat.format(options.getDataTablesOptions());
         }
         else if (options.isSetUPlotOptions()){
-            newFormat = new UPlotFormat();
+            formatted = uPlotFormat.format(dataset,options.getUPlotOptions());
         }
         else {
             throw new InterpreterException("Unsupported options type!");
         }
-        return new DatasetState(dataset,output,newFormat,options);
+        return formatted;
     }
 
     /**
@@ -151,13 +148,13 @@ public final class DatasetState {
     }
 
     /**
-     * Format the current Dataset with the current DatasetFormat and formatting options, then write the output to InterpreterOutput.
-     * @throws InterpreterException
+     * Format the current Dataset with the default DataTablesFormat, then write the output to InterpreterOutput.
+     * @throws InterpreterException Thrown when an error occurs during formatting.
      */
      public void writeDataUpdate() throws InterpreterException{
-        final JsonObject formatted = format.format(dataset,options);
-        final String outputContent = "%"+format.type().toLowerCase()+"\n" +
-                formatted.toString();
-        write(outputContent);
+         final DataTablesOptions defaultOptions = new DataTablesOptions(0,0,50,new DataTablesSearch("",false,new ArrayList<>()),new ArrayList<>(),new ArrayList<>());
+         final JsonObject formatted = dataTablesFormat.format(defaultOptions);
+         final String outputContent = "%"+dataTablesFormat.type().toLowerCase()+"\n" + formatted.toString();
+         write(outputContent);
     }
 }

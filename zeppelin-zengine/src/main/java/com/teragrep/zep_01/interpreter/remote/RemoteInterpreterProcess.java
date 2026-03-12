@@ -109,12 +109,9 @@ public abstract class RemoteInterpreterProcess implements InterpreterClient, Aut
     });
   }
 
-  public void formatDataset(String sessionId, String classname, String noteId, String paragraphId, Options options) throws InterpreterException{
+  public String formatDataset(String sessionId, String classname, String noteId, String paragraphId, Options options) throws InterpreterException{
     try{
-      callRemoteFunction(client -> {
-        client.formatDataset(sessionId, classname, noteId, paragraphId, options);
-        return null;
-      });
+      return callRemoteFunction(client -> client.formatDataset(sessionId, classname, noteId, paragraphId, options));
     } catch (Exception e){
       // Re-throw any Exception received via Thrift.
       throw new InterpreterException("Failed to get dataset from RemoteInterpreter!",e);

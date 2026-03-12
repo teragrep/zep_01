@@ -310,9 +310,9 @@ public class DPLInterpreter extends AbstractInterpreter {
     }
 
     @Override
-    public void formatDataset(final String noteId, final String paragraphId, final Options options) throws InterpreterException{
+    public String formatDataset(final String noteId, final String paragraphId, final Options options) throws InterpreterException{
         final UserInterfaceManager userInterfaceManager = findUserInterfacemanger(noteId,paragraphId);
         // set new options only.
-        userInterfaceManager.updateDataset(options);
+        return userInterfaceManager.formatDataset(options);
     }
 }

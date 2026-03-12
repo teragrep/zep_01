@@ -1139,8 +1139,11 @@ public class NotebookServer extends WebSocketServlet
     }
 
     try{
-      // Call to formatDataset responds via InterpreterOutput --> NotebookServer.onOutputUpdated(), same as with batch updates.
-      managedInterpreterGroup.formatDataset(sessionId, interpreter.getClassName(), noteId, paragraphId, options);
+      // Format the dataset within RemoteInterpreter, then return the output
+      final String formattedDataset = managedInterpreterGroup.formatDataset(sessionId, interpreter.getClassName(), noteId, paragraphId, options);
+      final JsonObject formattedJson = Json.createReader(new StringReader(formattedDataset)).readObject();
+      final JsonMessage msg = new JsonMessage(new SimpleMessageId(msgId),OP.PARAGRAPH_OUTPUT,formattedJson);
+      conn.send(msg.asJson().toString());
     } catch (InterpreterException e){
       // If an error occurs, send an ERROR_INFO message
       LOG.error("Failed to retrieve data from Interpreter process for note: {} paragraph: {} cause: {}",noteId,paragraphId,e.getCause(),e);
