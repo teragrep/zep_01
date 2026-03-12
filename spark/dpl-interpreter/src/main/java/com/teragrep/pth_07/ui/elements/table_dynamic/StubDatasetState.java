@@ -65,13 +65,13 @@ public class StubDatasetState implements DatasetState{
     }
 
     /**
-     * Use this method to turn a StubDatasetState into a MaterializedDatasetState using the given Dataset.
+     * Use this method to turn a StubDatasetState into a MaterializedDatasetState using the given Dataset. Initializes every supported format with the given data
      * @param rowDataset The Dataset to use
      * @return A new MaterializedDatasetState that contains the same InterpreterOutput as this StubDatasetState, the given Dataset.
      */
     @Override
     public DatasetState withDataset(Dataset<Row> rowDataset){
-        return new MaterializedDatasetState(rowDataset,output,new DataTablesFormat(rowDataset, new ArrayList<String>(),1),new UPlotFormat());
+        return new MaterializedDatasetState(rowDataset,output,new DataTablesFormat(rowDataset, rowDataset.toJSON().collectAsList(), 1),new UPlotFormat());
     }
 
     @Override
