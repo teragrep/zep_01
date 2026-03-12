@@ -1140,9 +1140,15 @@ public class NotebookServer extends WebSocketServlet
 
     try{
       // Format the dataset within RemoteInterpreter, then return the output
-      final String formattedDataset = managedInterpreterGroup.formatDataset(sessionId, interpreter.getClassName(), noteId, paragraphId, options);
-      final JsonObject formattedJson = Json.createReader(new StringReader(formattedDataset)).readObject();
-      final JsonMessage msg = new JsonMessage(new SimpleMessageId(msgId),OP.PARAGRAPH_OUTPUT,formattedJson);
+      final String output = managedInterpreterGroup.formatDataset(sessionId, interpreter.getClassName(), noteId, paragraphId, options);
+      final JsonObject outputJson = Json.createReader(new StringReader(output)).readObject();
+      final JsonObject messageData = Json.createObjectBuilder()
+              .add("noteId",noteId)
+              .add("paragraphId",paragraphId)
+              .add("result",outputJson)
+              .add("type",fromMessage.type())
+              .build();
+      final JsonMessage msg = new JsonMessage(new SimpleMessageId(msgId),OP.PARAGRAPH_OUTPUT,messageData);
       conn.send(msg.asJson().toString());
     } catch (InterpreterException e){
       // If an error occurs, send an ERROR_INFO message
