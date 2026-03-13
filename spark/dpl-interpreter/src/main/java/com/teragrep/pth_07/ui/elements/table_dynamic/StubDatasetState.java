@@ -71,7 +71,7 @@ public class StubDatasetState implements DatasetState{
      */
     @Override
     public DatasetState withDataset(Dataset<Row> rowDataset){
-        return new MaterializedDatasetState(rowDataset,output,new DataTablesFormat(rowDataset, rowDataset.toJSON().collectAsList(), 1),new UPlotFormat());
+        return new MaterializedDatasetState(rowDataset,output,new DataTablesFormat(rowDataset.schema(), rowDataset.toJSON().collectAsList(), 1),new UPlotFormat());
     }
 
     @Override

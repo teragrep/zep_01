@@ -68,49 +68,46 @@ import java.util.List;
  */
 public class DataTablesFormat{
     private static final Logger LOGGER = LoggerFactory.getLogger(DataTablesFormat.class);
-    private final Dataset<Row> dataset;
+    private final StructType schema;
     private final List<String> cachedRows;
     private final int draw;
 
-    public DataTablesFormat(final Dataset<Row> dataset, final List<String> cachedRows, final int draw){
-        this.dataset = dataset;
+    public DataTablesFormat(final StructType schema, final List<String> cachedRows, final int draw){
+        this.schema = schema;
         this.cachedRows = cachedRows;
         this.draw = draw;
     }
 
     /**
-     * Create a new instance of DataTablesFormat with an updated Dataset. This function calculates any required updates to draw, and caches the rows of the Dataset if needed.
-     * Caching is done to avoid repeated calls to Dataset.collectAsList() when formatting.
+     * Create a new instance of DataTablesFormat with an updated Dataset. This function calculates any required updates to draw based on dataset headers and caches the rows of the Dataset.
+     * Caching is done to avoid repeated calls to Dataset.collectAsList() when using format() method for pagination requests when the underlying dataset has not changed.
      * @param newDataset The updated Dataset
      * @return A new instance fo DataTablesFormat, containing an updated draw value and cache of rows based on the given dataset.
      */
     public DataTablesFormat withDataset(final Dataset<Row> newDataset) {
         final int updatedDraw;
         final List<String> updatedCache;
-        if(this.dataset.schema().equals(newDataset.schema())){
+        if(schema.equals(newDataset.schema())){
             updatedDraw = draw +1;
         }
         else {
             updatedDraw = 1;
         }
-        if(this.dataset.equals(newDataset)){
-            updatedCache = cachedRows;
-        }
-        else {
-            updatedCache = newDataset.toJSON().collectAsList();
-        }
-        return new DataTablesFormat(newDataset, updatedCache, updatedDraw);
+        updatedCache = newDataset.toJSON().collectAsList();
+        return new DataTablesFormat(newDataset.schema(), updatedCache, updatedDraw);
     }
 
     /**
      * Format the current Dataset into DataTables format using the parameters in the given Options object.
-     * @param options Thrift union object that must contain a DataTablesOptions object.
-     * @return JsonObject formatted to style expected by DataTables visualization library.
+     * This will paginate the cached rows based on Options parameters.
+     * Operates on the cached rows of this DataTablesFormat object. Repeated calls paginates the same data with given parameter. If the cache needs to be updated, use .withDataset() to create a new DataTablesFormat object.
+     * @param options A DataTablesOptions object that contains pagination parameters to use.
+     * @return JsonObject formatted to the style expected by DataTables visualization library, with requested pagination performed.
      */
     public JsonObject format(final DataTablesOptions options){
         // headers
         final JsonArrayBuilder headersBuilder = Json.createArrayBuilder();
-        for (final StructField header: this.dataset.schema().fields()) {
+        for (final StructField header: schema.fields()) {
             headersBuilder.add(header.name());
         }
         final JsonArray headers = headersBuilder.build();
@@ -129,7 +126,7 @@ public class DataTablesFormat{
         final JsonArray data = dataBuilder.build();
         final long recordsTotal = cachedRows.size();
         final long recordsFiltered = searchedRows.size();
-        final boolean isAggregated = isAggregated(this.dataset.schema());
+        final boolean isAggregated = isAggregated(schema);
 
         final int draw = Math.max(this.draw,options.getDraw());
 
