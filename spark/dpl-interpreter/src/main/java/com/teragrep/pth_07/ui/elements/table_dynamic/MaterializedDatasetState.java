@@ -83,23 +83,22 @@ public final class MaterializedDatasetState implements DatasetState{
 
     /**
      * Creates a new DatasetState object with an updated Dataset. Unpersists the previous dataset and persists the newly given dataset into memory.
+     * Notifies all supported format objects to perform all the operations they require when a new Dataset is received.
      * This method is called when a new batch of data is received from a DPL query.
      * @param rowDataset The updated Dataset
      * @return A new instance of DatasetState, containing the updated Dataset as well as previously existing Options.
      */
     public MaterializedDatasetState withDataset(final Dataset<Row> rowDataset){
-        Dataset<Row> currentDataset = dataset;
+        Dataset<Row> updatedDataset = dataset;
         // needs to be here as sparkContext might disappear later
         if (rowDataset.schema().nonEmpty()) {
-            // unpersist dataset upon receiving new data
-            if(currentDataset != null){
-                currentDataset.unpersist();
-            }
-            currentDataset = rowDataset.persist(StorageLevel.MEMORY_AND_DISK());
+            // unpersist existing dataset upon receiving new data and persist the new dataset.
+            updatedDataset.unpersist();
+            updatedDataset = rowDataset.persist(StorageLevel.MEMORY_AND_DISK());
         }
-        final DataTablesFormat newDataTablesFormat = dataTablesFormat.withDataset(currentDataset);
-        final UPlotFormat newUPlotFormat = uPlotFormat.withDataset(currentDataset);
-        return new MaterializedDatasetState(currentDataset,output,newDataTablesFormat,newUPlotFormat);
+        final DataTablesFormat newDataTablesFormat = dataTablesFormat.withDataset(updatedDataset);
+        final UPlotFormat newUPlotFormat = uPlotFormat.withDataset(updatedDataset);
+        return new MaterializedDatasetState(updatedDataset,output,newDataTablesFormat,newUPlotFormat);
     }
 
 
