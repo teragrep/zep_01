@@ -67,11 +67,11 @@ import java.util.ArrayList;
  * Responsible for writing a formatted representation of the dataset in some DatasetFormat to it's defined InterpreterOutput.
  */
 public final class MaterializedDatasetState implements DatasetState{
+    private static final Logger LOGGER = LoggerFactory.getLogger(MaterializedDatasetState.class);
     private final Dataset<Row> dataset;
     private final DataTablesFormat dataTablesFormat;
     private final UPlotFormat uPlotFormat;
     private final InterpreterOutput output;
-    private static final Logger LOGGER = LoggerFactory.getLogger(MaterializedDatasetState.class);
 
     public MaterializedDatasetState(final Dataset<Row> dataset, final InterpreterOutput output, final DataTablesFormat dataTablesFormat, final UPlotFormat uPlotFormat){
         this.dataset = dataset;
