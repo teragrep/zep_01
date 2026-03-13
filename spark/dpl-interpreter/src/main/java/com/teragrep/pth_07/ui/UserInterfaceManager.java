@@ -89,7 +89,7 @@ public class UserInterfaceManager {
     /**
      * Updates DatasetState to use a new Dataset, and writes the output to InterpreterOutput. A lock is acquired to avoid concurrent writes.
      * @param dataset The dataset containing updated data
-     * @throws InterpreterException Thrown if an error occurs during formatting of data.
+     * @throws InterpreterException Thrown if trying to write a StubDatasetState
      */
     public void updateDataset(final Dataset<Row> dataset) throws InterpreterException {
         try{
