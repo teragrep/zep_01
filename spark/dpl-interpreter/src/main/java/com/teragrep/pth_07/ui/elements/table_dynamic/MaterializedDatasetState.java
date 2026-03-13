@@ -97,8 +97,8 @@ public final class MaterializedDatasetState implements DatasetState{
             }
             currentDataset = rowDataset.persist(StorageLevel.MEMORY_AND_DISK());
         }
-        DataTablesFormat newDataTablesFormat = dataTablesFormat.withDataset(currentDataset);
-        UPlotFormat newUPlotFormat = uPlotFormat.withDataset(currentDataset);
+        final DataTablesFormat newDataTablesFormat = dataTablesFormat.withDataset(currentDataset);
+        final UPlotFormat newUPlotFormat = uPlotFormat.withDataset(currentDataset);
         return new MaterializedDatasetState(currentDataset,output,newDataTablesFormat,newUPlotFormat);
     }
 
@@ -110,7 +110,7 @@ public final class MaterializedDatasetState implements DatasetState{
      * @throws InterpreterException When an unsupported Options object is provided
      */
     public JsonObject formatDataset(final Options options) throws InterpreterException {
-        JsonObject formatted;
+        final JsonObject formatted;
         if(options.isSetDataTablesOptions()){
             formatted = dataTablesFormat.format(options.getDataTablesOptions());
         }

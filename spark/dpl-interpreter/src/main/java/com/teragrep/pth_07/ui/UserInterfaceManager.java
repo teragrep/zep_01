@@ -91,7 +91,7 @@ public class UserInterfaceManager {
      * @param dataset The dataset containing updated data
      * @throws InterpreterException Thrown if an error occurs during formatting of data.
      */
-    public void updateDataset(Dataset<Row> dataset) throws InterpreterException {
+    public void updateDataset(final Dataset<Row> dataset) throws InterpreterException {
         try{
             lock.lock();
             datasetState = datasetState.withDataset(dataset);
@@ -108,8 +108,8 @@ public class UserInterfaceManager {
      * @return String representing the formatted dataset.
      * @throws InterpreterException Thrown if an error occurs during formatting of data.
      */
-    public String formatDataset(Options options) throws InterpreterException{
-            JsonObject formattedDataset = datasetState.formatDataset(options);
+    public String formatDataset(final Options options) throws InterpreterException{
+            final JsonObject formattedDataset = datasetState.formatDataset(options);
             return formattedDataset.toString();
     }
 

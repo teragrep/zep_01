@@ -72,7 +72,7 @@ public class DataTablesFormat{
     private final List<String> cachedRows;
     private final int draw;
 
-    public DataTablesFormat(Dataset<Row> dataset, List<String> cachedRows, int draw){
+    public DataTablesFormat(final Dataset<Row> dataset, final List<String> cachedRows, final int draw){
         this.dataset = dataset;
         this.cachedRows = cachedRows;
         this.draw = draw;
@@ -84,7 +84,7 @@ public class DataTablesFormat{
      * @param newDataset The updated Dataset
      * @return A new instance fo DataTablesFormat, containing an updated draw value and cache of rows based on the given dataset.
      */
-    public DataTablesFormat withDataset(Dataset<Row> newDataset) {
+    public DataTablesFormat withDataset(final Dataset<Row> newDataset) {
         final int updatedDraw;
         final List<String> updatedCache;
         if(this.dataset.schema().equals(newDataset.schema())){
@@ -107,33 +107,33 @@ public class DataTablesFormat{
      * @param options Thrift union object that must contain a DataTablesOptions object.
      * @return JsonObject formatted to style expected by DataTables visualization library.
      */
-    public JsonObject format(DataTablesOptions options){
+    public JsonObject format(final DataTablesOptions options){
         // headers
-        JsonArrayBuilder headersBuilder = Json.createArrayBuilder();
-        for (StructField header: this.dataset.schema().fields()) {
+        final JsonArrayBuilder headersBuilder = Json.createArrayBuilder();
+        for (final StructField header: this.dataset.schema().fields()) {
             headersBuilder.add(header.name());
         }
-        JsonArray headers = headersBuilder.build();
+        final JsonArray headers = headersBuilder.build();
 
         // search
-        List<String> searchedRows = search(cachedRows, options.getSearch().getValue());
+        final List<String> searchedRows = search(cachedRows, options.getSearch().getValue());
 
         // paginate
-        List<String> paginatedRows = paginate(searchedRows, options.getStart(), options.getLength());
+        final List<String> paginatedRows = paginate(searchedRows, options.getStart(), options.getLength());
 
         // json
-        JsonArrayBuilder dataBuilder = Json.createArrayBuilder();
-        for (String jsonRow:paginatedRows) {
+        final JsonArrayBuilder dataBuilder = Json.createArrayBuilder();
+        for (final String jsonRow:paginatedRows) {
             dataBuilder.add(Json.createReader(new StringReader(jsonRow)).readObject());
         }
-        JsonArray data = dataBuilder.build();
-        long recordsTotal = cachedRows.size();
-        long recordsFiltered = searchedRows.size();
-        boolean isAggregated = isAggregated(this.dataset.schema());
+        final JsonArray data = dataBuilder.build();
+        final long recordsTotal = cachedRows.size();
+        final long recordsFiltered = searchedRows.size();
+        final boolean isAggregated = isAggregated(this.dataset.schema());
 
-        int draw = Math.max(this.draw,options.getDraw());
+        final int draw = Math.max(this.draw,options.getDraw());
 
-        JsonObject json = Json.createObjectBuilder()
+        final JsonObject json = Json.createObjectBuilder()
                 .add("data",Json.createObjectBuilder()
                         .add("headers",headers)
                         .add("data", data)
@@ -146,8 +146,8 @@ public class DataTablesFormat{
                 .build();
         return json;
     }
-    private boolean isAggregated(StructType schema) {
-        for (StructField field:schema.fields()) {
+    private boolean isAggregated(final StructType schema) {
+        for (final StructField field:schema.fields()) {
             if(field.metadata().contains("dpl_internal_isGroupByColumn")){
                 return true;
             }
@@ -159,18 +159,18 @@ public class DataTablesFormat{
         return InterpreterResult.Type.DATATABLES.label;
     }
 
-    private List<String> search(List<String> rows, String searchString){
+    private List<String> search(final List<String> rows, final String searchString){
         List<String> searchedRows = new ArrayList<>();
         if (!"".equals(searchString)) {
             try {
-                for (String row : rows) {
-                    JsonReader reader = Json.createReader(new StringReader(row));
-                    JsonObject line = reader.readObject();
+                for (final String row : rows) {
+                    final JsonReader reader = Json.createReader(new StringReader(row));
+                    final JsonObject line = reader.readObject();
 
                     // NOTE hard coded to _raw column
-                    JsonString _raw = line.getJsonString("_raw");
+                    final JsonString _raw = line.getJsonString("_raw");
                     if (_raw != null) {
-                        String _rawString = _raw.getString();
+                        final String _rawString = _raw.getString();
                         if (_rawString != null) {
                             if (_rawString.contains(searchString)) {
                                 // _raw matches, add whole row to result set
@@ -180,7 +180,7 @@ public class DataTablesFormat{
                     }
                     reader.close();
                 }
-            } catch (JsonException | IllegalStateException e) {
+            } catch (final JsonException | IllegalStateException e) {
                 LOGGER.error(e.toString());
             }
         }
@@ -190,7 +190,7 @@ public class DataTablesFormat{
         return searchedRows;
     }
 
-    private List<String> paginate(List<String> rows, int pageStart, int pageSize){
+    private List<String> paginate(final List<String> rows, final int pageStart, final int pageSize){
         // ranges must be greater than 0
         int fromIndex = Math.max(pageStart, 0);
         int toIndex = Math.max(fromIndex + pageSize, 0);
@@ -205,7 +205,7 @@ public class DataTablesFormat{
             fromIndex = toIndex;
         }
 
-        List<String> paginatedRows = rows.subList(fromIndex, toIndex);
+        final List<String> paginatedRows = rows.subList(fromIndex, toIndex);
         return paginatedRows;
     }
 }

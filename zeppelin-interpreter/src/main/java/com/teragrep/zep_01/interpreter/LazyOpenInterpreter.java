@@ -213,7 +213,7 @@ public class LazyOpenInterpreter
   }
 
   @Override
-  public String formatDataset(String noteId, String paragraphId, Options options) throws InterpreterException{
+  public String formatDataset(final String noteId, final String paragraphId, final Options options) throws InterpreterException{
     return this.intp.formatDataset(noteId, paragraphId, options);
   }
 }

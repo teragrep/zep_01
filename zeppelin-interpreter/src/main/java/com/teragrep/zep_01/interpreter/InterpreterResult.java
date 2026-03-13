@@ -64,7 +64,7 @@ public class InterpreterResult implements Serializable, JsonSerializable, Jsonab
 
     public final String label;
 
-    Type(String label) {
+    Type(final String label) {
       this.label = label;
     }
   }

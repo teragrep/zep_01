@@ -6,7 +6,7 @@ import jakarta.json.JsonValue;
 public class SimpleMessageId implements MessageId{
 
     private final String id;
-    public SimpleMessageId(String id){
+    public SimpleMessageId(final String id){
         this.id = id;
     }
     @Override

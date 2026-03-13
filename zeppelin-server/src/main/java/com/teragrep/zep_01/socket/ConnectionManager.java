@@ -238,10 +238,10 @@ public class ConnectionManager {
       }
       socketsToBroadcast = new ArrayList<>(socketLists);
     }
-    for (NotebookSocket conn : socketsToBroadcast) {
+    for (final NotebookSocket conn : socketsToBroadcast) {
       try {
         conn.send(message);
-      } catch (IOException | WebSocketException e) {
+      } catch (final IOException | WebSocketException e) {
         LOGGER.error("socket error", e);
       }
     }
@@ -266,7 +266,7 @@ public class ConnectionManager {
 
   private void broadcastToWatchers(final String noteId, final String subject, final String message) {
     synchronized (watcherSockets) {
-      for (NotebookSocket watcher : watcherSockets) {
+      for (final NotebookSocket watcher : watcherSockets) {
         try {
           watcher.send(
                   WatcherMessage.builder(noteId)
@@ -274,7 +274,7 @@ public class ConnectionManager {
                           .message(message)
                           .build()
                           .toJson());
-        } catch (IOException | WebSocketException e) {
+        } catch (final IOException | WebSocketException e) {
           LOGGER.error("Cannot broadcast message to watcher", e);
         }
       }
@@ -354,7 +354,7 @@ public class ConnectionManager {
       return;
     }
 
-    for (NotebookSocket conn : userSocketMap.get(user)) {
+    for (final NotebookSocket conn : userSocketMap.get(user)) {
       unicast(m, conn);
     }
   }
@@ -370,7 +370,7 @@ public class ConnectionManager {
   public void unicast(final String m, final NotebookSocket conn) {
     try {
       conn.send(m);
-    } catch (IOException | WebSocketException e) {
+    } catch (final IOException | WebSocketException e) {
       LOGGER.error("socket error", e);
     }
     broadcastToWatchers(StringUtils.EMPTY, StringUtils.EMPTY, m);

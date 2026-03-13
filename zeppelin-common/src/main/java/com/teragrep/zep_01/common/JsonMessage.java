@@ -35,20 +35,20 @@ public class JsonMessage implements Jsonable {
   private final String principal;
   private final String roles;
 
-  public JsonMessage(Message.OP op, JsonValue data){
+  public JsonMessage(final Message.OP op, final JsonValue data){
     this(new StubMessageId(), op,data,"anonymous","anonymous","");
   }
-  public JsonMessage(MessageId id, Message.OP op, JsonValue data){
+  public JsonMessage(final MessageId id, final Message.OP op, final JsonValue data){
     this(id, op,data,"anonymous","anonymous","");
   }
-  public JsonMessage(Message.OP op, Jsonable data){
+  public JsonMessage(final Message.OP op, final Jsonable data){
     this(new StubMessageId(), op,data.asJson(),"anonymous","anonymous","");
   }
-  public JsonMessage(MessageId id, Message.OP op, Jsonable data){
+  public JsonMessage(final MessageId id, final Message.OP op, final Jsonable data){
     this(id, op,data.asJson(),"anonymous","anonymous","");
   }
 
-  public JsonMessage(MessageId id, Message.OP op, JsonValue data, String ticket, String principal, String roles) {
+  public JsonMessage(final MessageId id, final Message.OP op, final JsonValue data, final String ticket, final String principal, final String roles) {
     this.id = id;
     this.op = op;
     this.data = data;
@@ -58,7 +58,7 @@ public class JsonMessage implements Jsonable {
   }
   @Override
   public JsonObject asJson() {
-    JsonObjectBuilder json = Json.createObjectBuilder();
+    final JsonObjectBuilder json = Json.createObjectBuilder();
     if(!id.isStub()){
       json.add("msgId",id.asJson());
     }

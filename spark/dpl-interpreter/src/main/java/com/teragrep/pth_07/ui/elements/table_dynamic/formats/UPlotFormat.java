@@ -71,7 +71,7 @@ public class UPlotFormat{
      * @param dataset The updated dataset
      * @return This UPlotFormat
      */
-    public UPlotFormat withDataset(Dataset<Row> dataset){
+    public UPlotFormat withDataset(final Dataset<Row> dataset){
         return this;
     }
 
@@ -82,7 +82,7 @@ public class UPlotFormat{
      * @return JsonObject formatted to style expected by uPlot visualization library.
      * @throws InterpreterException Thrown when Dataset or Options given are invalid.
      */
-    public JsonObject format(Dataset<Row> dataset, UPlotOptions options) throws InterpreterException{
+    public JsonObject format(final Dataset<Row> dataset, final UPlotOptions options) throws InterpreterException{
         if(dataset.isEmpty()){
             throw new InterpreterException("Cannot format an empty Dataset!");
         }
@@ -112,7 +112,7 @@ public class UPlotFormat{
 
         final JsonArrayBuilder dataBuilder = Json.createArrayBuilder();
         dataBuilder.add(xAxis);
-        for (JsonArray array:yAxisArray) {
+        for (final JsonArray array:yAxisArray) {
             dataBuilder.add(array);
         }
         final JsonArray data = dataBuilder.build();
@@ -195,7 +195,7 @@ public class UPlotFormat{
                             throw new InterpreterException("uPlot format only supports numerical data, but encountered "+type.typeName()+" in column "+ field.name() +"!");
                         }
                     }
-                    JsonArray array = arrayBuilder.build();
+                    final JsonArray array = arrayBuilder.build();
                     yAxis.add(array);
                 }
         }

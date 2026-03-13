@@ -238,7 +238,7 @@ public class NoteTest {
     Assertions.assertEquals("test_note", noteJson.getString("name"));
     Assertions.assertEquals(note.getId(), noteJson.getString("id"));
     Assertions.assertEquals("/test_note", noteJson.getString("path"));
-    JsonObject config = Assertions.assertDoesNotThrow(()->noteJson.getJsonObject("config"));
+    final JsonObject config = Assertions.assertDoesNotThrow(()->noteJson.getJsonObject("config"));
     Assertions.assertEquals(1, config.size());
     Assertions.assertEquals(false, config.getBoolean("isZeppelinNotebookCronEnable"));
   }
