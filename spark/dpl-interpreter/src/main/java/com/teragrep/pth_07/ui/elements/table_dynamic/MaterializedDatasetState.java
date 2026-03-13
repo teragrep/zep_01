@@ -61,6 +61,7 @@ import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.concurrent.locks.ReentrantLock;
 
 /**
  * Snapshot of a paragraph's Dataset, its selected format and formatting options. Can switch between formatting options and new Datasets by creating a modified copy of itself.
@@ -72,12 +73,14 @@ public final class MaterializedDatasetState implements DatasetState{
     private final DataTablesFormat dataTablesFormat;
     private final UPlotFormat uPlotFormat;
     private final InterpreterOutput output;
+    private final ReentrantLock lock;
 
     public MaterializedDatasetState(final Dataset<Row> dataset, final InterpreterOutput output, final DataTablesFormat dataTablesFormat, final UPlotFormat uPlotFormat){
         this.dataset = dataset;
         this.output = output;
         this.dataTablesFormat = dataTablesFormat;
         this.uPlotFormat = uPlotFormat;
+        this.lock = new ReentrantLock();
     }
 
 
@@ -129,12 +132,16 @@ public final class MaterializedDatasetState implements DatasetState{
 
     private void write(final String outputContent){
         try {
+            lock.lock();
             output.clear(false);
             output.write(outputContent);
             output.flush();
         } catch (final IOException e) {
             LOGGER.error(e.toString());
             e.printStackTrace();
+        }
+        finally{
+            lock.unlock();
         }
     }
 

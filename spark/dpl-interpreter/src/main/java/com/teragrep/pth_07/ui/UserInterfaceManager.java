@@ -58,7 +58,7 @@ import org.apache.spark.sql.Row;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.concurrent.locks.ReentrantLock;
+import java.util.concurrent.atomic.AtomicReference;
 
 
 /**
@@ -67,13 +67,12 @@ import java.util.concurrent.locks.ReentrantLock;
  */
 public class UserInterfaceManager {
     private static final Logger LOGGER = LoggerFactory.getLogger(UserInterfaceManager.class);
-    private final ReentrantLock lock = new ReentrantLock();
-    private DatasetState datasetState; // This variable is mutable, as an immutable implementation would require a larger refactoring of DPLInterpreter
+    private final AtomicReference<DatasetState> datasetState;
     private final PerformanceIndicator performanceIndicator;
     private final MessageLog messageLog;
 
     public UserInterfaceManager(InterpreterContext interpreterContext) {
-        datasetState = new StubDatasetState(interpreterContext.out());
+        datasetState = new AtomicReference<>(new StubDatasetState(interpreterContext.out()));
         performanceIndicator = new PerformanceIndicator(interpreterContext);
         messageLog = new MessageLog(interpreterContext);
     }
@@ -87,18 +86,13 @@ public class UserInterfaceManager {
     }
 
     /**
-     * Updates DatasetState to use a new Dataset, and writes the output to InterpreterOutput. A lock is acquired to avoid concurrent writes.
+     * Updates DatasetState to use a new Dataset, and writes the output to InterpreterOutput.
      * @param dataset The dataset containing updated data
      * @throws InterpreterException Thrown if trying to write a StubDatasetState
      */
     public void updateDataset(final Dataset<Row> dataset) throws InterpreterException {
-        try{
-            lock.lock();
-            datasetState = datasetState.withDataset(dataset);
-            datasetState.writeDataUpdate();
-        } finally {
-            lock.unlock();
-        }
+        datasetState.set(datasetState.get().withDataset(dataset));
+        datasetState.get().writeDataUpdate();
     }
 
 
@@ -109,7 +103,7 @@ public class UserInterfaceManager {
      * @throws InterpreterException Thrown if an error occurs during formatting of data.
      */
     public String formatDataset(final Options options) throws InterpreterException{
-            final JsonObject formattedDataset = datasetState.formatDataset(options);
+            final JsonObject formattedDataset = datasetState.get().formatDataset(options);
             return formattedDataset.toString();
     }
 
