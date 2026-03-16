@@ -68,7 +68,7 @@ import java.util.concurrent.locks.ReentrantLock;
  * Snapshot of a paragraph's Dataset, its selected format and formatting options. Can switch between formatting options and new Datasets by creating a modified copy of itself.
  * Responsible for writing a formatted representation of the dataset in some DatasetFormat to it's defined InterpreterOutput.
  */
-public final class MaterializedDatasetState implements DatasetState{
+public final class MaterializedDatasetState implements DatasetState {
     private static final Logger LOGGER = LoggerFactory.getLogger(MaterializedDatasetState.class);
     private final Dataset<Row> dataset;
     private final DataTablesFormat dataTablesFormat;
@@ -92,6 +92,7 @@ public final class MaterializedDatasetState implements DatasetState{
      * @param rowDataset The updated Dataset
      * @return A new instance of DatasetState, containing the updated Dataset as well as previously existing Options.
      */
+    @Override
     public MaterializedDatasetState withDataset(final Dataset<Row> rowDataset){
         Dataset<Row> updatedDataset = dataset;
         // needs to be here as sparkContext might disappear later
@@ -112,6 +113,7 @@ public final class MaterializedDatasetState implements DatasetState{
      * @return A new DatasetState instance with updated Options based on the options object provided. If given Options require a different instance of DatasetFormat, it will also be created.
      * @throws InterpreterException When an unsupported Options object is provided
      */
+    @Override
     public JsonObject formatDataset(final Options options) throws InterpreterException {
         final JsonObject formatted;
         if(options.isSetDataTablesOptions()){
@@ -149,6 +151,7 @@ public final class MaterializedDatasetState implements DatasetState{
     /**
      * Format the current Dataset with the default DataTablesFormat, then write the output to InterpreterOutput.
      */
+    @Override
      public void writeDataUpdate() {
          final DataTablesOptions defaultOptions = new DataTablesOptions(0,0,50,new DataTablesSearch("",false,new ArrayList<>()),new ArrayList<>(),new ArrayList<>());
          final JsonObject formatted = dataTablesFormat.format(defaultOptions);
