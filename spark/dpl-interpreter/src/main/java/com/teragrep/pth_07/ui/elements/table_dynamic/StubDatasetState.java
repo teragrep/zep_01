@@ -54,12 +54,11 @@ import jakarta.json.JsonObject;
 import org.apache.spark.sql.Dataset;
 import org.apache.spark.sql.Row;
 
-import java.util.ArrayList;
 import java.util.Objects;
 
-public class StubDatasetState implements DatasetState{
+public final class StubDatasetState implements DatasetState{
     private final InterpreterOutput output;
-    public StubDatasetState(InterpreterOutput output){
+    public StubDatasetState(final InterpreterOutput output){
         this.output = output;
     }
 
@@ -69,12 +68,12 @@ public class StubDatasetState implements DatasetState{
      * @return A new MaterializedDatasetState that contains the same InterpreterOutput as this StubDatasetState, the given Dataset.
      */
     @Override
-    public DatasetState withDataset(Dataset<Row> rowDataset){
-        return new MaterializedDatasetState(rowDataset,output,new DataTablesFormat(rowDataset.schema(), rowDataset.toJSON().collectAsList(), 1),new UPlotFormat());
+    public DatasetState withDataset(final Dataset<Row> rowDataset){
+        return new MaterializedDatasetState(rowDataset,output,new DataTablesFormat().withDataset(rowDataset),new UPlotFormat().withDataset(rowDataset));
     }
 
     @Override
-    public JsonObject formatDataset(Options options) throws InterpreterException {
+    public JsonObject formatDataset(final Options options) throws InterpreterException {
         throw new InterpreterException("Attempting to format an empty dataset!");
     }
 

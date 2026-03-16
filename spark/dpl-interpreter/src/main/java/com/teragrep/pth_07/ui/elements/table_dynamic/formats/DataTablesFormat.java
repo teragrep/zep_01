@@ -73,6 +73,10 @@ public final class DataTablesFormat{
     private final List<String> cachedRows;
     private final int draw;
 
+    public DataTablesFormat(){
+        this(new StructType(), new ArrayList<>() , 0);
+    }
+
     public DataTablesFormat(final StructType schema, final List<String> cachedRows, final int draw){
         this.schema = schema;
         this.cachedRows = cachedRows;
