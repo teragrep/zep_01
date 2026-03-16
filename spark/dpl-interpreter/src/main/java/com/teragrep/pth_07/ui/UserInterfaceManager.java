@@ -70,11 +70,14 @@ public class UserInterfaceManager {
     private final AtomicReference<DatasetState> datasetState;
     private final PerformanceIndicator performanceIndicator;
     private final MessageLog messageLog;
+    public UserInterfaceManager(final InterpreterContext interpreterContext) {
+        this(new AtomicReference<>(new StubDatasetState(interpreterContext.out())), new PerformanceIndicator(interpreterContext), new MessageLog(interpreterContext));
+    }
 
-    public UserInterfaceManager(InterpreterContext interpreterContext) {
-        datasetState = new AtomicReference<>(new StubDatasetState(interpreterContext.out()));
-        performanceIndicator = new PerformanceIndicator(interpreterContext);
-        messageLog = new MessageLog(interpreterContext);
+    public UserInterfaceManager(AtomicReference<DatasetState> datasetState, PerformanceIndicator performanceIndicator, MessageLog messageLog){
+        this.datasetState = datasetState;
+        this.performanceIndicator = performanceIndicator;
+        this.messageLog = messageLog;
     }
 
     public PerformanceIndicator getPerformanceIndicator() {
