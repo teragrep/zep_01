@@ -22,11 +22,13 @@ import jakarta.json.JsonObject;
 import jakarta.json.JsonObjectBuilder;
 import jakarta.json.JsonValue;
 
+import java.util.Objects;
+
 
 /**
  * A Message that contains a single Jsonable as its data.
  */
-public class JsonMessage implements Jsonable {
+public final class JsonMessage implements Jsonable {
 
   private final MessageId id;
   private final Message.OP op;
@@ -34,6 +36,19 @@ public class JsonMessage implements Jsonable {
   private final String ticket;
   private final String principal;
   private final String roles;
+
+  @Override
+  public boolean equals(Object o) {
+    if (this == o) return true;
+    if (o == null || getClass() != o.getClass()) return false;
+    JsonMessage that = (JsonMessage) o;
+    return Objects.equals(id, that.id) && op == that.op && Objects.equals(data, that.data) && Objects.equals(ticket, that.ticket) && Objects.equals(principal, that.principal) && Objects.equals(roles, that.roles);
+  }
+
+  @Override
+  public int hashCode() {
+    return Objects.hash(id, op, data, ticket, principal, roles);
+  }
 
   public JsonMessage(final Message.OP op, final JsonValue data){
     this(new StubMessageId(), op,data,"anonymous","anonymous","");

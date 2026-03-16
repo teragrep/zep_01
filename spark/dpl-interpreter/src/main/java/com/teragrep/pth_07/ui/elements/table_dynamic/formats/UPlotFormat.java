@@ -57,7 +57,7 @@ import org.slf4j.LoggerFactory;
 import java.util.ArrayList;
 import java.util.List;
 
-public class UPlotFormat{
+public final class UPlotFormat{
 
     private static final Logger LOGGER = LoggerFactory.getLogger(UPlotFormat.class);
     /**

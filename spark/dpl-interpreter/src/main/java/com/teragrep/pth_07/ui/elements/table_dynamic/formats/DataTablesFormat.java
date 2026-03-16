@@ -58,6 +58,7 @@ import org.slf4j.LoggerFactory;
 import java.io.StringReader;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 /**
  * Formats a given Dataset to expected format for DataTables visualization library.
@@ -66,7 +67,7 @@ import java.util.List;
  * Keeps the rows of a Dataset in a cache to avoid unnecessary calls to Dataset.collectAsList() when performing for example pagination requests.
  * Cache is updated when a new Dataset is received
  */
-public class DataTablesFormat{
+public final class DataTablesFormat{
     private static final Logger LOGGER = LoggerFactory.getLogger(DataTablesFormat.class);
     private final StructType schema;
     private final List<String> cachedRows;
@@ -204,5 +205,18 @@ public class DataTablesFormat{
 
         final List<String> paginatedRows = rows.subList(fromIndex, toIndex);
         return paginatedRows;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        DataTablesFormat format = (DataTablesFormat) o;
+        return draw == format.draw && Objects.equals(schema, format.schema) && Objects.equals(cachedRows, format.cachedRows);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(schema, cachedRows, draw);
     }
 }

@@ -1,6 +1,7 @@
 package com.teragrep.zep_01.notebook;
 
 import jakarta.json.JsonObject;
+import nl.jqno.equalsverifier.EqualsVerifier;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
@@ -30,5 +31,9 @@ class EditorSettingTest {
         Assertions.assertEquals(completionKey, json.getString("completionKey"));
         Assertions.assertEquals(completionSupport, json.getBoolean("completionSupport"));
         Assertions.assertEquals(editOnDoubleClick, json.getBoolean("editOnDoubleClick"));
+    }
+    @Test
+    void equalsVerifier() {
+        EqualsVerifier.forClass(EditorSetting.class).verify();
     }
 }

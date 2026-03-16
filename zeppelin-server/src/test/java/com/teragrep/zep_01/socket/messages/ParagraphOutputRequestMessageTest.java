@@ -5,6 +5,7 @@ import com.teragrep.zep_01.interpreter.thrift.UPlotOptions;
 import jakarta.json.Json;
 import jakarta.json.JsonException;
 import jakarta.json.JsonObject;
+import nl.jqno.equalsverifier.EqualsVerifier;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
@@ -142,5 +143,9 @@ class ParagraphOutputRequestMessageTest {
         final ParagraphOutputRequestMessage message = new ParagraphOutputRequestMessage(messageJson);
         // Should throw an error when trying to retrieve the options
         Assertions.assertThrows(JsonException.class,()-> message.options());
+    }
+    @Test
+    void equalsVerifier() {
+        EqualsVerifier.forClass(ParagraphOutputRequestMessage.class).verify();
     }
 }

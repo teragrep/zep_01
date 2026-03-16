@@ -1,6 +1,7 @@
 package com.teragrep.zep_01.notebook;
 
 import jakarta.json.JsonObject;
+import nl.jqno.equalsverifier.EqualsVerifier;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
@@ -20,5 +21,9 @@ class ParagraphRuntimeInfoTest {
         Assertions.assertEquals(tooltip,json.getString("tooltip"));
         Assertions.assertEquals(group,json.getString("group"));
         Assertions.assertEquals(intpSettingId,json.getString("interpreterSettingId"));
+    }
+    @Test
+    void equalsVerifier() {
+        EqualsVerifier.forClass(ParagraphRuntimeInfo.class).verify();
     }
 }

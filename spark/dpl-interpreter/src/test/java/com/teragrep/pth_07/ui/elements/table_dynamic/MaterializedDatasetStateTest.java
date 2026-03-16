@@ -47,6 +47,7 @@ package com.teragrep.pth_07.ui.elements.table_dynamic;
 
 import com.teragrep.pth_07.ui.elements.table_dynamic.testdata.TestDPLData;
 import com.teragrep.zep_01.interpreter.*;
+import nl.jqno.equalsverifier.EqualsVerifier;
 import org.apache.spark.sql.Dataset;
 import org.apache.spark.sql.Row;
 import org.apache.spark.sql.SparkSession;
@@ -60,6 +61,7 @@ import java.sql.Timestamp;
 import java.time.Instant;
 import java.util.List;
 import java.util.UUID;
+import java.util.concurrent.locks.ReentrantLock;
 
 
 public class MaterializedDatasetStateTest {
@@ -186,5 +188,23 @@ public class MaterializedDatasetStateTest {
         public int numberOfResetCalls(){
             return numberOfResetCalls;
         }
+    }
+    @Test
+    void equalsVerifier() {
+        // EqualsVerifier requires some prefab values due to usage of mutable or complex objects
+        Dataset<Row> redDataset = sparkSession.emptyDataFrame();
+        Dataset<Row> blueDataset = testDs;
+
+        InterpreterOutput redOutput = new InterpreterOutput(new TestInterpreterOutputListener());
+        InterpreterOutput blueOutput = new InterpreterOutput();
+
+        ReentrantLock redLock = new ReentrantLock();
+        ReentrantLock blueLock = new ReentrantLock();
+        blueLock.lock();
+
+        EqualsVerifier.forClass(MaterializedDatasetState.class)
+                .withPrefabValues(Dataset.class, redDataset, blueDataset)
+                .withPrefabValues(InterpreterOutput.class,redOutput,blueOutput)
+                .withPrefabValues(ReentrantLock.class, redLock,blueLock).verify();
     }
 }

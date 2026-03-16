@@ -1,6 +1,7 @@
 package com.teragrep.zep_01.notebook;
 
 import jakarta.json.JsonObject;
+import nl.jqno.equalsverifier.EqualsVerifier;
 import org.junit.Test;
 import org.junit.jupiter.api.Assertions;
 
@@ -32,5 +33,9 @@ public class NoteConfigTest {
         Assertions.assertEquals(cronEnabled,json.getBoolean("isZeppelinNotebookCronEnable"));
         Assertions.assertEquals(looknfeel,json.getString("looknfeel"));
         Assertions.assertEquals(personalizedMode,json.getString("personalizedMode"));
+    }
+    @org.junit.jupiter.api.Test
+    void equalsVerifier() {
+        EqualsVerifier.forClass(NoteConfig.class).verify();
     }
 }

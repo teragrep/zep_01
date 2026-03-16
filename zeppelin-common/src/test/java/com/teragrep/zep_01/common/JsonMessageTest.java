@@ -2,6 +2,7 @@ package com.teragrep.zep_01.common;
 
 import jakarta.json.Json;
 import jakarta.json.JsonObject;
+import nl.jqno.equalsverifier.EqualsVerifier;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
@@ -75,5 +76,9 @@ class JsonMessageTest {
                 .add("msgId",messageId)
                 .build();
         Assertions.assertEquals(expectedJson, message.asJson());
+    }
+    @Test
+    void equalsVerifier() {
+        EqualsVerifier.forClass(JsonMessage.class).verify();
     }
 }

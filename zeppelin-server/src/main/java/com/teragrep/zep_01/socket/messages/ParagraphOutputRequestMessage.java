@@ -7,9 +7,10 @@ import jakarta.json.*;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 // CLient-to-Server message that must minimally contain all the required pieces of information for a dataset formatting request.
-public class ParagraphOutputRequestMessage implements Jsonable {
+public final class ParagraphOutputRequestMessage implements Jsonable {
 
     private final JsonObject json;
 
@@ -212,5 +213,18 @@ public class ParagraphOutputRequestMessage implements Jsonable {
     @Override
     public JsonObject asJson() {
         return json;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        ParagraphOutputRequestMessage that = (ParagraphOutputRequestMessage) o;
+        return Objects.equals(json, that.json);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(json);
     }
 }

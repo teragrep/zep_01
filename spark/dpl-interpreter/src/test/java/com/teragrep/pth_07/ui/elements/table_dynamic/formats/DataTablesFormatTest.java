@@ -50,6 +50,7 @@ import com.teragrep.zep_01.interpreter.thrift.DataTablesOptions;
 import com.teragrep.zep_01.interpreter.thrift.DataTablesSearch;
 import jakarta.json.JsonArray;
 import jakarta.json.JsonObject;
+import nl.jqno.equalsverifier.EqualsVerifier;
 import org.apache.spark.sql.Dataset;
 import org.apache.spark.sql.Row;
 import org.apache.spark.sql.SparkSession;
@@ -320,5 +321,10 @@ class DataTablesFormatTest {
         Assertions.assertEquals(1,formatted2.getJsonArray("data").getJsonObject(4).getInt("filesModified"));
 
         Assertions.assertEquals(2,formatted2.getInt("draw"));
+    }
+
+    @Test
+    void equalsVerifier() {
+        EqualsVerifier.forClass(DataTablesFormat.class).verify();
     }
 }

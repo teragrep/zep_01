@@ -6,9 +6,24 @@ import jakarta.json.JsonObject;
 import jakarta.json.JsonObjectBuilder;
 
 import java.util.Map;
+import java.util.Objects;
 
-public class ParagraphRuntimeInfos implements Jsonable {
-    private Map<String,ParagraphRuntimeInfo> runtimeInfoMap;
+public final class ParagraphRuntimeInfos implements Jsonable {
+    private final Map<String,ParagraphRuntimeInfo> runtimeInfoMap;
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        ParagraphRuntimeInfos that = (ParagraphRuntimeInfos) o;
+        return Objects.equals(runtimeInfoMap, that.runtimeInfoMap);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(runtimeInfoMap);
+    }
+
     public ParagraphRuntimeInfos(final Map<String, ParagraphRuntimeInfo> runtimeInfoMap){
         this.runtimeInfoMap = runtimeInfoMap;
     }

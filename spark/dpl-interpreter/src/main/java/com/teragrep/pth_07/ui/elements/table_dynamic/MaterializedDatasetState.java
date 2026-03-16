@@ -61,6 +61,7 @@ import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Objects;
 import java.util.concurrent.locks.ReentrantLock;
 
 /**
@@ -153,5 +154,18 @@ public final class MaterializedDatasetState implements DatasetState{
          final JsonObject formatted = dataTablesFormat.format(defaultOptions);
          final String outputContent = "%"+dataTablesFormat.type().toLowerCase()+"\n" + formatted.toString();
          write(outputContent);
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        MaterializedDatasetState that = (MaterializedDatasetState) o;
+        return Objects.equals(dataset, that.dataset) && Objects.equals(dataTablesFormat, that.dataTablesFormat) && Objects.equals(uPlotFormat, that.uPlotFormat) && Objects.equals(output, that.output) && Objects.equals(lock, that.lock);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(dataset, dataTablesFormat, uPlotFormat, output, lock);
     }
 }

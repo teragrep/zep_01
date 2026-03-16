@@ -6,9 +6,24 @@ import jakarta.json.JsonObject;
 import jakarta.json.JsonObjectBuilder;
 
 import java.util.Map;
+import java.util.Objects;
 
-public class EditorSetting implements Jsonable {
+public final class EditorSetting implements Jsonable {
     private final Map<String, Object> settingMap;
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        EditorSetting that = (EditorSetting) o;
+        return Objects.equals(settingMap, that.settingMap);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(settingMap);
+    }
+
     public EditorSetting(final Map<String, Object> settingMap){
         this.settingMap = settingMap;
     }

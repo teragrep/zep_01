@@ -6,9 +6,24 @@ import jakarta.json.JsonObject;
 import jakarta.json.JsonObjectBuilder;
 
 import java.util.Map;
+import java.util.Objects;
 
-public class NoteConfig implements Jsonable {
+public final class NoteConfig implements Jsonable {
     private final Map<String,Object> configMap;
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        NoteConfig that = (NoteConfig) o;
+        return Objects.equals(configMap, that.configMap);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(configMap);
+    }
+
     public NoteConfig(final Map<String,Object> configMap){
         this.configMap = configMap;
     }
