@@ -75,7 +75,7 @@ public final class UserInterfaceManager {
         this(new AtomicReference<>(new StubDatasetState(interpreterContext.out())), new PerformanceIndicator(interpreterContext), new MessageLog(interpreterContext));
     }
 
-    public UserInterfaceManager(AtomicReference<DatasetState> datasetState, PerformanceIndicator performanceIndicator, MessageLog messageLog){
+    public UserInterfaceManager(final AtomicReference<DatasetState> datasetState, final PerformanceIndicator performanceIndicator, final MessageLog messageLog){
         this.datasetState = datasetState;
         this.performanceIndicator = performanceIndicator;
         this.messageLog = messageLog;
