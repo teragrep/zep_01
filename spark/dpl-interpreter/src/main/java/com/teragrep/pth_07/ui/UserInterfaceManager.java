@@ -58,6 +58,7 @@ import org.apache.spark.sql.Row;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.Objects;
 import java.util.concurrent.atomic.AtomicReference;
 
 
@@ -65,7 +66,7 @@ import java.util.concurrent.atomic.AtomicReference;
  * Holds the state of the Dataset, PerformanceIndicator and MessageLog of a single Paragraph.
  * Responsible for passing new Datasets and formatting requests to DatasetState and triggering the writing of the DatasetState to UI.
  */
-public class UserInterfaceManager {
+public final class UserInterfaceManager {
     private static final Logger LOGGER = LoggerFactory.getLogger(UserInterfaceManager.class);
     private final AtomicReference<DatasetState> datasetState;
     private final PerformanceIndicator performanceIndicator;
@@ -110,4 +111,16 @@ public class UserInterfaceManager {
             return formattedDataset.toString();
     }
 
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        UserInterfaceManager that = (UserInterfaceManager) o;
+        return Objects.equals(datasetState, that.datasetState) && Objects.equals(performanceIndicator, that.performanceIndicator) && Objects.equals(messageLog, that.messageLog);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(datasetState, performanceIndicator, messageLog);
+    }
 }
