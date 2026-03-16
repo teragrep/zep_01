@@ -45,54 +45,49 @@
  */
 package com.teragrep.pth_07.ui.elements.table_dynamic;
 
-import com.teragrep.pth_07.ui.elements.table_dynamic.formats.DataTablesFormat;
-import com.teragrep.pth_07.ui.elements.table_dynamic.formats.UPlotFormat;
 import com.teragrep.zep_01.interpreter.InterpreterException;
 import com.teragrep.zep_01.interpreter.InterpreterOutput;
+import com.teragrep.zep_01.interpreter.thrift.DataTablesOptions;
 import com.teragrep.zep_01.interpreter.thrift.Options;
-import jakarta.json.JsonObject;
 import org.apache.spark.sql.Dataset;
 import org.apache.spark.sql.Row;
+import org.apache.spark.sql.SparkSession;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 
-import java.util.ArrayList;
-import java.util.Objects;
+import java.util.UUID;
 
-public class StubDatasetState implements DatasetState{
-    private final InterpreterOutput output;
-    public StubDatasetState(InterpreterOutput output){
-        this.output = output;
+
+class StubDatasetStateTest {
+
+    private final SparkSession sparkSession = SparkSession.builder()
+            .master("local[*]")
+            .config("spark.cleaner.referenceTracking.cleanCheckpoints", "true")
+            .config("checkpointLocation","/tmp/pth_10/test/StackTest/checkpoints/" + UUID.randomUUID() + "/")
+            .config("spark.sql.session.timeZone", "UTC")
+            .getOrCreate();
+
+    // Calling .withDataset(Dataset) on a StubDatasetState should return a MaterializedDatasetState object.
+    @Test
+    void withDatasetTest() {
+        Dataset<Row> emptyData = sparkSession.emptyDataFrame();
+        StubDatasetState stubState = new StubDatasetState(new InterpreterOutput());
+        DatasetState materializedState = Assertions.assertDoesNotThrow(() -> stubState.withDataset(emptyData));
+        Assertions.assertEquals(MaterializedDatasetState.class,materializedState.getClass());
     }
 
-    /**
-     * Use this method to turn a StubDatasetState into a MaterializedDatasetState using the given Dataset. Initializes every supported format with the given data
-     * @param rowDataset The Dataset to use
-     * @return A new MaterializedDatasetState that contains the same InterpreterOutput as this StubDatasetState, the given Dataset.
-     */
-    @Override
-    public DatasetState withDataset(Dataset<Row> rowDataset){
-        return new MaterializedDatasetState(rowDataset,output,new DataTablesFormat(rowDataset.schema(), rowDataset.toJSON().collectAsList(), 1),new UPlotFormat());
+    // Trying to format a StubDatasetState should throw an error.
+    @Test
+    void formatDatasetTest() {
+        StubDatasetState stubState = new StubDatasetState(new InterpreterOutput());
+        Options options = Options.dataTablesOptions(new DataTablesOptions());
+        Assertions.assertThrows(InterpreterException.class,()->stubState.formatDataset(options));
     }
 
-    @Override
-    public JsonObject formatDataset(Options options) throws InterpreterException {
-        throw new InterpreterException("Attempting to format an empty dataset!");
-    }
-
-    @Override
-    public void writeDataUpdate() throws InterpreterException {
-        throw new InterpreterException("Attempting to write an empty dataset!");
-    }
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        StubDatasetState that = (StubDatasetState) o;
-        return Objects.equals(output, that.output);
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(output);
+    // Trying to write to a StubDatasetState's InterpreterOutput should throw an error.
+    @Test
+    void writeDataUpdateTest() {
+        StubDatasetState stubState = new StubDatasetState(new InterpreterOutput());
+        Assertions.assertThrows(InterpreterException.class,()->stubState.writeDataUpdate());
     }
 }
