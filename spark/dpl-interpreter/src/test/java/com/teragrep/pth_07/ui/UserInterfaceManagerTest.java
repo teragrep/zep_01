@@ -55,6 +55,8 @@ import com.teragrep.zep_01.interpreter.InterpreterOutputListener;
 import com.teragrep.zep_01.interpreter.InterpreterResultMessageOutput;
 import com.teragrep.zep_01.interpreter.thrift.Options;
 import com.teragrep.zep_01.interpreter.thrift.UPlotOptions;
+import jakarta.json.Json;
+import jakarta.json.JsonObject;
 import nl.jqno.equalsverifier.EqualsVerifier;
 import org.apache.spark.sql.Dataset;
 import org.apache.spark.sql.Row;
@@ -120,12 +122,15 @@ class UserInterfaceManagerTest {
     void updateDatasetTest() {
         Assertions.assertDoesNotThrow(()->userInterfaceManager.updateDataset(testDs));
         final String output = Assertions.assertDoesNotThrow(()->testOutputListener.latestOutput());
-        final String expectedOutput = "%datatables {\"data\":{\"headers\":[\"id\",\"offset\"]," +
-                "\"data\":[{\"id\":0,\"offset\":0}," +
+        final String expectedOutput = "%datatables {\"data\":" +
+                "{\"data\":[" +
+                "{\"id\":0,\"offset\":0}," +
                 "{\"id\":0,\"offset\":0}]," +
                 "\"draw\":1," +
                 "\"recordsTotal\":2," +
                 "\"recordsFiltered\":2}," +
+                "\"options\":{\"headers\":" +
+                "[\"id\",\"offset\"]}," +
                 "\"isAggregated\":false," +
                 "\"type\":\"dataTables\"}";
         Assertions.assertEquals(expectedOutput,output);

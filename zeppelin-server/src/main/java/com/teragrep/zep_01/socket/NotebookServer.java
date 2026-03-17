@@ -39,6 +39,7 @@ import com.teragrep.zep_01.interpreter.*;
 import com.teragrep.zep_01.interpreter.remote.RemoteInterpreter;
 import com.teragrep.zep_01.interpreter.thrift.*;
 import com.teragrep.zep_01.rest.exception.BadRequestException;
+import com.teragrep.zep_01.socket.messages.ParagraphOutputResponseMessage;
 import jakarta.json.Json;
 import jakarta.json.JsonObject;
 import org.apache.commons.lang3.StringUtils;
@@ -1142,13 +1143,8 @@ public class NotebookServer extends WebSocketServlet
       // Format the dataset within RemoteInterpreter, then return the output
       final String output = managedInterpreterGroup.formatDataset(sessionId, interpreter.getClassName(), noteId, paragraphId, options);
       final JsonObject outputJson = Json.createReader(new StringReader(output)).readObject();
-      final JsonObject messageData = Json.createObjectBuilder()
-              .add("noteId",noteId)
-              .add("paragraphId",paragraphId)
-              .add("result",outputJson)
-              .add("type",fromMessage.type())
-              .build();
-      final JsonMessage msg = new JsonMessage(new SimpleMessageId(msgId),OP.PARAGRAPH_OUTPUT,messageData);
+      final ParagraphOutputResponseMessage paragraphOutputResponse = new ParagraphOutputResponseMessage(noteId,paragraphId,outputJson);
+      final JsonMessage msg = new JsonMessage(new SimpleMessageId(msgId),OP.PARAGRAPH_OUTPUT,paragraphOutputResponse);
       conn.send(msg.asJson().toString());
     } catch (InterpreterException e){
       // If an error occurs, send an ERROR_INFO message
@@ -1156,7 +1152,7 @@ public class NotebookServer extends WebSocketServlet
       final JsonObject errorJson = Json.createObjectBuilder()
               .add("message","Failed to retrieve data. Please rerun the paragraph and try again or see technical log for details!")
               .build();
-      final JsonMessage msg = new JsonMessage(new SimpleMessageId(msgId),OP.ERROR_INFO,errorJson);
+      final JsonMessage msg = new JsonMessage(new SimpleMessageId(msgId),OP.INTERPRETER_ERROR,errorJson);
       conn.send(msg.asJson().toString());
     }
   }
@@ -1680,13 +1676,8 @@ public class NotebookServer extends WebSocketServlet
     }
     // As formatted data is passed as a String via Thrift, we have to parse it with JsonReader to make sure the data types are represented correctly.
     final JsonObject outputJson = Json.createReader(new StringReader(output)).readObject();
-    final JsonObject messageData = Json.createObjectBuilder()
-            .add("noteId",noteId)
-            .add("paragraphId",paragraphId)
-            .add("result",outputJson)
-            .add("type",type.label)
-            .build();
-    final JsonMessage msg = new JsonMessage(OP.PARAGRAPH_OUTPUT,messageData);
+    final ParagraphOutputResponseMessage paragraphOutputResponse = new ParagraphOutputResponseMessage(noteId,paragraphId,outputJson);
+    final JsonMessage msg = new JsonMessage(OP.PARAGRAPH_OUTPUT, paragraphOutputResponse);
     try {
       Note note = getNotebook().getNote(noteId);
       if (note == null) {
