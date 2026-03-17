@@ -2,7 +2,7 @@ package com.teragrep.zep_01.common;
 
 import jakarta.json.JsonValue;
 
-public class StubMessageId implements MessageId{
+public final class StubMessageId implements MessageId{
     @Override
     public boolean isStub() {
         return true;

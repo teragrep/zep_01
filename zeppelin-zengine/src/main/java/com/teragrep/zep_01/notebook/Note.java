@@ -75,7 +75,7 @@ import java.util.concurrent.CopyOnWriteArrayList;
  * Represent the note of Zeppelin. All the note and its paragraph operations are done
  * via this class.
  */
-public class Note implements JsonSerializable, Jsonable {
+public final class Note implements JsonSerializable, Jsonable {
 
   private static final Logger LOGGER = LoggerFactory.getLogger(Note.class);
 

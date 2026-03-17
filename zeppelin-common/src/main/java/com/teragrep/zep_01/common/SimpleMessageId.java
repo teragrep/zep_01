@@ -5,7 +5,7 @@ import jakarta.json.JsonValue;
 
 import java.util.Objects;
 
-public class SimpleMessageId implements MessageId{
+public final class SimpleMessageId implements MessageId{
 
     private final String id;
     public SimpleMessageId(final String id){
