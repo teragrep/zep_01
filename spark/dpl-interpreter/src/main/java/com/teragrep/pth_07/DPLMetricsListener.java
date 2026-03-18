@@ -86,11 +86,13 @@ public final class DPLMetricsListener extends StreamingQueryListener {
                 while (executionDataIterator.hasNext()) {
                     final SQLExecutionUIData executionData = executionDataIterator.next();
                     final Map<Object, String> metricValues = JavaConverters.mapAsJavaMap(executionData.metricValues());
-                    for (final SQLPlanMetric metric : JavaConverters.asJavaIterable(executionData.metrics())) {
-                        final long id = metric.accumulatorId();
-                        final Object value = metricValues.get(id);
-                        if (metric.metricType().startsWith("v2Custom_") && value != null) {
-                            currentMetrics.put(metric.name(), value.toString());
+                    if(metricValues != null){
+                        for (final SQLPlanMetric metric : JavaConverters.asJavaIterable(executionData.metrics())) {
+                            final long id = metric.accumulatorId();
+                            final Object value = metricValues.get(id);
+                            if (metric.metricType().startsWith("v2Custom_") && value != null) {
+                                currentMetrics.put(metric.name(), value.toString());
+                            }
                         }
                     }
                 }
