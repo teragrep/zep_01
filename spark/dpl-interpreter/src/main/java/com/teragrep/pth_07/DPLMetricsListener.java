@@ -88,13 +88,16 @@ public final class DPLMetricsListener extends StreamingQueryListener {
                     final scala.collection.Map<Object, String> scalaMetricValues = executionData.metricValues();
                     if(scalaMetricValues != null){
                     final Map<Object, String> metricValues = JavaConverters.mapAsJavaMap(scalaMetricValues);
-                        for (final SQLPlanMetric metric : JavaConverters.asJavaIterable(executionData.metrics())) {
+                    Seq<SQLPlanMetric> metrics = executionData.metrics();
+                    if(metrics != null){
+                        for (final SQLPlanMetric metric : JavaConverters.asJavaIterable(metrics)) {
                             final long id = metric.accumulatorId();
                             final Object value = metricValues.get(id);
                             if (metric.metricType().startsWith("v2Custom_") && value != null) {
                                 currentMetrics.put(metric.name(), value.toString());
                             }
                         }
+                    }
                     }
                 }
             }
