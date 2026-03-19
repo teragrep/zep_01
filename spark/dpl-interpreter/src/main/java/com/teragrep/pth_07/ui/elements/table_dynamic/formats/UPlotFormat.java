@@ -55,6 +55,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 public final class UPlotFormat{
@@ -83,12 +84,14 @@ public final class UPlotFormat{
      * @throws InterpreterException Thrown when Dataset or Options given are invalid.
      */
     public JsonObject format(final Dataset<Row> dataset, final UPlotOptions options) throws InterpreterException{
+        //TODO: refactor this monstrosity into more objects. At least Timechart and regular data should be separated.
         if(dataset.isEmpty()){
             throw new InterpreterException("Cannot format an empty Dataset!");
         }
         final StructType schema = dataset.schema();
         boolean aggsUsed = false;
         final List<String> groupByColumnNames = new ArrayList<>();
+        final List<String> valueColumnNames = new ArrayList<>();
         String delimiter = "";
         final StringBuilder concatenatedGroupByColumnName = new StringBuilder();
         for (final StructField field:schema.fields()) {
@@ -99,12 +102,42 @@ public final class UPlotFormat{
                 concatenatedGroupByColumnName.append(field.name());
                 groupByColumnNames.add(field.name());
             }
+            else {
+                valueColumnNames.add(field.name());
+            }
         }
-        final Dataset<Row> concatenatedDataset = concatenateColumns(dataset,groupByColumnNames,concatenatedGroupByColumnName.toString());
-        final List<Row> collectedData = concatenatedDataset.collectAsList();
+        final Dataset<Row> transformedDataset;
+        // Timechart case
+        if(groupByColumnNames.contains("_time")){
+            if(groupByColumnNames.size() == 1){
+                transformedDataset = dataset;
+            }
+            else {
+                List<String> timechartGroupByColumnNames = new ArrayList<>(groupByColumnNames);
+                timechartGroupByColumnNames.remove("_time");
 
+                List<Column> columns = new ArrayList<>();
+                for (int i = 0; i < valueColumnNames.size(); i++) {
+                    columns.add(org.apache.spark.sql.functions.first(valueColumnNames.get(i)).alias(valueColumnNames.get(i)));
+                }
+                Column first = columns.get(0);
+                columns.remove(0);
+                Column[] rest = columns.toArray(new Column[0]);
 
-        final JsonArray series = series(concatenatedDataset.schema());
+                transformedDataset = dataset.groupBy("_time")
+                        .pivot(timechartGroupByColumnNames.get(0))
+                        .agg(first,rest);
+            }
+        }
+
+        // Other cases
+        else {
+            transformedDataset = concatenateColumns(dataset,groupByColumnNames,concatenatedGroupByColumnName.toString());
+        }
+
+        final List<Row> collectedData = transformedDataset.collectAsList();
+
+        final JsonArray series = series(transformedDataset.schema());
         final JsonArray labels = labels(collectedData, aggsUsed);
 
         final JsonArray xAxis = xAxis(collectedData, aggsUsed);
@@ -161,38 +194,44 @@ public final class UPlotFormat{
                     for (final Row row:rows) {
                         final DataType type = field.dataType();
                         final Object value = row.get(i);
-                        if(type.equals(DataTypes.StringType)){
-                            // Some data from DPL may come as numerical data, but stringified. If string data is encountered, try to parse into Double before throwing an Exception.
-                            try{
-                                final Double doubleValue = Double.parseDouble((String)value);
-                                arrayBuilder.add(doubleValue);
-                            }
-                            catch (final NumberFormatException exception){
-                                throw new InterpreterException("uPlot format only supports numerical data, but encountered unparseable string in column "+field.name()+" !");
-                            }
-                        }
-                        else if (type.equals(DataTypes.LongType)){
-                            final Long longValue = (Long) value;
-                            arrayBuilder.add(longValue);
-                        }
-                        else if (type.equals(DataTypes.IntegerType)){
-                            final Integer intValue = (Integer) value;
-                            arrayBuilder.add(intValue);
-                        }
-                        else if (type.equals(DataTypes.DoubleType)){
-                            final Double doubleValue = (Double) value;
-                            arrayBuilder.add(doubleValue);
-                        }
-                        else if (type.equals(DataTypes.FloatType)){
-                            final Float floatValue = (Float) value;
-                            arrayBuilder.add(floatValue);
-                        }
-                        else if (type.equals(DataTypes.ShortType)){
-                            final Short shortValue = (Short) value;
-                            arrayBuilder.add(shortValue);
+                        // Spark datasets may contain null values, and uPlot expects JSON nulls to represent empty data
+                        if(value == null){
+                            arrayBuilder.add(JsonValue.NULL);
                         }
                         else {
-                            throw new InterpreterException("uPlot format only supports numerical data, but encountered "+type.typeName()+" in column "+ field.name() +"!");
+                            if(type.equals(DataTypes.StringType)){
+                                // Some data from DPL may come as numerical data, but stringified. If string data is encountered, try to parse into Double before throwing an Exception.
+                                try{
+                                    final Double doubleValue = Double.parseDouble((String)value);
+                                    arrayBuilder.add(doubleValue);
+                                }
+                                catch (final NumberFormatException exception){
+                                    throw new InterpreterException("uPlot format only supports numerical data, but encountered unparseable string in column "+field.name()+" !");
+                                }
+                            }
+                            else if (type.equals(DataTypes.LongType)){
+                                final Long longValue = (Long) value;
+                                arrayBuilder.add(longValue);
+                            }
+                            else if (type.equals(DataTypes.IntegerType)){
+                                final Integer intValue = (Integer) value;
+                                arrayBuilder.add(intValue);
+                            }
+                            else if (type.equals(DataTypes.DoubleType)){
+                                final Double doubleValue = (Double) value;
+                                arrayBuilder.add(doubleValue);
+                            }
+                            else if (type.equals(DataTypes.FloatType)){
+                                final Float floatValue = (Float) value;
+                                arrayBuilder.add(floatValue);
+                            }
+                            else if (type.equals(DataTypes.ShortType)){
+                                final Short shortValue = (Short) value;
+                                arrayBuilder.add(shortValue);
+                            }
+                            else {
+                                throw new InterpreterException("uPlot format only supports numerical data, but encountered "+type.typeName()+" in column "+ field.name() +"!");
+                            }
                         }
                     }
                     final JsonArray array = arrayBuilder.build();
