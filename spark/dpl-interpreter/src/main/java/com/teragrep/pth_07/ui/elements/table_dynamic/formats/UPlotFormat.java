@@ -68,6 +68,12 @@ public final class UPlotFormat{
         this(new UPlotData(new ArrayList<>(),false), new UPlotMetadata(new StructType(),new ArrayList<>(),"line",false));
     }
 
+    public UPlotFormat(UPlotData data, UPlotMetadata metadata){
+        this.data = data;
+        this.metadata = metadata;
+    }
+
+
     /**
      * Create a new instance of UPlotFormat with an updated Dataset. This function calculates any required transformations UPlot format might need for the dataset and caches a UPlotData and UPlotMetadata objects for later use in formatting.
      * Caching is done to avoid repeated calls to Dataset.collectAsList() when using format() method for switching between graph types when the underlying dataset has not changed.
@@ -124,11 +130,6 @@ public final class UPlotFormat{
         List<Row> collectedData = transformedDataset.collectAsList();
         StructType transformedSchema = transformedDataset.schema();
         return new UPlotFormat(new UPlotData(collectedData,aggsUsed),new UPlotMetadata(transformedSchema,collectedData,"line",aggsUsed));
-    }
-
-    public UPlotFormat(UPlotData data, UPlotMetadata metadata){
-        this.data = data;
-        this.metadata = metadata;
     }
 
     public JsonObject format(UPlotOptions options) throws InterpreterException{
