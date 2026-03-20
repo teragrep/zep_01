@@ -46,7 +46,6 @@
 package com.teragrep.pth_07.ui.elements.table_dynamic.formats;
 import com.teragrep.zep_01.interpreter.InterpreterException;
 import com.teragrep.zep_01.interpreter.InterpreterResult;
-import com.teragrep.zep_01.interpreter.thrift.Options;
 import com.teragrep.zep_01.interpreter.thrift.UPlotOptions;
 import jakarta.json.*;
 import org.apache.spark.sql.*;
@@ -55,40 +54,28 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 public final class UPlotFormat{
 
+    private final UPlotData data;
+    private final UPlotMetadata metadata;
     private static final Logger LOGGER = LoggerFactory.getLogger(UPlotFormat.class);
     /**
      * Formats a given Dataset to expected format for uPlot visualization library.
      */
     public UPlotFormat(){
+        this(new UPlotData(new ArrayList<>(),false), new UPlotMetadata(new StructType(),new ArrayList<>(),"line",false));
     }
 
     /**
-     * No-op. UPlot does not need to react to changes in dataset
-     * @param dataset The updated dataset
-     * @return This UPlotFormat
+     * Create a new instance of UPlotFormat with an updated Dataset. This function calculates any required transformations UPlot format might need for the dataset and caches a UPlotData and UPlotMetadata objects for later use in formatting.
+     * Caching is done to avoid repeated calls to Dataset.collectAsList() when using format() method for switching between graph types when the underlying dataset has not changed.
+     * @param newDataset The updated Dataset
+     * @return A new instance of UPlotFormat, containing an updated UPlotData and UPlotMetadata objects ready for formatting.
      */
-    public UPlotFormat withDataset(final Dataset<Row> dataset){
-        return this;
-    }
-
-    /**
-     * Format a given Dataset into uPlot format using the parameters in the given Options object
-     * @param dataset Dataset to format
-     * @param options Thrift union object that must contain a UPlotOptions object.
-     * @return JsonObject formatted to style expected by uPlot visualization library.
-     * @throws InterpreterException Thrown when Dataset or Options given are invalid.
-     */
-    public JsonObject format(final Dataset<Row> dataset, final UPlotOptions options) throws InterpreterException{
-        //TODO: refactor this monstrosity into more objects. At least Timechart and regular data should be separated.
-        if(dataset.isEmpty()){
-            throw new InterpreterException("Cannot format an empty Dataset!");
-        }
-        final StructType schema = dataset.schema();
+    public UPlotFormat withDataset(final Dataset<Row> newDataset) {
+        final StructType schema = newDataset.schema();
         boolean aggsUsed = false;
         final List<String> groupByColumnNames = new ArrayList<>();
         final List<String> valueColumnNames = new ArrayList<>();
@@ -110,7 +97,7 @@ public final class UPlotFormat{
         // Timechart case
         if(groupByColumnNames.contains("_time")){
             if(groupByColumnNames.size() == 1){
-                transformedDataset = dataset;
+                transformedDataset = newDataset;
             }
             else {
                 List<String> timechartGroupByColumnNames = new ArrayList<>(groupByColumnNames);
@@ -124,7 +111,7 @@ public final class UPlotFormat{
                 columns.remove(0);
                 Column[] rest = columns.toArray(new Column[0]);
 
-                transformedDataset = dataset.groupBy("_time")
+                transformedDataset = newDataset.groupBy("_time")
                         .pivot(timechartGroupByColumnNames.get(0))
                         .agg(first,rest);
             }
@@ -132,149 +119,27 @@ public final class UPlotFormat{
 
         // Other cases
         else {
-            transformedDataset = concatenateColumns(dataset,groupByColumnNames,concatenatedGroupByColumnName.toString());
+            transformedDataset = concatenateColumns(newDataset,groupByColumnNames,concatenatedGroupByColumnName.toString());
         }
+        List<Row> collectedData = transformedDataset.collectAsList();
+        StructType transformedSchema = transformedDataset.schema();
+        return new UPlotFormat(new UPlotData(collectedData,aggsUsed),new UPlotMetadata(transformedSchema,collectedData,"line",aggsUsed));
+    }
 
-        final List<Row> collectedData = transformedDataset.collectAsList();
+    public UPlotFormat(UPlotData data, UPlotMetadata metadata){
+        this.data = data;
+        this.metadata = metadata;
+    }
 
-        final JsonArray series = series(transformedDataset.schema());
-        final JsonArray labels = labels(collectedData, aggsUsed);
-
-        final JsonArray xAxis = xAxis(collectedData, aggsUsed);
-        final List<JsonArray> yAxisArray = yAxis(collectedData);
-
-        final JsonArrayBuilder dataBuilder = Json.createArrayBuilder();
-        dataBuilder.add(xAxis);
-        for (final JsonArray array:yAxisArray) {
-            dataBuilder.add(array);
-        }
-        final JsonArray data = dataBuilder.build();
-
+    public JsonObject format(UPlotOptions options) throws InterpreterException{
+        final UPlotMetadata updatedMetadata = metadata.withOptions(options);
         final JsonObjectBuilder builder = Json.createObjectBuilder()
-                .add("data",data)
-                .add("options",Json.createObjectBuilder()
-                        .add("labels",labels)
-                        .add("series",series)
-                        .add("graphType",options.getGraphType()))
-                .add("isAggregated",aggsUsed)
+                .add("data",data.asJson())
+                .add("options",updatedMetadata.asJson())
+                .add("isAggregated",updatedMetadata.isAggregated())
                 .add("type", InterpreterResult.Type.UPLOT.label);
         final JsonObject json = builder.build();
         return json;
-    }
-
-    /**
-     * Builds a JsonArray representing the indexes of the X-Axis values in uPlot
-     * @param rows List of Rows in the Dataset to be formatted.
-     * @param aggsUsed Whether aggregations were used in the Dataset to be formatted.
-     * @return A JsonArray containing integers which can be mapped to group by labels to draw the X-Axis in uPlot. If no group by clause was used in the Dataset, an empty array is returned.
-     */
-    private JsonArray xAxis(final List<Row> rows, final boolean aggsUsed){
-        final JsonArrayBuilder builder = Json.createArrayBuilder();
-        if(aggsUsed){
-            for (int i = 0; i < rows.size(); i++) {
-                builder.add(i);
-            }
-        }
-        return builder.build();
-    }
-
-    /**
-     * Builds a list of JsonArrays representing the Y-Axis in uPlot
-     * @param rows List of Rows in the Dataset to be formatted. Rows must contain only numerical data (or stringified numerical data). Any columns containing metadata boolean "dpl-internal_isGroupByColumn" will be ignored.
-     * @return A list of JsonArrays, each representing columnar data of a single series.
-     * @throws InterpreterException Thrown when receiving non-numerical data, which is invalid for uPlot.
-     */
-    private List<JsonArray> yAxis(final List<Row> rows) throws InterpreterException {
-        final List<JsonArray> yAxis = new ArrayList<>();
-        final StructType schema = rows.get(0).schema();
-            for (int i = 0; i < schema.fields().length; i++) {
-                final JsonArrayBuilder arrayBuilder = Json.createArrayBuilder();
-                final StructField field = schema.fields()[i];
-                if(!field.metadata().contains("dpl_internal_isGroupByColumn")){
-                    for (final Row row:rows) {
-                        final DataType type = field.dataType();
-                        final Object value = row.get(i);
-                        // Spark datasets may contain null values, and uPlot expects JSON nulls to represent empty data
-                        if(value == null){
-                            arrayBuilder.add(JsonValue.NULL);
-                        }
-                        else {
-                            if(type.equals(DataTypes.StringType)){
-                                // Some data from DPL may come as numerical data, but stringified. If string data is encountered, try to parse into Double before throwing an Exception.
-                                try{
-                                    final Double doubleValue = Double.parseDouble((String)value);
-                                    arrayBuilder.add(doubleValue);
-                                }
-                                catch (final NumberFormatException exception){
-                                    throw new InterpreterException("uPlot format only supports numerical data, but encountered unparseable string in column "+field.name()+" !");
-                                }
-                            }
-                            else if (type.equals(DataTypes.LongType)){
-                                final Long longValue = (Long) value;
-                                arrayBuilder.add(longValue);
-                            }
-                            else if (type.equals(DataTypes.IntegerType)){
-                                final Integer intValue = (Integer) value;
-                                arrayBuilder.add(intValue);
-                            }
-                            else if (type.equals(DataTypes.DoubleType)){
-                                final Double doubleValue = (Double) value;
-                                arrayBuilder.add(doubleValue);
-                            }
-                            else if (type.equals(DataTypes.FloatType)){
-                                final Float floatValue = (Float) value;
-                                arrayBuilder.add(floatValue);
-                            }
-                            else if (type.equals(DataTypes.ShortType)){
-                                final Short shortValue = (Short) value;
-                                arrayBuilder.add(shortValue);
-                            }
-                            else {
-                                throw new InterpreterException("uPlot format only supports numerical data, but encountered "+type.typeName()+" in column "+ field.name() +"!");
-                            }
-                        }
-                    }
-                    final JsonArray array = arrayBuilder.build();
-                    yAxis.add(array);
-                }
-        }
-        return yAxis;
-    }
-
-    /**
-     * Builds a JsonArray containing the values within group by columns (such as timestamps), mapped to the X-Axis in uPlot.
-     * @param rows List of Rows in the dataset to be formatted. Any column not containing metadata boolean "dpl-internal_isGroupByColumn" will be ignored.
-     * @param aggsUsed Whether aggregations were used in the Dataset to be formatted.
-     * @return JsonArray containing every value of every group by column used in the Dataset.
-     */
-    private JsonArray labels(final List<Row> rows, final boolean aggsUsed) {
-        final JsonArrayBuilder builder = Json.createArrayBuilder();
-        if(!rows.isEmpty() && aggsUsed){
-            final StructType schema = rows.get(0).schema();
-            for (final Row row:rows) {
-                for (final StructField field:schema.fields()) {
-                    if(field.metadata().contains("dpl_internal_isGroupByColumn")){
-                        builder.add(row.get(row.fieldIndex(field.name())).toString());
-                    }
-                }
-            }
-        }
-        return builder.build();
-    }
-
-    /**
-     * Builds a JsonArray containing the names of all series that were not used in a group by clause.
-     * @param schema Schema of the Dataset to be formatted
-     * @return JsonArray containing the column names of all columns that do not contain metadata boolean "dpl_internal_isGroupByColumn"
-     */
-    private JsonArray series(final StructType schema){
-        final JsonArrayBuilder builder = Json.createArrayBuilder();
-        for (final StructField field:schema.fields()) {
-            if(! field.metadata().contains("dpl_internal_isGroupByColumn")){
-                builder.add(field.name());
-            }
-        }
-        return builder.build();
     }
 
     /**

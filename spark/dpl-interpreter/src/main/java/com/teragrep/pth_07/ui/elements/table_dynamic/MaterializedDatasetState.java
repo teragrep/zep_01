@@ -120,7 +120,7 @@ public final class MaterializedDatasetState implements DatasetState {
             formatted = dataTablesFormat.format(options.getDataTablesOptions());
         }
         else if (options.isSetUPlotOptions()){
-            formatted = uPlotFormat.format(dataset,options.getUPlotOptions());
+            formatted = uPlotFormat.format(options.getUPlotOptions());
         }
         else {
             throw new InterpreterException("Unsupported options type!");
