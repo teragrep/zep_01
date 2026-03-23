@@ -21,6 +21,8 @@ import com.google.gson.Gson;
 import com.teragrep.zep_01.common.JsonSerializable;
 import com.teragrep.zep_01.common.Jsonable;
 import jakarta.json.Json;
+import jakarta.json.JsonArray;
+import jakarta.json.JsonArrayBuilder;
 import jakarta.json.JsonObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -33,7 +35,7 @@ import java.util.List;
 /**
  * Interpreter result template.
  */
-public class InterpreterResult implements Serializable, JsonSerializable, Jsonable {
+public class InterpreterResult implements Serializable, JsonSerializable {
   transient Logger logger = LoggerFactory.getLogger(InterpreterResult.class);
   private static final Gson gson = new Gson();
 
@@ -148,14 +150,12 @@ public class InterpreterResult implements Serializable, JsonSerializable, Jsonab
 
     return sb.toString();
   }
-  @Override
-  public JsonObject asJson() {
-    if(msg.size() > 0){
-      final InterpreterResultMessage resultMessage = msg.get(0); // Result format does not support multiple ResultMessages, so we take the first one.
-      return resultMessage.asJson();
+
+  public JsonArray asJson() {
+    JsonArrayBuilder arrayBuilder = Json.createArrayBuilder();
+    for (InterpreterResultMessage message : msg) {
+      arrayBuilder.add(message.asJson());
     }
-    else{
-      return Json.createObjectBuilder().build();
-    }
+    return arrayBuilder.build();
   }
 }

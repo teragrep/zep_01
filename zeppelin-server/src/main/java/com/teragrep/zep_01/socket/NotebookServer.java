@@ -1140,6 +1140,7 @@ public class NotebookServer extends WebSocketServlet
     }
 
     try{
+      getNotebook().getNote(noteId).getParagraph(paragraphId).getReturn().asJson();
       // Format the dataset within RemoteInterpreter, then return the output
       final String output = managedInterpreterGroup.formatDataset(sessionId, interpreter.getClassName(), noteId, paragraphId, options);
       final JsonObject outputJson = Json.createReader(new StringReader(output)).readObject();

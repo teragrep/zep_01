@@ -52,6 +52,7 @@ import com.teragrep.zep_01.interpreter.InterpreterOutput;
 import com.teragrep.zep_01.interpreter.thrift.DataTablesOptions;
 import com.teragrep.zep_01.interpreter.thrift.DataTablesSearch;
 import com.teragrep.zep_01.interpreter.thrift.Options;
+import com.teragrep.zep_01.interpreter.thrift.UPlotOptions;
 import jakarta.json.*;
 import org.apache.spark.sql.Dataset;
 import org.apache.spark.sql.Row;
@@ -61,6 +62,7 @@ import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Objects;
 import java.util.concurrent.locks.ReentrantLock;
 
@@ -130,14 +132,16 @@ public final class MaterializedDatasetState implements DatasetState {
 
     /**
      * Writes the given String to the InterpreterOutput.
-     * @param outputContent String to write
+     * @param outputList String to write
      */
 
-    private void write(final String outputContent){
+    private void write(final List<String> outputList){
         try {
             lock.lock();
             output.clear(false);
-            output.write(outputContent);
+            for (String content:outputList) {
+                output.write(content);
+            }
             output.flush();
         } catch (final IOException e) {
             LOGGER.error(e.toString());
@@ -154,10 +158,18 @@ public final class MaterializedDatasetState implements DatasetState {
      */
     @Override
      public void writeDataUpdate() {
-         final DataTablesOptions defaultOptions = new DataTablesOptions(0,0,0,new DataTablesSearch("",false,new ArrayList<>()),new ArrayList<>(),new ArrayList<>());
-         final JsonObject formatted = dataTablesFormat.format(defaultOptions);
-         final String outputContent = "%"+dataTablesFormat.type().toLowerCase()+"\n" + formatted.toString();
-         write(outputContent);
+        final DataTablesOptions defaultDTOptions = new DataTablesOptions(0,0,0,new DataTablesSearch("",false,new ArrayList<>()),new ArrayList<>(),new ArrayList<>());
+        final JsonObject dtFormatted = dataTablesFormat.format(defaultDTOptions);
+        List<String> contentList = new ArrayList<>();
+        contentList.add("%"+dataTablesFormat.type().toLowerCase()+"\n"+dtFormatted.toString());
+         try{
+             final UPlotOptions defaultuPlotOptions = new UPlotOptions("line");
+             final JsonObject uPlotFormatted = uPlotFormat.format(defaultuPlotOptions);
+             contentList.add("%"+uPlotFormat.type().toLowerCase()+"\n"+uPlotFormatted.toString());
+         }catch (InterpreterException e) {
+             // If uPlot is unsupported, don't add new resultMessage
+         }
+         write(contentList);
     }
 
     @Override

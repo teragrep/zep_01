@@ -55,8 +55,6 @@ import com.teragrep.zep_01.interpreter.InterpreterOutputListener;
 import com.teragrep.zep_01.interpreter.InterpreterResultMessageOutput;
 import com.teragrep.zep_01.interpreter.thrift.Options;
 import com.teragrep.zep_01.interpreter.thrift.UPlotOptions;
-import jakarta.json.Json;
-import jakarta.json.JsonObject;
 import nl.jqno.equalsverifier.EqualsVerifier;
 import org.apache.spark.sql.Dataset;
 import org.apache.spark.sql.Row;
@@ -68,6 +66,8 @@ import org.apache.spark.sql.types.StructType;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.UUID;
 
 
@@ -121,8 +121,9 @@ class UserInterfaceManagerTest {
     @Test
     void updateDatasetTest() {
         Assertions.assertDoesNotThrow(()->userInterfaceManager.updateDataset(testDs));
-        final String output = Assertions.assertDoesNotThrow(()->testOutputListener.latestOutput());
-        final String expectedOutput = "%datatables {\"data\":" +
+        final List<InterpreterResultMessageOutput> outputs = Assertions.assertDoesNotThrow(()->testOutputListener.outputs());
+        Assertions.assertEquals(2,outputs.size());
+        final String expectedDTOutput = "%datatables {\"data\":" +
                 "{\"data\":[" +
                 "{\"id\":0,\"offset\":0}," +
                 "{\"id\":0,\"offset\":0}]," +
@@ -132,8 +133,12 @@ class UserInterfaceManagerTest {
                 "\"options\":{\"headers\":" +
                 "[\"id\",\"offset\"]}," +
                 "\"isAggregated\":false," +
-                "\"type\":\"dataTables\"}";
-        Assertions.assertEquals(expectedOutput,output);
+                "\"type\":\"dataTables\"}"+
+                "\n";
+        Assertions.assertEquals(expectedDTOutput,outputs.get(0).toString());
+
+        final String expectedUplotOutput = "%uplot {\"data\":[[],[0,0],[0,0]],\"options\":{\"labels\":[],\"series\":[\"id\",\"offset\"],\"graphType\":\"line\"},\"isAggregated\":false,\"type\":\"uPlot\"}";
+        Assertions.assertEquals(expectedUplotOutput,outputs.get(1).toString());
     }
 
     // Call to UserInterfaceManager.formatDataset() should return a formatted representation of the dataset as a String.
@@ -155,8 +160,7 @@ class UserInterfaceManagerTest {
     }
 
     private final class TestInterpreterOutputListener implements InterpreterOutputListener{
-
-            private InterpreterResultMessageOutput latestOutput;
+            private List<InterpreterResultMessageOutput> outputList = new ArrayList<>();
 
             @Override
             public void onUpdateAll(final InterpreterOutput out) {
@@ -168,11 +172,11 @@ class UserInterfaceManagerTest {
 
             @Override
             public void onUpdate(final int index, final InterpreterResultMessageOutput out) {
-                latestOutput = out;
+                outputList.add(out);
             }
 
-            public String latestOutput(){
-                return latestOutput.toString();
+            public List<InterpreterResultMessageOutput> outputs(){
+                return outputList;
             }
         }
     }

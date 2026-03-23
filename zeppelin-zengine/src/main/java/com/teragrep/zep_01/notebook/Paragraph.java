@@ -31,6 +31,7 @@ import java.util.Set;
 
 import com.teragrep.zep_01.common.Jsonable;
 import jakarta.json.Json;
+import jakarta.json.JsonArray;
 import jakarta.json.JsonObject;
 import jakarta.json.JsonObjectBuilder;
 import org.apache.commons.lang3.StringUtils;
@@ -172,7 +173,7 @@ public class Paragraph extends JobWithProgressPoller<InterpreterResult> implemen
       builder.add("runtimeInfos",runtimeInfosJson);
     }
     if(results != null){
-      final JsonObject resultJson = results.asJson();
+      final JsonArray resultJson = results.asJson();
       builder.add("output",resultJson);
     }
     if(config != null){

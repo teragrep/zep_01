@@ -50,12 +50,12 @@ public class InterpreterOutputTest implements InterpreterOutputListener {
     assertEquals(InterpreterResult.Type.TEXT, out.getOutputAt(0).getType());
     assertEquals("hello\n", new String(out.getOutputAt(0).toByteArray()));
     assertEquals(1, numAppendEvent);
-    assertEquals(1, numUpdateEvent);
+    assertEquals(0, numUpdateEvent);
 
     out.write("\n");
     assertEquals("hello\nworld\n", new String(out.getOutputAt(0).toByteArray()));
     assertEquals(2, numAppendEvent);
-    assertEquals(1, numUpdateEvent);
+    assertEquals(0, numUpdateEvent);
   }
 
   @Test
@@ -63,12 +63,12 @@ public class InterpreterOutputTest implements InterpreterOutputListener {
     out.write("hello\nworld");
     assertEquals("hello\n", new String(out.getOutputAt(0).toByteArray()));
     assertEquals(1, numAppendEvent);
-    assertEquals(1, numUpdateEvent);
+    assertEquals(0, numUpdateEvent);
 
     out.flush();
     assertEquals("hello\nworld", new String(out.getOutputAt(0).toByteArray()));
     assertEquals(2, numAppendEvent);
-    assertEquals(1, numUpdateEvent);
+    assertEquals(0, numUpdateEvent);
 
     out.clear();
     out.write("%html div");
@@ -87,20 +87,20 @@ public class InterpreterOutputTest implements InterpreterOutputListener {
     assertEquals(InterpreterResult.Type.TEXT, out.getOutputAt(0).getType());
     assertEquals("Text\n", new String(out.getOutputAt(0).toByteArray()));
     assertEquals(1, numAppendEvent);
-    assertEquals(1, numUpdateEvent);
+    assertEquals(0, numUpdateEvent);
 
     // change type
     out.write("%html\n");
     assertEquals(InterpreterResult.Type.HTML, out.getOutputAt(1).getType());
     assertEquals("", new String(out.getOutputAt(1).toByteArray()));
     assertEquals(1, numAppendEvent);
-    assertEquals(1, numUpdateEvent);
+    assertEquals(0, numUpdateEvent);
 
     // none TEXT type output stream does not generate append event
     out.write("<div>html</div>\n");
     assertEquals(InterpreterResult.Type.HTML, out.getOutputAt(1).getType());
     assertEquals(1, numAppendEvent);
-    assertEquals(2, numUpdateEvent);
+    assertEquals(0, numUpdateEvent);
     out.flush();
     assertEquals("<div>html</div>\n", new String(out.getOutputAt(1).toByteArray()));
 
@@ -108,25 +108,30 @@ public class InterpreterOutputTest implements InterpreterOutputListener {
     out.write("%text hello\n");
     assertEquals(InterpreterResult.Type.TEXT, out.getOutputAt(2).getType());
     assertEquals(2, numAppendEvent);
-    assertEquals(4, numUpdateEvent);
+    assertEquals(1, numUpdateEvent);
     assertEquals("hello\n", new String(out.getOutputAt(2).toByteArray()));
 
     // InterpreterOutput type detection is case-sensitive and expects to receive the type name in lowercase.
     out.write("%"+InterpreterResult.Type.DATATABLES.label.toLowerCase()+" yes hello\n");
     assertEquals(InterpreterResult.Type.DATATABLES, out.getOutputAt(3).getType());
     assertEquals(2, numAppendEvent);
-    assertEquals(5, numUpdateEvent);
+    assertEquals(1, numUpdateEvent);
     out.flush();
-    assertEquals(6, numUpdateEvent);
+    assertEquals(2, numUpdateEvent);
     assertEquals("yes hello\n", new String(out.getOutputAt(3).toByteArray()));
 
     out.write("%"+InterpreterResult.Type.UPLOT.label.toLowerCase()+" uPlot calling\n");
     assertEquals(InterpreterResult.Type.UPLOT, out.getOutputAt(4).getType());
     assertEquals(2, numAppendEvent);
-    assertEquals(7, numUpdateEvent);
+    assertEquals(2, numUpdateEvent);
     out.flush();
-    assertEquals(8, numUpdateEvent);
+    assertEquals(3, numUpdateEvent);
     assertEquals("uPlot calling\n", new String(out.getOutputAt(4).toByteArray()));
+    out.write("%"+InterpreterResult.Type.DATATABLES.label.toLowerCase()+"\n{some_dataTables_data}\n%"+InterpreterResult.Type.UPLOT.label.toLowerCase()+"\n{some_uPlot_data}\n");
+    out.flush();
+    assertEquals(5, numUpdateEvent);
+    assertEquals("{some_dataTables_data}\n", new String(out.getOutputAt(5).toByteArray()));
+    assertEquals("{some_uPlot_data}\n", new String(out.getOutputAt(6).toByteArray()));
 
   }
 

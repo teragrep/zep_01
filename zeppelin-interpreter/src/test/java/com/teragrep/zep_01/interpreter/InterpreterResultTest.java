@@ -17,6 +17,8 @@
 
 package com.teragrep.zep_01.interpreter;
 
+import jakarta.json.Json;
+import jakarta.json.JsonArray;
 import org.junit.Test;
 import org.junit.Ignore;
 
@@ -133,4 +135,12 @@ public class InterpreterResultTest {
         "%html hello").toString());
   }
 
+  @org.junit.jupiter.api.Test
+  void asJsonTest() {
+    InterpreterResult testResult = new InterpreterResult(InterpreterResult.Code.SUCCESS);
+    testResult.add(new InterpreterResultMessage(InterpreterResult.Type.DATATABLES, Json.createObjectBuilder().add("key","value").add("key2",1).build().toString()));
+    testResult.add(new InterpreterResultMessage(InterpreterResult.Type.UPLOT, Json.createObjectBuilder().add("key","uPlot").add("key2",0).build().toString()));
+    JsonArray json = testResult.asJson();
+    System.out.println(json);
+  }
 }
