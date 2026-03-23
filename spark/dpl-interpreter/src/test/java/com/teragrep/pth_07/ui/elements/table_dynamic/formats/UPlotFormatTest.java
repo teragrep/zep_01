@@ -398,6 +398,73 @@ class UPlotFormatTest {
         Assertions.assertEquals(InterpreterResult.Type.UPLOT.label,formatted.getString("type"));
     }
 
+    @Test
+    void testAggregatedFormatWithTimeGrouping() {
+        // Create test dataset and a query string to simulate most recent dataset received from DPL
+        final String dplQuery = "%dpl\n" +
+                "index=test earliest=-5y\n" +
+                "| spath\n" +
+                "| stats count(operation) avg(filesModified) by _time operation success filesModified";
+        final int groupByCount = 2;
+        final Dataset<Row> resultDataset = sourceData
+                .groupBy("_time","operation", "success")
+                .agg(org.apache.spark.sql.functions.count("operation"),org.apache.spark.sql.functions.avg("filesModified"),org.apache.spark.sql.functions.max("filesModified"))
+                .withMetadata("_time", new MetadataBuilder().putBoolean("dpl_internal_isGroupByColumn",true).build())
+                .withMetadata("operation", new MetadataBuilder().putBoolean("dpl_internal_isGroupByColumn",true).build())
+                .withMetadata("success", new MetadataBuilder().putBoolean("dpl_internal_isGroupByColumn",true).build());
+
+        // Create options and Format objects to be tested
+        final String graphType = "line";
+        final UPlotOptions options = new UPlotOptions(graphType);
+        final UPlotFormat format = new UPlotFormat();
+        final UPlotFormat format1 = format.withDataset(resultDataset);
+
+        final JsonObject formatted = Assertions.assertDoesNotThrow(()-> format1.format(options));
+
+        // Object must contain "data" array, "options" object and "isAggregated" boolean
+        Assertions.assertTrue(formatted.containsKey("data"));
+        Assertions.assertTrue(formatted.containsKey("options"));
+        Assertions.assertTrue(formatted.containsKey("isAggregated"));
+
+        // Check data
+        // Data must contain at least two arrays
+        Assertions.assertTrue(formatted.getJsonArray("data").size() > 1);
+
+        // First array of Data is the indexes for the series names used for X axis. It's length in timechart commands should be the number of unique dates in the output.
+        // In cases where aggregations are used, the dataset's size should always equal this number. If no aggregations aren't used, the number should be zero
+        Long timeCount = resultDataset.select("_time").distinct().count();
+        Assertions.assertEquals(timeCount,formatted.getJsonArray("data").getJsonArray(0).size());
+
+        // Data must contain additional arrays equal to the number of series. In Timechart's case this is the number of distinct values in the group by column multiplied by the number of columns requested in the query
+        long queryColumnCount = resultDataset.schema().size() - 1 - groupByCount;
+        long expectedArrayCount = queryColumnCount * resultDataset.select("operation","success").distinct().count();
+        Assertions.assertEquals(expectedArrayCount,formatted.getJsonArray("data").size()-1);
+
+        // Each additional array within Data should contain one value for each unique dates in the output
+        Assertions.assertEquals(timeCount,formatted.getJsonArray("data").getJsonArray(1).size());
+
+        // Check options
+        // Options must contain a series array, a labels array and a graphType
+        Assertions.assertTrue(formatted.getJsonObject("options").containsKey("series"));
+        Assertions.assertTrue(formatted.getJsonObject("options").containsKey("labels"));
+        Assertions.assertTrue(formatted.getJsonObject("options").containsKey("graphType"));
+
+        // GraphType must match with what's given in the UI request
+        Assertions.assertEquals(graphType, formatted.getJsonObject("options").getString("graphType"));
+
+        // Labels size must match with size of first array of Data so that each index is mapped to a label.
+        Assertions.assertEquals(formatted.getJsonArray("data").getJsonArray(0).size(), formatted.getJsonObject("options").getJsonArray("labels").size());
+
+        // Series size must match with the size of second array of Data and the number of columns in the result dataset schema (minus number of group by fields used)
+        Assertions.assertEquals(formatted.getJsonArray("data").size()-1, formatted.getJsonObject("options").getJsonArray("series").size());
+        Assertions.assertEquals(expectedArrayCount, formatted.getJsonObject("options").getJsonArray("series").size());
+
+        // This dataset is aggregated, so isAggregated should be true
+        Assertions.assertEquals(true,formatted.containsKey("isAggregated"));
+
+        Assertions.assertEquals(InterpreterResult.Type.UPLOT.label,formatted.getString("type"));
+    }
+
     // If other Spark methods (such as filter) are called during the creation of the Dataset, the first LogicalPlan of the dataset might not be of type Aggregate, even if aggregations were used at some point.
     // Verify that if the final operation is not a group by, aggregations are still detected and formatting still works.
     @Test

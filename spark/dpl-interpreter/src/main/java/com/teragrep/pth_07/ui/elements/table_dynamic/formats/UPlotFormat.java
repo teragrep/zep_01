@@ -126,10 +126,33 @@ public final class UPlotFormat{
             columns.remove(0);
             final Column[] rest = columns.toArray(new Column[0]);
 
-            transformedDataset = dataset.groupBy("_time")
-                    .pivot(timechartGroupByColumnNames.get(0))
+            final List<Column> groupByColumns = new ArrayList<>();
+            for (int i = 0; i < timechartGroupByColumnNames.size(); i++) {
+                groupByColumns.add(org.apache.spark.sql.functions.col(timechartGroupByColumnNames.get(i)));
+            }
+            Column[] groupByColumnArray = groupByColumns.toArray(new Column[0]);
+            Dataset<Row> pivotedDataset = dataset
+                    .withColumn("pivot", org.apache.spark.sql.functions.concat_ws(".",groupByColumnArray))
+                    .groupBy("_time")
+                    .pivot("pivot")
                     .agg(first,rest);
+
+            // pivot() uses an underscore as the separator when it creates new columns, and it cannot be overridden. To use "." as separator we have to rename the columns.
+            for (StructField column : pivotedDataset.schema().fields()) {
+                for (String valueColumn : valueColumnNames){
+                    if(column.name().endsWith("_"+valueColumn)){
+                        String existingName = column.name();
+                        int separatorIndex = existingName.indexOf("_"+valueColumn);
+                        StringBuilder newName = new StringBuilder(existingName);
+                        newName.setCharAt(separatorIndex,'.');
+                        pivotedDataset = pivotedDataset.withColumnRenamed(existingName, newName.toString());
+                    }
+                }
+            }
+            transformedDataset = pivotedDataset;
         }
+
+
         final List<Row> collectedData = transformedDataset.collectAsList();
         return new UPlotFormat(new UPlotData(collectedData,aggsUsed),new UPlotMetadata(transformedDataset.schema(),collectedData,"line",aggsUsed));
     }
