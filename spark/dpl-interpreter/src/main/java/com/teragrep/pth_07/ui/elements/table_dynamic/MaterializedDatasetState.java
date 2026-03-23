@@ -150,10 +150,11 @@ public final class MaterializedDatasetState implements DatasetState {
 
     /**
      * Format the current Dataset with the default DataTablesFormat, then write the output to InterpreterOutput.
+     * Writing data to InterpreterOutput also saves the output to disk.
      */
     @Override
      public void writeDataUpdate() {
-         final DataTablesOptions defaultOptions = new DataTablesOptions(0,0,50,new DataTablesSearch("",false,new ArrayList<>()),new ArrayList<>(),new ArrayList<>());
+         final DataTablesOptions defaultOptions = new DataTablesOptions(0,0,0,new DataTablesSearch("",false,new ArrayList<>()),new ArrayList<>(),new ArrayList<>());
          final JsonObject formatted = dataTablesFormat.format(defaultOptions);
          final String outputContent = "%"+dataTablesFormat.type().toLowerCase()+"\n" + formatted.toString();
          write(outputContent);

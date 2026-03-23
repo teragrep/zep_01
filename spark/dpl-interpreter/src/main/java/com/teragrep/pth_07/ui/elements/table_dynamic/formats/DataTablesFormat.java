@@ -194,7 +194,10 @@ public final class DataTablesFormat{
         return searchedRows;
     }
 
-    private List<String> paginate(final List<String> rows, final int pageStart, final int pageSize){
+    private List<String> paginate(final List<String> rows, final int pageStart, int pageSize){
+        if(pageSize == 0){
+            pageSize = rows.size();
+        }
         // ranges must be greater than 0
         int fromIndex = Math.max(pageStart, 0);
         int toIndex = Math.max(fromIndex + pageSize, 0);
