@@ -43,7 +43,6 @@ import com.teragrep.zep_01.socket.messages.ParagraphOutputResponseMessage;
 import jakarta.json.Json;
 import jakarta.json.JsonException;
 import jakarta.json.JsonObject;
-import jakarta.json.JsonObjectBuilder;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.apache.thrift.TException;
@@ -1154,12 +1153,12 @@ public class NotebookServer extends WebSocketServlet
       if(result != null) {
         for (InterpreterResultMessage resultMessage:result.message()) {
           try{
-            JsonObject outputJson = resultMessage.asJsonwithOptions(options);
+            JsonObject outputJson = resultMessage.format(options);
             final ParagraphOutputResponseMessage paragraphOutputResponse = new ParagraphOutputResponseMessage(noteId, paragraphId, outputJson);
             final JsonMessage msg = new JsonMessage(new SimpleMessageId(msgId), OP.PARAGRAPH_OUTPUT, paragraphOutputResponse);
             conn.send(msg.asJson().toString());
             return;
-          }catch (JsonException exception){
+          }catch (InterpreterException exception){
             // continue until all results have been exhausted
           }
         }
