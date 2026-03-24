@@ -1702,6 +1702,10 @@ public class NotebookServer extends WebSocketServlet
       }
       Paragraph paragraph = note.getParagraph(paragraphId);
       paragraph.updateOutputBuffer(index, type, output);
+      // Only broadcast the first result, as default format is in the first index, other formats are stored in later indexes
+      if(index > 0){
+        return;
+      }
       if (note.isPersonalizedMode()) {
         String user = note.getParagraph(paragraphId).getUser();
         if (null != user) {
