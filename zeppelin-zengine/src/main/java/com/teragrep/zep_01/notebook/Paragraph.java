@@ -173,7 +173,7 @@ public class Paragraph extends JobWithProgressPoller<InterpreterResult> implemen
       builder.add("runtimeInfos",runtimeInfosJson);
     }
     if(results != null){
-      final JsonArray resultJson = results.asJson();
+      final JsonObject resultJson = results.asJson();
       builder.add("output",resultJson);
     }
     if(config != null){

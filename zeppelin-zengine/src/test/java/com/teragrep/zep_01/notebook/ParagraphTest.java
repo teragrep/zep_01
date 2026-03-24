@@ -509,7 +509,7 @@ public class ParagraphTest extends AbstractInterpreterTest {
     Assertions.assertEquals(completionSupport, editorSettingJson.getBoolean("completionSupport"));
     Assertions.assertEquals(editOnDoubleClick, editorSettingJson.getBoolean("editOnDoubleClick"));
 
-    final JsonObject resultJson = json.getJsonArray("output").getJsonObject(0);
+    final JsonObject resultJson = json.getJsonObject("output");
     Assertions.assertEquals(false,resultJson.getBoolean("isAggregated"));
     Assertions.assertEquals(Type.DATATABLES.label,resultJson.getString("type"));
     final JsonArray expectedHeaders = Json.createArrayBuilder()

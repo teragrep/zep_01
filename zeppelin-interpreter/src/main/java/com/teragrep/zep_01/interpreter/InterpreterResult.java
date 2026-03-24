@@ -20,10 +20,7 @@ package com.teragrep.zep_01.interpreter;
 import com.google.gson.Gson;
 import com.teragrep.zep_01.common.JsonSerializable;
 import com.teragrep.zep_01.common.Jsonable;
-import jakarta.json.Json;
-import jakarta.json.JsonArray;
-import jakarta.json.JsonArrayBuilder;
-import jakarta.json.JsonObject;
+import jakarta.json.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -151,11 +148,14 @@ public class InterpreterResult implements Serializable, JsonSerializable {
     return sb.toString();
   }
 
-  public JsonArray asJson() {
-    JsonArrayBuilder arrayBuilder = Json.createArrayBuilder();
-    for (InterpreterResultMessage message : msg) {
-      arrayBuilder.add(message.asJson());
+  public JsonObject asJson() {
+    final JsonObject json;
+    if(msg.size() > 0){
+      json = msg.get(0).asJson();
     }
-    return arrayBuilder.build();
+    else {
+      json = JsonValue.EMPTY_JSON_OBJECT;
+    }
+    return json;
   }
 }

@@ -134,13 +134,4 @@ public class InterpreterResultTest {
     assertEquals("%html hello", new InterpreterResult(InterpreterResult.Code.SUCCESS,
         "%html hello").toString());
   }
-
-  @org.junit.jupiter.api.Test
-  void asJsonTest() {
-    InterpreterResult testResult = new InterpreterResult(InterpreterResult.Code.SUCCESS);
-    testResult.add(new InterpreterResultMessage(InterpreterResult.Type.DATATABLES, Json.createObjectBuilder().add("key","value").add("key2",1).build().toString()));
-    testResult.add(new InterpreterResultMessage(InterpreterResult.Type.UPLOT, Json.createObjectBuilder().add("key","uPlot").add("key2",0).build().toString()));
-    JsonArray json = testResult.asJson();
-    System.out.println(json);
-  }
 }
