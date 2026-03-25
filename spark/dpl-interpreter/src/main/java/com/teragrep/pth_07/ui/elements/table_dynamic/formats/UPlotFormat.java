@@ -84,6 +84,7 @@ public final class UPlotFormat{
         final List<String> groupByColumnNames = new ArrayList<>();
         final List<String> valueColumnNames = new ArrayList<>();
         for (final StructField field:schema.fields()) {
+            // We detect grouping columns by metadata instead of LogicalPlan because StreamingQueries created in batches have their LogicalPlans overwritten.
             if (field.metadata().contains("dpl_internal_isGroupByColumn")) {
                 groupByColumnNames.add(field.name());
             }
@@ -92,6 +93,7 @@ public final class UPlotFormat{
             }
         }
         final UPlotFormat updatedFormat;
+        // Datasets grouped by _time column (such as those created using timechart command) require different formatting than datasets without such grouping.
         if(groupByColumnNames.contains("_time")){
             updatedFormat = timechartTransformation(newDataset,groupByColumnNames,valueColumnNames);
         }
@@ -102,7 +104,8 @@ public final class UPlotFormat{
     }
 
     /**
-     * Creates a new instance of UPlotFormat when a dataset's X-axis should be a timescale. This is called when "_time" is used in a group by clause.
+     * Creates a new instance of UPlotFormat when a dataset's X-axis should be a timescale. Dataset should contain a column named "_time"
+     * This method pivots the dataset so that only "_time" is used as the X-axis, and combinations of unique values in other group by columns are combined into different series on the Y-axis.
      * @param dataset The dataset to transform
      * @param groupByColumnNames List of column names used in group by clauses
      * @param valueColumnNames List of column names used outside of group by clauses
@@ -115,6 +118,7 @@ public final class UPlotFormat{
             transformedDataset = dataset;
         }
         else {
+            // Grouping columns as Column array for transformation
             final List<String> timechartGroupByColumnNames = new ArrayList<>(groupByColumnNames);
             timechartGroupByColumnNames.remove("_time");
 
@@ -130,7 +134,7 @@ public final class UPlotFormat{
             for (int i = 0; i < timechartGroupByColumnNames.size(); i++) {
                 groupByColumns.add(org.apache.spark.sql.functions.col(timechartGroupByColumnNames.get(i)));
             }
-            Column[] groupByColumnArray = groupByColumns.toArray(new Column[0]);
+            final Column[] groupByColumnArray = groupByColumns.toArray(new Column[0]);
             Dataset<Row> pivotedDataset = dataset
                     .withColumn("pivot", org.apache.spark.sql.functions.concat_ws(".",groupByColumnArray))
                     .groupBy("_time")
@@ -138,12 +142,12 @@ public final class UPlotFormat{
                     .agg(first,rest);
 
             // pivot() uses an underscore as the separator when it creates new columns, and it cannot be overridden. To use "." as separator we have to rename the columns.
-            for (StructField column : pivotedDataset.schema().fields()) {
-                for (String valueColumn : valueColumnNames){
+            for (final StructField column : pivotedDataset.schema().fields()) {
+                for (final String valueColumn : valueColumnNames){
                     if(column.name().endsWith("_"+valueColumn)){
-                        String existingName = column.name();
-                        int separatorIndex = existingName.indexOf("_"+valueColumn);
-                        StringBuilder newName = new StringBuilder(existingName);
+                        final String existingName = column.name();
+                        final int separatorIndex = existingName.indexOf("_"+valueColumn);
+                        final StringBuilder newName = new StringBuilder(existingName);
                         newName.setCharAt(separatorIndex,'.');
                         pivotedDataset = pivotedDataset.withColumnRenamed(existingName, newName.toString());
                     }
@@ -152,13 +156,13 @@ public final class UPlotFormat{
             transformedDataset = pivotedDataset;
         }
 
-
         final List<Row> collectedData = transformedDataset.collectAsList();
         return new UPlotFormat(new UPlotData(collectedData,aggsUsed),new UPlotMetadata(transformedDataset.schema(),collectedData,"line",aggsUsed));
     }
 
     /**
-     * Creates a new instance of UPlotFormat when a dataset's X-axis should be something other than a timescale. This is called when columns other than "_time" are used in a group by clause.
+     * Creates a new instance of UPlotFormat when a dataset's X-axis should consist of the combinations of all used grouping labels.
+     * This method transforms the dataset so that
      * @param dataset Dataset to transform
      * @param groupByColumnNames List of names used in group by clauses
      * @return A new instance of UPlotFormat ready for formatting.

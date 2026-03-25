@@ -17,8 +17,6 @@
 
 package com.teragrep.zep_01.interpreter;
 
-import jakarta.json.Json;
-import jakarta.json.JsonArray;
 import org.junit.Test;
 import org.junit.Ignore;
 

@@ -216,10 +216,10 @@ public final class ParagraphOutputRequestMessage implements Jsonable {
     }
 
     @Override
-    public boolean equals(Object o) {
+    public boolean equals(final Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
-        ParagraphOutputRequestMessage that = (ParagraphOutputRequestMessage) o;
+        final ParagraphOutputRequestMessage that = (ParagraphOutputRequestMessage) o;
         return Objects.equals(json, that.json);
     }
 

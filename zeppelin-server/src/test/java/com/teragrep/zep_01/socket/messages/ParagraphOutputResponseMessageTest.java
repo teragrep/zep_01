@@ -12,16 +12,16 @@ class ParagraphOutputResponseMessageTest {
 
     @Test
     void asJsonTest() {
-        String noteId = "testNote";
-        String paragraphId = "testParagraph";
-        JsonObject testOutput = Json.createObjectBuilder()
+        final String noteId = "testNote";
+        final String paragraphId = "testParagraph";
+        final JsonObject testOutput = Json.createObjectBuilder()
                 .add("type","dataTables")
                 .add("data",Json.createArrayBuilder()
                         .build())
                 .build();
-        ParagraphOutputResponseMessage testMessage = new ParagraphOutputResponseMessage(noteId,paragraphId,testOutput);
-        JsonObject actualJson = testMessage.asJson();
-        JsonObject expectedJson = Json.createObjectBuilder()
+        final ParagraphOutputResponseMessage testMessage = new ParagraphOutputResponseMessage(noteId,paragraphId,testOutput);
+        final JsonObject actualJson = testMessage.asJson();
+        final JsonObject expectedJson = Json.createObjectBuilder()
                 .add("noteId",noteId)
                 .add("paragraphId",paragraphId)
                 .add("output",testOutput)

@@ -70,24 +70,24 @@ class StubDatasetStateTest {
     // Calling .withDataset(Dataset) on a StubDatasetState should return a MaterializedDatasetState object.
     @Test
     void withDatasetTest() {
-        Dataset<Row> emptyData = sparkSession.emptyDataFrame();
-        StubDatasetState stubState = new StubDatasetState(new InterpreterOutput());
-        DatasetState materializedState = Assertions.assertDoesNotThrow(() -> stubState.withDataset(emptyData));
+        final Dataset<Row> emptyData = sparkSession.emptyDataFrame();
+        final StubDatasetState stubState = new StubDatasetState(new InterpreterOutput());
+        final DatasetState materializedState = Assertions.assertDoesNotThrow(() -> stubState.withDataset(emptyData));
         Assertions.assertEquals(MaterializedDatasetState.class,materializedState.getClass());
     }
 
     // Trying to format a StubDatasetState should throw an error.
     @Test
     void formatDatasetTest() {
-        StubDatasetState stubState = new StubDatasetState(new InterpreterOutput());
-        Options options = Options.dataTablesOptions(new DataTablesOptions());
+        final StubDatasetState stubState = new StubDatasetState(new InterpreterOutput());
+        final Options options = Options.dataTablesOptions(new DataTablesOptions());
         Assertions.assertThrows(InterpreterException.class,()->stubState.formatDataset(options));
     }
 
     // Trying to write to a StubDatasetState's InterpreterOutput should throw an error.
     @Test
     void writeDataUpdateTest() {
-        StubDatasetState stubState = new StubDatasetState(new InterpreterOutput());
+        final StubDatasetState stubState = new StubDatasetState(new InterpreterOutput());
         Assertions.assertThrows(InterpreterException.class,()->stubState.writeDataUpdate());
     }
 }

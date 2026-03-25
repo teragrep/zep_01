@@ -105,10 +105,10 @@ public class MaterializedDatasetStateTest {
     @Test
     public void testNoOutputClearMessagesSentToUI(){
 
-        TestInterpreterOutputListener listener = new TestInterpreterOutputListener();
-        InterpreterOutput testOutput =  new InterpreterOutput(listener);
+        final TestInterpreterOutputListener listener = new TestInterpreterOutputListener();
+        final InterpreterOutput testOutput =  new InterpreterOutput(listener);
 
-        DatasetState dtTableDatasetNg = new StubDatasetState(testOutput);
+        final DatasetState dtTableDatasetNg = new StubDatasetState(testOutput);
 
         // Simulate DPL receiving new data.
         Assertions.assertDoesNotThrow(()->{
@@ -132,34 +132,34 @@ public class MaterializedDatasetStateTest {
      */
     @Test
     public void testIncrementDraw(){
-        TestInterpreterOutputListener listener = new TestInterpreterOutputListener();
-        InterpreterOutput testOutput =  new InterpreterOutput(listener);
+        final TestInterpreterOutputListener listener = new TestInterpreterOutputListener();
+        final InterpreterOutput testOutput =  new InterpreterOutput(listener);
 
-        DatasetState initialState = new StubDatasetState(testOutput);
+        final DatasetState initialState = new StubDatasetState(testOutput);
 
         // Simulate DPL receiving new data.
 
-        DatasetState state1 = initialState.withDataset(testDs);
+        final DatasetState state1 = initialState.withDataset(testDs);
         Assertions.assertDoesNotThrow(()->state1.writeDataUpdate());
-        List<InterpreterResultMessage> messages = Assertions.assertDoesNotThrow(()->testOutput.toInterpreterResultMessage());
+        final List<InterpreterResultMessage> messages = Assertions.assertDoesNotThrow(()->testOutput.toInterpreterResultMessage());
         // First message should have draw value of 1
         Assertions.assertTrue(messages.get(0).getData().contains("\"draw\":1"));
 
         // Simulate DPL receiving another batch of new data without changing schema.
-        DatasetState state2 = state1.withDataset(testDs);
+        final DatasetState state2 = state1.withDataset(testDs);
         Assertions.assertDoesNotThrow(()->{
             state2.writeDataUpdate();
         });
-        List<InterpreterResultMessage> messages2 = Assertions.assertDoesNotThrow(()->testOutput.toInterpreterResultMessage());
+        final List<InterpreterResultMessage> messages2 = Assertions.assertDoesNotThrow(()->testOutput.toInterpreterResultMessage());
         // Second message should have draw value of 2
         Assertions.assertTrue(messages2.get(0).getData().contains("\"draw\":2"));
 
         // Simulate DPL receiving yet another batch of new data but with a changed schema.
-        DatasetState state3 = state2.withDataset(smallTestDs);
+        final DatasetState state3 = state2.withDataset(smallTestDs);
         Assertions.assertDoesNotThrow(()->{
             state3.writeDataUpdate();
         });
-        List<InterpreterResultMessage> messages3 = Assertions.assertDoesNotThrow(()->testOutput.toInterpreterResultMessage());
+        final List<InterpreterResultMessage> messages3 = Assertions.assertDoesNotThrow(()->testOutput.toInterpreterResultMessage());
         // Third message's draw value should be reset to 1
         Assertions.assertTrue(messages3.get(0).getData().contains("\"draw\":1"));
     }
@@ -168,16 +168,16 @@ public class MaterializedDatasetStateTest {
         private int numberOfResetCalls = 0;
         private int numberOfUpdateCalls = 0;
         @Override
-        public void onUpdateAll(InterpreterOutput out) {
+        public void onUpdateAll(final InterpreterOutput out) {
             numberOfResetCalls++;
             // Calling this clears the paragraph's results. It will be called when we update the dataset, but should not be called upon pagination request.
         }
         @Override
-        public void onAppend(int index, InterpreterResultMessageOutput out, byte[] line) {
+        public void onAppend(final int index, final InterpreterResultMessageOutput out, final byte[] line) {
             // Calling this does not clear the paragraph's results.
         }
         @Override
-        public void onUpdate(int index, InterpreterResultMessageOutput out) {
+        public void onUpdate(final int index, final InterpreterResultMessageOutput out) {
             // Calling this does not clear the paragraph's results.
             numberOfUpdateCalls++;
         }
@@ -192,14 +192,14 @@ public class MaterializedDatasetStateTest {
     @Test
     void equalsVerifier() {
         // EqualsVerifier requires some prefab values due to usage of mutable or complex objects
-        Dataset<Row> redDataset = sparkSession.emptyDataFrame();
-        Dataset<Row> blueDataset = testDs;
+        final Dataset<Row> redDataset = sparkSession.emptyDataFrame();
+        final Dataset<Row> blueDataset = testDs;
 
-        InterpreterOutput redOutput = new InterpreterOutput(new TestInterpreterOutputListener());
-        InterpreterOutput blueOutput = new InterpreterOutput();
+        final InterpreterOutput redOutput = new InterpreterOutput(new TestInterpreterOutputListener());
+        final InterpreterOutput blueOutput = new InterpreterOutput();
 
-        ReentrantLock redLock = new ReentrantLock();
-        ReentrantLock blueLock = new ReentrantLock();
+        final ReentrantLock redLock = new ReentrantLock();
+        final ReentrantLock blueLock = new ReentrantLock();
         blueLock.lock();
 
         EqualsVerifier.forClass(MaterializedDatasetState.class)

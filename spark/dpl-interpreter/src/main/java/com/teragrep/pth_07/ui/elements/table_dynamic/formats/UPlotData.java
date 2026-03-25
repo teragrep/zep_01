@@ -62,7 +62,7 @@ public class UPlotData {
     private final boolean aggsUsed;
     private JsonArray cachedJson;
 
-    public UPlotData(List<Row> collectedData, boolean aggsUsed){
+    public UPlotData(final List<Row> collectedData, final boolean aggsUsed){
         this.collectedData = collectedData;
         this.aggsUsed = aggsUsed;
     }

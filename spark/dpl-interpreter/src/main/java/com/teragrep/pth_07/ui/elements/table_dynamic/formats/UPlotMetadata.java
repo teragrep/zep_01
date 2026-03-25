@@ -59,14 +59,14 @@ public class UPlotMetadata {
     private final String graphType;
     private final boolean isAggregated;
 
-    public UPlotMetadata(StructType schema, List<Row> collectedData, String graphType, boolean isAggregated){
+    public UPlotMetadata(final StructType schema, final List<Row> collectedData, final String graphType, final boolean isAggregated){
         this.schema = schema;
         this.collectedData = collectedData;
         this.graphType = graphType;
         this.isAggregated = isAggregated;
     }
 
-    public UPlotMetadata withOptions(UPlotOptions options){
+    public UPlotMetadata withOptions(final UPlotOptions options){
         return new UPlotMetadata(schema,collectedData,options.getGraphType(),isAggregated);
     }
 

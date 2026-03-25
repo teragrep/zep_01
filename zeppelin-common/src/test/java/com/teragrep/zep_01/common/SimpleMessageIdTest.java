@@ -56,9 +56,9 @@ class SimpleMessageIdTest {
 
     @Test
     void asJson() {
-        String testId = "test";
-        SimpleMessageId id = new SimpleMessageId(testId);
-        JsonValue expectedJson = Json.createValue(testId);
+        final String testId = "test";
+        final SimpleMessageId id = new SimpleMessageId(testId);
+        final JsonValue expectedJson = Json.createValue(testId);
         Assertions.assertEquals(expectedJson,id.asJson());
     }
     @Test

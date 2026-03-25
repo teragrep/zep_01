@@ -52,7 +52,7 @@ class StubMessageIdTest {
 
     @Test
     void asJson() {
-        StubMessageId stubMessageId = new StubMessageId();
+        final StubMessageId stubMessageId = new StubMessageId();
         Assertions.assertThrows(IllegalStateException.class,()->stubMessageId.asJson());
     }
 }

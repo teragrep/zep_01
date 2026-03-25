@@ -139,7 +139,7 @@ public final class MaterializedDatasetState implements DatasetState {
         try {
             lock.lock();
             output.clear(false);
-            for (String content:outputList) {
+            for (final String content:outputList) {
                 output.write(content);
             }
             output.flush();
@@ -160,23 +160,23 @@ public final class MaterializedDatasetState implements DatasetState {
      public void writeDataUpdate() {
         final DataTablesOptions defaultDTOptions = new DataTablesOptions(0,0,0,new DataTablesSearch("",false,new ArrayList<>()),new ArrayList<>(),new ArrayList<>());
         final JsonObject dtFormatted = dataTablesFormat.format(defaultDTOptions);
-        List<String> contentList = new ArrayList<>();
+        final List<String> contentList = new ArrayList<>();
         contentList.add("%"+dataTablesFormat.type().toLowerCase()+"\n"+dtFormatted.toString());
          try{
              final UPlotOptions defaultuPlotOptions = new UPlotOptions("line");
              final JsonObject uPlotFormatted = uPlotFormat.format(defaultuPlotOptions);
              contentList.add("%"+uPlotFormat.type().toLowerCase()+"\n"+uPlotFormatted.toString());
-         }catch (InterpreterException e) {
+         }catch (final InterpreterException e) {
              // If uPlot is unsupported, don't add new resultMessage
          }
          write(contentList);
     }
 
     @Override
-    public boolean equals(Object o) {
+    public boolean equals(final Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
-        MaterializedDatasetState that = (MaterializedDatasetState) o;
+        final MaterializedDatasetState that = (MaterializedDatasetState) o;
         return Objects.equals(dataset, that.dataset) && Objects.equals(dataTablesFormat, that.dataTablesFormat) && Objects.equals(uPlotFormat, that.uPlotFormat) && Objects.equals(output, that.output) && Objects.equals(lock, that.lock);
     }
 

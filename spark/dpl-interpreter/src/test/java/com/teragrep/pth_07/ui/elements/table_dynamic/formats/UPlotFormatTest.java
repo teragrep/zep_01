@@ -302,12 +302,12 @@ class UPlotFormatTest {
 
         // First array of Data is the indexes for the series names used for X axis. It's length in timechart commands should be the number of unique dates in the output.
         // In cases where aggregations are used, the dataset's size should always equal this number. If no aggregations aren't used, the number should be zero
-        Long timeCount = resultDataset.select("_time").distinct().count();
+        final Long timeCount = resultDataset.select("_time").distinct().count();
         Assertions.assertEquals(timeCount,formatted.getJsonArray("data").getJsonArray(0).size());
 
         // Data must contain additional arrays equal to the number of series. In Timechart's case this is the number of distinct values in the group by column multiplied by the number of columns requested in the query
-        long queryColumnCount = resultDataset.schema().size() - 1 - groupByCount;
-        long expectedArrayCount = queryColumnCount * resultDataset.select("operation").distinct().count();
+        final long queryColumnCount = resultDataset.schema().size() - 1 - groupByCount;
+        final long expectedArrayCount = queryColumnCount * resultDataset.select("operation").distinct().count();
         Assertions.assertEquals(expectedArrayCount,formatted.getJsonArray("data").size()-1);
 
         // Each additional array within Data should contain one value for each unique dates in the output
@@ -434,12 +434,12 @@ class UPlotFormatTest {
 
         // First array of Data is the indexes for the series names used for X axis. It's length in timechart commands should be the number of unique dates in the output.
         // In cases where aggregations are used, the dataset's size should always equal this number. If no aggregations aren't used, the number should be zero
-        Long timeCount = resultDataset.select("_time").distinct().count();
+        final Long timeCount = resultDataset.select("_time").distinct().count();
         Assertions.assertEquals(timeCount,formatted.getJsonArray("data").getJsonArray(0).size());
 
         // Data must contain additional arrays equal to the number of series. In Timechart's case this is the number of distinct values in the group by column multiplied by the number of columns requested in the query
-        long queryColumnCount = resultDataset.schema().size() - 1 - groupByCount;
-        long expectedArrayCount = queryColumnCount * resultDataset.select("operation","success").distinct().count();
+        final long queryColumnCount = resultDataset.schema().size() - 1 - groupByCount;
+        final long expectedArrayCount = queryColumnCount * resultDataset.select("operation","success").distinct().count();
         Assertions.assertEquals(expectedArrayCount,formatted.getJsonArray("data").size()-1);
 
         // Each additional array within Data should contain one value for each unique dates in the output
@@ -572,16 +572,16 @@ class UPlotFormatTest {
         Assertions.assertEquals(23,operationColumn.size());
         Assertions.assertEquals(23,successColumn.size());
         Assertions.assertEquals(23,filesModifiedColumn.size());
-        for (JsonValue value : timeColumn) {
+        for (final JsonValue value : timeColumn) {
             Assertions.assertEquals(JsonValue.ValueType.NULL,value.getValueType());
         }
-        for (JsonValue value : successColumn) {
+        for (final JsonValue value : successColumn) {
             Assertions.assertEquals(JsonValue.ValueType.NULL,value.getValueType());
         }
-        for (JsonValue value : operationColumn) {
+        for (final JsonValue value : operationColumn) {
             Assertions.assertEquals(JsonValue.ValueType.NULL,value.getValueType());
         }
-        for (JsonValue value : filesModifiedColumn) {
+        for (final JsonValue value : filesModifiedColumn) {
             Assertions.assertEquals(JsonValue.ValueType.NUMBER,value.getValueType());
         }
     }

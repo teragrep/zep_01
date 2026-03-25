@@ -22,10 +22,10 @@ public final class SimpleMessageId implements MessageId{
     }
 
     @Override
-    public boolean equals(Object o) {
+    public boolean equals(final Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
-        SimpleMessageId that = (SimpleMessageId) o;
+        final SimpleMessageId that = (SimpleMessageId) o;
         return Objects.equals(id, that.id);
     }
 

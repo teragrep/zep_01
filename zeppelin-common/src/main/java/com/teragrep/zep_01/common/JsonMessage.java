@@ -38,10 +38,10 @@ public final class JsonMessage implements Jsonable {
   private final String roles;
 
   @Override
-  public boolean equals(Object o) {
+  public boolean equals(final Object o) {
     if (this == o) return true;
     if (o == null || getClass() != o.getClass()) return false;
-    JsonMessage that = (JsonMessage) o;
+    final JsonMessage that = (JsonMessage) o;
     return Objects.equals(id, that.id) && op == that.op && Objects.equals(data, that.data) && Objects.equals(ticket, that.ticket) && Objects.equals(principal, that.principal) && Objects.equals(roles, that.roles);
   }
 

@@ -12,10 +12,10 @@ public final class ParagraphConfig implements Jsonable {
     private final Map<String, Object> configMap;
 
     @Override
-    public boolean equals(Object o) {
+    public boolean equals(final Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
-        ParagraphConfig config = (ParagraphConfig) o;
+        final ParagraphConfig config = (ParagraphConfig) o;
         return Objects.equals(configMap, config.configMap);
     }
 

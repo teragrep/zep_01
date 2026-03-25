@@ -12,10 +12,10 @@ public final class ParagraphRuntimeInfos implements Jsonable {
     private final Map<String,ParagraphRuntimeInfo> runtimeInfoMap;
 
     @Override
-    public boolean equals(Object o) {
+    public boolean equals(final Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
-        ParagraphRuntimeInfos that = (ParagraphRuntimeInfos) o;
+        final ParagraphRuntimeInfos that = (ParagraphRuntimeInfos) o;
         return Objects.equals(runtimeInfoMap, that.runtimeInfoMap);
     }
 

@@ -84,10 +84,10 @@ public final class DataTablesFormat{
     }
 
     /**
-     * Create a new instance of DataTablesFormat with an updated Dataset. This function calculates any required updates to draw based on dataset headers and caches the rows of the Dataset.
+     * Create a new instance of DataTablesFormat with an updated Dataset. This function calculates any required updates to draw based on dataset schema and caches the rows of the Dataset.
      * Caching is done to avoid repeated calls to Dataset.collectAsList() when using format() method for pagination requests when the underlying dataset has not changed.
      * @param newDataset The updated Dataset
-     * @return A new instance fo DataTablesFormat, containing an updated draw value and cache of rows based on the given dataset.
+     * @return A new instance of DataTablesFormat, containing an updated draw value and cache of rows based on the given dataset.
      */
     public DataTablesFormat withDataset(final Dataset<Row> newDataset) {
         final int updatedDraw;
@@ -217,10 +217,10 @@ public final class DataTablesFormat{
     }
 
     @Override
-    public boolean equals(Object o) {
+    public boolean equals(final Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
-        DataTablesFormat format = (DataTablesFormat) o;
+        final DataTablesFormat format = (DataTablesFormat) o;
         return draw == format.draw && Objects.equals(schema, format.schema) && Objects.equals(cachedRows, format.cachedRows);
     }
 

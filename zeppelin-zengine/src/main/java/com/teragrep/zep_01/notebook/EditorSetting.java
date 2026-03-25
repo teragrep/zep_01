@@ -12,10 +12,10 @@ public final class EditorSetting implements Jsonable {
     private final Map<String, Object> settingMap;
 
     @Override
-    public boolean equals(Object o) {
+    public boolean equals(final Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
-        EditorSetting that = (EditorSetting) o;
+        final EditorSetting that = (EditorSetting) o;
         return Objects.equals(settingMap, that.settingMap);
     }
 

@@ -12,10 +12,10 @@ public final class NoteConfig implements Jsonable {
     private final Map<String,Object> configMap;
 
     @Override
-    public boolean equals(Object o) {
+    public boolean equals(final Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
-        NoteConfig that = (NoteConfig) o;
+        final NoteConfig that = (NoteConfig) o;
         return Objects.equals(configMap, that.configMap);
     }
 

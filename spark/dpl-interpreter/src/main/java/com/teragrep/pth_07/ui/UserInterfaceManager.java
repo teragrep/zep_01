@@ -64,7 +64,7 @@ import java.util.concurrent.atomic.AtomicReference;
 
 /**
  * Holds the state of the Dataset, PerformanceIndicator and MessageLog of a single Paragraph.
- * Responsible for passing new Datasets and formatting requests to DatasetState and triggering the writing of the DatasetState to UI.
+ * Responsible for passing new Datasets and formatting requests to DatasetState and triggering the writing of the DatasetState to InterpreterOutput for saving on disk and updating UI.
  */
 public final class UserInterfaceManager {
     private static final Logger LOGGER = LoggerFactory.getLogger(UserInterfaceManager.class);
@@ -101,7 +101,7 @@ public final class UserInterfaceManager {
 
 
     /**
-     * Formats the current dataset with given formatting options.
+     * Formats the current dataset with given formatting options. Used when UI requests the current dataset in a different format.
      * @param options Thrift union object containing the wanted formatting options.
      * @return String representing the formatted dataset.
      * @throws InterpreterException Thrown if an error occurs during formatting of data.
@@ -112,10 +112,10 @@ public final class UserInterfaceManager {
     }
 
     @Override
-    public boolean equals(Object o) {
+    public boolean equals(final Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
-        UserInterfaceManager that = (UserInterfaceManager) o;
+        final UserInterfaceManager that = (UserInterfaceManager) o;
         return Objects.equals(datasetState, that.datasetState) && Objects.equals(performanceIndicator, that.performanceIndicator) && Objects.equals(messageLog, that.messageLog);
     }
 
