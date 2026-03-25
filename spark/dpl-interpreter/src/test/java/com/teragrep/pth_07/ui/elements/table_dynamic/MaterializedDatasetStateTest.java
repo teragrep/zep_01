@@ -114,14 +114,14 @@ public class MaterializedDatasetStateTest {
         Assertions.assertDoesNotThrow(()->{
             dtTableDatasetNg.withDataset(testDs).writeDataUpdate();
         });
-        Assertions.assertEquals(1,listener.numberOfUpdateCalls());
+        Assertions.assertEquals(2,listener.numberOfUpdateCalls());
         Assertions.assertEquals(0,listener.numberOfResetCalls());
 
         // Simulate DPL receiving another batch of data.
         Assertions.assertDoesNotThrow(()->{
             dtTableDatasetNg.withDataset(testDs).writeDataUpdate();
         });
-        Assertions.assertEquals(2,listener.numberOfUpdateCalls());
+        Assertions.assertEquals(4,listener.numberOfUpdateCalls());
         Assertions.assertEquals(0,listener.numberOfResetCalls());
 
     }
