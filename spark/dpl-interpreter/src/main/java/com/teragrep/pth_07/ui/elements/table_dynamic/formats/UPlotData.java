@@ -46,10 +46,7 @@
 package com.teragrep.pth_07.ui.elements.table_dynamic.formats;
 
 import com.teragrep.zep_01.interpreter.InterpreterException;
-import jakarta.json.Json;
-import jakarta.json.JsonArray;
-import jakarta.json.JsonArrayBuilder;
-import jakarta.json.JsonValue;
+import jakarta.json.*;
 import org.apache.spark.sql.Row;
 import org.apache.spark.sql.types.DataType;
 import org.apache.spark.sql.types.DataTypes;
@@ -63,6 +60,7 @@ public class UPlotData {
 
     private final List<Row> collectedData;
     private final boolean aggsUsed;
+    private JsonArray cachedJson;
 
     public UPlotData(List<Row> collectedData, boolean aggsUsed){
         this.collectedData = collectedData;
@@ -151,14 +149,17 @@ public class UPlotData {
     }
 
     public JsonValue asJson() throws InterpreterException {
-        final JsonArray xAxis = xAxis(collectedData, aggsUsed);
-        final List<JsonArray> yAxisArray = yAxis(collectedData);
+        if(cachedJson == null){
+            final JsonArray xAxis = xAxis(collectedData, aggsUsed);
+            final List<JsonArray> yAxisArray = yAxis(collectedData);
 
-        final JsonArrayBuilder dataBuilder = Json.createArrayBuilder();
-        dataBuilder.add(xAxis);
-        for (final JsonArray array:yAxisArray) {
-            dataBuilder.add(array);
+            final JsonArrayBuilder dataBuilder = Json.createArrayBuilder();
+            dataBuilder.add(xAxis);
+            for (final JsonArray array:yAxisArray) {
+                dataBuilder.add(array);
+            }
+            cachedJson = dataBuilder.build();
         }
-        return dataBuilder.build();
+        return cachedJson;
     }
 }
