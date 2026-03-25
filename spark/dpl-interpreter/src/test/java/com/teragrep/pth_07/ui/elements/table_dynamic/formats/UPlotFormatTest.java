@@ -48,7 +48,9 @@ package com.teragrep.pth_07.ui.elements.table_dynamic.formats;
 import com.teragrep.zep_01.interpreter.InterpreterException;
 import com.teragrep.zep_01.interpreter.InterpreterResult;
 import com.teragrep.zep_01.interpreter.thrift.UPlotOptions;
+import jakarta.json.JsonArray;
 import jakarta.json.JsonObject;
+import jakarta.json.JsonValue;
 import org.apache.spark.sql.Dataset;
 import org.apache.spark.sql.Row;
 import org.apache.spark.sql.SparkSession;
@@ -558,8 +560,30 @@ class UPlotFormatTest {
         final UPlotFormat format = new UPlotFormat();
         final UPlotFormat format1 = format.withDataset(resultDataset);
 
-        // Trying to display string data (such as operation name: "create") should result in an Exception as uPlot only supports numerical data
-        Assertions.assertThrows(InterpreterException.class,()-> format1.format(options));
+        // Trying to display string data (such as operation name: "create") should result in a dataset where only numerical data is shown, and string data is replaced by JSON nulls.
+        final JsonObject formatted = Assertions.assertDoesNotThrow(()-> format1.format(options));
+        final JsonArray timeColumn = formatted.getJsonArray("data").getJsonArray(1);
+        final JsonArray operationColumn = formatted.getJsonArray("data").getJsonArray(2);
+        final JsonArray successColumn = formatted.getJsonArray("data").getJsonArray(3);
+        final JsonArray filesModifiedColumn = formatted.getJsonArray("data").getJsonArray(4);
+
+        // Check that every non-numerical column is populated with nulls and that numerical columns keep their data.
+        Assertions.assertEquals(23,timeColumn.size());
+        Assertions.assertEquals(23,operationColumn.size());
+        Assertions.assertEquals(23,successColumn.size());
+        Assertions.assertEquals(23,filesModifiedColumn.size());
+        for (JsonValue value : timeColumn) {
+            Assertions.assertEquals(JsonValue.ValueType.NULL,value.getValueType());
+        }
+        for (JsonValue value : successColumn) {
+            Assertions.assertEquals(JsonValue.ValueType.NULL,value.getValueType());
+        }
+        for (JsonValue value : operationColumn) {
+            Assertions.assertEquals(JsonValue.ValueType.NULL,value.getValueType());
+        }
+        for (JsonValue value : filesModifiedColumn) {
+            Assertions.assertEquals(JsonValue.ValueType.NUMBER,value.getValueType());
+        }
     }
     @Test
     void testUnaggregatedFormat() {

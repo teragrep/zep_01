@@ -106,13 +106,15 @@ public class UPlotData {
                         }
                         else {
                             if(type.equals(DataTypes.StringType)){
-                                // Some data from DPL may come as numerical data, but stringified. If string data is encountered, try to parse into Double before throwing an Exception.
+                                // Some data from DPL may come as numerical data, but stringified. If string data is encountered, try to parse into Double first.
                                 try{
                                     final Double doubleValue = Double.parseDouble((String)value);
                                     arrayBuilder.add(doubleValue);
                                 }
+                                // Showing non-numerical data throws an error when attempting to display it on uPlot's Y axis.
+                                // If parsing of an encountered string fails, we replace it with JSON null values to allow for the rest of the data to be shown.
                                 catch (final NumberFormatException exception){
-                                    throw new InterpreterException("uPlot format only supports numerical data, but encountered unparseable string in column "+field.name()+" !");
+                                    arrayBuilder.add(JsonValue.NULL);
                                 }
                             }
                             else if (type.equals(DataTypes.LongType)){
@@ -136,7 +138,9 @@ public class UPlotData {
                                 arrayBuilder.add(shortValue);
                             }
                             else {
-                                throw new InterpreterException("uPlot format only supports numerical data, but encountered "+type.typeName()+" in column "+ field.name() +"!");
+                                // uPlot throws an error if attempting to display any data that is not in numerical format.
+                                // To allow drawing datasets where some columns are numerical and others are not, we show a JSON null values for non-numerical columns.
+                                arrayBuilder.add(JsonValue.NULL);
                             }
                         }
                     }
