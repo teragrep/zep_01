@@ -52,6 +52,7 @@ import com.teragrep.pth_07.ui.elements.table_dynamic.DTTableDatasetNg;
 import com.teragrep.pth_15.DPLExecutor;
 import com.teragrep.pth_15.DPLExecutorFactory;
 import com.teragrep.pth_15.DPLExecutorResult;
+import com.teragrep.zep_01.interpreter.thrift.Options;
 import com.typesafe.config.Config;
 import com.typesafe.config.ConfigFactory;
 import jakarta.json.JsonObject;
@@ -295,28 +296,25 @@ public class DPLInterpreter extends AbstractInterpreter {
         return null;
     }
 
-    @Override
-    public String getDataset(String noteId, String paragraphId, int start, int length, String searchString, int draw) throws InterpreterException{
+    private UserInterfaceManager findUserInterfacemanger(final String noteId, final String paragraphId) throws InterpreterException{
         if(notebookParagraphUserInterfaceManager == null){
             throw new InterpreterException("DPLInterpreter's notebookParagraphUserInterfaceManager map is not instantiated!");
         }
-        Map<String,UserInterfaceManager> notebookUserInterfaceManagers = notebookParagraphUserInterfaceManager.get(noteId);
+        final Map<String,UserInterfaceManager> notebookUserInterfaceManagers = notebookParagraphUserInterfaceManager.get(noteId);
         if(notebookUserInterfaceManagers == null){
             throw new InterpreterException("DPLInterpreter does not have a UserInterfaceManager for note id "+noteId);
         }
-        UserInterfaceManager userInterfaceManager = notebookUserInterfaceManagers.get(paragraphId);
+        final UserInterfaceManager userInterfaceManager = notebookUserInterfaceManagers.get(paragraphId);
         if(userInterfaceManager == null){
             throw new InterpreterException("DPLInterpreter does not have a UserInterfaceManager for paragraph id "+paragraphId+" within note id "+noteId);
         }
-        DTTableDatasetNg dtTableDatasetNg = userInterfaceManager.getDtTableDatasetNg();
-        if(dtTableDatasetNg == null){
-            throw new InterpreterException("UserInterfaceManager for paragraph id "+paragraphId+" does not have a DTTableDatasetNG object!");
-        }
-        if(dtTableDatasetNg.getDatasetAsJSON().isEmpty()){
-            throw new InterpreterException("Dataset of paragraph "+paragraphId+" within note "+noteId+" is empty!");
-        }
-        JsonObject json = dtTableDatasetNg.SearchAndPaginate(draw,start,length,searchString);
-        String dataset = json.toString();
-        return dataset;
+        return userInterfaceManager;
+    }
+
+    @Override
+    public String formatDataset(final String noteId, final String paragraphId, final Options options) throws InterpreterException{
+        final UserInterfaceManager userInterfaceManager = findUserInterfacemanger(noteId,paragraphId);
+        // set new options only.
+        return userInterfaceManager.formatDataset(options);
     }
 }

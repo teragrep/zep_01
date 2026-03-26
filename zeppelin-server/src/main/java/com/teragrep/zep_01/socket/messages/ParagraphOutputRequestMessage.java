@@ -1,0 +1,230 @@
+package com.teragrep.zep_01.socket.messages;
+
+import com.teragrep.zep_01.common.Jsonable;
+import com.teragrep.zep_01.interpreter.InterpreterResult;
+import com.teragrep.zep_01.interpreter.thrift.*;
+import jakarta.json.*;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Objects;
+
+// CLient-to-Server message that must minimally contain all the required pieces of information for a dataset formatting request.
+public final class ParagraphOutputRequestMessage implements Jsonable {
+
+    private final JsonObject json;
+
+    public ParagraphOutputRequestMessage(final JsonObject json){
+        this.json = json;
+    }
+
+    public String messageId() throws JsonException {
+        if (!json.containsKey("msgId") || !json.get("msgId").getValueType().equals(JsonValue.ValueType.STRING)) {
+            throw new JsonException("Json does not contain a msgId!");
+        } else {
+            return json.getString("msgId");
+        }
+    }
+
+    public String noteId() throws JsonException {
+        if(!json.containsKey("data") || !json.get("data").getValueType().equals(JsonValue.ValueType.OBJECT)) {
+            throw new JsonException("Json does not contain a data object!");
+        }
+        else{
+            final JsonObject data = json.getJsonObject("data");
+            if (!data.containsKey("noteId") || !data.get("noteId").getValueType().equals(JsonValue.ValueType.STRING)) {
+                throw new JsonException("Json does not contain a noteId!");
+            } else {
+                return data.getString("noteId");
+            }
+        }
+    }
+
+    public String paragraphId() throws JsonException {
+            if(!json.containsKey("data") || !json.get("data").getValueType().equals(JsonValue.ValueType.OBJECT)) {
+                throw new JsonException("Json does not contain a data object!");
+            }
+            else {
+                final JsonObject data = json.getJsonObject("data");
+                if (!data.containsKey("paragraphId") || !data.get("paragraphId").getValueType().equals(JsonValue.ValueType.STRING)) {
+                    throw new JsonException("Json does not contain a paragraphId!");
+                } else {
+                    return data.getString("paragraphId");
+                }
+            }
+    }
+    public String type() throws JsonException {
+            if(!json.containsKey("data") || !json.get("data").getValueType().equals(JsonValue.ValueType.OBJECT)){
+                throw new JsonException("Json does not contain a data object!");
+            }
+            else {
+                final JsonObject data = json.getJsonObject("data");
+                if (!data.containsKey("type") || !data.get("type").getValueType().equals(JsonValue.ValueType.STRING)) {
+                    throw new JsonException("Json does not contain a type!");
+                } else {
+                    return data.getString("type");
+                }
+            }
+        }
+
+    public Options options() throws JsonException{
+        final String type = type();
+        final JsonObject data = json.getJsonObject("data");
+        final Options options;
+        if(type.equals(InterpreterResult.Type.DATATABLES.label)){
+            if(!data.containsKey("requestOptions") || !data.get("requestOptions").getValueType().equals(JsonValue.ValueType.OBJECT)){
+                throw new JsonException("Json does not contain requestOptions object!");
+            }
+            options = Options.dataTablesOptions(dataTablesOptions(data.getJsonObject("requestOptions")));
+        }
+        else if(type.equals(InterpreterResult.Type.UPLOT.label)){
+            if(!data.containsKey("requestOptions") || !data.get("requestOptions").getValueType().equals(JsonValue.ValueType.OBJECT)){
+                throw new JsonException("Json does not contain requestOptions object!");
+            }
+            options = Options.uPlotOptions(uplotOptions(data.getJsonObject("requestOptions")));
+        }
+        else {
+            throw new JsonException("Given format type is not a supported visualization library!");
+        }
+        return options;
+    }
+
+    // Verifies that all keys are present and in correct format. If so, returns a DataTablesOptions object
+    private DataTablesOptions dataTablesOptions(final JsonObject json){
+        if(!json.containsKey("draw") || !json.get("draw").getValueType().equals(JsonValue.ValueType.NUMBER)){
+            throw new JsonException("Json does not contain a draw number!");
+        }
+        final int draw = json.getInt("draw");
+
+        if(!json.containsKey("start") || !json.get("start").getValueType().equals(JsonValue.ValueType.NUMBER)){
+            throw new JsonException("Json does not contain a start number!");
+        }
+        final int start = json.getInt("start");
+
+        if(!json.containsKey("length") || !json.get("length").getValueType().equals(JsonValue.ValueType.NUMBER)){
+            throw new JsonException("Json does not contain a length number!");
+        }
+        final int length = json.getInt("length");
+
+        final DataTablesSearch search;
+        // Search is an optional field, so if it is omitted, we default to an empty search object.
+        if(!json.containsKey("search")) {
+            search = new DataTablesSearch("", false, new ArrayList<>());
+        }
+        else{
+            if (!json.get("search").getValueType().equals(JsonValue.ValueType.OBJECT)) {
+                throw new JsonException("Json contains a malformed search object!");
+            }
+            else {
+                search = dataTablesSearch(json.getJsonObject("search"));
+            }
+        }
+
+        final List<String> order = new ArrayList<>();
+        if(!json.containsKey("order") || !json.get("order").getValueType().equals(JsonValue.ValueType.ARRAY)){
+            // Order is an optional field, so if it is omitted, we continue with the empty order list.
+        }
+        else {
+            final JsonArray orderJson = json.getJsonArray("order");
+            for (int i = 0; i < orderJson.size(); i++) {
+                if(!orderJson.get(i).getValueType().equals(JsonValue.ValueType.STRING)){
+                    throw new JsonException("Order array does not contain only Strings!");
+                }
+                order.add(orderJson.getString(i));
+            }
+        }
+
+        final List<DataTablesColumns> columns = new ArrayList<>();
+        if(!json.containsKey("columns") || !json.get("columns").getValueType().equals(JsonValue.ValueType.ARRAY)){
+            // Columns is an optional field, so if it is omitted, we continue with the empty coolumns list.
+        }
+        else {
+            final JsonArray columnsJson = json.getJsonArray("columns");
+            for (int i = 0; i < columnsJson.size(); i++) {
+                if(!columnsJson.get(i).getValueType().equals(JsonValue.ValueType.OBJECT)){
+                    throw new JsonException("Columns array does not contain only Objects!");
+                }
+                columns.add(dataTablesColumns(columnsJson.getJsonObject(i)));
+            }
+        }
+        final DataTablesOptions dataTablesOptions = new DataTablesOptions(draw,start,length,search,order,columns);
+        return dataTablesOptions;
+    }
+
+    private DataTablesSearch dataTablesSearch(final JsonObject json){
+        if(!json.containsKey("value") || !json.get("value").getValueType().equals(JsonValue.ValueType.STRING)){
+            throw new JsonException("Json does not contain search.value string!");
+        }
+        if(!json.containsKey("regex") || !(json.get("regex").getValueType().equals(JsonValue.ValueType.TRUE) || json.get("regex").getValueType().equals(JsonValue.ValueType.FALSE))){
+            throw new JsonException("Json does not contain search.regex boolean!");
+        }
+        if(!json.containsKey("fixed") || !json.get("fixed").getValueType().equals(JsonValue.ValueType.ARRAY)){
+            throw new JsonException("Json does not contain search.fixed array!");
+        }
+        final List<String> fixed = new ArrayList<>();
+        final JsonArray fixedJson = json.getJsonArray("fixed");
+        for (int i = 0; i < fixedJson.size(); i++) {
+            if(!fixedJson.get(i).getValueType().equals(JsonValue.ValueType.STRING)){
+                throw new JsonException("search.fixed does not contain only string values!");
+            }
+            fixed.add(fixedJson.getString(i));
+        }
+        return new DataTablesSearch(json.getString("value"), json.getBoolean("regex"), fixed);
+    }
+
+    private DataTablesColumns dataTablesColumns(final JsonObject json){
+        if(!json.containsKey("name") || !(json.get("name").getValueType().equals(JsonValue.ValueType.STRING))){
+            throw new JsonException("Json does not contain column.name string!");
+        }
+        final String name = json.getString("name");
+
+        if(!json.containsKey("data") || !(json.get("data").getValueType().equals(JsonValue.ValueType.STRING))){
+            throw new JsonException("Json does not contain column.data string!");
+        }
+        final String data = json.getString("data");
+
+        if(!json.containsKey("searchable") || !(json.get("searchable").getValueType().equals(JsonValue.ValueType.TRUE) || json.get("searchable").getValueType().equals(JsonValue.ValueType.FALSE))){
+            throw new JsonException("Json does not contain column.searchable boolean!");
+        }
+        final boolean searchable = json.getBoolean("searchable");
+
+        if(!json.containsKey("orderable") || !(json.get("orderable").getValueType().equals(JsonValue.ValueType.TRUE) || json.get("orderable").getValueType().equals(JsonValue.ValueType.FALSE))){
+            throw new JsonException("Json does not contain column.orderable boolean!");
+        }
+        final boolean orderable = json.getBoolean("orderable");
+
+        if(!json.containsKey("search") || !json.get("search").getValueType().equals(JsonValue.ValueType.OBJECT)){
+            throw new JsonException("Json does not contain a columns.search object!");
+        }
+        final DataTablesSearch search = dataTablesSearch(json.getJsonObject("search"));
+        return new DataTablesColumns(data,name,orderable,search,searchable);
+    }
+
+    private UPlotOptions uplotOptions(final JsonObject json){
+        if(!json.containsKey("graphType") || !json.get("graphType").getValueType().equals(JsonValue.ValueType.STRING)){
+            throw new JsonException("Json does not contain a graphType string!");
+        }
+        final String graphType = json.getString("graphType");
+        final UPlotOptions uPlotOptions = new UPlotOptions(graphType);
+        return uPlotOptions;
+    }
+
+
+    @Override
+    public JsonObject asJson() {
+        return json;
+    }
+
+    @Override
+    public boolean equals(final Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        final ParagraphOutputRequestMessage that = (ParagraphOutputRequestMessage) o;
+        return Objects.equals(json, that.json);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(json);
+    }
+}
