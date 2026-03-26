@@ -580,8 +580,8 @@ public class NotebookServer extends WebSocketServlet
   }
 
   private void inlineBroadcastNote(Note note) {
-    Message message = new Message(OP.NOTE).put("note", note);
-    getConnectionManager().broadcast(note.getId(), message);
+    final JsonObject message = new JsonMessage(OP.NOTE,note).asJson();
+    getConnectionManager().broadcast(note.getId(),message.toString());
   }
 
   private void inlineBroadcastParagraph(Note note, Paragraph p, String msgId) {
