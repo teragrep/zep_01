@@ -45,65 +45,53 @@
  */
 package com.teragrep.pth_07.ui.elements.table_dynamic;
 
-import jakarta.json.*;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import com.teragrep.pth_07.ui.elements.table_dynamic.formats.DataTablesFormat;
+import com.teragrep.pth_07.ui.elements.table_dynamic.formats.UPlotFormat;
+import com.teragrep.zep_01.interpreter.InterpreterException;
+import com.teragrep.zep_01.interpreter.InterpreterOutput;
+import com.teragrep.zep_01.interpreter.thrift.Options;
+import jakarta.json.JsonObject;
+import org.apache.spark.sql.Dataset;
+import org.apache.spark.sql.Row;
 
-import java.io.StringReader;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Objects;
 
-public final class DTSearch {
-    protected static final Logger LOGGER = LoggerFactory.getLogger(DTSearch.class);
-    private final List<String> rowList;
-
-    public DTSearch(List<String> rowList){
-        this.rowList = rowList;
+public final class StubDatasetState implements DatasetState{
+    private final InterpreterOutput output;
+    public StubDatasetState(final InterpreterOutput output){
+        this.output = output;
     }
-    public List<String> search(String searchString){
-        List<String> searchedList = new ArrayList<>();
-        if (!"".equals(searchString)) {
-            try {
-                for (String row : rowList) {
-                    JsonReader reader = Json.createReader(new StringReader(row));
-                    JsonObject line = reader.readObject();
 
-                    // NOTE hard coded to _raw column
-                    JsonString _raw = line.getJsonString("_raw");
-                    if (_raw != null) {
-                        String _rawString = _raw.getString();
-                        if (_rawString != null) {
-                            if (_rawString.contains(searchString)) {
-                                // _raw matches, add whole row to result set
-                                searchedList.add(row);
-                            }
-                        }
-                    }
-                    reader.close();
-                }
-                return searchedList;
-            } catch (JsonException | IllegalStateException e) {
-                LOGGER.error(e.toString());
-                return searchedList;
-            }
-        }
-        else {
-            searchedList = rowList;
-        }
-        return searchedList;
+    /**
+     * Use this method to turn a StubDatasetState into a MaterializedDatasetState using the given Dataset. Initializes every supported format with the given data
+     * @param rowDataset The Dataset to use
+     * @return A new MaterializedDatasetState that contains the same InterpreterOutput as this StubDatasetState, the given Dataset.
+     */
+    @Override
+    public DatasetState withDataset(final Dataset<Row> rowDataset){
+        return new MaterializedDatasetState(rowDataset,output,new DataTablesFormat().withDataset(rowDataset),new UPlotFormat().withDataset(rowDataset));
     }
 
     @Override
-    public boolean equals(Object o) {
+    public JsonObject formatDataset(final Options options) throws InterpreterException {
+        throw new InterpreterException("Attempting to format an empty dataset!");
+    }
+
+    @Override
+    public void writeDataUpdate() throws InterpreterException {
+        throw new InterpreterException("Attempting to write an empty dataset!");
+    }
+
+    @Override
+    public boolean equals(final Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
-        DTSearch dtSearch = (DTSearch) o;
-        return Objects.equals(rowList, dtSearch.rowList);
+        final StubDatasetState that = (StubDatasetState) o;
+        return Objects.equals(output, that.output);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(rowList);
+        return Objects.hash(output);
     }
 }
