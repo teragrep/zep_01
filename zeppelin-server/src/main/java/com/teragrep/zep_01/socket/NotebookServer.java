@@ -1682,8 +1682,10 @@ public class NotebookServer extends WebSocketServlet
     if (!sendParagraphStatusToFrontend) {
       return;
     }
-    Message msg = new Message(OP.PARAGRAPH_UPDATE_OUTPUT).put("noteId", noteId)
-        .put("paragraphId", paragraphId).put("index", index).put("type", type).put("data", output);
+    // As formatted data is passed as a String via Thrift, we have to parse it with JsonReader to make sure the data types are represented correctly.
+    final JsonObject outputJson = Json.createReader(new StringReader(output)).readObject();
+    final ParagraphOutputResponseMessage paragraphOutputResponse = new ParagraphOutputResponseMessage(noteId,paragraphId,outputJson);
+    final JsonMessage msg = new JsonMessage(OP.PARAGRAPH_OUTPUT, paragraphOutputResponse);
     try {
       Note note = getNotebook().getNote(noteId);
       if (note == null) {
@@ -1692,13 +1694,17 @@ public class NotebookServer extends WebSocketServlet
       }
       Paragraph paragraph = note.getParagraph(paragraphId);
       paragraph.updateOutputBuffer(index, type, output);
+      // Only broadcast the first result, as default format is in the first index, other formats are stored in later indexes
+      if(index > 0){
+        return;
+      }
       if (note.isPersonalizedMode()) {
         String user = note.getParagraph(paragraphId).getUser();
         if (null != user) {
-          getConnectionManager().multicastToUser(user, msg);
+          getConnectionManager().multicastToUser(user, msg.asJson().toString());
         }
       } else {
-        getConnectionManager().broadcast(noteId, msg);
+        getConnectionManager().broadcast(noteId, msg.asJson().toString());
       }
     } catch (IOException e) {
       LOG.warn("Fail to call onOutputUpdated", e);

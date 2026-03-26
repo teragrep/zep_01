@@ -43,42 +43,16 @@
  * Teragrep, the applicable Commercial License may apply to this file if you as
  * a licensee so wish it.
  */
+package com.teragrep.zep_01.common;
 
-package com.teragrep.pth_07.ui.elements.table_dynamic.pojo;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 
-import com.google.gson.annotations.Expose;
-import com.google.gson.annotations.SerializedName;
+class StubMessageIdTest {
 
-public class Order {
-
-    @SerializedName("column")
-    @Expose
-    private Integer column;
-    @SerializedName("dir")
-    @Expose
-    private String dir;
-
-    public Integer getColumn() {
-        return column;
-    }
-
-    public void setColumn(Integer column) {
-        this.column = column;
-    }
-
-    public String getDir() {
-        return dir;
-    }
-
-    public void setDir(String dir) {
-        this.dir = dir;
-    }
-
-    @Override
-    public String toString() {
-        return "Order{" +
-                "column=" + column +
-                ", dir='" + dir + '\'' +
-                '}';
+    @Test
+    void asJson() {
+        final StubMessageId stubMessageId = new StubMessageId();
+        Assertions.assertThrows(IllegalStateException.class,()->stubMessageId.asJson());
     }
 }

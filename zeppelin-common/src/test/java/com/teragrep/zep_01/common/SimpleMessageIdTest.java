@@ -43,41 +43,26 @@
  * Teragrep, the applicable Commercial License may apply to this file if you as
  * a licensee so wish it.
  */
-package com.teragrep.pth_07.ui.elements;
+package com.teragrep.zep_01.common;
 
-import com.teragrep.zep_01.interpreter.InterpreterContext;
+import jakarta.json.Json;
+import jakarta.json.JsonValue;
+import nl.jqno.equalsverifier.EqualsVerifier;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 
-import java.io.IOException;
 
-public class OutputContent extends AbstractUserInterfaceElement {
+class SimpleMessageIdTest {
 
-    private String outputContent = "";
-
-    public OutputContent(InterpreterContext interpreterContext) {
-        super(interpreterContext);
+    @Test
+    void asJson() {
+        final String testId = "test";
+        final SimpleMessageId id = new SimpleMessageId(testId);
+        final JsonValue expectedJson = Json.createValue(testId);
+        Assertions.assertEquals(expectedJson,id.asJson());
     }
-
-    @Override
-    protected void draw() {
-        getInterpreterContext().out().clear(false);
-        try {
-            getInterpreterContext().out().write(outputContent);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-    }
-
-    @Override
-    public void emit() {
-        // no angular in this one
-    }
-
-    public void setOutputContent(String outputContent) {
-        this.outputContent = outputContent;
-        draw();
-    }
-
-    public void clear() {
-        getInterpreterContext().out().clear(true);
+    @Test
+    void equalsVerifier() {
+        EqualsVerifier.forClass(JsonMessage.class).verify();
     }
 }
