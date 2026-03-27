@@ -19,6 +19,8 @@ package com.teragrep.zep_01.interpreter;
 
 import com.google.gson.Gson;
 import com.teragrep.zep_01.common.JsonSerializable;
+import com.teragrep.zep_01.common.Jsonable;
+import jakarta.json.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -48,15 +50,22 @@ public class InterpreterResult implements Serializable, JsonSerializable {
    * Type of Data.
    */
   public enum Type {
-    TEXT,
-    HTML,
-    ANGULAR,
-    TABLE,
-    IMG,
-    SVG,
-    NULL,
-    NETWORK,
-    JSONTABLE
+    TEXT("text"),
+    HTML("html"),
+    ANGULAR("angular"),
+    TABLE("table"),
+    IMG("img"),
+    SVG("svg"),
+    NULL("null"),
+    NETWORK("network"),
+    DATATABLES("dataTables"),
+    UPLOT("uPlot");
+
+    public final String label;
+
+    Type(final String label) {
+      this.label = label;
+    }
   }
 
   Code code;
@@ -137,5 +146,16 @@ public class InterpreterResult implements Serializable, JsonSerializable {
     }
 
     return sb.toString();
+  }
+
+  public JsonObject asJson() {
+    final JsonObject json;
+    if(msg.size() > 0){
+      json = msg.get(0).asJson();
+    }
+    else {
+      json = JsonValue.EMPTY_JSON_OBJECT;
+    }
+    return json;
   }
 }

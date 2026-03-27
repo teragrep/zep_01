@@ -46,30 +46,39 @@
 package com.teragrep.pth_07.ui;
 
 import com.teragrep.pth_07.ui.elements.MessageLog;
-import com.teragrep.pth_07.ui.elements.OutputContent;
 import com.teragrep.pth_07.ui.elements.PerformanceIndicator;
-import com.teragrep.pth_07.ui.elements.table_dynamic.DTTableDatasetNg;
+import com.teragrep.pth_07.ui.elements.table_dynamic.DatasetState;
+import com.teragrep.pth_07.ui.elements.table_dynamic.StubDatasetState;
 import com.teragrep.zep_01.interpreter.InterpreterContext;
+import com.teragrep.zep_01.interpreter.InterpreterException;
+import com.teragrep.zep_01.interpreter.thrift.Options;
+import jakarta.json.JsonObject;
+import org.apache.spark.sql.Dataset;
+import org.apache.spark.sql.Row;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class UserInterfaceManager {
-    private static final Logger LOGGER = LoggerFactory.getLogger(UserInterfaceManager.class);
+import java.util.Objects;
+import java.util.concurrent.atomic.AtomicReference;
 
-    private final DTTableDatasetNg dtTableDatasetNg;
+
+/**
+ * Holds the state of the Dataset, PerformanceIndicator and MessageLog of a single Paragraph.
+ * Responsible for passing new Datasets and formatting requests to DatasetState and triggering the writing of the DatasetState to InterpreterOutput for saving on disk and updating UI.
+ */
+public final class UserInterfaceManager {
+    private static final Logger LOGGER = LoggerFactory.getLogger(UserInterfaceManager.class);
+    private final AtomicReference<DatasetState> datasetState;
     private final PerformanceIndicator performanceIndicator;
     private final MessageLog messageLog;
-    private final OutputContent outputContent;
-
-    public UserInterfaceManager(InterpreterContext interpreterContext) {
-        dtTableDatasetNg = new DTTableDatasetNg(interpreterContext);
-        performanceIndicator = new PerformanceIndicator(interpreterContext);
-        messageLog = new MessageLog(interpreterContext);
-        outputContent = new OutputContent(interpreterContext);
+    public UserInterfaceManager(final InterpreterContext interpreterContext) {
+        this(new AtomicReference<>(new StubDatasetState(interpreterContext.out())), new PerformanceIndicator(interpreterContext), new MessageLog(interpreterContext));
     }
 
-    public DTTableDatasetNg getDtTableDatasetNg() {
-        return dtTableDatasetNg;
+    public UserInterfaceManager(final AtomicReference<DatasetState> datasetState, final PerformanceIndicator performanceIndicator, final MessageLog messageLog){
+        this.datasetState = datasetState;
+        this.performanceIndicator = performanceIndicator;
+        this.messageLog = messageLog;
     }
 
     public PerformanceIndicator getPerformanceIndicator() {
@@ -80,7 +89,38 @@ public class UserInterfaceManager {
         return messageLog;
     }
 
-    public OutputContent getOutputContent() {
-        return outputContent;
+    /**
+     * Updates DatasetState to use a new Dataset, and writes the output to InterpreterOutput.
+     * @param dataset The dataset containing updated data
+     * @throws InterpreterException Thrown if trying to write a StubDatasetState
+     */
+    public void updateDataset(final Dataset<Row> dataset) throws InterpreterException {
+        datasetState.set(datasetState.get().withDataset(dataset));
+        datasetState.get().writeDataUpdate();
+    }
+
+
+    /**
+     * Formats the current dataset with given formatting options. Used when UI requests the current dataset in a different format.
+     * @param options Thrift union object containing the wanted formatting options.
+     * @return String representing the formatted dataset.
+     * @throws InterpreterException Thrown if an error occurs during formatting of data.
+     */
+    public String formatDataset(final Options options) throws InterpreterException{
+            final JsonObject formattedDataset = datasetState.get().formatDataset(options);
+            return formattedDataset.toString();
+    }
+
+    @Override
+    public boolean equals(final Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        final UserInterfaceManager that = (UserInterfaceManager) o;
+        return Objects.equals(datasetState, that.datasetState) && Objects.equals(performanceIndicator, that.performanceIndicator) && Objects.equals(messageLog, that.messageLog);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(datasetState, performanceIndicator, messageLog);
     }
 }

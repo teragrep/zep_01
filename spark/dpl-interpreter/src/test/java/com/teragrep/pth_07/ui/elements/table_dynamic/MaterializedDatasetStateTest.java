@@ -46,12 +46,8 @@
 package com.teragrep.pth_07.ui.elements.table_dynamic;
 
 import com.teragrep.pth_07.ui.elements.table_dynamic.testdata.TestDPLData;
-import com.teragrep.zep_01.display.AngularObjectRegistry;
 import com.teragrep.zep_01.interpreter.*;
-import jakarta.json.Json;
-import jakarta.json.JsonArray;
-import jakarta.json.JsonArrayBuilder;
-import jakarta.json.JsonObject;
+import nl.jqno.equalsverifier.EqualsVerifier;
 import org.apache.spark.sql.Dataset;
 import org.apache.spark.sql.Row;
 import org.apache.spark.sql.SparkSession;
@@ -63,14 +59,13 @@ import org.slf4j.LoggerFactory;
 
 import java.sql.Timestamp;
 import java.time.Instant;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
+import java.util.concurrent.locks.ReentrantLock;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
 
-public class DTTableDatasetNgTest {
-    private static final Logger LOGGER = LoggerFactory.getLogger(DTTableDatasetNgTest.class);
+public class MaterializedDatasetStateTest {
+    private static final Logger LOGGER = LoggerFactory.getLogger(MaterializedDatasetStateTest.class);
     private final SparkSession sparkSession = SparkSession.builder()
             .master("local[*]")
             .config("spark.cleaner.referenceTracking.cleanCheckpoints", "true")
@@ -105,113 +100,28 @@ public class DTTableDatasetNgTest {
     private final TestDPLData smallTestDataset = new TestDPLData(sparkSession, smallTestSchema);
     private final Dataset<Row> smallTestDs = smallTestDataset.createDataset(49,Timestamp.from(Instant.ofEpochSecond(0)),0L,"data data");
 
-    @Test
-    public void testAJAXResponse() {
-        List<String> datasetAsJSON = testDs.toJSON().collectAsList();
-
-        List<String> subList = datasetAsJSON.subList(0, 5);
-
-        JsonArray formated = DTTableDatasetNg.dataStreamParser(subList);
-
-        DTHeader dtHeader = new DTHeader(testSchema);
-        JsonArray headers = dtHeader.json();
-        JsonObject response = DTTableDatasetNg.DTNetResponse(formated, headers, 1, datasetAsJSON.size(),formated.size());
-
-        ArrayList<String> timestamps = new ArrayList<>();
-        timestamps.add("1970-01-01T00:00:49.000Z");
-        timestamps.add("1970-01-01T00:00:48.000Z");
-        timestamps.add("1970-01-01T00:00:47.000Z");
-        timestamps.add("1970-01-01T00:00:46.000Z");
-        timestamps.add("1970-01-01T00:00:45.000Z");
-
-        JsonArrayBuilder dataBuilder = Json.createArrayBuilder();
-        for (String timestamp:timestamps
-             ) {
-            JsonObject rowJson = Json.createObjectBuilder()
-                    .add("_time",timestamp)
-                    .add("id",0)
-                    .add("_raw","data data")
-                    .add("index","index_A")
-                    .add("sourcetype","stream")
-                    .add("host","host")
-                    .add("source","input")
-                    .add("partition","0")
-                    .add("offset",0)
-                    .add("origin","test data")
-                    .build();
-            dataBuilder.add(rowJson);
-        }
-        JsonArray data = dataBuilder.build();
-
-        // Ensure that data field has the correct number of rows.
-        Assertions.assertEquals(5,data.size());
-
-        JsonObject expectedJson = Json.createObjectBuilder()
-                .add("headers",headers)
-                .add("data", data)
-                .add("draw",1)
-                .add("recordsTotal",49)
-                .add("recordsFiltered",5)
-                .build();
-
-        assertEquals(expectedJson.toString()
-                , response.toString()
-        );
-    }
-
-    @Test
-    public void testPagination(){
-        // Boilerplate to create an InterpreterContext
-        TestInterpreterOutputListener listener = new TestInterpreterOutputListener();
-        InterpreterOutput testOutput =  new InterpreterOutput(listener);
-        AngularObjectRegistry testRegistry = new AngularObjectRegistry("test", null);
-        InterpreterContext context = InterpreterContext.builder().setInterpreterOut(testOutput).setAngularObjectRegistry(testRegistry).build();
-
-        DTTableDatasetNg dtTableDatasetNg = new DTTableDatasetNg(context);
-
-        // Simulate DPL receiving new data.
-        Assertions.assertDoesNotThrow(()->{
-            dtTableDatasetNg.setParagraphDataset(testDs);
-        });
-
-        // Get first 5 rows of the dataset, check values of first and last field
-        JsonObject page1 = Assertions.assertDoesNotThrow(()->dtTableDatasetNg.SearchAndPaginate(0,0,5,""));
-        Assertions.assertEquals(5,page1.getJsonArray("data").size());
-        Assertions.assertEquals("1970-01-01T00:00:49.000Z",page1.getJsonArray("data").getJsonObject(0).getString("_time"));
-        Assertions.assertEquals("1970-01-01T00:00:45.000Z",page1.getJsonArray("data").getJsonObject(4).getString("_time"));
-
-
-        // Get rows 6-15 of the dataset, check values of first and last field
-        JsonObject page2 = Assertions.assertDoesNotThrow(()->dtTableDatasetNg.SearchAndPaginate(0,5,10,""));
-        Assertions.assertEquals(10,page2.getJsonArray("data").size());
-        Assertions.assertEquals("1970-01-01T00:00:44.000Z",page2.getJsonArray("data").getJsonObject(0).getString("_time"));
-        Assertions.assertEquals("1970-01-01T00:00:35.000Z",page2.getJsonArray("data").getJsonObject(9).getString("_time"));
-    }
-
     // When new data is received, DTTableDatasetNg should not send an empty update to frontend every time InterpreterOutput.clear() is called.
     // Does not include a concrete implementation of InterpreterOutputListener as it's an anonymous class within RemoteInterpreterServer, and instantiating it would require too many dependencies.
     @Test
     public void testNoOutputClearMessagesSentToUI(){
 
-        TestInterpreterOutputListener listener = new TestInterpreterOutputListener();
-        InterpreterOutput testOutput =  new InterpreterOutput(listener);
+        final TestInterpreterOutputListener listener = new TestInterpreterOutputListener();
+        final InterpreterOutput testOutput =  new InterpreterOutput(listener);
 
-        AngularObjectRegistry testRegistry = new AngularObjectRegistry("test", null);
-        InterpreterContext context = InterpreterContext.builder().setInterpreterOut(testOutput).setAngularObjectRegistry(testRegistry).build();
-        DTTableDatasetNg dtTableDatasetNg = new DTTableDatasetNg(context);
+        final DatasetState dtTableDatasetNg = new StubDatasetState(testOutput);
 
         // Simulate DPL receiving new data.
         Assertions.assertDoesNotThrow(()->{
-            dtTableDatasetNg.setParagraphDataset(testDs);
+            dtTableDatasetNg.withDataset(testDs).writeDataUpdate();
         });
-        Assertions.assertEquals(1,listener.numberOfUpdateCalls());
+        Assertions.assertEquals(2,listener.numberOfUpdateCalls());
         Assertions.assertEquals(0,listener.numberOfResetCalls());
 
         // Simulate DPL receiving another batch of data.
         Assertions.assertDoesNotThrow(()->{
-            dtTableDatasetNg.setParagraphDataset(testDs);
+            dtTableDatasetNg.withDataset(testDs).writeDataUpdate();
         });
-        Assertions.assertEquals(2,listener.numberOfUpdateCalls());
+        Assertions.assertEquals(4,listener.numberOfUpdateCalls());
         Assertions.assertEquals(0,listener.numberOfResetCalls());
 
     }
@@ -222,34 +132,34 @@ public class DTTableDatasetNgTest {
      */
     @Test
     public void testIncrementDraw(){
-        TestInterpreterOutputListener listener = new TestInterpreterOutputListener();
-        InterpreterOutput testOutput =  new InterpreterOutput(listener);
+        final TestInterpreterOutputListener listener = new TestInterpreterOutputListener();
+        final InterpreterOutput testOutput =  new InterpreterOutput(listener);
 
-        AngularObjectRegistry testRegistry = new AngularObjectRegistry("test", null);
-        InterpreterContext context = InterpreterContext.builder().setInterpreterOut(testOutput).setAngularObjectRegistry(testRegistry).build();
-        DTTableDatasetNg dtTableDatasetNg = new DTTableDatasetNg(context);
+        final DatasetState initialState = new StubDatasetState(testOutput);
 
         // Simulate DPL receiving new data.
-        Assertions.assertDoesNotThrow(()->{
-            dtTableDatasetNg.setParagraphDataset(testDs);
-        });
-        List<InterpreterResultMessage> messages = Assertions.assertDoesNotThrow(()->testOutput.toInterpreterResultMessage());
+
+        final DatasetState state1 = initialState.withDataset(testDs);
+        Assertions.assertDoesNotThrow(()->state1.writeDataUpdate());
+        final List<InterpreterResultMessage> messages = Assertions.assertDoesNotThrow(()->testOutput.toInterpreterResultMessage());
         // First message should have draw value of 1
         Assertions.assertTrue(messages.get(0).getData().contains("\"draw\":1"));
 
         // Simulate DPL receiving another batch of new data without changing schema.
+        final DatasetState state2 = state1.withDataset(testDs);
         Assertions.assertDoesNotThrow(()->{
-            dtTableDatasetNg.setParagraphDataset(testDs);
+            state2.writeDataUpdate();
         });
-        List<InterpreterResultMessage> messages2 = Assertions.assertDoesNotThrow(()->testOutput.toInterpreterResultMessage());
+        final List<InterpreterResultMessage> messages2 = Assertions.assertDoesNotThrow(()->testOutput.toInterpreterResultMessage());
         // Second message should have draw value of 2
         Assertions.assertTrue(messages2.get(0).getData().contains("\"draw\":2"));
 
         // Simulate DPL receiving yet another batch of new data but with a changed schema.
+        final DatasetState state3 = state2.withDataset(smallTestDs);
         Assertions.assertDoesNotThrow(()->{
-            dtTableDatasetNg.setParagraphDataset(smallTestDs);
+            state3.writeDataUpdate();
         });
-        List<InterpreterResultMessage> messages3 = Assertions.assertDoesNotThrow(()->testOutput.toInterpreterResultMessage());
+        final List<InterpreterResultMessage> messages3 = Assertions.assertDoesNotThrow(()->testOutput.toInterpreterResultMessage());
         // Third message's draw value should be reset to 1
         Assertions.assertTrue(messages3.get(0).getData().contains("\"draw\":1"));
     }
@@ -258,16 +168,16 @@ public class DTTableDatasetNgTest {
         private int numberOfResetCalls = 0;
         private int numberOfUpdateCalls = 0;
         @Override
-        public void onUpdateAll(InterpreterOutput out) {
+        public void onUpdateAll(final InterpreterOutput out) {
             numberOfResetCalls++;
             // Calling this clears the paragraph's results. It will be called when we update the dataset, but should not be called upon pagination request.
         }
         @Override
-        public void onAppend(int index, InterpreterResultMessageOutput out, byte[] line) {
+        public void onAppend(final int index, final InterpreterResultMessageOutput out, final byte[] line) {
             // Calling this does not clear the paragraph's results.
         }
         @Override
-        public void onUpdate(int index, InterpreterResultMessageOutput out) {
+        public void onUpdate(final int index, final InterpreterResultMessageOutput out) {
             // Calling this does not clear the paragraph's results.
             numberOfUpdateCalls++;
         }
@@ -278,5 +188,23 @@ public class DTTableDatasetNgTest {
         public int numberOfResetCalls(){
             return numberOfResetCalls;
         }
+    }
+    @Test
+    void equalsVerifier() {
+        // EqualsVerifier requires some prefab values due to usage of mutable or complex objects
+        final Dataset<Row> redDataset = sparkSession.emptyDataFrame();
+        final Dataset<Row> blueDataset = testDs;
+
+        final InterpreterOutput redOutput = new InterpreterOutput(new TestInterpreterOutputListener());
+        final InterpreterOutput blueOutput = new InterpreterOutput();
+
+        final ReentrantLock redLock = new ReentrantLock();
+        final ReentrantLock blueLock = new ReentrantLock();
+        blueLock.lock();
+
+        EqualsVerifier.forClass(MaterializedDatasetState.class)
+                .withPrefabValues(Dataset.class, redDataset, blueDataset)
+                .withPrefabValues(InterpreterOutput.class,redOutput,blueOutput)
+                .withPrefabValues(ReentrantLock.class, redLock,blueLock).verify();
     }
 }
