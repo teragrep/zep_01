@@ -580,8 +580,8 @@ public class NotebookServer extends WebSocketServlet
   }
 
   private void inlineBroadcastNote(Note note) {
-    Message message = new Message(OP.NOTE).put("note", note);
-    getConnectionManager().broadcast(note.getId(), message);
+    final JsonObject message = new JsonMessage(OP.NOTE,note).asJson();
+    getConnectionManager().broadcast(note.getId(),message.toString());
   }
 
   private void inlineBroadcastParagraph(Note note, Paragraph p, String msgId) {
@@ -590,8 +590,16 @@ public class NotebookServer extends WebSocketServlet
     if (note.isPersonalizedMode()) {
       broadcastParagraphs(p.getUserParagraphMap(), p, msgId);
     } else {
-      Message message = new Message(OP.PARAGRAPH).withMsgId(msgId).put("paragraph", p);
-      getConnectionManager().broadcast(note.getId(), message);
+      // msgId might be null, leading to a NullPointerException, so we need to check it here. Will need to completely remove the old Message object and replace it with JsonMessages.
+      final MessageId messageId;
+      if(msgId == null){
+        messageId = new StubMessageId();
+      }
+      else {
+        messageId = new SimpleMessageId(msgId);
+      }
+      final JsonObject message = new JsonMessage(messageId,OP.PARAGRAPH,p).asJson();
+      getConnectionManager().broadcast(note.getId(),message.toString());
     }
   }
 
@@ -704,7 +712,8 @@ public class NotebookServer extends WebSocketServlet
           @Override
           public void onSuccess(Note note, ServiceContext context) throws IOException {
             getConnectionManager().addNoteConnection(note.getId(), conn);
-            conn.send(serializeMessage(new Message(OP.NOTE).put("note", note)));
+            final JsonObject message = new JsonMessage(OP.NOTE,note).asJson();
+            conn.send(message.toString());
             updateAngularObjectRegistry(conn, note);
             sendAllAngularObjects(note, context.getAutheInfo().getUser(), conn);
           }
@@ -877,7 +886,8 @@ public class NotebookServer extends WebSocketServlet
           public void onSuccess(Note note, ServiceContext context) throws IOException {
             super.onSuccess(note, context);
             getConnectionManager().addNoteConnection(note.getId(), conn);
-            conn.send(serializeMessage(new Message(OP.NEW_NOTE).put("note", note)));
+            final JsonObject message = new JsonMessage(OP.NEW_NOTE,note).asJson();
+            conn.send(message.toString());
             broadcastNoteList(context.getAutheInfo(), context.getUserAndRoles());
           }
 
