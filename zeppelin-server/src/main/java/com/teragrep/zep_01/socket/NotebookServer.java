@@ -1137,8 +1137,22 @@ public class NotebookServer extends WebSocketServlet
       final ParagraphOutputResponseMessage paragraphOutputResponse = new ParagraphOutputResponseMessage(noteId, paragraphId, outputJson);
       final JsonMessage msg = new JsonMessage(new SimpleMessageId(msgId), OP.PARAGRAPH_OUTPUT, paragraphOutputResponse);
       conn.send(msg.asJson().toString());
-    }
-    catch (InterpreterException e) {
+    } catch (InterpreterException e) {
+      // If unable to retrieve formatted data from Interpreter, try to retrieve latest formatted data from Notebook object.
+      InterpreterResult result = paragraph.getReturn();
+      if(result != null) {
+        for (InterpreterResultMessage resultMessage:result.message()) {
+          try{
+            JsonObject outputJson = resultMessage.format(options);
+            final ParagraphOutputResponseMessage paragraphOutputResponse = new ParagraphOutputResponseMessage(noteId, paragraphId, outputJson);
+            final JsonMessage msg = new JsonMessage(new SimpleMessageId(msgId), OP.PARAGRAPH_OUTPUT, paragraphOutputResponse);
+            conn.send(msg.asJson().toString());
+            return;
+          }catch (InterpreterException exception){
+            // continue until all results have been exhausted
+          }
+        }
+      }
       // If unable to retrieve data from Notebook object, throw an exception and log as an error.
       LOG.error("Failed to retrieve output for note: {} paragraph: {} cause: {}", noteId, paragraphId, e.getCause(), e);
       final JsonObject errorJson = Json.createObjectBuilder()
