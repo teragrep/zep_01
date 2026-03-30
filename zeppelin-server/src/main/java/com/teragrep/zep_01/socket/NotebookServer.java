@@ -436,12 +436,6 @@ public class NotebookServer extends WebSocketServlet
         case WATCHER:
           getConnectionManager().switchConnectionToWatcher(conn);
           break;
-        case SAVE_NOTE_FORMS:
-          saveNoteForms(conn, context, receivedMessage);
-          break;
-        case REMOVE_NOTE_FORMS:
-          removeNoteForms(conn, context, receivedMessage);
-          break;
         case PATCH_PARAGRAPH:
           patchParagraph(conn, context, receivedMessage);
           break;
@@ -581,7 +575,6 @@ public class NotebookServer extends WebSocketServlet
   }
 
   private void inlineBroadcastParagraph(Note note, Paragraph p, String msgId) {
-    broadcastNoteForms(note);
 
     if (note.isPersonalizedMode()) {
       broadcastParagraphs(p.getUserParagraphMap(), p, msgId);
@@ -2143,44 +2136,6 @@ public class NotebookServer extends WebSocketServlet
       paragraphInfos.add(paraInfo);
     }
     return paragraphInfos;
-  }
-
-  private void broadcastNoteForms(Note note) {
-    GUI formsSettings = new GUI();
-    formsSettings.setForms(note.getNoteForms());
-    formsSettings.setParams(note.getNoteParams());
-    getConnectionManager().broadcast(note.getId(),
-        new Message(OP.SAVE_NOTE_FORMS).put("formsData", formsSettings));
-  }
-
-  private void saveNoteForms(NotebookSocket conn,
-                             ServiceContext context,
-                             Message fromMessage) throws IOException {
-    String noteId = (String) fromMessage.get("noteId");
-    Map<String, Object> noteParams = (Map<String, Object>) fromMessage.get("noteParams");
-
-    getNotebookService().saveNoteForms(noteId, noteParams, context,
-        new WebSocketServiceCallback<Note>(conn) {
-          @Override
-          public void onSuccess(Note note, ServiceContext context) {
-            broadcastNoteForms(note);
-          }
-        });
-  }
-
-  private void removeNoteForms(NotebookSocket conn,
-                               ServiceContext context,
-                               Message fromMessage) throws IOException {
-    String noteId = (String) fromMessage.get("noteId");
-    String formName = (String) fromMessage.get("formName");
-
-    getNotebookService().removeNoteForms(noteId, formName, context,
-        new WebSocketServiceCallback<Note>(conn) {
-          @Override
-          public void onSuccess(Note note, ServiceContext context) {
-            broadcastNoteForms(note);
-          }
-        });
   }
 
   @ManagedAttribute
