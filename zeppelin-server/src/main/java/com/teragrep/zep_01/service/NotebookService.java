@@ -367,9 +367,6 @@ public class NotebookService {
     p.setText(text);
     p.setTitle(title);
     p.setAuthenticationInfo(context.getAutheInfo());
-    if (params != null && !params.isEmpty()) {
-      p.settings.setParams(params);
-    }
     if (config != null && !config.isEmpty()) {
       p.mergeConfig(config);
     }
@@ -379,9 +376,6 @@ public class NotebookService {
       p.setText(text);
       p.setTitle(title);
       p.setAuthenticationInfo(context.getAutheInfo());
-      if (params != null && !params.isEmpty()) {
-        p.settings.setParams(params);
-      }
       if (config != null && !config.isEmpty()) {
         p.mergeConfig(config);
       }
@@ -649,13 +643,11 @@ public class NotebookService {
       return;
     }
 
-    p.settings.setParams(params);
     p.mergeConfig(config);
     p.setTitle(title);
     p.setText(text);
     if (note.isPersonalizedMode()) {
       p = p.getUserParagraph(context.getAutheInfo().getUser());
-      p.settings.setParams(params);
       p.mergeConfig(config);
       p.setTitle(title);
       p.setText(text);
@@ -788,47 +780,6 @@ public class NotebookService {
     return cronUpdated;
   }
 
-  public void saveNoteForms(String noteId,
-                            Map<String, Object> noteParams,
-                            ServiceContext context,
-                            ServiceCallback<Note> callback) throws IOException {
-    if (!checkPermission(noteId, Permission.WRITER, Message.OP.SAVE_NOTE_FORMS, context,
-        callback)) {
-      return;
-    }
-
-    Note note = notebook.getNote(noteId);
-    if (note == null) {
-      callback.onFailure(new NoteNotFoundException(noteId), context);
-      return;
-    }
-
-    note.setNoteParams(noteParams);
-    notebook.saveNote(note, context.getAutheInfo());
-    callback.onSuccess(note, context);
-  }
-
-  public void removeNoteForms(String noteId,
-                              String formName,
-                              ServiceContext context,
-                              ServiceCallback<Note> callback) throws IOException {
-    Note note = notebook.getNote(noteId);
-    if (note == null) {
-      callback.onFailure(new NoteNotFoundException(noteId), context);
-      return;
-    }
-
-    if (!checkPermission(noteId, Permission.WRITER, Message.OP.REMOVE_NOTE_FORMS, context,
-        callback)) {
-      return;
-    }
-
-    note.getNoteForms().remove(formName);
-    note.getNoteParams().remove(formName);
-    notebook.saveNote(note, context.getAutheInfo());
-    callback.onSuccess(note, context);
-  }
-
   public NotebookRepoWithVersionControl.Revision checkpointNote(
       String noteId,
       String commitMessage,
@@ -841,7 +792,7 @@ public class NotebookService {
       return null;
     }
 
-    if (!checkPermission(noteId, Permission.WRITER, Message.OP.REMOVE_NOTE_FORMS, context,
+    if (!checkPermission(noteId, Permission.WRITER, Message.OP.CHECKPOINT_NOTE, context,
         callback)) {
       return null;
     }
@@ -1185,7 +1136,6 @@ public class NotebookService {
     AuthenticationInfo subject =
         new AuthenticationInfo(fromMessage.principal, fromMessage.roles, fromMessage.ticket);
     p.setAuthenticationInfo(subject);
-    p.settings.setParams(params);
     p.setConfig(config);
 
     if (note.isPersonalizedMode()) {
@@ -1193,7 +1143,6 @@ public class NotebookService {
       p.setText(text);
       p.setTitle(title);
       p.setAuthenticationInfo(subject);
-      p.settings.setParams(params);
       p.setConfig(config);
     }
 

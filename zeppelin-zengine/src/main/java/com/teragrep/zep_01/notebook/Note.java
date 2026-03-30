@@ -27,7 +27,6 @@ import com.teragrep.zep_01.common.JsonSerializable;
 import com.teragrep.zep_01.conf.ZeppelinConfiguration;
 import com.teragrep.zep_01.display.AngularObject;
 import com.teragrep.zep_01.display.AngularObjectRegistry;
-import com.teragrep.zep_01.display.Input;
 import com.teragrep.zep_01.interpreter.ExecutionContext;
 import com.teragrep.zep_01.interpreter.Interpreter;
 import com.teragrep.zep_01.interpreter.InterpreterFactory;
@@ -59,7 +58,6 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
-import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
@@ -115,7 +113,6 @@ public class Note implements JsonSerializable {
           .setPrettyPrinting()
           .setDateFormat("yyyy-MM-dd HH:mm:ss.SSS")
           .registerTypeAdapter(Date.class, new NotebookImportDeserializer())
-          .registerTypeAdapterFactory(Input.TypeAdapterFactory)
           .setExclusionStrategies(NOTE_GSON_EXCLUSION_STRATEGY)
           .create();
   private static final DateTimeFormatter DATE_TIME_FORMATTER =
@@ -126,9 +123,6 @@ public class Note implements JsonSerializable {
   private String id;
   private String defaultInterpreterGroup;
   private String version;
-
-  private Map<String, Object> noteParams = new LinkedHashMap<>();
-  private Map<String, Input> noteForms = new LinkedHashMap<>();
   private Map<String, List<AngularObject>> angularObjects = new HashMap<>();
 
   /*
@@ -225,8 +219,6 @@ public class Note implements JsonSerializable {
       this.paragraphs = null;
       this.config = null;
       this.info = null;
-      this.noteForms = null;
-      this.noteParams = null;
       this.angularObjects = null;
     }
   }
@@ -302,22 +294,6 @@ public class Note implements JsonSerializable {
 
   public void setDefaultInterpreterGroup(String defaultInterpreterGroup) {
     this.defaultInterpreterGroup = defaultInterpreterGroup;
-  }
-
-  public Map<String, Object> getNoteParams() {
-    return noteParams;
-  }
-
-  public void setNoteParams(Map<String, Object> noteParams) {
-    this.noteParams = noteParams;
-  }
-
-  public Map<String, Input> getNoteForms() {
-    return noteForms;
-  }
-
-  public void setNoteForms(Map<String, Input> noteForms) {
-    this.noteForms = noteForms;
   }
 
   public void setName(String name) {
@@ -491,15 +467,11 @@ public class Note implements JsonSerializable {
     Paragraph newParagraph = new Paragraph(srcParagraph.getId(), this, paragraphJobListener);
 
     Map<String, Object> config = new HashMap<>(srcParagraph.getConfig());
-    Map<String, Object> param = srcParagraph.settings.getParams();
-    Map<String, Input> form = srcParagraph.settings.getForms();
 
     LOGGER.debug("srcParagraph user: {}", srcParagraph.getUser());
 
     newParagraph.setAuthenticationInfo(subject);
     newParagraph.setConfig(config);
-    newParagraph.settings.setParams(param);
-    newParagraph.settings.setForms(form);
     newParagraph.setText(srcParagraph.getText());
     newParagraph.setTitle(srcParagraph.getTitle());
 
@@ -793,11 +765,7 @@ public class Note implements JsonSerializable {
           continue;
         }
         p.setAuthenticationInfo(authInfo);
-        Map<String, Object> originalParams = p.settings.getParams();
         try {
-          if (params != null && !params.isEmpty()) {
-            p.settings.setParams(params);
-          }
           Interpreter interpreter = p.getBindedInterpreter();
           if (interpreter != null) {
             // set interpreter property to execution.mode to be note
@@ -812,9 +780,6 @@ public class Note implements JsonSerializable {
           }
         } catch (InterpreterNotFoundException e) {
           // ignore, because the following run method will fail if interpreter not found.
-        } finally {
-          // reset params to the original value
-          p.settings.setParams(originalParams);
         }
       }
     } catch (Exception e) {
@@ -1119,7 +1084,6 @@ public class Note implements JsonSerializable {
   public static Note fromJson(String noteId, String json) throws IOException {
     try {
       Note note = GSON.fromJson(json, Note.class);
-      convertOldInput(note);
       note.info.remove("isRunning");
       note.postProcessParagraphs();
       return note;
@@ -1140,12 +1104,6 @@ public class Note implements JsonSerializable {
       if (p.getStatus() == Status.RUNNING && !zConf.isRecoveryEnabled()) {
         p.setStatus(Status.ABORT);
       }
-    }
-  }
-
-  private static void convertOldInput(Note note) {
-    for (Paragraph p : note.paragraphs) {
-      p.settings.convertOldInput();
     }
   }
 
