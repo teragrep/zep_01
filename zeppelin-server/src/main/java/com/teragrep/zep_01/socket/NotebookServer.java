@@ -40,9 +40,7 @@ import com.teragrep.zep_01.interpreter.remote.RemoteInterpreter;
 import com.teragrep.zep_01.interpreter.thrift.*;
 import com.teragrep.zep_01.rest.exception.BadRequestException;
 import com.teragrep.zep_01.socket.messages.ParagraphOutputResponseMessage;
-import jakarta.json.Json;
-import jakarta.json.JsonException;
-import jakarta.json.JsonObject;
+import jakarta.json.*;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.apache.thrift.TException;
@@ -1691,7 +1689,26 @@ public class NotebookServer extends WebSocketServlet
       return;
     }
     // As formatted data is passed as a String via Thrift, we have to parse it with JsonReader to make sure the data types are represented correctly.
-    final JsonObject outputJson = Json.createReader(new StringReader(output)).readObject();
+    JsonObject outputJson = Json.createReader(new StringReader(output)).readObject();
+
+    // Since output contains the entire dataset in order to be saved on disk for offline use, we need to make it so that we only return the first 50 rows to UI instead of the entire dataset.
+    // This can be refactored so that UI will send a pagination request when it receives a batch update from server. Alternatively refactor how notebooks are saved to disk to allow offline usage.
+    if(type.equals(InterpreterResult.Type.DATATABLES)){
+      JsonObject data = outputJson.getJsonObject("data");
+      JsonArray dataArray = data.getJsonArray("data");
+      if(dataArray.size() > 50){
+        JsonArrayBuilder truncatedDataArrayBuilder = Json.createArrayBuilder();
+        for (int i = 0; i < 50; i++) {
+          truncatedDataArrayBuilder.add(dataArray.get(i));
+        }
+        JsonObjectBuilder truncatedDataBuilder = Json.createObjectBuilder(data);
+        truncatedDataBuilder.add("data",truncatedDataArrayBuilder.build());
+
+        JsonObjectBuilder truncatedOutputBuilder = Json.createObjectBuilder(outputJson);
+        truncatedOutputBuilder.add("data",truncatedDataBuilder.build());
+        outputJson = truncatedOutputBuilder.build();
+      }
+    }
     final ParagraphOutputResponseMessage paragraphOutputResponse = new ParagraphOutputResponseMessage(noteId,paragraphId,outputJson);
     final JsonMessage msg = new JsonMessage(OP.PARAGRAPH_OUTPUT, paragraphOutputResponse);
     try {
