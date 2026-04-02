@@ -166,7 +166,7 @@ public final class DataTablesFormat{
 
     private List<String> search(final List<String> rows, final String searchString){
         List<String> searchedRows = new ArrayList<>();
-        if (!"".equals(searchString)) {
+        if (!searchString.isEmpty()) {
             try {
                 for (final String row : rows) {
                     final JsonReader reader = Json.createReader(new StringReader(row));
