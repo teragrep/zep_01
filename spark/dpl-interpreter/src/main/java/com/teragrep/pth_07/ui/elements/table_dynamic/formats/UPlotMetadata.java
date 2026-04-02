@@ -72,10 +72,9 @@ public final class UPlotMetadata {
 
     /**
      * Builds a JsonArray containing the names of all series that were not used in a group by clause.
-     * @param schema Schema of the Dataset to be formatted
      * @return JsonArray containing the column names of all columns that do not contain metadata boolean "dpl_internal_isGroupByColumn"
      */
-    private JsonArray series(final StructType schema){
+    private JsonArray series(){
         final JsonArrayBuilder builder = Json.createArrayBuilder();
         for (final StructField field:schema.fields()) {
             if(! field.metadata().contains("dpl_internal_isGroupByColumn")){
@@ -87,15 +86,12 @@ public final class UPlotMetadata {
 
     /**
      * Builds a JsonArray containing the values within group by columns (such as timestamps), mapped to the X-Axis in uPlot.
-     * @param rows List of Rows in the dataset to be formatted. Any column not containing metadata boolean "dpl-internal_isGroupByColumn" will be ignored.
-     * @param aggsUsed Whether aggregations were used in the Dataset to be formatted.
      * @return JsonArray containing every value of every group by column used in the Dataset.
      */
-    private JsonArray labels(final List<Row> rows, final boolean aggsUsed) {
+    private JsonArray labels() {
         final JsonArrayBuilder builder = Json.createArrayBuilder();
-        if(!rows.isEmpty() && aggsUsed){
-            final StructType schema = rows.get(0).schema();
-            for (final Row row:rows) {
+        if(!collectedData.isEmpty() && isAggregated){
+            for (final Row row:collectedData) {
                 for (final StructField field:schema.fields()) {
                     if(field.metadata().contains("dpl_internal_isGroupByColumn")){
                         builder.add(row.get(row.fieldIndex(field.name())).toString());
@@ -113,8 +109,8 @@ public final class UPlotMetadata {
 
     public JsonValue asJson() {
         return Json.createObjectBuilder()
-                .add("labels",labels(collectedData,isAggregated))
-                .add("series",series(schema))
+                .add("labels",labels())
+                .add("series",series())
                 .add("graphType", graphType)
                 .build();
     }
