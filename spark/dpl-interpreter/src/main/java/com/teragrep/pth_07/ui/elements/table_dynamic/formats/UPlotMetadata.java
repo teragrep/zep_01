@@ -52,6 +52,7 @@ import org.apache.spark.sql.types.StructField;
 import org.apache.spark.sql.types.StructType;
 
 import java.util.List;
+import java.util.Objects;
 
 public final class UPlotMetadata {
     private final StructType schema;
@@ -121,4 +122,17 @@ public final class UPlotMetadata {
                 .add("graphType", graphType)
                 .build();
     }
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        UPlotMetadata that = (UPlotMetadata) o;
+        return isAggregated == that.isAggregated && Objects.equals(schema, that.schema) && Objects.equals(collectedData, that.collectedData) && Objects.equals(graphType, that.graphType);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(schema, collectedData, graphType, isAggregated);
+    }
+
 }
