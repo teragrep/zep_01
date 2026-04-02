@@ -53,7 +53,7 @@ import org.apache.spark.sql.types.StructType;
 
 import java.util.List;
 
-public class UPlotMetadata {
+public final class UPlotMetadata {
     private final StructType schema;
     private final List<Row> collectedData;
     private final String graphType;
