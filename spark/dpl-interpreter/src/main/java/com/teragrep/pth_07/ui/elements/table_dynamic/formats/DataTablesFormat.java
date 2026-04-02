@@ -57,6 +57,7 @@ import org.slf4j.LoggerFactory;
 
 import java.io.StringReader;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 
@@ -79,7 +80,7 @@ public final class DataTablesFormat{
 
     public DataTablesFormat(final StructType schema, final List<String> cachedRows, final int draw){
         this.schema = schema;
-        this.cachedRows = cachedRows;
+        this.cachedRows = Collections.unmodifiableList(cachedRows);
         this.draw = draw;
     }
 
