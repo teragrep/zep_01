@@ -116,11 +116,13 @@ public final class UserInterfaceManager {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         final UserInterfaceManager that = (UserInterfaceManager) o;
-        return Objects.equals(datasetState.get(), that.datasetState.get()) && Objects.equals(performanceIndicator, that.performanceIndicator) && Objects.equals(messageLog, that.messageLog);
+        return Objects.equals(datasetState != null ? datasetState.get() : null, that.datasetState != null ? that.datasetState.get() : null)
+                && Objects.equals(performanceIndicator, that.performanceIndicator)
+                && Objects.equals(messageLog, that.messageLog);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(datasetState.get(), performanceIndicator, messageLog);
+        return Objects.hash(datasetState != null ? datasetState.get() : null, performanceIndicator, messageLog);
     }
 }
