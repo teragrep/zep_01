@@ -43,41 +43,55 @@
  * Teragrep, the applicable Commercial License may apply to this file if you as
  * a licensee so wish it.
  */
-package com.teragrep.pth_07.ui.elements;
+package com.teragrep.pth_07.ui.elements.table_dynamic;
 
-import com.teragrep.zep_01.interpreter.InterpreterContext;
+import com.teragrep.pth_07.ui.elements.table_dynamic.formats.DataTablesFormat;
+import com.teragrep.pth_07.ui.elements.table_dynamic.formats.UPlotFormat;
+import com.teragrep.zep_01.interpreter.InterpreterException;
+import com.teragrep.zep_01.interpreter.InterpreterOutput;
+import com.teragrep.zep_01.interpreter.thrift.Options;
+import jakarta.json.JsonObject;
+import org.apache.spark.sql.Dataset;
+import org.apache.spark.sql.Row;
 
-import java.io.IOException;
+import java.util.Objects;
 
-public class OutputContent extends AbstractUserInterfaceElement {
+public final class StubDatasetState implements DatasetState{
+    private final InterpreterOutput output;
+    public StubDatasetState(final InterpreterOutput output){
+        this.output = output;
+    }
 
-    private String outputContent = "";
-
-    public OutputContent(InterpreterContext interpreterContext) {
-        super(interpreterContext);
+    /**
+     * Use this method to turn a StubDatasetState into a MaterializedDatasetState using the given Dataset. Initializes every supported format with the given data
+     * @param rowDataset The Dataset to use
+     * @return A new MaterializedDatasetState that contains the same InterpreterOutput as this StubDatasetState, the given Dataset.
+     */
+    @Override
+    public DatasetState withDataset(final Dataset<Row> rowDataset){
+        return new MaterializedDatasetState(rowDataset,output,new DataTablesFormat().withDataset(rowDataset),new UPlotFormat().withDataset(rowDataset));
     }
 
     @Override
-    protected void draw() {
-        getInterpreterContext().out().clear(false);
-        try {
-            getInterpreterContext().out().write(outputContent);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+    public JsonObject formatDataset(final Options options) throws InterpreterException {
+        throw new InterpreterException("Attempting to format an empty dataset!");
     }
 
     @Override
-    public void emit() {
-        // no angular in this one
+    public void writeDataUpdate() throws InterpreterException {
+        throw new InterpreterException("Attempting to write an empty dataset!");
     }
 
-    public void setOutputContent(String outputContent) {
-        this.outputContent = outputContent;
-        draw();
+    @Override
+    public boolean equals(final Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        final StubDatasetState that = (StubDatasetState) o;
+        return Objects.equals(output, that.output);
     }
 
-    public void clear() {
-        getInterpreterContext().out().clear(true);
+    @Override
+    public int hashCode() {
+        return Objects.hash(output);
     }
 }
