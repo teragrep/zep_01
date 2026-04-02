@@ -55,6 +55,7 @@ import org.apache.spark.sql.types.StructType;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 public final class UPlotData {
 
@@ -165,5 +166,18 @@ public final class UPlotData {
             cachedJson = dataBuilder.build();
         }
         return cachedJson;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        UPlotData uPlotData = (UPlotData) o;
+        return aggsUsed == uPlotData.aggsUsed && Objects.equals(collectedData, uPlotData.collectedData) && Objects.equals(cachedJson, uPlotData.cachedJson);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(collectedData, aggsUsed, cachedJson);
     }
 }
