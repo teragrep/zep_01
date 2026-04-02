@@ -56,16 +56,18 @@ import org.apache.spark.sql.types.StructType;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
+import java.util.concurrent.atomic.AtomicReference;
 
 public final class UPlotData {
 
     private final List<Row> collectedData;
     private final boolean aggsUsed;
-    private JsonArray cachedJson;
+    private final AtomicReference<JsonValue> cachedJson;
 
     public UPlotData(final List<Row> collectedData, final boolean aggsUsed){
         this.collectedData = collectedData;
         this.aggsUsed = aggsUsed;
+        this.cachedJson = new AtomicReference<>(JsonValue.NULL);
     }
 
     /**
@@ -154,7 +156,7 @@ public final class UPlotData {
     }
 
     public JsonValue asJson() throws InterpreterException {
-        if(cachedJson == null){
+        if(cachedJson.get().getValueType().equals(JsonValue.ValueType.NULL)){
             final JsonArray xAxis = xAxis(collectedData, aggsUsed);
             final List<JsonArray> yAxisArray = yAxis(collectedData);
 
@@ -163,9 +165,9 @@ public final class UPlotData {
             for (final JsonArray array:yAxisArray) {
                 dataBuilder.add(array);
             }
-            cachedJson = dataBuilder.build();
+            cachedJson.set(dataBuilder.build());
         }
-        return cachedJson;
+        return cachedJson.get();
     }
 
     @Override
@@ -173,7 +175,9 @@ public final class UPlotData {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         UPlotData uPlotData = (UPlotData) o;
-        return aggsUsed == uPlotData.aggsUsed && Objects.equals(collectedData, uPlotData.collectedData) && Objects.equals(cachedJson, uPlotData.cachedJson);
+        return aggsUsed == uPlotData.aggsUsed
+                && Objects.equals(collectedData, uPlotData.collectedData)
+                && Objects.equals(cachedJson != null ? cachedJson.get() : null, uPlotData.cachedJson != null ? uPlotData.cachedJson.get() : null);
     }
 
     @Override
