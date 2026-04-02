@@ -94,7 +94,14 @@ public final class UPlotMetadata {
             for (final Row row:collectedData) {
                 for (final StructField field:schema.fields()) {
                     if(field.metadata().contains("dpl_internal_isGroupByColumn")){
-                        builder.add(row.get(row.fieldIndex(field.name())).toString());
+                        final int index = row.fieldIndex(field.name());
+                        final Object value = row.get(index);
+                        if(value != null){
+                            builder.add(value.toString());
+                        }
+                        else {
+                            builder.add(JsonValue.NULL);
+                        }
                     }
                 }
             }
