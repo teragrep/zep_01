@@ -45,65 +45,14 @@
  */
 package com.teragrep.pth_07.ui.elements.table_dynamic;
 
-import jakarta.json.*;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import com.teragrep.zep_01.interpreter.InterpreterException;
+import com.teragrep.zep_01.interpreter.thrift.Options;
+import jakarta.json.JsonObject;
+import org.apache.spark.sql.Dataset;
+import org.apache.spark.sql.Row;
 
-import java.io.StringReader;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Objects;
-
-public final class DTSearch {
-    protected static final Logger LOGGER = LoggerFactory.getLogger(DTSearch.class);
-    private final List<String> rowList;
-
-    public DTSearch(List<String> rowList){
-        this.rowList = rowList;
-    }
-    public List<String> search(String searchString){
-        List<String> searchedList = new ArrayList<>();
-        if (!"".equals(searchString)) {
-            try {
-                for (String row : rowList) {
-                    JsonReader reader = Json.createReader(new StringReader(row));
-                    JsonObject line = reader.readObject();
-
-                    // NOTE hard coded to _raw column
-                    JsonString _raw = line.getJsonString("_raw");
-                    if (_raw != null) {
-                        String _rawString = _raw.getString();
-                        if (_rawString != null) {
-                            if (_rawString.contains(searchString)) {
-                                // _raw matches, add whole row to result set
-                                searchedList.add(row);
-                            }
-                        }
-                    }
-                    reader.close();
-                }
-                return searchedList;
-            } catch (JsonException | IllegalStateException e) {
-                LOGGER.error(e.toString());
-                return searchedList;
-            }
-        }
-        else {
-            searchedList = rowList;
-        }
-        return searchedList;
-    }
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        DTSearch dtSearch = (DTSearch) o;
-        return Objects.equals(rowList, dtSearch.rowList);
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(rowList);
-    }
+public interface DatasetState {
+    public abstract DatasetState withDataset(final Dataset<Row> rowDataset);
+    public abstract JsonObject formatDataset(final Options options) throws InterpreterException;
+    public abstract void writeDataUpdate() throws InterpreterException;
 }

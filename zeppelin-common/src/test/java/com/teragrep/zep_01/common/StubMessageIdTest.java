@@ -43,45 +43,16 @@
  * Teragrep, the applicable Commercial License may apply to this file if you as
  * a licensee so wish it.
  */
-package com.teragrep.pth_07.ui.elements.table_dynamic;
+package com.teragrep.zep_01.common;
 
-import java.util.List;
-import java.util.Objects;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 
-final class DTPagination {
+class StubMessageIdTest {
 
-    private final List<String> rowList;
-    public DTPagination(List<String> rowList){
-        this.rowList = rowList;
-    }
-    public List<String> paginate(int pageSize, int pageStart) {
-        // ranges must be greater than 0
-        int fromIndex = Math.max(pageStart, 0);
-        int toIndex = Math.max(fromIndex + pageSize, 0);
-
-        // list must end at the maximum size
-        if (toIndex > rowList.size()) {
-            toIndex = rowList.size();
-        }
-
-        // list range must be positive
-        if (fromIndex > toIndex) {
-            fromIndex = toIndex;
-        }
-
-        return rowList.subList(fromIndex, toIndex);
-    }
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        DTPagination that = (DTPagination) o;
-        return Objects.equals(rowList, that.rowList);
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(rowList);
+    @Test
+    void asJson() {
+        final StubMessageId stubMessageId = new StubMessageId();
+        Assertions.assertThrows(IllegalStateException.class,()->stubMessageId.asJson());
     }
 }
