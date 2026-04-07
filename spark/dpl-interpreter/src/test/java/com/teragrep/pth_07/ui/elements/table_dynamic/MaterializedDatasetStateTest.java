@@ -205,6 +205,7 @@ public class MaterializedDatasetStateTest {
         EqualsVerifier.forClass(MaterializedDatasetState.class)
                 .withPrefabValues(Dataset.class, redDataset, blueDataset)
                 .withPrefabValues(InterpreterOutput.class,redOutput,blueOutput)
-                .withPrefabValues(ReentrantLock.class, redLock,blueLock).verify();
+                .withPrefabValues(ReentrantLock.class, redLock,blueLock)
+                .withIgnoredFields("lock").verify();
     }
 }
