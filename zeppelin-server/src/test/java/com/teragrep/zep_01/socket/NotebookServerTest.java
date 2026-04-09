@@ -104,8 +104,8 @@ public class NotebookServerTest extends AbstractTestRestApi {
   // Should not broadcast NOTES_INFO messages when renaming or editing notebooks.
   @Test
   public void testNoNotesInfoBroadcasting(){
-    final NotebookSocket sock1 = createWebSocket();
-    final NotebookSocket sock2 = createWebSocket();
+    final NotebookSocketFake sock1 = new NotebookSocketFake();
+    final NotebookSocketFake sock2 = new NotebookSocketFake();
 
     // Create a notebook
     final String noteName = "folder/Note with millis " + System.currentTimeMillis();
@@ -139,15 +139,15 @@ public class NotebookServerTest extends AbstractTestRestApi {
     notebookServer.onMessage(sock1, deleteFolderJson);
 
     // Assert that NOTES_INFO was not sent as part of any previous requests
-    Assertions.assertDoesNotThrow(()-> verify(sock1, times(0)).send(contains(OP.NOTES_INFO.toString())));
-    Assertions.assertDoesNotThrow(()-> verify(sock2, times(0)).send(contains(OP.NOTES_INFO.toString())));
+    Assertions.assertEquals(sock1.notesInfoMessageCount(),0);
+    Assertions.assertEquals(sock2.notesInfoMessageCount(),0);
 
     // Should be sent on LIST_NOTES to only requesting connectiont
     final Message listNotesMessage = new Message(OP.LIST_NOTES);
     final String listNotesJson = listNotesMessage.toJson();
     notebookServer.onMessage(sock1, listNotesJson);
-    Assertions.assertDoesNotThrow(()-> verify(sock1, times(1)).send(contains(OP.NOTES_INFO.toString())));
-    Assertions.assertDoesNotThrow(()-> verify(sock2, times(0)).send(contains(OP.NOTES_INFO.toString())));
+    Assertions.assertEquals(sock1.notesInfoMessageCount(),1);
+    Assertions.assertEquals(sock2.notesInfoMessageCount(),0);
   }
 
   @Ignore(value="[ERROR] Crashed tests:\n" +
@@ -886,5 +886,23 @@ public class NotebookServerTest extends AbstractTestRestApi {
     NotebookSocket sock = mock(NotebookSocket.class);
     when(sock.getRequest()).thenReturn(mockRequest);
     return sock;
+  }
+
+  private class NotebookSocketFake extends NotebookSocket{
+
+    private int notesInfoMessageCount = 0;
+    public NotebookSocketFake() {
+      super(null,null,null);
+    }
+
+    @Override
+    public void send(String serializeMessage){
+      if(serializeMessage.contains("NOTES_INFO")){
+        notesInfoMessageCount++;
+      }
+    }
+    public int notesInfoMessageCount(){
+      return notesInfoMessageCount;
+    }
   }
 }
