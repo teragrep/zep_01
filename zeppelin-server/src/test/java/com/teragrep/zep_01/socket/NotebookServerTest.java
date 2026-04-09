@@ -113,24 +113,39 @@ public class NotebookServerTest extends AbstractTestRestApi {
     final String noteId = notebook.getNotesInfo().get(0).getId();
 
     // notebook is renamed
-    notebookServer.onMessage(sock2, new Message(OP.NOTE_RENAME).put("id",noteId).put("name","renamedNote").toJson());
+    final Message renameMessage = new Message(OP.NOTE_RENAME).put("id",noteId).put("name","renamedNote");
+    final String renameJson = renameMessage.toJson();
+    notebookServer.onMessage(sock2, renameJson);
     // notebook is updated
-    notebookServer.onMessage(sock1, new Message(OP.NOTE_UPDATE).put("id",noteId).put("name","renamedNote").put("config",new HashMap<>()).toJson());
+    final HashMap<String,String> emptyConfig = new HashMap<>();
+    final Message updateMessage = new Message(OP.NOTE_UPDATE).put("id",noteId).put("name","renamedNote").put("config",emptyConfig);
+    final String updateJson = updateMessage.toJson();
+    notebookServer.onMessage(sock1, updateJson);
     // Notebook is cloned
-    notebookServer.onMessage(sock2, new Message(OP.CLONE_NOTE).put("id",noteId).put("name","clonedNote").toJson());
+    final Message cloneMessage = new Message(OP.CLONE_NOTE).put("id",noteId).put("name","clonedNote");
+    final String cloneJson = cloneMessage.toJson();
+    notebookServer.onMessage(sock2, cloneJson);
     // notebook is deleted
-    notebookServer.onMessage(sock2, new Message(OP.DEL_NOTE).put("id",noteId).toJson());
+    final Message deleteMessage = new Message(OP.DEL_NOTE).put("id",noteId);
+    final String deleteJson = deleteMessage.toJson();
+    notebookServer.onMessage(sock2, deleteJson);
     // Folder is renamed
-    notebookServer.onMessage(sock1, new Message(OP.FOLDER_RENAME).put("id","folder").put("name","renamedFolder").toJson());
+    final Message renameFolderMessage = new Message(OP.FOLDER_RENAME).put("id","folder").put("name","renamedFolder");
+    final String renameFolderJson = renameFolderMessage.toJson();
+    notebookServer.onMessage(sock1, renameFolderJson);
     // Folder is deleted
-    notebookServer.onMessage(sock1, new Message(OP.REMOVE_FOLDER).put("id","renamedFolder").toJson());
+    final Message deleteFolderMessage = new Message(OP.REMOVE_FOLDER).put("id","renamedFolder");
+    final String deleteFolderJson = deleteFolderMessage.toJson();
+    notebookServer.onMessage(sock1, deleteFolderJson);
 
     // Assert that NOTES_INFO was not sent as part of any previous requests
     Assertions.assertDoesNotThrow(()-> verify(sock1, times(0)).send(contains(OP.NOTES_INFO.toString())));
     Assertions.assertDoesNotThrow(()-> verify(sock2, times(0)).send(contains(OP.NOTES_INFO.toString())));
 
-    // Should be sent on LIST_NOTES to only requesting connection
-    notebookServer.onMessage(sock1, new Message(OP.LIST_NOTES).toJson());
+    // Should be sent on LIST_NOTES to only requesting connectiont
+    final Message listNotesMessage = new Message(OP.LIST_NOTES);
+    final String listNotesJson = listNotesMessage.toJson();
+    notebookServer.onMessage(sock1, listNotesJson);
     Assertions.assertDoesNotThrow(()-> verify(sock1, times(1)).send(contains(OP.NOTES_INFO.toString())));
     Assertions.assertDoesNotThrow(()-> verify(sock2, times(0)).send(contains(OP.NOTES_INFO.toString())));
   }
