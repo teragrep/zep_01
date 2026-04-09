@@ -49,14 +49,19 @@ import com.teragrep.zep_01.display.AngularObject;
 import com.teragrep.zep_01.display.AngularObjectWatcher;
 import com.teragrep.zep_01.interpreter.InterpreterContext;
 import jakarta.json.Json;
+import jakarta.json.JsonArrayBuilder;
 import jakarta.json.JsonObject;
+import org.apache.spark.sql.Dataset;
+import org.apache.spark.sql.Row;
 
-import java.util.Map;
+import java.io.StringReader;
+import java.util.List;
 
 public class PerformanceIndicator extends AbstractUserInterfaceElement {
 
     private final AngularObject<String> batchMsg;
     private String message;
+    private Dataset<Row> performanceData;
 
     public PerformanceIndicator(InterpreterContext interpreterContext) {
         super(interpreterContext);
@@ -82,6 +87,11 @@ public class PerformanceIndicator extends AbstractUserInterfaceElement {
 
     }
 
+    private void draw(final String message){
+        this.message = message;
+        draw();
+    }
+
     @Override
     protected void draw() {
         batchMsg.set(message);
@@ -92,22 +102,19 @@ public class PerformanceIndicator extends AbstractUserInterfaceElement {
         batchMsg.emit();
     }
 
-    public void setPerformanceData(long numInputRows, long batchId, double processedRowsPerSecond, Map<String, String> currentMetrics) {
-        final StringBuilder newMessage = new StringBuilder();
+    public void setPerformanceDataset(final Dataset<Row> performanceData){
+        this.performanceData = performanceData;
+    }
 
-        newMessage.append("Full table input rows read from archive: ").append(numInputRows).append(" ");
-        newMessage.append("during batchId: ").append(batchId).append(" ");
-        newMessage.append("with avg EPS: ").append(processedRowsPerSecond).append("\n");
-
-        if (!currentMetrics.isEmpty()) {
-            newMessage.append("Metrics:\n");
-            for (final Map.Entry<String, String> metric : currentMetrics.entrySet()) {
-                newMessage.append(metric.getKey()).append(": ").append(metric.getValue()).append("\n");
-            }
+    public void sendPerformanceUpdate(){
+        // TODO: format dataset to uPlot format
+        // TODO: maybe format into table as well if needed
+        final JsonArrayBuilder output = Json.createArrayBuilder();
+        final List<String> rows = performanceData.toJSON().collectAsList();
+        for (String row : rows) {
+            final JsonObject rowJson = Json.createReader(new StringReader(row)).readObject();
+            output.add(rowJson);
         }
-
-        message = newMessage.toString();
-
-        draw();
+        draw(output.build().toString());
     }
 }

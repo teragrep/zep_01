@@ -43,24 +43,31 @@
  * Teragrep, the applicable Commercial License may apply to this file if you as
  * a licensee so wish it.
  */
-package com.teragrep.pth_07;
+package com.teragrep.pth_07.performance;
 
 import com.teragrep.pth_07.ui.UserInterfaceManager;
+import org.apache.spark.sql.Dataset;
+import org.apache.spark.sql.Row;
 import org.apache.spark.sql.SparkSession;
+import org.apache.spark.sql.catalyst.expressions.GenericRowWithSchema;
 import org.apache.spark.sql.execution.ui.SQLExecutionUIData;
 import org.apache.spark.sql.execution.ui.SQLPlanMetric;
 import org.apache.spark.sql.streaming.StreamingQueryListener;
+import org.apache.spark.sql.types.DataTypes;
+import org.apache.spark.sql.types.StructField;
+import org.apache.spark.sql.types.StructType;
 import scala.collection.Iterator;
 import scala.collection.JavaConverters;
 import scala.collection.Seq;
 
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 
 public final class DPLMetricsListener extends StreamingQueryListener {
     private final SparkSession sparkSession;
     private final UserInterfaceManager uiManager;
     private final String queryId;
+    private final StructType schema;
+    private final List<Row> rows;
 
     public DPLMetricsListener(
             final SparkSession sparkSession,
@@ -69,6 +76,8 @@ public final class DPLMetricsListener extends StreamingQueryListener {
         this.sparkSession = sparkSession;
         this.uiManager = uiManager;
         this.queryId = queryId;
+        this.schema = DPLMetrics.schema();
+        this.rows = new ArrayList<Row>();
     }
 
     @Override
@@ -79,29 +88,48 @@ public final class DPLMetricsListener extends StreamingQueryListener {
     @Override
     public void onQueryProgress(final QueryProgressEvent event) {
         if (event.progress().name().equals(queryId)) {
-            final Map<String, String> currentMetrics = new HashMap<>();
             final Seq<SQLExecutionUIData> executionsList = sparkSession.sharedState().statusStore().executionsList();
             if (!executionsList.isEmpty()) {
-                final Iterator<SQLExecutionUIData> executionDataIterator = sparkSession.sharedState().statusStore().executionsList().iterator();
+                final Iterator<SQLExecutionUIData> executionDataIterator = executionsList.iterator();
                 while (executionDataIterator.hasNext()) {
                     final SQLExecutionUIData executionData = executionDataIterator.next();
                     final Map<Object, String> metricValues = JavaConverters.mapAsJavaMap(executionData.metricValues());
-                    for (final SQLPlanMetric metric : JavaConverters.asJavaIterable(executionData.metrics())) {
-                        final long id = metric.accumulatorId();
-                        final Object value = metricValues.get(id);
-                        if (metric.metricType().startsWith("v2Custom_") && value != null) {
-                            currentMetrics.put(metric.name(), value.toString());
+                    final List<Object> typedValues = new ArrayList<>();
+                    // Iterate over schema to make sure values are in correct order
+                    for (StructField field: schema.fields()) {
+                        // Initialize as null because Spark rows use nulls to indicate lack of data.
+                        Object fieldValue = null;
+                        for (final SQLPlanMetric metric : JavaConverters.asJavaIterable(executionData.metrics())) {
+                            final long id = metric.accumulatorId();
+                            final String value = metricValues.get(id);
+                            if (metric.metricType().startsWith("v2Custom_") && metric.name().contains(field.name())) {
+                                if(field.dataType().equals(DataTypes.StringType)){
+                                    fieldValue = value;
+                                } else if (field.dataType().equals(DataTypes.IntegerType)) {
+                                    fieldValue = Integer.parseInt(value);
+                                } else if (field.dataType().equals(DataTypes.LongType)) {
+                                    fieldValue = Long.parseLong(value);
+                                } else if (field.dataType().equals(DataTypes.ShortType)) {
+                                    fieldValue = Short.parseShort(value);
+                                } else if (field.dataType().equals(DataTypes.FloatType)) {
+                                    fieldValue = Float.parseFloat(value);
+                                } else if (field.dataType().equals(DataTypes.DoubleType)) {
+                                    fieldValue = Double.parseDouble(value);
+                                }
+                                else {
+                                    throw new UnsupportedOperationException("Encountered an unsupported data type in DPLMetricsListener's schema");
+                                }
+                            }
                         }
+                        typedValues.add(fieldValue);
                     }
+                    Row row = new GenericRowWithSchema(typedValues.toArray(),schema);
+                    rows.add(row);
                 }
             }
-
-            uiManager.getPerformanceIndicator().setPerformanceData(
-                    event.progress().numInputRows(),
-                    event.progress().batchId(),
-                    event.progress().processedRowsPerSecond(),
-                    currentMetrics
-            );
+            Dataset<Row> metricsDataset = sparkSession.createDataFrame(rows,schema).na().drop();
+            uiManager.getPerformanceIndicator().setPerformanceDataset(metricsDataset);
+            uiManager.getPerformanceIndicator().sendPerformanceUpdate();
         }
     }
 
