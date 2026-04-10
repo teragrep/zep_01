@@ -55,6 +55,7 @@ import org.slf4j.LoggerFactory;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 public final class UPlotFormat{
 
@@ -205,5 +206,18 @@ public final class UPlotFormat{
 
     public String type(){
         return InterpreterResult.Type.UPLOT.label;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        UPlotFormat format = (UPlotFormat) o;
+        return Objects.equals(data, format.data) && Objects.equals(metadata, format.metadata);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(data, metadata);
     }
 }

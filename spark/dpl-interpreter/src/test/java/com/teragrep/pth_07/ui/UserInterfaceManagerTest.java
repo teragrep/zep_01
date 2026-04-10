@@ -45,16 +45,18 @@
  */
 package com.teragrep.pth_07.ui;
 
+import com.teragrep.pth_07.ui.elements.table_dynamic.DatasetState;
+import com.teragrep.pth_07.ui.elements.table_dynamic.MaterializedDatasetState;
+import com.teragrep.pth_07.ui.elements.table_dynamic.StubDatasetState;
 import com.teragrep.pth_07.ui.elements.table_dynamic.testdata.TestDPLData;
 import com.teragrep.zep_01.display.AngularObject;
 import com.teragrep.zep_01.display.AngularObjectRegistry;
 import com.teragrep.zep_01.display.AngularObjectRegistryListener;
-import com.teragrep.zep_01.interpreter.InterpreterContext;
-import com.teragrep.zep_01.interpreter.InterpreterOutput;
-import com.teragrep.zep_01.interpreter.InterpreterOutputListener;
-import com.teragrep.zep_01.interpreter.InterpreterResultMessageOutput;
+import com.teragrep.zep_01.interpreter.*;
 import com.teragrep.zep_01.interpreter.thrift.Options;
 import com.teragrep.zep_01.interpreter.thrift.UPlotOptions;
+import jakarta.json.JsonObject;
+import jakarta.json.JsonValue;
 import nl.jqno.equalsverifier.EqualsVerifier;
 import org.apache.spark.sql.Dataset;
 import org.apache.spark.sql.Row;
@@ -69,6 +71,7 @@ import org.junit.jupiter.api.Test;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
+import java.util.concurrent.atomic.AtomicReference;
 
 
 class UserInterfaceManagerTest {
@@ -155,8 +158,14 @@ class UserInterfaceManagerTest {
     void equalsVerifier() {
         final InterpreterContext redPerformanceIndicator = InterpreterContext.builder().setNoteId("red").build();
         final InterpreterContext bluePerformanceIndicactor = InterpreterContext.builder().setNoteId("blue").build();
+        final InterpreterOutput redOutput = new InterpreterOutput();
+        final InterpreterOutput blueOutput = new InterpreterOutput();
+        final AtomicReference<DatasetState> redAtomicReference = new AtomicReference<>(new StubDatasetState(redOutput));
+        final AtomicReference<DatasetState> blueAtomicReference = new AtomicReference<>(new StubDatasetState(blueOutput));
         EqualsVerifier.forClass(UserInterfaceManager.class)
-                .withPrefabValues(InterpreterContext.class, redPerformanceIndicator, bluePerformanceIndicactor);
+                .withPrefabValues(InterpreterContext.class, redPerformanceIndicator, bluePerformanceIndicactor)
+                .withPrefabValues(AtomicReference.class, redAtomicReference, blueAtomicReference)
+                .verify();
     }
 
     private final class TestInterpreterOutputListener implements InterpreterOutputListener{

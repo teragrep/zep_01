@@ -177,11 +177,11 @@ public final class MaterializedDatasetState implements DatasetState {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         final MaterializedDatasetState that = (MaterializedDatasetState) o;
-        return Objects.equals(dataset, that.dataset) && Objects.equals(dataTablesFormat, that.dataTablesFormat) && Objects.equals(uPlotFormat, that.uPlotFormat) && Objects.equals(output, that.output) && Objects.equals(lock, that.lock);
+        return Objects.equals(dataset, that.dataset) && Objects.equals(dataTablesFormat, that.dataTablesFormat) && Objects.equals(uPlotFormat, that.uPlotFormat) && Objects.equals(output, that.output);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(dataset, dataTablesFormat, uPlotFormat, output, lock);
+        return Objects.hash(dataset, dataTablesFormat, uPlotFormat, output);
     }
 }

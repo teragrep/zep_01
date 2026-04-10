@@ -57,6 +57,7 @@ import org.slf4j.LoggerFactory;
 
 import java.io.StringReader;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 
@@ -79,7 +80,7 @@ public final class DataTablesFormat{
 
     public DataTablesFormat(final StructType schema, final List<String> cachedRows, final int draw){
         this.schema = schema;
-        this.cachedRows = cachedRows;
+        this.cachedRows = Collections.unmodifiableList(cachedRows);
         this.draw = draw;
     }
 
@@ -165,12 +166,10 @@ public final class DataTablesFormat{
 
     private List<String> search(final List<String> rows, final String searchString){
         List<String> searchedRows = new ArrayList<>();
-        if (!"".equals(searchString)) {
-            try {
-                for (final String row : rows) {
-                    final JsonReader reader = Json.createReader(new StringReader(row));
+        if (!searchString.isEmpty()) {
+            for (final String row : rows) {
+                try (final JsonReader reader = Json.createReader(new StringReader(row))){
                     final JsonObject line = reader.readObject();
-
                     // NOTE hard coded to _raw column
                     final JsonString _raw = line.getJsonString("_raw");
                     if (_raw != null) {
@@ -182,10 +181,10 @@ public final class DataTablesFormat{
                             }
                         }
                     }
-                    reader.close();
                 }
-            } catch (final JsonException | IllegalStateException e) {
-                LOGGER.error(e.toString());
+                catch (JsonException e){
+                    LOGGER.error(e.toString());
+                }
             }
         }
         else {

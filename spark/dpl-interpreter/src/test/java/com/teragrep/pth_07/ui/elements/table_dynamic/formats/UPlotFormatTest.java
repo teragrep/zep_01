@@ -45,12 +45,12 @@
  */
 package com.teragrep.pth_07.ui.elements.table_dynamic.formats;
 
-import com.teragrep.zep_01.interpreter.InterpreterException;
 import com.teragrep.zep_01.interpreter.InterpreterResult;
 import com.teragrep.zep_01.interpreter.thrift.UPlotOptions;
 import jakarta.json.JsonArray;
 import jakarta.json.JsonObject;
 import jakarta.json.JsonValue;
+import nl.jqno.equalsverifier.EqualsVerifier;
 import org.apache.spark.sql.Dataset;
 import org.apache.spark.sql.Row;
 import org.apache.spark.sql.SparkSession;
@@ -641,5 +641,10 @@ class UPlotFormatTest {
         Assertions.assertEquals(false,formatted.getBoolean("isAggregated"));
 
         Assertions.assertEquals(InterpreterResult.Type.UPLOT.label,formatted.getString("type"));
+    }
+    @Test
+    void equalsVerifier() {
+        EqualsVerifier.forClass(UPlotFormat.class)
+                .verify();
     }
 }
