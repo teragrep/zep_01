@@ -285,7 +285,7 @@ public class DPLPerformanceEntry {
         values.add(recordsProcessed.value());
         values.add(rowsReadFromArchive.value());
         values.add(timestamp.value());
-        return RowFactory.create(values);
+        return RowFactory.create(values.toArray());
     }
     
     public StructType schema(){
