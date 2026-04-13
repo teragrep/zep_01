@@ -151,62 +151,67 @@ public class DPLPerformanceEntry {
     }
 
     public DPLPerformanceEntry withData(final String key, final String value){
-        final DPLPerformanceEntry modifiedPerformanceEntry;
-        if(key.equals(archiveCompressedBytesProcessed.name()+": "+archiveCompressedBytesProcessed.description())){
-            modifiedPerformanceEntry = withArchiveCompressedBytesProcessed(Long.parseLong(value));
+        try{
+            final DPLPerformanceEntry modifiedPerformanceEntry;
+            if(key.equals(archiveCompressedBytesProcessed.name()+": "+archiveCompressedBytesProcessed.description())){
+                modifiedPerformanceEntry = withArchiveCompressedBytesProcessed(Long.parseLong(value));
+            }
+            else if(key.equals(archiveDatabaseRowCount.name()+": "+archiveDatabaseRowCount.description())){
+                modifiedPerformanceEntry = withArchiveDatabaseRowCount(Long.parseLong(value));
+            }
+            else if(key.equals(archiveDatabaseRowAvgLatency.name()+": "+archiveDatabaseRowAvgLatency.description())){
+                modifiedPerformanceEntry = withArchiveDatabaseRowAvgLatency(Long.parseLong(value));
+            }
+            else if(key.equals(archiveDatabaseRowMinLatency.name()+": "+archiveDatabaseRowMinLatency.description())){
+                modifiedPerformanceEntry = withArchiveDatabaseRowMinLatency(Long.parseLong(value));
+            }
+            else if(key.equals(archiveDatabaseRowMaxLatency.name()+": "+archiveDatabaseRowMaxLatency.description())){
+                modifiedPerformanceEntry = withArchiveDatabaseRowMaxLatency(Long.parseLong(value));
+            }
+            else if(key.equals(archiveOffset.name()+": "+archiveOffset.description())){
+                modifiedPerformanceEntry = withArchiveOffset(Long.parseLong(value));
+            }
+            else if(key.equals(archiveObjectsProcessed.name()+": "+archiveObjectsProcessed.description())){
+                modifiedPerformanceEntry = withArchiveObjectsProcessed(Long.parseLong(value));
+            }
+            else if(key.equals(batchId.name()+": "+batchId.description())){
+                modifiedPerformanceEntry = withBatchId(Long.parseLong(value));
+            }
+            else if(key.equals(bytesPerSecond.name()+": "+bytesPerSecond.description())){
+                modifiedPerformanceEntry = withBytesPerSecond(Long.parseLong(value));
+            }
+            else if(key.equals(bytesProcessed.name()+": "+bytesProcessed.description())){
+                modifiedPerformanceEntry = withBytesProcessed(Long.parseLong(value));
+            }
+            else if(key.equals(eps.name()+": "+eps.description())){
+                modifiedPerformanceEntry = withEps(Long.parseLong(value));
+            }
+            else if(key.equals(kafkaOffset.name()+": "+kafkaOffset.description())){
+                modifiedPerformanceEntry = withKafkaOffset(Long.parseLong(value));
+            }
+            else if(key.equals(latestKafkaTimestamp.name()+": "+latestKafkaTimestamp.description())){
+                modifiedPerformanceEntry = withLatestKafkaTimestamp(Long.parseLong(value));
+            }
+            else if(key.equals(recordsPerSecond.name()+": "+recordsPerSecond.description())){
+                modifiedPerformanceEntry = withRecordsPerSecond(Long.parseLong(value));
+            }
+            else if(key.equals(recordsProcessed.name()+": "+recordsProcessed.description())){
+                modifiedPerformanceEntry = withRecordsProcessed(Long.parseLong(value));
+            }
+            else if(key.equals(rowsReadFromArchive.name()+": "+rowsReadFromArchive.description())){
+                modifiedPerformanceEntry = withRowsReadFromArchive(Long.parseLong(value));
+            }
+            else if(key.equals(timestamp.name()+": "+timestamp.description())){
+                modifiedPerformanceEntry = withTimestamp(Long.parseLong(value));
+            }
+            else {
+                modifiedPerformanceEntry = this;
+            }
+            return modifiedPerformanceEntry;
         }
-        else if(key.equals(archiveDatabaseRowCount.name()+": "+archiveDatabaseRowCount.description())){
-            modifiedPerformanceEntry = withArchiveDatabaseRowCount(Long.parseLong(value));
+        catch (NumberFormatException numberFormatException){
+            throw new UnsupportedOperationException("Failed to update performance data! Encountered invalid data type", numberFormatException);
         }
-        else if(key.equals(archiveDatabaseRowAvgLatency.name()+": "+archiveDatabaseRowAvgLatency.description())){
-            modifiedPerformanceEntry = withArchiveDatabaseRowAvgLatency(Long.parseLong(value));
-        }
-        else if(key.equals(archiveDatabaseRowMinLatency.name()+": "+archiveDatabaseRowMinLatency.description())){
-            modifiedPerformanceEntry = withArchiveDatabaseRowMinLatency(Long.parseLong(value));
-        }
-        else if(key.equals(archiveDatabaseRowMaxLatency.name()+": "+archiveDatabaseRowMaxLatency.description())){
-            modifiedPerformanceEntry = withArchiveDatabaseRowMaxLatency(Long.parseLong(value));
-        }
-        else if(key.equals(archiveOffset.name()+": "+archiveOffset.description())){
-            modifiedPerformanceEntry = withArchiveOffset(Long.parseLong(value));
-        }
-        else if(key.equals(archiveObjectsProcessed.name()+": "+archiveObjectsProcessed.description())){
-            modifiedPerformanceEntry = withArchiveObjectsProcessed(Long.parseLong(value));
-        }
-        else if(key.equals(batchId.name()+": "+batchId.description())){
-            modifiedPerformanceEntry = withBatchId(Long.parseLong(value));
-        }
-        else if(key.equals(bytesPerSecond.name()+": "+bytesPerSecond.description())){
-            modifiedPerformanceEntry = withBytesPerSecond(Long.parseLong(value));
-        }
-        else if(key.equals(bytesProcessed.name()+": "+bytesProcessed.description())){
-            modifiedPerformanceEntry = withBytesProcessed(Long.parseLong(value));
-        }
-        else if(key.equals(eps.name()+": "+eps.description())){
-            modifiedPerformanceEntry = withEps(Long.parseLong(value));
-        }
-        else if(key.equals(kafkaOffset.name()+": "+kafkaOffset.description())){
-            modifiedPerformanceEntry = withKafkaOffset(Long.parseLong(value));
-        }
-        else if(key.equals(latestKafkaTimestamp.name()+": "+latestKafkaTimestamp.description())){
-            modifiedPerformanceEntry = withLatestKafkaTimestamp(Long.parseLong(value));
-        }
-        else if(key.equals(recordsPerSecond.name()+": "+recordsPerSecond.description())){
-            modifiedPerformanceEntry = withRecordsPerSecond(Long.parseLong(value));
-        }
-        else if(key.equals(recordsProcessed.name()+": "+recordsProcessed.description())){
-            modifiedPerformanceEntry = withRecordsProcessed(Long.parseLong(value));
-        }
-        else if(key.equals(rowsReadFromArchive.name()+": "+rowsReadFromArchive.description())){
-            modifiedPerformanceEntry = withRowsReadFromArchive(Long.parseLong(value));
-        }
-        else if(key.equals(timestamp.name()+": "+timestamp.description())){
-            modifiedPerformanceEntry = withTimestamp(Long.parseLong(value));
-        }
-        else {
-            modifiedPerformanceEntry = this;
-        }
-        return modifiedPerformanceEntry;
     }
 
     public DPLPerformanceEntry withArchiveCompressedBytesProcessed(final long value){
