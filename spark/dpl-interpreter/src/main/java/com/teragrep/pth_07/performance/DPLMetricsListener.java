@@ -107,9 +107,7 @@ public final class DPLMetricsListener extends StreamingQueryListener {
                 }
             }
             Dataset<Row> metricsDataset = sparkSession.createDataFrame(rows,schema);
-            // Drop values where no data was available.
-            Dataset<Row> prunedDataset = metricsDataset.na().drop();
-            uiManager.getPerformanceIndicator().setPerformanceDataset(prunedDataset);
+            uiManager.getPerformanceIndicator().setPerformanceDataset(metricsDataset);
             uiManager.getPerformanceIndicator().sendPerformanceUpdate();
         }
     }
