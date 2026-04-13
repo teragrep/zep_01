@@ -76,7 +76,7 @@ public final class DPLMetricsListener extends StreamingQueryListener {
         this.sparkSession = sparkSession;
         this.uiManager = uiManager;
         this.queryId = queryId;
-        this.schema = DPLMetrics.schema();
+        this.schema = new DPLPerformanceEntry().schema();
         this.rows = new ArrayList<Row>();
     }
 
@@ -94,41 +94,22 @@ public final class DPLMetricsListener extends StreamingQueryListener {
                 while (executionDataIterator.hasNext()) {
                     final SQLExecutionUIData executionData = executionDataIterator.next();
                     final Map<Object, String> metricValues = JavaConverters.mapAsJavaMap(executionData.metricValues());
-                    final List<Object> typedValues = new ArrayList<>();
-                    // Iterate over schema to make sure values are in correct order
-                    for (StructField field: schema.fields()) {
-                        // Initialize as null because Spark rows use nulls to indicate lack of data.
-                        Object fieldValue = null;
+                    DPLPerformanceEntry entry = new DPLPerformanceEntry();
                         for (final SQLPlanMetric metric : JavaConverters.asJavaIterable(executionData.metrics())) {
                             final long id = metric.accumulatorId();
                             final String value = metricValues.get(id);
-                            if (metric.metricType().startsWith("v2Custom_") && metric.name().contains(field.name())) {
-                                if(field.dataType().equals(DataTypes.StringType)){
-                                    fieldValue = value;
-                                } else if (field.dataType().equals(DataTypes.IntegerType)) {
-                                    fieldValue = Integer.parseInt(value);
-                                } else if (field.dataType().equals(DataTypes.LongType)) {
-                                    fieldValue = Long.parseLong(value);
-                                } else if (field.dataType().equals(DataTypes.ShortType)) {
-                                    fieldValue = Short.parseShort(value);
-                                } else if (field.dataType().equals(DataTypes.FloatType)) {
-                                    fieldValue = Float.parseFloat(value);
-                                } else if (field.dataType().equals(DataTypes.DoubleType)) {
-                                    fieldValue = Double.parseDouble(value);
-                                }
-                                else {
-                                    throw new UnsupportedOperationException("Encountered an unsupported data type in DPLMetricsListener's schema");
-                                }
+                            if (metric.metricType().startsWith("v2Custom_")) {
+                                entry = entry.withData(metric.name(),value);
                             }
-                        }
-                        typedValues.add(fieldValue);
                     }
-                    Row row = new GenericRowWithSchema(typedValues.toArray(),schema);
+                    Row row = entry.asRow();
                     rows.add(row);
                 }
             }
-            Dataset<Row> metricsDataset = sparkSession.createDataFrame(rows,schema).na().drop();
-            uiManager.getPerformanceIndicator().setPerformanceDataset(metricsDataset);
+            Dataset<Row> metricsDataset = sparkSession.createDataFrame(rows,schema);
+            // Drop values where no data was available.
+            Dataset<Row> prunedDataset = metricsDataset.na().drop();
+            uiManager.getPerformanceIndicator().setPerformanceDataset(prunedDataset);
             uiManager.getPerformanceIndicator().sendPerformanceUpdate();
         }
     }

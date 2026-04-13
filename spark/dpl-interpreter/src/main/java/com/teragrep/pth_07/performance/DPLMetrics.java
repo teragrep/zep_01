@@ -56,23 +56,24 @@ import java.util.List;
  * Each entry defines a name, a Spark data type and Spark Metadata that might be needed.
  * Can generate a schema containing each entry.
  */
+// TODO: remove
 public enum DPLMetrics {
     rowsReadFromArchive("rowsReadFromArchive", DataTypes.IntegerType, new MetadataBuilder().build()),
     batchId("batchId",DataTypes.IntegerType, new MetadataBuilder().build()),
     EPS("EPS",DataTypes.DoubleType, new MetadataBuilder().build()),
-    archiveDatabaseRowCount("archiveDatabaseRowCount",DataTypes.IntegerType, new MetadataBuilder().build()),
-    kafkaOffset("kafkaOffset",DataTypes.IntegerType, new MetadataBuilder().build()),
-    bytesPerSecond("bytesPerSecond",DataTypes.IntegerType, new MetadataBuilder().build()),
-    bytesProcessed("bytesProcessed",DataTypes.IntegerType, new MetadataBuilder().build()),
-    latestKafkaTimestamp("latestKafkaTimestamp",DataTypes.IntegerType, new MetadataBuilder().build()),
-    archiveCompressedBytesProcessed("archiveCompressedBytesProcessed",DataTypes.IntegerType, new MetadataBuilder().build()),
-    archiveObjectsProcessed("archiveObjectsProcessed",DataTypes.IntegerType, new MetadataBuilder().build()),
-    archiveDatabaseRowMinLatency("archiveDatabaseRowMinLatency",DataTypes.IntegerType, new MetadataBuilder().build()),
-    archiveDatabaseRowMaxLatency("archiveDatabaseRowMaxLatency",DataTypes.IntegerType, new MetadataBuilder().build()),
-    archiveOffset("archiveOffset",DataTypes.IntegerType, new MetadataBuilder().build()),
-    recordsProcessed("recordsProcessed",DataTypes.IntegerType, new MetadataBuilder().build()),
-    recordsPerSecond("recordsPerSecond",DataTypes.IntegerType, new MetadataBuilder().build()),
-    archiveDatabaseRowAvgLatency("archiveDatabaseRowAvgLatency",DataTypes.IntegerType, new MetadataBuilder().build()),
+    archiveDatabaseRowCount("ArchiveDatabaseRowCount",DataTypes.IntegerType, new MetadataBuilder().build()),
+    kafkaOffset("KafkaOffset",DataTypes.IntegerType, new MetadataBuilder().build()),
+    bytesPerSecond("BytesPerSecond",DataTypes.IntegerType, new MetadataBuilder().build()),
+    bytesProcessed("BytesProcessed",DataTypes.IntegerType, new MetadataBuilder().build()),
+    latestKafkaTimestamp("LatestKafkaTimestamp",DataTypes.IntegerType, new MetadataBuilder().build()),
+    archiveCompressedBytesProcessed("ArchiveCompressedBytesProcessed",DataTypes.IntegerType, new MetadataBuilder().build()),
+    archiveObjectsProcessed("ArchiveObjectsProcessed",DataTypes.IntegerType, new MetadataBuilder().build()),
+    archiveDatabaseRowMinLatency("ArchiveDatabaseRowMinLatency",DataTypes.IntegerType, new MetadataBuilder().build()),
+    archiveDatabaseRowMaxLatency("ArchiveDatabaseRowMaxLatency",DataTypes.IntegerType, new MetadataBuilder().build()),
+    archiveOffset("ArchiveOffset",DataTypes.IntegerType, new MetadataBuilder().build()),
+    recordsProcessed("RecordsProcessed",DataTypes.IntegerType, new MetadataBuilder().build()),
+    recordsPerSecond("RecordsPerSecond",DataTypes.IntegerType, new MetadataBuilder().build()),
+    archiveDatabaseRowAvgLatency("ArchiveDatabaseRowAvgLatency",DataTypes.IntegerType, new MetadataBuilder().build()),
     timestamp("timestamp",DataTypes.IntegerType, new MetadataBuilder().putBoolean("dpl_internal_isGroupByColumn",true).build());
     private final String label;
     private final DataType type;
