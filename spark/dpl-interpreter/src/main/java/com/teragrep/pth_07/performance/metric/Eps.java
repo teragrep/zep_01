@@ -52,11 +52,11 @@ import org.apache.spark.sql.types.Metadata;
 import org.apache.spark.sql.types.StructField;
 
 public class Eps implements Stubable, PerformanceMetric {
-    private final Long value;
+    private final Double value;
     public Eps(){
         this(null);
     }
-    public Eps(Long value){
+    public Eps(Double value){
         this.value = value;
     }
     @Override

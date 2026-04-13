@@ -244,8 +244,8 @@ public class DPLPerformanceEntry {
     public DPLPerformanceEntry withBytesProcessed(final long value){
         return new DPLPerformanceEntry(archiveCompressedBytesProcessed,archiveDatabaseRowCount,archiveDatabaseRowAvgLatency,archiveDatabaseRowMaxLatency,archiveDatabaseRowMinLatency, archiveObjectsProcessed,archiveOffset,batchId,bytesPerSecond,new BytesProcessed(Long.valueOf(value)),eps,kafkaOffset,latestKafkaTimestamp,recordsPerSecond,recordsProcessed,rowsReadFromArchive,timestamp);
     }
-    public DPLPerformanceEntry withEps(final long value){
-        return new DPLPerformanceEntry(archiveCompressedBytesProcessed,archiveDatabaseRowCount,archiveDatabaseRowAvgLatency,archiveDatabaseRowMaxLatency,archiveDatabaseRowMinLatency, archiveObjectsProcessed,archiveOffset,batchId,bytesPerSecond,bytesProcessed,new Eps(Long.valueOf(value)),kafkaOffset,latestKafkaTimestamp,recordsPerSecond,recordsProcessed,rowsReadFromArchive,timestamp);
+    public DPLPerformanceEntry withEps(final double value){
+        return new DPLPerformanceEntry(archiveCompressedBytesProcessed,archiveDatabaseRowCount,archiveDatabaseRowAvgLatency,archiveDatabaseRowMaxLatency,archiveDatabaseRowMinLatency, archiveObjectsProcessed,archiveOffset,batchId,bytesPerSecond,bytesProcessed,new Eps(Double.valueOf(value)),kafkaOffset,latestKafkaTimestamp,recordsPerSecond,recordsProcessed,rowsReadFromArchive,timestamp);
     }
     public DPLPerformanceEntry withKafkaOffset(final long value){
         return new DPLPerformanceEntry(archiveCompressedBytesProcessed,archiveDatabaseRowCount,archiveDatabaseRowAvgLatency,archiveDatabaseRowMaxLatency,archiveDatabaseRowMinLatency, archiveObjectsProcessed,archiveOffset,batchId,bytesPerSecond,bytesProcessed,eps,new KafkaOffset(Long.valueOf(value)),latestKafkaTimestamp,recordsPerSecond,recordsProcessed,rowsReadFromArchive,timestamp);

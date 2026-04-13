@@ -60,6 +60,7 @@ import scala.collection.Iterator;
 import scala.collection.JavaConverters;
 import scala.collection.Seq;
 
+import java.time.Instant;
 import java.util.*;
 
 public final class DPLMetricsListener extends StreamingQueryListener {
@@ -101,9 +102,12 @@ public final class DPLMetricsListener extends StreamingQueryListener {
                             if (metric.metricType().startsWith("v2Custom_") && value != null && value != "null") {
                                 entry = entry.withData(metric.name(),value);
                             }
-                    }
-                    Row row = entry.asRow();
-                    rows.add(row);
+                        }
+                        entry = entry.withBatchId(event.progress().batchId());
+                        entry = entry.withEps(event.progress().processedRowsPerSecond());
+                        entry = entry.withTimestamp(Instant.now().toEpochMilli());
+                        Row row = entry.asRow();
+                        rows.add(row);
                 }
             }
             Dataset<Row> metricsDataset = sparkSession.createDataFrame(rows,schema);
