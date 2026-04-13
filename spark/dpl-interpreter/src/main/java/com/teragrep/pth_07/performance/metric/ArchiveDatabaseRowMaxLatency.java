@@ -91,6 +91,6 @@ public class ArchiveDatabaseRowMaxLatency implements Stubable, PerformanceMetric
 
     @Override
     public StructField structField(){
-        return DataTypes.createStructField(name(),type(),false,metadata());
+        return DataTypes.createStructField(name(),type(),true,metadata());
     }
 }

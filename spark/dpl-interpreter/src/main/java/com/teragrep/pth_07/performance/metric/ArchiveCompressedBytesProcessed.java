@@ -93,6 +93,6 @@ public class ArchiveCompressedBytesProcessed implements Stubable, PerformanceMet
 
     @Override
     public StructField structField(){
-        return DataTypes.createStructField(name(),type(),false,metadata());
+        return DataTypes.createStructField(name(),type(),true,metadata());
     }
 }
