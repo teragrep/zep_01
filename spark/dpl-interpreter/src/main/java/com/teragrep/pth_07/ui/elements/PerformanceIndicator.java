@@ -78,7 +78,7 @@ public class PerformanceIndicator extends AbstractUserInterfaceElement {
 
         batchMsg = getInterpreterContext().getAngularObjectRegistry().add(
                 "batchMsg",
-                "",
+                "[]",
                 getInterpreterContext().getNoteId(),
                 getInterpreterContext().getParagraphId(),
                 true
