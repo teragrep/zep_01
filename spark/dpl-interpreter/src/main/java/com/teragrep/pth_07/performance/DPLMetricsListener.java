@@ -49,12 +49,9 @@ import com.teragrep.pth_07.ui.UserInterfaceManager;
 import org.apache.spark.sql.Dataset;
 import org.apache.spark.sql.Row;
 import org.apache.spark.sql.SparkSession;
-import org.apache.spark.sql.catalyst.expressions.GenericRowWithSchema;
 import org.apache.spark.sql.execution.ui.SQLExecutionUIData;
 import org.apache.spark.sql.execution.ui.SQLPlanMetric;
 import org.apache.spark.sql.streaming.StreamingQueryListener;
-import org.apache.spark.sql.types.DataTypes;
-import org.apache.spark.sql.types.StructField;
 import org.apache.spark.sql.types.StructType;
 import scala.collection.Iterator;
 import scala.collection.JavaConverters;
@@ -92,10 +89,12 @@ public final class DPLMetricsListener extends StreamingQueryListener {
             final Seq<SQLExecutionUIData> executionsList = sparkSession.sharedState().statusStore().executionsList();
             if (!executionsList.isEmpty()) {
                 final Iterator<SQLExecutionUIData> executionDataIterator = executionsList.iterator();
+
+                // We want only one DPLPerformanceEntry per QueryProgressEvent. Only the latest instances of each metric encountered will be added to the entry.
+                DPLPerformanceEntry entry = new DPLPerformanceEntry();
                 while (executionDataIterator.hasNext()) {
                     final SQLExecutionUIData executionData = executionDataIterator.next();
                     final Map<Object, String> metricValues = JavaConverters.mapAsJavaMap(executionData.metricValues());
-                    DPLPerformanceEntry entry = new DPLPerformanceEntry();
                         for (final SQLPlanMetric metric : JavaConverters.asJavaIterable(executionData.metrics())) {
                             final long id = metric.accumulatorId();
                             final String value = metricValues.get(id);
@@ -103,12 +102,12 @@ public final class DPLMetricsListener extends StreamingQueryListener {
                                 entry = entry.withData(metric.name(),value);
                             }
                         }
-                        entry = entry.withBatchId(event.progress().batchId());
-                        entry = entry.withEps(event.progress().processedRowsPerSecond());
-                        entry = entry.withTimestamp(Instant.now().toEpochMilli());
-                        Row row = entry.asRow();
-                        rows.add(row);
                 }
+                entry = entry.withBatchId(event.progress().batchId());
+                entry = entry.withEps(event.progress().processedRowsPerSecond());
+                entry = entry.withTimestamp(Instant.now().toEpochMilli());
+                Row row = entry.asRow();
+                rows.add(row);
             }
             Dataset<Row> metricsDataset = sparkSession.createDataFrame(rows,schema);
             uiManager.getPerformanceIndicator().setPerformanceDataset(metricsDataset);
