@@ -81,7 +81,7 @@ public class Eps implements Stubable, PerformanceMetric {
 
     @Override
     public DataType type() {
-        return DataTypes.LongType;
+        return DataTypes.DoubleType;
     }
 
     @Override
