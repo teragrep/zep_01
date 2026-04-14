@@ -48,6 +48,8 @@ package com.teragrep.pth_07.performance.metric;
 import com.teragrep.stb_01.Stubable;
 import org.apache.spark.sql.types.*;
 
+import java.util.Objects;
+
 public class Timestamp implements Stubable, PerformanceMetric {
     private final Long value;
     public Timestamp(){
@@ -89,5 +91,18 @@ public class Timestamp implements Stubable, PerformanceMetric {
     @Override
     public StructField structField(){
         return DataTypes.createStructField(name(),type(),true,metadata());
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Timestamp timestamp = (Timestamp) o;
+        return Objects.equals(value, timestamp.value);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(value);
     }
 }

@@ -51,6 +51,8 @@ import org.apache.spark.sql.types.DataTypes;
 import org.apache.spark.sql.types.Metadata;
 import org.apache.spark.sql.types.StructField;
 
+import java.util.Objects;
+
 public class Eps implements Stubable, PerformanceMetric {
     private final Double value;
     public Eps(){
@@ -92,5 +94,18 @@ public class Eps implements Stubable, PerformanceMetric {
     @Override
     public StructField structField(){
         return DataTypes.createStructField(name(),type(),true,metadata());
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Eps eps = (Eps) o;
+        return Objects.equals(value, eps.value);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(value);
     }
 }

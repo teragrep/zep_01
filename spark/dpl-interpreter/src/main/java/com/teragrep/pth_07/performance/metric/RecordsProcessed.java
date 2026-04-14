@@ -51,6 +51,8 @@ import org.apache.spark.sql.types.DataTypes;
 import org.apache.spark.sql.types.Metadata;
 import org.apache.spark.sql.types.StructField;
 
+import java.util.Objects;
+
 public class RecordsProcessed implements Stubable, PerformanceMetric {
     private final Long value;
     public RecordsProcessed(){
@@ -92,5 +94,18 @@ public class RecordsProcessed implements Stubable, PerformanceMetric {
     @Override
     public StructField structField(){
         return DataTypes.createStructField(name(),type(),true,metadata());
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        RecordsProcessed that = (RecordsProcessed) o;
+        return Objects.equals(value, that.value);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(value);
     }
 }
