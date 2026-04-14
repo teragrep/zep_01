@@ -53,7 +53,7 @@ import org.apache.spark.sql.types.StructField;
 
 import java.util.Objects;
 
-public class BatchId implements Stubable, PerformanceMetric {
+public final class BatchId implements Stubable, PerformanceMetric {
     private final Long value;
     public BatchId(){
         this(null);

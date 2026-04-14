@@ -53,7 +53,7 @@ import org.apache.spark.sql.types.StructField;
 
 import java.util.Objects;
 
-public class Eps implements Stubable, PerformanceMetric {
+public final class Eps implements Stubable, PerformanceMetric {
     private final Double value;
     public Eps(){
         this(null);

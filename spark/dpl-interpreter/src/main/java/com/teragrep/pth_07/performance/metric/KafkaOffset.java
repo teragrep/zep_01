@@ -53,7 +53,7 @@ import org.apache.spark.sql.types.StructField;
 
 import java.util.Objects;
 
-public class KafkaOffset implements Stubable, PerformanceMetric {
+public final class KafkaOffset implements Stubable, PerformanceMetric {
     private final Long value;
     public KafkaOffset(){
         this(null);

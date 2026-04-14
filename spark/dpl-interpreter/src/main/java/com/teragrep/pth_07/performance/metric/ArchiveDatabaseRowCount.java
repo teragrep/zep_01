@@ -53,7 +53,7 @@ import org.apache.spark.sql.types.StructField;
 
 import java.util.Objects;
 
-public class ArchiveDatabaseRowCount implements Stubable, PerformanceMetric {
+public final class ArchiveDatabaseRowCount implements Stubable, PerformanceMetric {
     private final Long value;
     public ArchiveDatabaseRowCount(){
         this(null);

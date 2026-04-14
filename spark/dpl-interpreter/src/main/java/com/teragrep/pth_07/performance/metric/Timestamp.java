@@ -50,7 +50,7 @@ import org.apache.spark.sql.types.*;
 
 import java.util.Objects;
 
-public class Timestamp implements Stubable, PerformanceMetric {
+public final class Timestamp implements Stubable, PerformanceMetric {
     private final Long value;
     public Timestamp(){
         this(null);

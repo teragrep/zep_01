@@ -53,7 +53,7 @@ import org.apache.spark.sql.types.StructField;
 
 import java.util.Objects;
 
-public class ArchiveDatabaseRowAvgLatency implements Stubable, PerformanceMetric {
+public final class ArchiveDatabaseRowAvgLatency implements Stubable, PerformanceMetric {
     private final Long value;
     public ArchiveDatabaseRowAvgLatency(){
         this(null);

@@ -53,7 +53,7 @@ import org.apache.spark.sql.types.StructField;
 
 import java.util.Objects;
 
-public class RowsReadFromArchive implements Stubable, PerformanceMetric {
+public final class RowsReadFromArchive implements Stubable, PerformanceMetric {
     private final Long value;
     public RowsReadFromArchive(){
         this(null);

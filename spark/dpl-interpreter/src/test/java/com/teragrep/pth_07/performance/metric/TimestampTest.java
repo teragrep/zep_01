@@ -45,67 +45,14 @@
  */
 package com.teragrep.pth_07.performance.metric;
 
-import com.teragrep.stb_01.Stubable;
-import org.apache.spark.sql.types.DataType;
-import org.apache.spark.sql.types.DataTypes;
-import org.apache.spark.sql.types.Metadata;
-import org.apache.spark.sql.types.StructField;
+import nl.jqno.equalsverifier.EqualsVerifier;
+import org.junit.jupiter.api.Test;
 
-import java.util.Objects;
+import static org.junit.jupiter.api.Assertions.*;
 
-public final class ArchiveDatabaseRowMaxLatency implements Stubable, PerformanceMetric {
-    private final Long value;
-    public ArchiveDatabaseRowMaxLatency(){
-        this(null);
-    }
-    public ArchiveDatabaseRowMaxLatency(Long value){
-        this.value = value;
-    }
-    @Override
-    public boolean isStub() {
-        return false;
-    }
-
-    @Override
-    public Object value() {
-        return value;
-    }
-
-    @Override
-    public String name() {
-        return "ArchiveDatabaseRowMaxLatency";
-    }
-
-    @Override
-    public String description() {
-        return "maximum time per row in nanoseconds";
-    }
-
-    @Override
-    public DataType type() {
-        return DataTypes.LongType;
-    }
-
-    @Override
-    public Metadata metadata() {
-        return Metadata.empty();
-    }
-
-    @Override
-    public StructField structField(){
-        return DataTypes.createStructField(name(),type(),true,metadata());
-    }
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        ArchiveDatabaseRowMaxLatency that = (ArchiveDatabaseRowMaxLatency) o;
-        return Objects.equals(value, that.value);
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(value);
+class TimestampTest {
+    @Test
+    public void testContract() {
+        EqualsVerifier.forClass(Timestamp.class).verify();
     }
 }

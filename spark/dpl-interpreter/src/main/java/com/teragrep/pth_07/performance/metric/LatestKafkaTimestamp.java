@@ -53,7 +53,7 @@ import org.apache.spark.sql.types.StructField;
 
 import java.util.Objects;
 
-public class LatestKafkaTimestamp implements Stubable, PerformanceMetric {
+public final class LatestKafkaTimestamp implements Stubable, PerformanceMetric {
     private final Long value;
     public LatestKafkaTimestamp(){
         this(null);

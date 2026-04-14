@@ -53,7 +53,7 @@ import org.apache.spark.sql.types.StructField;
 
 import java.util.Objects;
 
-public class RecordsProcessed implements Stubable, PerformanceMetric {
+public final class RecordsProcessed implements Stubable, PerformanceMetric {
     private final Long value;
     public RecordsProcessed(){
         this(null);
