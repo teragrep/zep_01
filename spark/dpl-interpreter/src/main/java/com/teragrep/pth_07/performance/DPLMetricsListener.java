@@ -103,6 +103,7 @@ public final class DPLMetricsListener extends StreamingQueryListener {
                             }
                         }
                 }
+                entry = entry.withRowsReadFromArchive(event.progress().numInputRows());
                 entry = entry.withBatchId(event.progress().batchId());
                 entry = entry.withEps(event.progress().processedRowsPerSecond());
                 entry = entry.withTimestamp(Instant.now().toEpochMilli());
