@@ -48,11 +48,9 @@ package com.teragrep.pth_07.performance.metric;
 import nl.jqno.equalsverifier.EqualsVerifier;
 import org.junit.jupiter.api.Test;
 
-import static org.junit.jupiter.api.Assertions.*;
-
 class BytesProcessedTest {
     @Test
     public void testContract() {
-        EqualsVerifier.forClass(BytesProcessed.class).verify();
+        EqualsVerifier.forClass(BytesProcessedImpl.class).verify();
     }
 }

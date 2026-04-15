@@ -48,11 +48,11 @@ package com.teragrep.pth_07.performance.metric;
 import nl.jqno.equalsverifier.EqualsVerifier;
 import org.junit.jupiter.api.Test;
 
-import static org.junit.jupiter.api.Assertions.*;
 
-class RowsReadFromArchiveTest {
+class ArchiveCompressedBytesProcessedImplTestImpl {
+
     @Test
     public void testContract() {
-        EqualsVerifier.forClass(RowsReadFromArchive.class).verify();
+        EqualsVerifier.forClass(ArchiveCompressedBytesProcessedImpl.class).verify();
     }
 }

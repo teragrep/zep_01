@@ -1,3 +1,4 @@
+
 /*
  * Teragrep DPL Spark Integration PTH-07
  * Copyright (C) 2022  Suomen Kanuuna Oy
@@ -45,14 +46,63 @@
  */
 package com.teragrep.pth_07.performance.metric;
 
-import nl.jqno.equalsverifier.EqualsVerifier;
-import org.junit.jupiter.api.Test;
+import org.apache.spark.sql.types.DataType;
+import org.apache.spark.sql.types.DataTypes;
+import org.apache.spark.sql.types.Metadata;
+import org.apache.spark.sql.types.StructField;
 
+import java.util.Objects;
 
-class ArchiveObjectsProcessedTest {
+public final class ArchiveOffsetImpl implements ArchiveOffset {
+    private final long value;
+    public ArchiveOffsetImpl(final long value){
+        this.value = value;
+    }
+    @Override
+    public boolean isStub() {
+        return false;
+    }
 
-    @Test
-    public void testContract() {
-        EqualsVerifier.forClass(ArchiveObjectsProcessed.class).verify();
+    @Override
+    public long value() {
+        return value;
+    }
+
+    @Override
+    public String name() {
+        return "ArchiveOffset";
+    }
+
+    @Override
+    public String description() {
+        return "latest archive offset processed (epoch time)";
+    }
+
+    @Override
+    public DataType type() {
+        return DataTypes.LongType;
+    }
+
+    @Override
+    public Metadata metadata() {
+        return Metadata.empty();
+    }
+
+    @Override
+    public StructField structField(){
+        return DataTypes.createStructField(name(),type(),true,metadata());
+    }
+
+    @Override
+    public boolean equals(final Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        final ArchiveOffsetImpl that = (ArchiveOffsetImpl) o;
+        return Objects.equals(value, that.value);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(value);
     }
 }

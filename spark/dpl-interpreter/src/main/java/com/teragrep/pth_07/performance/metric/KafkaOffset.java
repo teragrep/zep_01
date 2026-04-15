@@ -45,67 +45,7 @@
  */
 package com.teragrep.pth_07.performance.metric;
 
-import com.teragrep.stb_01.Stubable;
-import org.apache.spark.sql.types.DataType;
-import org.apache.spark.sql.types.DataTypes;
-import org.apache.spark.sql.types.Metadata;
-import org.apache.spark.sql.types.StructField;
+public interface KafkaOffset extends PerformanceMetric{
+    public abstract long value();
 
-import java.util.Objects;
-
-public final class KafkaOffset implements Stubable, PerformanceMetric {
-    private final Long value;
-    public KafkaOffset(){
-        this(null);
-    }
-    public KafkaOffset(Long value){
-        this.value = value;
-    }
-    @Override
-    public boolean isStub() {
-        return false;
-    }
-
-    @Override
-    public Object value() {
-        return value;
-    }
-
-    @Override
-    public String name() {
-        return "KafkaOffset";
-    }
-
-    @Override
-    public String description() {
-        return "sum of processed kafka offsets";
-    }
-
-    @Override
-    public DataType type() {
-        return DataTypes.LongType;
-    }
-
-    @Override
-    public Metadata metadata() {
-        return Metadata.empty();
-    }
-
-    @Override
-    public StructField structField(){
-        return DataTypes.createStructField(name(),type(),true,metadata());
-    }
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        KafkaOffset that = (KafkaOffset) o;
-        return Objects.equals(value, that.value);
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(value);
-    }
 }

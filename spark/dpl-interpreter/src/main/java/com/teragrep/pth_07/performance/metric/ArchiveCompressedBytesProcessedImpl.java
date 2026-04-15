@@ -45,14 +45,64 @@
  */
 package com.teragrep.pth_07.performance.metric;
 
-import nl.jqno.equalsverifier.EqualsVerifier;
-import org.junit.jupiter.api.Test;
+import com.teragrep.stb_01.Stubable;
+import org.apache.spark.sql.types.DataType;
+import org.apache.spark.sql.types.DataTypes;
+import org.apache.spark.sql.types.Metadata;
+import org.apache.spark.sql.types.StructField;
 
+import java.util.Objects;
 
-class BytesPerSecondTest {
+public final class ArchiveCompressedBytesProcessedImpl implements Stubable, ArchiveCompressedBytesProcessed{
+    private final long value;
+    public ArchiveCompressedBytesProcessedImpl(final long value){
+        this.value = value;
+    }
+    @Override
+    public boolean isStub() {
+        return false;
+    }
 
-    @Test
-    public void testContract() {
-        EqualsVerifier.forClass(BytesPerSecond.class).verify();
+    @Override
+    public long value() {
+        return value;
+    }
+
+    @Override
+    public String name() {
+        return "ArchiveCompressedBytesProcessed";
+    }
+
+    @Override
+    public String description() {
+        return "total compressed bytes processed from archive";
+    }
+
+    @Override
+    public DataType type() {
+        return DataTypes.LongType;
+    }
+
+    @Override
+    public Metadata metadata() {
+        return Metadata.empty();
+    }
+
+    @Override
+    public StructField structField(){
+        return DataTypes.createStructField(name(),type(),true,metadata());
+    }
+
+    @Override
+    public boolean equals(final Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        final ArchiveCompressedBytesProcessedImpl that = (ArchiveCompressedBytesProcessedImpl) o;
+        return Objects.equals(value, that.value);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(value);
     }
 }

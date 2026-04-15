@@ -45,14 +45,63 @@
  */
 package com.teragrep.pth_07.performance.metric;
 
-import nl.jqno.equalsverifier.EqualsVerifier;
-import org.junit.jupiter.api.Test;
+import org.apache.spark.sql.types.DataType;
+import org.apache.spark.sql.types.DataTypes;
+import org.apache.spark.sql.types.Metadata;
+import org.apache.spark.sql.types.StructField;
 
+import java.util.Objects;
 
-class ArchiveDatabaseRowMinLatencyTest {
+public final class EpsImpl implements Eps {
+    private final double value;
+    public EpsImpl(final double value){
+        this.value = value;
+    }
+    @Override
+    public boolean isStub() {
+        return false;
+    }
 
-    @Test
-    public void testContract() {
-        EqualsVerifier.forClass(ArchiveDatabaseRowMinLatency.class).verify();
+    @Override
+    public double value() {
+        return value;
+    }
+
+    @Override
+    public String name() {
+        return "eps";
+    }
+
+    @Override
+    public String description() {
+        return "processed rows per second";
+    }
+
+    @Override
+    public DataType type() {
+        return DataTypes.DoubleType;
+    }
+
+    @Override
+    public Metadata metadata() {
+        return Metadata.empty();
+    }
+
+    @Override
+    public StructField structField(){
+        return DataTypes.createStructField(name(),type(),true,metadata());
+    }
+
+    @Override
+    public boolean equals(final Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        final EpsImpl eps = (EpsImpl) o;
+        return Objects.equals(value, eps.value);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(value);
     }
 }

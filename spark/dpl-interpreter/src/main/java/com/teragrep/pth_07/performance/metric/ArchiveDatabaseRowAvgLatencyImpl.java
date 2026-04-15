@@ -45,14 +45,63 @@
  */
 package com.teragrep.pth_07.performance.metric;
 
-import nl.jqno.equalsverifier.EqualsVerifier;
-import org.junit.jupiter.api.Test;
+import org.apache.spark.sql.types.DataType;
+import org.apache.spark.sql.types.DataTypes;
+import org.apache.spark.sql.types.Metadata;
+import org.apache.spark.sql.types.StructField;
 
-import static org.junit.jupiter.api.Assertions.*;
+import java.util.Objects;
 
-class RecordsPerSecondTest {
-    @Test
-    public void testContract() {
-        EqualsVerifier.forClass(RecordsPerSecond.class).verify();
+public final class ArchiveDatabaseRowAvgLatencyImpl implements ArchiveDatabaseRowAvgLatency {
+    private final long value;
+    public ArchiveDatabaseRowAvgLatencyImpl(final long value){
+        this.value = value;
+    }
+    @Override
+    public boolean isStub() {
+        return false;
+    }
+
+    @Override
+    public long value() {
+        return value;
+    }
+
+    @Override
+    public String name() {
+        return "ArchiveDatabaseRowAvgLatency";
+    }
+
+    @Override
+    public String description() {
+        return "average time per row in nanoseconds";
+    }
+
+    @Override
+    public DataType type() {
+        return DataTypes.LongType;
+    }
+
+    @Override
+    public Metadata metadata() {
+        return Metadata.empty();
+    }
+
+    @Override
+    public StructField structField(){
+        return DataTypes.createStructField(name(),type(),true,metadata());
+    }
+
+    @Override
+    public boolean equals(final Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        final ArchiveDatabaseRowAvgLatencyImpl that = (ArchiveDatabaseRowAvgLatencyImpl) o;
+        return Objects.equals(value, that.value);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(value);
     }
 }

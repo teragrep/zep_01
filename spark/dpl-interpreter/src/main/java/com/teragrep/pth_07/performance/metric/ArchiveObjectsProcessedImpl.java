@@ -45,7 +45,63 @@
  */
 package com.teragrep.pth_07.performance.metric;
 
-public interface BytesProcessed extends PerformanceMetric{
-    public abstract long value();
+import org.apache.spark.sql.types.DataType;
+import org.apache.spark.sql.types.DataTypes;
+import org.apache.spark.sql.types.Metadata;
+import org.apache.spark.sql.types.StructField;
 
+import java.util.Objects;
+
+public final class ArchiveObjectsProcessedImpl implements ArchiveObjectsProcessed {
+    private final long value;
+    public ArchiveObjectsProcessedImpl(final long value){
+        this.value = value;
+    }
+    @Override
+    public boolean isStub() {
+        return false;
+    }
+
+    @Override
+    public long value() {
+        return value;
+    }
+
+    @Override
+    public String name() {
+        return "ArchiveObjectsProcessed";
+    }
+
+    @Override
+    public String description() {
+        return "total objects processed from archive";
+    }
+
+    @Override
+    public DataType type() {
+        return DataTypes.LongType;
+    }
+
+    @Override
+    public Metadata metadata() {
+        return Metadata.empty();
+    }
+
+    @Override
+    public StructField structField(){
+        return DataTypes.createStructField(name(),type(),true,metadata());
+    }
+
+    @Override
+    public boolean equals(final Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        final ArchiveObjectsProcessedImpl that = (ArchiveObjectsProcessedImpl) o;
+        return Objects.equals(value, that.value);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(value);
+    }
 }

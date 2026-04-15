@@ -45,7 +45,63 @@
  */
 package com.teragrep.pth_07.performance.metric;
 
-public interface BytesProcessed extends PerformanceMetric{
-    public abstract long value();
+import org.apache.spark.sql.types.DataType;
+import org.apache.spark.sql.types.Metadata;
+import org.apache.spark.sql.types.StructField;
 
+import java.util.Objects;
+
+public final class TimestampStub implements Timestamp {
+
+    public TimestampStub() {
+
+    }
+    @Override
+    public boolean isStub() {
+        return true;
+    }
+
+    @Override
+    public long value() {
+        throw new UnsupportedOperationException("Stub object does not implement value()");
+    }
+
+    @Override
+    public String name() {
+        throw new UnsupportedOperationException("Stub object does not implement name()");
+    }
+
+    @Override
+    public String description() {
+        throw new UnsupportedOperationException("Stub object does not implement description()");
+    }
+
+    @Override
+    public DataType type() {
+        throw new UnsupportedOperationException("Stub object does not implement type()");
+    }
+
+    @Override
+    public Metadata metadata() {
+        throw new UnsupportedOperationException("Stub object does not implement metadata()");
+    }
+
+    @Override
+    public StructField structField(){
+        throw new UnsupportedOperationException("Stub object does not implement structField()");
+    }
+
+    @Override
+    public boolean equals(final Object o) {
+        boolean equals = true;
+        if (o == null || getClass() != o.getClass()) {
+            equals = false;
+        }
+        return equals;
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hashCode(getClass().getName());
+    }
 }

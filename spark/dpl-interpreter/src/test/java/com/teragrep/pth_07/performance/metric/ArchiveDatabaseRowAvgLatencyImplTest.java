@@ -49,10 +49,10 @@ import nl.jqno.equalsverifier.EqualsVerifier;
 import org.junit.jupiter.api.Test;
 
 
-class ArchiveDatabaseRowMaxLatencyTest {
+class ArchiveDatabaseRowAvgLatencyImplTest {
 
     @Test
     public void testContract() {
-        EqualsVerifier.forClass(ArchiveDatabaseRowMaxLatency.class).verify();
+        EqualsVerifier.forClass(ArchiveDatabaseRowAvgLatencyImpl.class).verify();
     }
 }

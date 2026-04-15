@@ -45,7 +45,60 @@
  */
 package com.teragrep.pth_07.performance.metric;
 
-public interface BytesProcessed extends PerformanceMetric{
-    public abstract long value();
+import org.apache.spark.sql.types.*;
 
+import java.util.Objects;
+
+public final class TimestampImpl implements Timestamp {
+    private final long value;
+    public TimestampImpl(final long value){
+        this.value = value;
+    }
+    @Override
+    public boolean isStub() {
+        return false;
+    }
+
+    @Override
+    public long value() {
+        return value;
+    }
+
+    @Override
+    public String name() {
+        return "Timestamp";
+    }
+
+    @Override
+    public String description() {
+        return "timestamp of when performance data was received(epochtime)";
+    }
+
+    @Override
+    public DataType type() {
+        return DataTypes.LongType;
+    }
+
+    @Override
+    public Metadata metadata() {
+        return new MetadataBuilder().putBoolean("dpl_internal_isGroupByColumn",true).build();
+    }
+
+    @Override
+    public StructField structField(){
+        return DataTypes.createStructField(name(),type(),true,metadata());
+    }
+
+    @Override
+    public boolean equals(final Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        final TimestampImpl timestamp = (TimestampImpl) o;
+        return Objects.equals(value, timestamp.value);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(value);
+    }
 }

@@ -45,16 +45,15 @@
  */
 package com.teragrep.pth_07.performance.metric;
 
+import com.teragrep.stb_01.Stubable;
 import org.apache.spark.sql.types.DataType;
-import org.apache.spark.sql.types.DataTypes;
 import org.apache.spark.sql.types.Metadata;
 import org.apache.spark.sql.types.StructField;
 
-public interface PerformanceMetric {
-    public abstract Object value();
+public interface PerformanceMetric extends Stubable {
     public abstract String name();
     public abstract String description();
     public abstract DataType type();
     public abstract Metadata metadata();
-    public StructField structField();
+    public abstract StructField structField();
 }

@@ -48,11 +48,11 @@ package com.teragrep.pth_07.performance.metric;
 import nl.jqno.equalsverifier.EqualsVerifier;
 import org.junit.jupiter.api.Test;
 
-import static org.junit.jupiter.api.Assertions.*;
 
-class TimestampTest {
+class ArchiveDatabaseRowMaxLatencyImplTest {
+
     @Test
     public void testContract() {
-        EqualsVerifier.forClass(Timestamp.class).verify();
+        EqualsVerifier.forClass(ArchiveDatabaseRowMaxLatencyImpl.class).verify();
     }
 }

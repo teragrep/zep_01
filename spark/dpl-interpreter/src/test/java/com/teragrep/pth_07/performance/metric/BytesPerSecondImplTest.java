@@ -45,7 +45,14 @@
  */
 package com.teragrep.pth_07.performance.metric;
 
-public interface BytesProcessed extends PerformanceMetric{
-    public abstract long value();
+import nl.jqno.equalsverifier.EqualsVerifier;
+import org.junit.jupiter.api.Test;
 
+
+class BytesPerSecondImplTest {
+
+    @Test
+    public void testContract() {
+        EqualsVerifier.forClass(BytesPerSecondImpl.class).verify();
+    }
 }

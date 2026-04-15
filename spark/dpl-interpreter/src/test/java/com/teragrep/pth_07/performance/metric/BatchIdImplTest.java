@@ -49,10 +49,10 @@ import nl.jqno.equalsverifier.EqualsVerifier;
 import org.junit.jupiter.api.Test;
 
 
-class ArchiveDatabaseRowCountTest {
+class BatchIdImplTest {
 
     @Test
     public void testContract() {
-        EqualsVerifier.forClass(ArchiveDatabaseRowCount.class).verify();
+        EqualsVerifier.forClass(BatchIdImpl.class).verify();
     }
 }

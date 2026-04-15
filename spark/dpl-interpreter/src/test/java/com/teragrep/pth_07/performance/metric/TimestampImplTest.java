@@ -48,11 +48,9 @@ package com.teragrep.pth_07.performance.metric;
 import nl.jqno.equalsverifier.EqualsVerifier;
 import org.junit.jupiter.api.Test;
 
-
-class ArchiveOffsetTest {
-
+class TimestampImplTest {
     @Test
     public void testContract() {
-        EqualsVerifier.forClass(ArchiveOffset.class).verify();
+        EqualsVerifier.forClass(TimestampImpl.class).verify();
     }
 }
