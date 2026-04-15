@@ -534,25 +534,64 @@ public class DPLPerformanceEntry {
                 ,new Timestamp(value));
     }
 
-    public Row asRow(){
+    public Row asRow(StructType schema){
         final List<Object> values = new ArrayList<>();
-        values.add(archiveCompressedBytesProcessed.value().isStub() ? null : archiveCompressedBytesProcessed.value().value());
-        values.add(archiveDatabaseRowCount.value().isStub() ? null : archiveDatabaseRowCount.value().value());
-        values.add(archiveDatabaseRowAvgLatency.value().isStub() ? null : archiveDatabaseRowAvgLatency.value().value());
-        values.add(archiveDatabaseRowMaxLatency.value().isStub() ? null : archiveDatabaseRowMaxLatency.value().value());
-        values.add(archiveDatabaseRowMinLatency.value().isStub() ? null : archiveDatabaseRowMinLatency.value().value());
-        values.add(archiveOffset.value().isStub() ? null : archiveOffset.value().value());
-        values.add(archiveObjectsProcessed.value().isStub() ? null : archiveObjectsProcessed.value().value());
-        values.add(batchId.value().isStub() ? null : batchId.value().value());
-        values.add(bytesPerSecond.value().isStub() ? null : bytesPerSecond.value().value());
-        values.add(bytesProcessed.value().isStub() ? null : bytesProcessed.value().value());
-        values.add(eps.value().isStub() ? null : eps.value().value());
-        values.add(kafkaOffset.value().isStub() ? null : kafkaOffset.value().value());
-        values.add(latestKafkaTimestamp.value().isStub() ? null : latestKafkaTimestamp.value().value());
-        values.add(recordsPerSecond.value().isStub() ? null : recordsPerSecond.value().value());
-        values.add(recordsProcessed.value().isStub() ? null : recordsProcessed.value().value());
-        values.add(rowsReadFromArchive.value().isStub() ? null : rowsReadFromArchive.value().value());
-        values.add(timestamp.value().isStub() ? null : timestamp.value().value());
+        for (StructField field : schema.fields()) {
+            if(field.name().equals(archiveCompressedBytesProcessed.name()) && field.dataType().equals(archiveCompressedBytesProcessed.type())){
+                values.add(archiveCompressedBytesProcessed.value().isStub() ? null : archiveCompressedBytesProcessed.value().value());
+            }
+            else if(field.name().equals(archiveDatabaseRowCount.name()) && field.dataType().equals(archiveDatabaseRowCount.type())){
+                values.add(archiveDatabaseRowCount.value().isStub() ? null : archiveDatabaseRowCount.value().value());
+            }
+            else if(field.name().equals(archiveDatabaseRowAvgLatency.name()) && field.dataType().equals(archiveDatabaseRowAvgLatency.type())){
+                values.add(archiveDatabaseRowAvgLatency.value().isStub() ? null : archiveDatabaseRowAvgLatency.value().value());
+            }
+            else if(field.name().equals(archiveDatabaseRowMinLatency.name()) && field.dataType().equals(archiveDatabaseRowMinLatency.type())){
+                values.add(archiveDatabaseRowMinLatency.value().isStub() ? null : archiveDatabaseRowMinLatency.value().value());
+            }
+            else if(field.name().equals(archiveDatabaseRowMaxLatency.name()) && field.dataType().equals(archiveDatabaseRowMaxLatency.type())){
+                values.add(archiveDatabaseRowMaxLatency.value().isStub() ? null : archiveDatabaseRowMaxLatency.value().value());
+            }
+            else if(field.name().equals(archiveOffset.name()) && field.dataType().equals(archiveOffset.type())){
+                values.add(archiveOffset.value().isStub() ? null : archiveOffset.value().value());
+            }
+            else if(field.name().equals(archiveObjectsProcessed.name()) && field.dataType().equals(archiveObjectsProcessed.type())){
+                values.add(archiveObjectsProcessed.value().isStub() ? null : archiveObjectsProcessed.value().value());
+            }
+            else if(field.name().equals(batchId.name()) && field.dataType().equals(batchId.type())){
+                values.add(batchId.value().isStub() ? null : batchId.value().value());
+            }
+            else if(field.name().equals(bytesPerSecond.name()) && field.dataType().equals(bytesPerSecond.type())){
+                values.add(bytesPerSecond.value().isStub() ? null : bytesPerSecond.value().value());
+            }
+            else if(field.name().equals(bytesProcessed.name()) && field.dataType().equals(bytesProcessed.type())){
+                values.add(bytesProcessed.value().isStub() ? null : bytesProcessed.value().value());
+            }
+            else if(field.name().equals(eps.name()) && field.dataType().equals(eps.type())){
+                values.add(eps.value().isStub() ? null : eps.value().value());
+            }
+            else if(field.name().equals(kafkaOffset.name()) && field.dataType().equals(kafkaOffset.type())){
+                values.add(kafkaOffset.value().isStub() ? null : kafkaOffset.value().value());
+            }
+            else if(field.name().equals(latestKafkaTimestamp.name()) && field.dataType().equals(latestKafkaTimestamp.type())){
+                values.add(latestKafkaTimestamp.value().isStub() ? null : latestKafkaTimestamp.value().value());
+            }
+            else if(field.name().equals(recordsPerSecond.name()) && field.dataType().equals(recordsPerSecond.type())){
+                values.add(recordsPerSecond.value().isStub() ? null : recordsPerSecond.value().value());
+            }
+            else if(field.name().equals(recordsProcessed.name()) && field.dataType().equals(recordsProcessed.type())){
+                values.add(recordsProcessed.value().isStub() ? null : recordsProcessed.value().value());
+            }
+            else if(field.name().equals(rowsReadFromArchive.name()) && field.dataType().equals(rowsReadFromArchive.type())){
+                values.add(rowsReadFromArchive.value().isStub() ? null : rowsReadFromArchive.value().value());
+            }
+            else if(field.name().equals(timestamp.name()) && field.dataType().equals(timestamp.type())){
+                values.add(timestamp.value().isStub() ? null : timestamp.value().value());
+            }
+            else {
+                continue;
+            }
+        }
         return RowFactory.create(values.toArray());
     }
 
