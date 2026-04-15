@@ -51,6 +51,6 @@ import org.junit.jupiter.api.Test;
 class BytesProcessedTest {
     @Test
     public void testContract() {
-        EqualsVerifier.forClass(BytesProcessedImpl.class).verify();
+        EqualsVerifier.forClass(BytesProcessed.class).verify();
     }
 }

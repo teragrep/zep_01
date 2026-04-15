@@ -45,7 +45,62 @@
  */
 package com.teragrep.pth_07.performance.metric;
 
-public interface Timestamp extends PerformanceMetric{
-    public abstract long value();
+import com.teragrep.pth_07.performance.metric.value.LongMetricValue;
+import com.teragrep.pth_07.performance.metric.value.MetricValue;
+import com.teragrep.pth_07.performance.metric.value.StubMetricValue;
+import org.apache.spark.sql.types.*;
 
+import java.util.Objects;
+
+public final class Timestamp {
+    private final MetricValue value;
+    public Timestamp(){
+        this(new StubMetricValue());
+    }
+    public Timestamp(final long value){
+        this(new LongMetricValue(value));
+    }
+    private Timestamp(final MetricValue value){
+        this.value = value;
+    }
+    public MetricValue value() {
+        return value;
+    }
+    
+    public String name() {
+        return "Timestamp";
+    }
+
+    
+    public String description() {
+        return "timestamp of when performance data was received(epochtime)";
+    }
+
+    
+    public DataType type() {
+        return DataTypes.LongType;
+    }
+
+    
+    public Metadata metadata() {
+        return new MetadataBuilder().putBoolean("dpl_internal_isGroupByColumn",true).build();
+    }
+
+    
+    public StructField structField(){
+        return DataTypes.createStructField(name(),type(),true,metadata());
+    }
+
+    
+    public boolean equals(final Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        final Timestamp timestamp = (Timestamp) o;
+        return Objects.equals(value, timestamp.value);
+    }
+
+    
+    public int hashCode() {
+        return Objects.hash(value);
+    }
 }

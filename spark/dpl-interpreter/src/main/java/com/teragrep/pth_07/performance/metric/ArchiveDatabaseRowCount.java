@@ -45,7 +45,65 @@
  */
 package com.teragrep.pth_07.performance.metric;
 
-public interface ArchiveDatabaseRowCount extends PerformanceMetric{
-    public abstract long value();
+import com.teragrep.pth_07.performance.metric.value.LongMetricValue;
+import com.teragrep.pth_07.performance.metric.value.MetricValue;
+import com.teragrep.pth_07.performance.metric.value.StubMetricValue;
+import org.apache.spark.sql.types.DataType;
+import org.apache.spark.sql.types.DataTypes;
+import org.apache.spark.sql.types.Metadata;
+import org.apache.spark.sql.types.StructField;
 
+import java.util.Objects;
+
+public final class ArchiveDatabaseRowCount {
+    private final MetricValue value;
+    public ArchiveDatabaseRowCount(){
+        this(new StubMetricValue());
+    }
+    public ArchiveDatabaseRowCount(final long value){
+        this(new LongMetricValue(value));
+    }
+    private ArchiveDatabaseRowCount(final MetricValue value){
+        this.value = value;
+    }
+    public MetricValue value() {
+        return value;
+    }
+    
+    public String name() {
+        return "ArchiveDatabaseRowCount";
+    }
+
+    
+    public String description() {
+        return "number of processed archive database rows";
+    }
+
+    
+    public DataType type() {
+        return DataTypes.LongType;
+    }
+
+    
+    public Metadata metadata() {
+        return Metadata.empty();
+    }
+
+    
+    public StructField structField(){
+        return DataTypes.createStructField(name(),type(),true,metadata());
+    }
+
+    
+    public boolean equals(final Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        final ArchiveDatabaseRowCount that = (ArchiveDatabaseRowCount) o;
+        return Objects.equals(value, that.value);
+    }
+
+    
+    public int hashCode() {
+        return Objects.hash(value);
+    }
 }

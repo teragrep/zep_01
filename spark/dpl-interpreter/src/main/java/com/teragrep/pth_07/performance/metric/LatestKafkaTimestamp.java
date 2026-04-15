@@ -45,7 +45,65 @@
  */
 package com.teragrep.pth_07.performance.metric;
 
-public interface LatestKafkaTimestamp extends PerformanceMetric{
-    public abstract long value();
+import com.teragrep.pth_07.performance.metric.value.LongMetricValue;
+import com.teragrep.pth_07.performance.metric.value.MetricValue;
+import com.teragrep.pth_07.performance.metric.value.StubMetricValue;
+import org.apache.spark.sql.types.DataType;
+import org.apache.spark.sql.types.DataTypes;
+import org.apache.spark.sql.types.Metadata;
+import org.apache.spark.sql.types.StructField;
 
+import java.util.Objects;
+
+public final class LatestKafkaTimestamp {
+    private final MetricValue value;
+    public LatestKafkaTimestamp(){
+        this(new StubMetricValue());
+    }
+    public LatestKafkaTimestamp(final long value){
+        this(new LongMetricValue(value));
+    }
+    private LatestKafkaTimestamp(final MetricValue value){
+        this.value = value;
+    }
+    public MetricValue value() {
+        return value;
+    }
+    
+    public String name() {
+        return "LatestKafkaTimestamp";
+    }
+
+    
+    public String description() {
+        return "latest processed kafka records' timestamp";
+    }
+
+    
+    public DataType type() {
+        return DataTypes.LongType;
+    }
+
+    
+    public Metadata metadata() {
+        return Metadata.empty();
+    }
+
+    
+    public StructField structField(){
+        return DataTypes.createStructField(name(),type(),true,metadata());
+    }
+
+    
+    public boolean equals(final Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        final LatestKafkaTimestamp that = (LatestKafkaTimestamp) o;
+        return Objects.equals(value, that.value);
+    }
+
+    
+    public int hashCode() {
+        return Objects.hash(value);
+    }
 }

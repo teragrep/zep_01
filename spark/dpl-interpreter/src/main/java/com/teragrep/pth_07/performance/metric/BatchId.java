@@ -45,7 +45,65 @@
  */
 package com.teragrep.pth_07.performance.metric;
 
-public interface BatchId extends PerformanceMetric{
-    public abstract long value();
+import com.teragrep.pth_07.performance.metric.value.LongMetricValue;
+import com.teragrep.pth_07.performance.metric.value.MetricValue;
+import com.teragrep.pth_07.performance.metric.value.StubMetricValue;
+import org.apache.spark.sql.types.DataType;
+import org.apache.spark.sql.types.DataTypes;
+import org.apache.spark.sql.types.Metadata;
+import org.apache.spark.sql.types.StructField;
 
+import java.util.Objects;
+
+public final class BatchId {
+    private final MetricValue value;
+    public BatchId(){
+        this(new StubMetricValue());
+    }
+    public BatchId(final long value){
+        this(new LongMetricValue(value));
+    }
+    private BatchId(final MetricValue value){
+        this.value = value;
+    }
+    public MetricValue value() {
+        return value;
+    }
+    
+    public String name() {
+        return "BatchId";
+    }
+
+    
+    public String description() {
+        return "sequence number of the batch";
+    }
+
+    
+    public DataType type() {
+        return DataTypes.LongType;
+    }
+
+    
+    public Metadata metadata() {
+        return Metadata.empty();
+    }
+
+    
+    public StructField structField(){
+        return DataTypes.createStructField(name(),type(),true,metadata());
+    }
+
+    
+    public boolean equals(final Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        final BatchId batchId = (BatchId) o;
+        return Objects.equals(value, batchId.value);
+    }
+
+    
+    public int hashCode() {
+        return Objects.hash(value);
+    }
 }
