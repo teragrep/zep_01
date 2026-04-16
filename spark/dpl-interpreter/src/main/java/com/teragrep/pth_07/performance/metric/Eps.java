@@ -72,7 +72,7 @@ public final class Eps {
     }
     
     public String name() {
-        return "eps";
+        return "Eps";
     }
 
     
