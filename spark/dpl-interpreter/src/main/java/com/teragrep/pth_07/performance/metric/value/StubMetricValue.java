@@ -45,7 +45,9 @@
  */
 package com.teragrep.pth_07.performance.metric.value;
 
-public class StubMetricValue implements MetricValue{
+import java.util.Objects;
+
+public final class StubMetricValue implements MetricValue{
 
     @Override
     public boolean isStub() {
@@ -55,5 +57,19 @@ public class StubMetricValue implements MetricValue{
     @Override
     public Object value() {
         throw new UnsupportedOperationException("Stub object does not implement value()");
+    }
+
+    @Override
+    public boolean equals(final Object o) {
+        boolean equals = true;
+        if (o == null || getClass() != o.getClass()) {
+            equals = false;
+        }
+        return equals;
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hashCode(getClass().getName());
     }
 }

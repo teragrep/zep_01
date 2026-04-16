@@ -45,7 +45,9 @@
  */
 package com.teragrep.pth_07.performance.metric.value;
 
-public class LongMetricValue implements MetricValue<Long>{
+import java.util.Objects;
+
+public final class LongMetricValue implements MetricValue<Long>{
 
     private final long value;
 
@@ -61,5 +63,18 @@ public class LongMetricValue implements MetricValue<Long>{
     @Override
     public Long value() {
         return value;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        LongMetricValue that = (LongMetricValue) o;
+        return value == that.value;
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(value);
     }
 }
