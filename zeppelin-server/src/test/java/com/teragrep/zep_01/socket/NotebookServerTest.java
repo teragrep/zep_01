@@ -42,6 +42,7 @@ import java.util.*;
 
 import javax.servlet.http.HttpServletRequest;
 
+import com.teragrep.zep_01.socket.fakes.NotebookSocketFake;
 import org.apache.commons.io.IOUtils;
 import org.apache.thrift.TException;
 import com.teragrep.zep_01.conf.ZeppelinConfiguration;
@@ -63,7 +64,6 @@ import com.teragrep.zep_01.common.Message;
 import com.teragrep.zep_01.common.Message.OP;
 import com.teragrep.zep_01.rest.AbstractTestRestApi;
 import com.teragrep.zep_01.scheduler.Job;
-import com.teragrep.zep_01.service.ConfigurationService;
 import com.teragrep.zep_01.service.NotebookService;
 import com.teragrep.zep_01.service.ServiceContext;
 import com.teragrep.zep_01.user.AuthenticationInfo;
@@ -104,6 +104,7 @@ public class NotebookServerTest extends AbstractTestRestApi {
   // Should not broadcast NOTES_INFO messages when renaming or editing notebooks.
   @Test
   public void testNoNotesInfoBroadcasting(){
+    // Create two sockets simulating two connected users.
     final NotebookSocketFake sock1 = new NotebookSocketFake();
     final NotebookSocketFake sock2 = new NotebookSocketFake();
 
@@ -115,7 +116,7 @@ public class NotebookServerTest extends AbstractTestRestApi {
     // notebook is renamed
     final Message renameMessage = new Message(OP.NOTE_RENAME).put("id",noteId).put("name","renamedNote");
     final String renameJson = renameMessage.toJson();
-    notebookServer.onMessage(sock2, renameJson);
+    notebookServer.onMessage(sock1, renameJson);
     // notebook is updated
     final HashMap<String,String> emptyConfig = new HashMap<>();
     final Message updateMessage = new Message(OP.NOTE_UPDATE).put("id",noteId).put("name","renamedNote").put("config",emptyConfig);
@@ -124,11 +125,11 @@ public class NotebookServerTest extends AbstractTestRestApi {
     // Notebook is cloned
     final Message cloneMessage = new Message(OP.CLONE_NOTE).put("id",noteId).put("name","clonedNote");
     final String cloneJson = cloneMessage.toJson();
-    notebookServer.onMessage(sock2, cloneJson);
+    notebookServer.onMessage(sock1, cloneJson);
     // notebook is deleted
     final Message deleteMessage = new Message(OP.DEL_NOTE).put("id",noteId);
     final String deleteJson = deleteMessage.toJson();
-    notebookServer.onMessage(sock2, deleteJson);
+    notebookServer.onMessage(sock1, deleteJson);
     // Folder is renamed
     final Message renameFolderMessage = new Message(OP.FOLDER_RENAME).put("id","folder").put("name","renamedFolder");
     final String renameFolderJson = renameFolderMessage.toJson();
@@ -138,11 +139,11 @@ public class NotebookServerTest extends AbstractTestRestApi {
     final String deleteFolderJson = deleteFolderMessage.toJson();
     notebookServer.onMessage(sock1, deleteFolderJson);
 
-    // Assert that NOTES_INFO was not sent as part of any previous requests
+    // Assert that NOTES_INFO was not sent to any connected socket during any of the previous operations
     Assertions.assertEquals(sock1.notesInfoMessageCount(),0);
     Assertions.assertEquals(sock2.notesInfoMessageCount(),0);
 
-    // Should be sent on LIST_NOTES to only requesting connectiont
+    // NOTES_INFO should only be sent as a response to LIST_NOTES, and only to the requesting socket.
     final Message listNotesMessage = new Message(OP.LIST_NOTES);
     final String listNotesJson = listNotesMessage.toJson();
     notebookServer.onMessage(sock1, listNotesJson);
@@ -886,23 +887,5 @@ public class NotebookServerTest extends AbstractTestRestApi {
     NotebookSocket sock = mock(NotebookSocket.class);
     when(sock.getRequest()).thenReturn(mockRequest);
     return sock;
-  }
-
-  private class NotebookSocketFake extends NotebookSocket{
-
-    private int notesInfoMessageCount = 0;
-    public NotebookSocketFake() {
-      super(null,null,null);
-    }
-
-    @Override
-    public void send(String serializeMessage){
-      if(serializeMessage.contains("NOTES_INFO")){
-        notesInfoMessageCount++;
-      }
-    }
-    public int notesInfoMessageCount(){
-      return notesInfoMessageCount;
-    }
   }
 }
