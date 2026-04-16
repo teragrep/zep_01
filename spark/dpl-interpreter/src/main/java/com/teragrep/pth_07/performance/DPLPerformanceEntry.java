@@ -47,7 +47,7 @@ package com.teragrep.pth_07.performance;
 
 import com.teragrep.pth_07.performance.metric.*;
 import org.apache.spark.sql.Row;
-import org.apache.spark.sql.RowFactory;
+import org.apache.spark.sql.catalyst.expressions.GenericRowWithSchema;
 import org.apache.spark.sql.types.DataTypes;
 import org.apache.spark.sql.types.StructField;
 import org.apache.spark.sql.types.StructType;
@@ -534,6 +534,9 @@ public class DPLPerformanceEntry {
                 ,new Timestamp(value));
     }
 
+    public Row asRow(){
+        return asRow(schema());
+    }
     public Row asRow(StructType schema){
         final List<Object> values = new ArrayList<>();
         for (StructField field : schema.fields()) {
@@ -592,7 +595,7 @@ public class DPLPerformanceEntry {
                 continue;
             }
         }
-        return RowFactory.create(values.toArray());
+        return new GenericRowWithSchema(values.toArray(),schema);
     }
 
     public StructType schema(){
