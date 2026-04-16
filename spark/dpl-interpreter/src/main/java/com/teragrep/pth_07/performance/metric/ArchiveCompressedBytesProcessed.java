@@ -48,7 +48,6 @@ package com.teragrep.pth_07.performance.metric;
 import com.teragrep.pth_07.performance.metric.value.LongMetricValue;
 import com.teragrep.pth_07.performance.metric.value.MetricValue;
 import com.teragrep.pth_07.performance.metric.value.StubMetricValue;
-import com.teragrep.stb_01.Stubable;
 import org.apache.spark.sql.types.DataType;
 import org.apache.spark.sql.types.DataTypes;
 import org.apache.spark.sql.types.Metadata;

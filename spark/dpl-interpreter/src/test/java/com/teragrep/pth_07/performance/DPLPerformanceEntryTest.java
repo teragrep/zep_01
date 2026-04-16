@@ -1,6 +1,5 @@
 package com.teragrep.pth_07.performance;
 
-import com.teragrep.pth_07.performance.metric.Eps;
 import nl.jqno.equalsverifier.EqualsVerifier;
 import org.apache.spark.sql.Row;
 import org.apache.spark.sql.types.*;
