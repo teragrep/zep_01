@@ -56,15 +56,17 @@ import org.apache.spark.sql.Row;
 
 import java.io.StringReader;
 import java.util.List;
+import java.util.concurrent.atomic.AtomicReference;
 
 public class PerformanceIndicator extends AbstractUserInterfaceElement {
 
     private final AngularObject<String> batchMsg;
     private String message;
-    private Dataset<Row> performanceData;
+    private final AtomicReference<Dataset<Row>> performanceData;
 
     public PerformanceIndicator(InterpreterContext interpreterContext) {
         super(interpreterContext);
+        performanceData = new AtomicReference<>();
 
         AngularObjectWatcher angularObjectWatcher = new AngularObjectWatcher(getInterpreterContext()) {
             @Override
@@ -103,14 +105,14 @@ public class PerformanceIndicator extends AbstractUserInterfaceElement {
     }
 
     public void setPerformanceDataset(final Dataset<Row> performanceData){
-        this.performanceData = performanceData;
+        this.performanceData.set(performanceData);
     }
 
     public void sendPerformanceUpdate(){
-        // TODO: format dataset to uPlot format
-        // TODO: maybe format into table as well if needed
+        // TODO: format dataset to uPlot format (requires ZEP_01#283)
+        // TODO: format into DataTables format as well if needed (requires ZEP_01#283)
         final JsonArrayBuilder output = Json.createArrayBuilder();
-        final List<String> rows = performanceData.toJSON().collectAsList();
+        final List<String> rows = performanceData.get().toJSON().collectAsList();
         for (String row : rows) {
             final JsonObject rowJson = Json.createReader(new StringReader(row)).readObject();
             output.add(rowJson);
