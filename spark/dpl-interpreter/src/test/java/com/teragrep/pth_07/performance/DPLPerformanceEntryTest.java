@@ -25,6 +25,21 @@ class DPLPerformanceEntryTest {
     }
 
     @Test
+    void testWithDataIgnoresUnknownKeys() {
+        final String inputKey = "unknownKey: some data we want to ignore";
+        final String inputValue = "string data";
+        final DPLPerformanceEntry entry = new DPLPerformanceEntry();
+        final DPLPerformanceEntry modifiedEntry = entry.withData(inputKey,inputValue);
+        final Row row = modifiedEntry.asRow();
+
+        // Created row should be fully empty, containing only null values for each of the entries
+        Assertions.assertEquals(17,row.size());
+        for (int i = 0; i < row.size(); i++) {
+            Assertions.assertTrue(row.isNullAt(i));
+        }
+    }
+
+    @Test
     void testWithDataUsingCustomSchema() {
         final String bytesPerSecondInputKey = "BytesPerSecond: processed bytes per second";
         final String bytesPerSecondInputValue = "512";
