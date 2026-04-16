@@ -190,7 +190,7 @@ public final class DPLPerformanceEntry {
             }
             return modifiedPerformanceEntry;
         }
-        catch (NumberFormatException numberFormatException){
+        catch (final NumberFormatException numberFormatException){
             throw new UnsupportedOperationException("Failed to update performance data! Encountered invalid data type", numberFormatException);
         }
     }
@@ -538,9 +538,9 @@ public final class DPLPerformanceEntry {
     public Row asRow(){
         return asRow(schema());
     }
-    public Row asRow(StructType schema){
+    public Row asRow(final StructType schema){
         final List<Object> values = new ArrayList<>();
-        for (StructField field : schema.fields()) {
+        for (final StructField field : schema.fields()) {
             if(field.name().equals(archiveCompressedBytesProcessed.name()) && field.dataType().equals(archiveCompressedBytesProcessed.type())){
                 values.add(archiveCompressedBytesProcessed.value().isStub() ? null : archiveCompressedBytesProcessed.value().value());
             }
@@ -600,7 +600,7 @@ public final class DPLPerformanceEntry {
     }
 
     public StructType schema(){
-        List<StructField> fields = new ArrayList<>();
+        final List<StructField> fields = new ArrayList<>();
         fields.add(archiveCompressedBytesProcessed.structField());
         fields.add(archiveDatabaseRowCount.structField());
         fields.add(archiveDatabaseRowAvgLatency.structField());
@@ -618,15 +618,15 @@ public final class DPLPerformanceEntry {
         fields.add(recordsProcessed.structField());
         fields.add(rowsReadFromArchive.structField());
         fields.add(timestamp.structField());
-        StructType schema = DataTypes.createStructType(fields);
+        final StructType schema = DataTypes.createStructType(fields);
         return schema;
     }
 
     @Override
-    public boolean equals(Object o) {
+    public boolean equals(final Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
-        DPLPerformanceEntry entry = (DPLPerformanceEntry) o;
+        final DPLPerformanceEntry entry = (DPLPerformanceEntry) o;
         return Objects.equals(rowsReadFromArchive, entry.rowsReadFromArchive) && Objects.equals(batchId, entry.batchId) && Objects.equals(eps, entry.eps) && Objects.equals(archiveDatabaseRowCount, entry.archiveDatabaseRowCount) && Objects.equals(kafkaOffset, entry.kafkaOffset) && Objects.equals(bytesPerSecond, entry.bytesPerSecond) && Objects.equals(bytesProcessed, entry.bytesProcessed) && Objects.equals(latestKafkaTimestamp, entry.latestKafkaTimestamp) && Objects.equals(archiveCompressedBytesProcessed, entry.archiveCompressedBytesProcessed) && Objects.equals(archiveObjectsProcessed, entry.archiveObjectsProcessed) && Objects.equals(archiveDatabaseRowMinLatency, entry.archiveDatabaseRowMinLatency) && Objects.equals(archiveDatabaseRowMaxLatency, entry.archiveDatabaseRowMaxLatency) && Objects.equals(archiveOffset, entry.archiveOffset) && Objects.equals(recordsProcessed, entry.recordsProcessed) && Objects.equals(recordsPerSecond, entry.recordsPerSecond) && Objects.equals(archiveDatabaseRowAvgLatency, entry.archiveDatabaseRowAvgLatency) && Objects.equals(timestamp, entry.timestamp);
     }
 

@@ -51,7 +51,7 @@ public final class DoubleMetricValue implements MetricValue<Double>{
 
     private final double value;
 
-    public DoubleMetricValue(double value){
+    public DoubleMetricValue(final double value){
         this.value = value;
     }
 
@@ -66,10 +66,10 @@ public final class DoubleMetricValue implements MetricValue<Double>{
     }
 
     @Override
-    public boolean equals(Object o) {
+    public boolean equals(final Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
-        DoubleMetricValue that = (DoubleMetricValue) o;
+        final DoubleMetricValue that = (DoubleMetricValue) o;
         return Double.compare(that.value, value) == 0;
     }
 
