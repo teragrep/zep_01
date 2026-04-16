@@ -1,5 +1,7 @@
 package com.teragrep.pth_07.performance;
 
+import com.teragrep.pth_07.performance.metric.Eps;
+import nl.jqno.equalsverifier.EqualsVerifier;
 import org.apache.spark.sql.Row;
 import org.apache.spark.sql.types.*;
 import org.junit.jupiter.api.Assertions;
@@ -65,6 +67,10 @@ class DPLPerformanceEntryTest {
         Assertions.assertEquals(expectedBytesPersecond,row.getLong(bytesPerSecondIndex));
         Assertions.assertEquals(timestampValue,row.getLong(timestampIndex));
         Assertions.assertEquals(epsValue,row.getDouble(epsIndex));
+    }
 
+    @Test
+    public void testContract() {
+        EqualsVerifier.forClass(DPLPerformanceEntry.class).verify();
     }
 }

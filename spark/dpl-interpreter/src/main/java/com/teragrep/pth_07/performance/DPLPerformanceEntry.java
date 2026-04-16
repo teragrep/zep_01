@@ -54,8 +54,9 @@ import org.apache.spark.sql.types.StructType;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
-public class DPLPerformanceEntry {
+public final class DPLPerformanceEntry {
     private final RowsReadFromArchive rowsReadFromArchive;
     private final BatchId batchId;
     private final Eps eps;
@@ -619,5 +620,18 @@ public class DPLPerformanceEntry {
         fields.add(timestamp.structField());
         StructType schema = DataTypes.createStructType(fields);
         return schema;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        DPLPerformanceEntry entry = (DPLPerformanceEntry) o;
+        return Objects.equals(rowsReadFromArchive, entry.rowsReadFromArchive) && Objects.equals(batchId, entry.batchId) && Objects.equals(eps, entry.eps) && Objects.equals(archiveDatabaseRowCount, entry.archiveDatabaseRowCount) && Objects.equals(kafkaOffset, entry.kafkaOffset) && Objects.equals(bytesPerSecond, entry.bytesPerSecond) && Objects.equals(bytesProcessed, entry.bytesProcessed) && Objects.equals(latestKafkaTimestamp, entry.latestKafkaTimestamp) && Objects.equals(archiveCompressedBytesProcessed, entry.archiveCompressedBytesProcessed) && Objects.equals(archiveObjectsProcessed, entry.archiveObjectsProcessed) && Objects.equals(archiveDatabaseRowMinLatency, entry.archiveDatabaseRowMinLatency) && Objects.equals(archiveDatabaseRowMaxLatency, entry.archiveDatabaseRowMaxLatency) && Objects.equals(archiveOffset, entry.archiveOffset) && Objects.equals(recordsProcessed, entry.recordsProcessed) && Objects.equals(recordsPerSecond, entry.recordsPerSecond) && Objects.equals(archiveDatabaseRowAvgLatency, entry.archiveDatabaseRowAvgLatency) && Objects.equals(timestamp, entry.timestamp);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(rowsReadFromArchive, batchId, eps, archiveDatabaseRowCount, kafkaOffset, bytesPerSecond, bytesProcessed, latestKafkaTimestamp, archiveCompressedBytesProcessed, archiveObjectsProcessed, archiveDatabaseRowMinLatency, archiveDatabaseRowMaxLatency, archiveOffset, recordsProcessed, recordsPerSecond, archiveDatabaseRowAvgLatency, timestamp);
     }
 }
