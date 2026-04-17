@@ -46,14 +46,21 @@
 package com.teragrep.zep_01.socket.fakes;
 
 import com.teragrep.zep_01.socket.NotebookSocket;
+import com.teragrep.zep_01.socket.NotebookSocketListener;
+import org.eclipse.jetty.websocket.api.Session;
 
 public final class NotebookSocketFake extends NotebookSocket {
 
     private int notesInfoMessageCount = 0;
-    public NotebookSocketFake() {
-      super(null,null,null);
+    public NotebookSocketFake(final NotebookSocketListener listener) {
+      super(null,null,listener);
     }
 
+    public void connect() {
+        onWebSocketConnect(null);
+    }
+
+    // When receiving a message
     @Override
     public void send(final String serializeMessage){
       if(serializeMessage.contains("NOTES_INFO")){

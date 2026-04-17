@@ -104,9 +104,11 @@ public class NotebookServerTest extends AbstractTestRestApi {
   // Should not broadcast NOTES_INFO messages when renaming or editing notebooks.
   @Test
   public void testNoNotesInfoBroadcasting(){
-    // Create two sockets simulating two connected users.
-    final NotebookSocketFake sock1 = new NotebookSocketFake();
-    final NotebookSocketFake sock2 = new NotebookSocketFake();
+    // Create and connect two fake sockets simulating two connected users.
+    final NotebookSocketFake sock1 = new NotebookSocketFake(notebookServer);
+    final NotebookSocketFake sock2 = new NotebookSocketFake(notebookServer);
+    sock1.connect();
+    sock2.connect();
 
     // Create a notebook
     final String noteName = "folder/Note with millis " + System.currentTimeMillis();
