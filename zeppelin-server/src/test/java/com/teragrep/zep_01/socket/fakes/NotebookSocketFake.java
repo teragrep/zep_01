@@ -51,9 +51,14 @@ import org.eclipse.jetty.websocket.api.Session;
 
 public final class NotebookSocketFake extends NotebookSocket {
 
-    private int notesInfoMessageCount = 0;
+    private int notesInfoMessageCount;
     public NotebookSocketFake(final NotebookSocketListener listener) {
-      super(null,null,listener);
+        this(listener,0);
+    }
+
+    private NotebookSocketFake(final NotebookSocketListener listener, final int initialCount) {
+        super(null,null,listener);
+        notesInfoMessageCount = initialCount;
     }
 
     public void connect() {
