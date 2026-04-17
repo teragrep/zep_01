@@ -59,7 +59,7 @@ class DPLPerformanceEntryTest {
         final String inputValue = "512";
         final long expectedValue  = Long.parseLong(inputValue);
         final DPLPerformanceEntry entry = new DPLPerformanceEntry();
-        final DPLPerformanceEntry modifiedEntry = entry.withData(inputKey,inputValue);
+        final DPLPerformanceEntry modifiedEntry = Assertions.assertDoesNotThrow(()->entry.withData(inputKey,inputValue));
         final Row row = modifiedEntry.asRow();
         final int bytesPerSecondIndex = row.fieldIndex("BytesPerSecond");
         final int bytesProcessedindex = row.fieldIndex("BytesProcessed");
@@ -74,7 +74,7 @@ class DPLPerformanceEntryTest {
         final String inputKey = "unknownKey: some data we want to ignore";
         final String inputValue = "string data";
         final DPLPerformanceEntry entry = new DPLPerformanceEntry();
-        final DPLPerformanceEntry modifiedEntry = entry.withData(inputKey,inputValue);
+        final DPLPerformanceEntry modifiedEntry = Assertions.assertDoesNotThrow(()->entry.withData(inputKey,inputValue));
         final Row row = modifiedEntry.asRow();
 
         // Created row should be fully empty, containing only null values for each of the entries
@@ -90,17 +90,22 @@ class DPLPerformanceEntryTest {
         final String bytesPerSecondInputValue = "512";
         final long expectedBytesPersecond  = Long.parseLong(bytesPerSecondInputValue);
 
+        final String timestampInputKey = "Timestamp: timestamp of when performance data was received(epochtime)";
         final long timestampValue = 1780000000;
+        final String epsInputKey = "Eps: processed rows per second";
         final double epsValue = 2000.50;
 
         final String recordsProcessedInputKey = "RecordsProcessed: total processed records";
         final String recordsProcessedInputValue = "500000";
 
         final DPLPerformanceEntry entry = new DPLPerformanceEntry();
-        DPLPerformanceEntry modifiedEntry = entry.withData(recordsProcessedInputKey,recordsProcessedInputValue);
-        modifiedEntry = modifiedEntry.withData(bytesPerSecondInputKey,bytesPerSecondInputValue);
-        modifiedEntry = modifiedEntry.withEps(epsValue);
-        modifiedEntry = modifiedEntry.withTimestamp(timestampValue);
+        DPLPerformanceEntry modifiedEntry = Assertions.assertDoesNotThrow(()->entry.withData(recordsProcessedInputKey,recordsProcessedInputValue));
+        DPLPerformanceEntry finalModifiedEntry = modifiedEntry;
+        modifiedEntry = Assertions.assertDoesNotThrow(()-> finalModifiedEntry.withData(bytesPerSecondInputKey,bytesPerSecondInputValue));
+        DPLPerformanceEntry finalModifiedEntry1 = modifiedEntry;
+        modifiedEntry = Assertions.assertDoesNotThrow(()-> finalModifiedEntry1.withData(epsInputKey,epsValue));
+        DPLPerformanceEntry finalModifiedEntry2 = modifiedEntry;
+        modifiedEntry = Assertions.assertDoesNotThrow(()-> finalModifiedEntry2.withData(timestampInputKey,timestampValue));
 
         // Create a schema that contains only two of the three metrics, in different order compared to default.
         StructType customSchema = new StructType(new StructField[]{

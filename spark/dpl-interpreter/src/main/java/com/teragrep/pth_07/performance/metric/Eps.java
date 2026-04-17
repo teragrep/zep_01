@@ -48,6 +48,7 @@ package com.teragrep.pth_07.performance.metric;
 import com.teragrep.pth_07.performance.metric.value.DoubleMetricValue;
 import com.teragrep.pth_07.performance.metric.value.MetricValue;
 import com.teragrep.pth_07.performance.metric.value.StubMetricValue;
+import com.teragrep.zep_01.common.exception.IncompatibleValueException;
 import org.apache.spark.sql.types.DataType;
 import org.apache.spark.sql.types.DataTypes;
 import org.apache.spark.sql.types.Metadata;
@@ -55,7 +56,7 @@ import org.apache.spark.sql.types.StructField;
 
 import java.util.Objects;
 
-public final class Eps {
+public final class Eps implements PerformanceMetric {
     private final MetricValue value;
     public Eps(){
         this(new StubMetricValue());
@@ -66,10 +67,29 @@ public final class Eps {
     private Eps(final MetricValue value){
         this.value = value;
     }
-    public MetricValue value() {
+    public MetricValue metricValue() {
         return value;
     }
-    
+    @Override
+    public Eps withValue(java.lang.Object value) throws IncompatibleValueException {
+        final Eps modifiedMetric;
+        if(value instanceof String){
+            try{
+                double newValue = Double.parseDouble((String)value);
+                modifiedMetric = new Eps(newValue);
+            }
+            catch (NumberFormatException numberFormatException){
+                throw new IncompatibleValueException("Value "+value+" is not a compatible value for metric "+name());
+            }
+        }
+        else if(value instanceof Double){
+            modifiedMetric = new Eps((Double)value);
+        }
+        else {
+            throw new IncompatibleValueException("Value "+value+" is not a compatible value for metric "+name());
+        }
+        return modifiedMetric;
+    }
     public String name() {
         return "Eps";
     }
@@ -95,7 +115,7 @@ public final class Eps {
     }
 
     
-    public boolean equals(final Object o) {
+    public boolean equals(final java.lang.Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         final Eps eps = (Eps) o;

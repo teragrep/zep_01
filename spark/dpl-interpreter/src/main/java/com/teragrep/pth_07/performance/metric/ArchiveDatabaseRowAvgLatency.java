@@ -48,6 +48,7 @@ package com.teragrep.pth_07.performance.metric;
 import com.teragrep.pth_07.performance.metric.value.LongMetricValue;
 import com.teragrep.pth_07.performance.metric.value.MetricValue;
 import com.teragrep.pth_07.performance.metric.value.StubMetricValue;
+import com.teragrep.zep_01.common.exception.IncompatibleValueException;
 import org.apache.spark.sql.types.DataType;
 import org.apache.spark.sql.types.DataTypes;
 import org.apache.spark.sql.types.Metadata;
@@ -55,7 +56,7 @@ import org.apache.spark.sql.types.StructField;
 
 import java.util.Objects;
 
-public final class ArchiveDatabaseRowAvgLatency {
+public final class ArchiveDatabaseRowAvgLatency implements PerformanceMetric {
     private final MetricValue value;
     public ArchiveDatabaseRowAvgLatency(){
         this(new StubMetricValue());
@@ -66,8 +67,28 @@ public final class ArchiveDatabaseRowAvgLatency {
     private ArchiveDatabaseRowAvgLatency(final MetricValue value){
         this.value = value;
     }
-    public MetricValue value() {
+    public MetricValue metricValue() {
         return value;
+    }
+    @Override
+    public ArchiveDatabaseRowAvgLatency withValue(java.lang.Object value) throws IncompatibleValueException {
+        final ArchiveDatabaseRowAvgLatency modifiedMetric;
+        if(value instanceof String){
+            try{
+                long newValue = Long.parseLong((String)value);
+                modifiedMetric = new ArchiveDatabaseRowAvgLatency(newValue);
+            }
+            catch (NumberFormatException numberFormatException){
+                throw new IncompatibleValueException("Value "+value+" is not a compatible value for metric "+name());
+            }
+        }
+        else if(value instanceof Long){
+            modifiedMetric = new ArchiveDatabaseRowAvgLatency((Long)value);
+        }
+        else {
+            throw new IncompatibleValueException("Value "+value+" is not a compatible value for metric "+name());
+        }
+        return modifiedMetric;
     }
     public String name() {
         return "ArchiveDatabaseRowAvgLatency";
@@ -94,7 +115,7 @@ public final class ArchiveDatabaseRowAvgLatency {
     }
 
     
-    public boolean equals(final Object o) {
+    public boolean equals(final java.lang.Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         final ArchiveDatabaseRowAvgLatency that = (ArchiveDatabaseRowAvgLatency) o;

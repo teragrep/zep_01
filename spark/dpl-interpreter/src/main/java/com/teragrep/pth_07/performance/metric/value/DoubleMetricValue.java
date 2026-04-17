@@ -47,7 +47,7 @@ package com.teragrep.pth_07.performance.metric.value;
 
 import java.util.Objects;
 
-public final class DoubleMetricValue implements MetricValue<Double>{
+public final class DoubleMetricValue implements MetricValue {
 
     private final double value;
 
@@ -66,7 +66,7 @@ public final class DoubleMetricValue implements MetricValue<Double>{
     }
 
     @Override
-    public boolean equals(final Object o) {
+    public boolean equals(final java.lang.Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         final DoubleMetricValue that = (DoubleMetricValue) o;

@@ -48,6 +48,7 @@ package com.teragrep.pth_07.performance.metric;
 import com.teragrep.pth_07.performance.metric.value.LongMetricValue;
 import com.teragrep.pth_07.performance.metric.value.MetricValue;
 import com.teragrep.pth_07.performance.metric.value.StubMetricValue;
+import com.teragrep.zep_01.common.exception.IncompatibleValueException;
 import org.apache.spark.sql.types.DataType;
 import org.apache.spark.sql.types.DataTypes;
 import org.apache.spark.sql.types.Metadata;
@@ -55,7 +56,7 @@ import org.apache.spark.sql.types.StructField;
 
 import java.util.Objects;
 
-public final class ArchiveObjectsProcessed {
+public final class ArchiveObjectsProcessed implements PerformanceMetric {
     private final MetricValue value;
     public ArchiveObjectsProcessed(){
         this(new StubMetricValue());
@@ -66,14 +67,33 @@ public final class ArchiveObjectsProcessed {
     private ArchiveObjectsProcessed(final MetricValue value){
         this.value = value;
     }
-    public MetricValue value() {
+    public MetricValue metricValue() {
         return value;
     }
     
     public String name() {
         return "ArchiveObjectsProcessed";
     }
-
+    @Override
+    public ArchiveObjectsProcessed withValue(java.lang.Object value) throws IncompatibleValueException {
+        final ArchiveObjectsProcessed modifiedMetric;
+        if(value instanceof String){
+            try{
+                long newValue = Long.parseLong((String)value);
+                modifiedMetric = new ArchiveObjectsProcessed(newValue);
+            }
+            catch (NumberFormatException numberFormatException){
+                throw new IncompatibleValueException("Value "+value+" is not a compatible value for metric "+name());
+            }
+        }
+        else if(value instanceof Long){
+            modifiedMetric = new ArchiveObjectsProcessed((Long)value);
+        }
+        else {
+            throw new IncompatibleValueException("Value "+value+" is not a compatible value for metric "+name());
+        }
+        return modifiedMetric;
+    }
     
     public String description() {
         return "total objects processed from archive";
@@ -95,7 +115,7 @@ public final class ArchiveObjectsProcessed {
     }
 
     
-    public boolean equals(final Object o) {
+    public boolean equals(final java.lang.Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         final ArchiveObjectsProcessed that = (ArchiveObjectsProcessed) o;

@@ -45,7 +45,9 @@
  */
 package com.teragrep.pth_07.performance;
 
+import com.teragrep.pth_07.performance.metric.PerformanceSchemaFields;
 import com.teragrep.pth_07.ui.UserInterfaceManager;
+import com.teragrep.zep_01.common.exception.IncompatibleValueException;
 import org.apache.spark.sql.Dataset;
 import org.apache.spark.sql.Row;
 import org.apache.spark.sql.SparkSession;
@@ -53,6 +55,8 @@ import org.apache.spark.sql.execution.ui.SQLExecutionUIData;
 import org.apache.spark.sql.execution.ui.SQLPlanMetric;
 import org.apache.spark.sql.streaming.StreamingQueryListener;
 import org.apache.spark.sql.types.StructType;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import scala.collection.Iterator;
 import scala.collection.JavaConverters;
 import scala.collection.Seq;
@@ -61,6 +65,7 @@ import java.time.Instant;
 import java.util.*;
 
 public final class DPLMetricsListener extends StreamingQueryListener {
+    private static final Logger LOGGER = LoggerFactory.getLogger(DPLMetricsListener.class);
     private final SparkSession sparkSession;
     private final UserInterfaceManager uiManager;
     private final String queryId;
@@ -83,18 +88,17 @@ public final class DPLMetricsListener extends StreamingQueryListener {
 
     @Override
     public void onQueryProgress(final QueryProgressEvent event) {
-        if (event.progress().name().equals(queryId)) {
-            final Seq<SQLExecutionUIData> executionsList = sparkSession.sharedState().statusStore().executionsList();
-            DPLPerformanceEntry entry = new DPLPerformanceEntry();
-            final StructType schema = entry.schema();
-            if (!executionsList.isEmpty()) {
-                final Iterator<SQLExecutionUIData> executionDataIterator = executionsList.iterator();
+        try{
+            if (event.progress().name().equals(queryId)) {
+                final Seq<SQLExecutionUIData> executionsList = sparkSession.sharedState().statusStore().executionsList();
+                DPLPerformanceEntry entry = new DPLPerformanceEntry();
+                if (!executionsList.isEmpty()) {
+                    final Iterator<SQLExecutionUIData> executionDataIterator = executionsList.iterator();
 
-                // We want only one DPLPerformanceEntry per QueryProgressEvent. Only the latest instances of each metric encountered will be added to the entry.
-
-                while (executionDataIterator.hasNext()) {
-                    final SQLExecutionUIData executionData = executionDataIterator.next();
-                    final Map<Object, String> metricValues = JavaConverters.mapAsJavaMap(executionData.metricValues());
+                    // We want only one DPLPerformanceEntry per QueryProgressEvent. Only the latest instances of each metric encountered will be added to the entry.
+                    while (executionDataIterator.hasNext()) {
+                        final SQLExecutionUIData executionData = executionDataIterator.next();
+                        final Map<Object, String> metricValues = JavaConverters.mapAsJavaMap(executionData.metricValues());
                         for (final SQLPlanMetric metric : JavaConverters.asJavaIterable(executionData.metrics())) {
                             final long id = metric.accumulatorId();
                             final String value = metricValues.get(id);
@@ -102,17 +106,20 @@ public final class DPLMetricsListener extends StreamingQueryListener {
                                 entry = entry.withData(metric.name(),value);
                             }
                         }
+                    }
+                    entry = entry.withData(PerformanceSchemaFields.RowsReadFromArchive.metric().name()+": "+PerformanceSchemaFields.RowsReadFromArchive.metric().description(),event.progress().numInputRows());
+                    entry = entry.withData(PerformanceSchemaFields.BatchId.metric().name()+": "+PerformanceSchemaFields.BatchId.metric().description(),event.progress().batchId());
+                    entry = entry.withData(PerformanceSchemaFields.Eps.metric().name()+": "+PerformanceSchemaFields.Eps.metric().description(),event.progress().processedRowsPerSecond());
+                    entry = entry.withData(PerformanceSchemaFields.Timestamp.metric().name()+": "+PerformanceSchemaFields.Timestamp.metric().description(),Instant.now().toEpochMilli());
+                    final Row row = entry.asRow();
+                    rows.add(row);
                 }
-                entry = entry.withRowsReadFromArchive(event.progress().numInputRows());
-                entry = entry.withBatchId(event.progress().batchId());
-                entry = entry.withEps(event.progress().processedRowsPerSecond());
-                entry = entry.withTimestamp(Instant.now().toEpochMilli());
-                final Row row = entry.asRow(schema);
-                rows.add(row);
+                final Dataset<Row> metricsDataset = sparkSession.createDataFrame(rows,PerformanceSchemaFields.schema());
+                uiManager.getPerformanceIndicator().setPerformanceDataset(metricsDataset);
+                uiManager.getPerformanceIndicator().sendPerformanceUpdate();
             }
-            final Dataset<Row> metricsDataset = sparkSession.createDataFrame(rows,schema);
-            uiManager.getPerformanceIndicator().setPerformanceDataset(metricsDataset);
-            uiManager.getPerformanceIndicator().sendPerformanceUpdate();
+        }catch (IncompatibleValueException incompatibleValueException){
+            LOGGER.error("Failed to process performance data of query {} due to an incompatible value being encountered",queryId,incompatibleValueException);
         }
     }
 

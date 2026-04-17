@@ -43,33 +43,50 @@
  * Teragrep, the applicable Commercial License may apply to this file if you as
  * a licensee so wish it.
  */
-package com.teragrep.pth_07.performance.metric.value;
+package com.teragrep.pth_07.performance.metric;
 
-import java.util.Objects;
+import org.apache.spark.sql.types.DataTypes;
+import org.apache.spark.sql.types.StructField;
+import org.apache.spark.sql.types.StructType;
 
-public final class StubMetricValue implements MetricValue {
+import java.util.ArrayList;
+import java.util.List;
 
-    @Override
-    public boolean isStub() {
-        return true;
+public enum PerformanceSchemaFields {
+    ArchiveCompressedBytesProcessed(new ArchiveCompressedBytesProcessed()),
+    ArchiveDatabaseRowAvgLatency(new ArchiveDatabaseRowAvgLatency()),
+    ArchiveDatabaseRowCount(new ArchiveDatabaseRowCount()),
+    ArchiveDatabaseRowMaxLatency(new ArchiveDatabaseRowMaxLatency()),
+    ArchiveDatabaseRowMinLatency(new ArchiveDatabaseRowMinLatency()),
+    ArchiveObjectsProcessed(new ArchiveObjectsProcessed()),
+    ArchiveOffset(new ArchiveOffset()),
+    BatchId(new BatchId()),
+    BytesPerSecond(new BytesPerSecond()),
+    BytesProcessed(new BytesProcessed()),
+    Eps(new Eps()),
+    KafkaOffset(new KafkaOffset()),
+    LatestKafkaTimestamp(new LatestKafkaTimestamp()),
+    RecordsPerSecond(new RecordsPerSecond()),
+    RecordsProcessed(new RecordsProcessed()),
+    RowsReadFromArchive(new RowsReadFromArchive()),
+
+    Timestamp(new Timestamp());
+    private final PerformanceMetric metric;
+
+    private PerformanceSchemaFields(PerformanceMetric metric){
+        this.metric = metric;
     }
 
-    @Override
-    public java.lang.Object value() {
-        throw new UnsupportedOperationException("Stub object does not implement value()");
+    public PerformanceMetric metric(){
+        return metric;
     }
-
-    @Override
-    public boolean equals(final java.lang.Object o) {
-        boolean equals = true;
-        if (o == null || getClass() != o.getClass()) {
-            equals = false;
+    public static StructType schema(){
+        final List<StructField> fields = new ArrayList<>();
+        for (PerformanceSchemaFields schemaField: values()) {
+            PerformanceMetric metric = schemaField.metric();
+            fields.add(metric.structField());
         }
-        return equals;
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hashCode(getClass().getName());
+        final StructType schema = DataTypes.createStructType(fields);
+        return schema;
     }
 }
