@@ -47,7 +47,6 @@ package com.teragrep.zep_01.socket.fakes;
 
 import com.teragrep.zep_01.socket.NotebookSocket;
 import com.teragrep.zep_01.socket.NotebookSocketListener;
-import org.eclipse.jetty.websocket.api.Session;
 
 public final class NotebookSocketFake extends NotebookSocket {
 
