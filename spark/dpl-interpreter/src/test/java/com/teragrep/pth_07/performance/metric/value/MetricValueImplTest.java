@@ -45,13 +45,14 @@
  */
 package com.teragrep.pth_07.performance.metric.value;
 
+import com.teragrep.pth_07.performance.metric.Eps;
 import nl.jqno.equalsverifier.EqualsVerifier;
 import org.junit.jupiter.api.Test;
 
-class DoubleMetricValueTest {
+class MetricValueImplTest {
 
     @Test
     public void testContract() {
-        EqualsVerifier.forClass(DoubleMetricValue.class).verify();
+        EqualsVerifier.forClass(MetricValueImpl.class).verify();
     }
 }

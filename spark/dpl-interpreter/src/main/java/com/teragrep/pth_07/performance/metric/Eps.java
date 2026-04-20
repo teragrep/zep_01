@@ -45,8 +45,8 @@
  */
 package com.teragrep.pth_07.performance.metric;
 
-import com.teragrep.pth_07.performance.metric.value.DoubleMetricValue;
 import com.teragrep.pth_07.performance.metric.value.MetricValue;
+import com.teragrep.pth_07.performance.metric.value.MetricValueImpl;
 import com.teragrep.pth_07.performance.metric.value.StubMetricValue;
 import com.teragrep.zep_01.common.exception.IncompatibleValueException;
 import org.apache.spark.sql.types.DataType;
@@ -57,17 +57,17 @@ import org.apache.spark.sql.types.StructField;
 import java.util.Objects;
 
 public final class Eps implements PerformanceMetric {
-    private final MetricValue value;
+    private final MetricValue<Double> value;
     public Eps(){
-        this(new StubMetricValue());
+        this(new StubMetricValue<>());
     }
     public Eps(final double value){
-        this(new DoubleMetricValue(value));
+        this(new MetricValueImpl<>(value));
     }
-    private Eps(final MetricValue value){
+    private Eps(final MetricValue<Double> value){
         this.value = value;
     }
-    public MetricValue metricValue() {
+    public MetricValue<Double> metricValue() {
         return value;
     }
     @Override

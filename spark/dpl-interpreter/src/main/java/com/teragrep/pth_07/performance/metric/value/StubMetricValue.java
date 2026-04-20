@@ -47,7 +47,7 @@ package com.teragrep.pth_07.performance.metric.value;
 
 import java.util.Objects;
 
-public final class StubMetricValue implements MetricValue {
+public final class StubMetricValue<T> implements MetricValue<T> {
 
     @Override
     public boolean isStub() {

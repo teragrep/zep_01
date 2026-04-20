@@ -45,7 +45,7 @@
  */
 package com.teragrep.pth_07.performance.metric;
 
-import com.teragrep.pth_07.performance.metric.value.LongMetricValue;
+import com.teragrep.pth_07.performance.metric.value.MetricValueImpl;
 import com.teragrep.pth_07.performance.metric.value.MetricValue;
 import com.teragrep.pth_07.performance.metric.value.StubMetricValue;
 import com.teragrep.zep_01.common.exception.IncompatibleValueException;
@@ -54,17 +54,17 @@ import org.apache.spark.sql.types.*;
 import java.util.Objects;
 
 public final class Timestamp implements PerformanceMetric {
-    private final MetricValue value;
+    private final MetricValue<Long> value;
     public Timestamp(){
-        this(new StubMetricValue());
+        this(new StubMetricValue<>());
     }
     public Timestamp(final long value){
-        this(new LongMetricValue(value));
+        this(new MetricValueImpl<>(value));
     }
-    private Timestamp(final MetricValue value){
+    private Timestamp(final MetricValue<Long> value){
         this.value = value;
     }
-    public MetricValue metricValue() {
+    public MetricValue<Long> metricValue() {
         return value;
     }
     @Override
