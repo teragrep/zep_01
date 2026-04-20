@@ -102,7 +102,7 @@ public final class DPLMetricsListener extends StreamingQueryListener {
                         for (final SQLPlanMetric metric : JavaConverters.asJavaIterable(executionData.metrics())) {
                             final long id = metric.accumulatorId();
                             final String value = metricValues.get(id);
-                            if (metric.metricType().startsWith("v2Custom_") && value != null && value != "null") {
+                            if (metric.metricType().startsWith("v2Custom_") && value != null && !"null".equals(value)) {
                                 entry = entry.withData(metric.name(),value);
                             }
                         }
