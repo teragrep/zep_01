@@ -49,10 +49,12 @@ import com.teragrep.zep_01.display.AngularObject;
 import com.teragrep.zep_01.display.AngularObjectWatcher;
 import com.teragrep.zep_01.interpreter.InterpreterContext;
 import jakarta.json.Json;
+import jakarta.json.JsonArray;
 import jakarta.json.JsonArrayBuilder;
 import jakarta.json.JsonObject;
 import org.apache.spark.sql.Dataset;
 import org.apache.spark.sql.Row;
+import org.apache.spark.sql.functions;
 
 import java.io.StringReader;
 import java.util.List;
@@ -112,10 +114,15 @@ public class PerformanceIndicator extends AbstractUserInterfaceElement {
         // TODO: format dataset to uPlot format (requires ZEP_01#283)
         // TODO: format into DataTables format as well if needed (requires ZEP_01#283)
         final JsonArrayBuilder output = Json.createArrayBuilder();
-        final List<String> rows = performanceData.get().toJSON().collectAsList();
-        for (String row : rows) {
-            final JsonObject rowJson = Json.createReader(new StringReader(row)).readObject();
-            output.add(rowJson);
+        // Use collect_list to turn the data into a single Spark Row containing JSON strings.
+        final Row r = performanceData.get().toJSON().agg(functions.collect_list(functions.col("value")).as("values")).first();
+        // Read the Spark Row into a JsonArray
+        final JsonArray singleRowPerformanceData = Json.createReader(new StringReader(r.json())).readObject().getJsonArray("values");
+        // Iterate over the JsonArray and read the Json Strings into Json Objects. Skipping this step leaves Java's escape character to every quotation mark in the JSON
+        for (int i = 0; i < singleRowPerformanceData.size(); i++) {
+            String value = singleRowPerformanceData.getString(i);
+            JsonObject valueObject = Json.createReader(new StringReader(value)).readObject();
+            output.add(valueObject);
         }
         draw(output.build().toString());
     }
