@@ -71,19 +71,19 @@ public final class ArchiveDatabaseRowMaxLatency implements PerformanceMetric {
         return value;
     }
     @Override
-    public ArchiveDatabaseRowAvgLatency withValue(java.lang.Object value) throws IncompatibleValueException {
-        final ArchiveDatabaseRowAvgLatency modifiedMetric;
+    public ArchiveDatabaseRowMaxLatency withValue(java.lang.Object value) throws IncompatibleValueException {
+        final ArchiveDatabaseRowMaxLatency modifiedMetric;
         if(value instanceof String){
             try{
                 long newValue = Long.parseLong((String)value);
-                modifiedMetric = new ArchiveDatabaseRowAvgLatency(newValue);
+                modifiedMetric = new ArchiveDatabaseRowMaxLatency(newValue);
             }
             catch (NumberFormatException numberFormatException){
                 throw new IncompatibleValueException("Value "+value+" is not a compatible value for metric "+name());
             }
         }
         else if(value instanceof Long){
-            modifiedMetric = new ArchiveDatabaseRowAvgLatency((Long)value);
+            modifiedMetric = new ArchiveDatabaseRowMaxLatency((Long)value);
         }
         else {
             throw new IncompatibleValueException("Value "+value+" is not a compatible value for metric "+name());
