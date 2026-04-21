@@ -788,6 +788,26 @@ public class NotebookService {
     return cronUpdated;
   }
 
+
+  public void putNoteForm(String noteId,
+                          Map<String, Object> noteParams,
+                          ServiceContext context,
+                          ServiceCallback<Note> callback) throws IOException{
+    if (!checkPermission(noteId, Permission.WRITER, Message.OP.SAVE_NOTE_FORMS, context,
+            callback)) {
+      return;
+    }
+
+    Note note = notebook.getNote(noteId);
+    if (note == null) {
+      callback.onFailure(new NoteNotFoundException(noteId), context);
+      return;
+    }
+    note.getNoteParams().putAll(noteParams);
+    notebook.saveNote(note, context.getAutheInfo());
+    callback.onSuccess(note, context);
+  }
+
   public void saveNoteForms(String noteId,
                             Map<String, Object> noteParams,
                             ServiceContext context,
