@@ -436,9 +436,8 @@ public class NotebookServer extends WebSocketServlet
         case WATCHER:
           getConnectionManager().switchConnectionToWatcher(conn);
           break;
-        case SAVE_NOTE_FORMS:
-          saveNoteForms(conn, context, receivedMessage);
-          break;
+        case SUBMIT_FORM:
+          submitForm(conn, context, receivedMessage);
         case REMOVE_NOTE_FORMS:
           removeNoteForms(conn, context, receivedMessage);
           break;
@@ -2153,17 +2152,16 @@ public class NotebookServer extends WebSocketServlet
         new Message(OP.SAVE_NOTE_FORMS).put("formsData", formsSettings));
   }
 
-  private void saveNoteForms(NotebookSocket conn,
-                             ServiceContext context,
-                             Message fromMessage) throws IOException {
+  private void submitForm(NotebookSocket conn,
+                          ServiceContext context,
+                          Message fromMessage) throws IOException {
     String noteId = (String) fromMessage.get("noteId");
-    Map<String, Object> noteParams = (Map<String, Object>) fromMessage.get("noteParams");
-
-    getNotebookService().saveNoteForms(noteId, noteParams, context,
+    Map<String, Object> noteParams = (Map<String, Object>) fromMessage.get("form");
+    getNotebookService().putNoteForm(noteId, noteParams, context,
         new WebSocketServiceCallback<Note>(conn) {
           @Override
           public void onSuccess(Note note, ServiceContext context) {
-            broadcastNoteForms(note);
+            // broadcasting of SAVE_NOTE_FORMS removed
           }
         });
   }
