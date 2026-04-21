@@ -49,17 +49,26 @@ import com.teragrep.zep_01.display.AngularObject;
 import com.teragrep.zep_01.display.AngularObjectWatcher;
 import com.teragrep.zep_01.interpreter.InterpreterContext;
 import jakarta.json.Json;
+import jakarta.json.JsonArray;
+import jakarta.json.JsonArrayBuilder;
 import jakarta.json.JsonObject;
+import org.apache.spark.sql.Dataset;
+import org.apache.spark.sql.Row;
+import org.apache.spark.sql.functions;
 
-import java.util.Map;
+import java.io.StringReader;
+import java.util.List;
+import java.util.concurrent.atomic.AtomicReference;
 
 public class PerformanceIndicator extends AbstractUserInterfaceElement {
 
     private final AngularObject<String> batchMsg;
     private String message;
+    private final AtomicReference<Dataset<Row>> performanceData;
 
     public PerformanceIndicator(InterpreterContext interpreterContext) {
         super(interpreterContext);
+        performanceData = new AtomicReference<>();
 
         AngularObjectWatcher angularObjectWatcher = new AngularObjectWatcher(getInterpreterContext()) {
             @Override
@@ -73,13 +82,18 @@ public class PerformanceIndicator extends AbstractUserInterfaceElement {
 
         batchMsg = getInterpreterContext().getAngularObjectRegistry().add(
                 "batchMsg",
-                "",
+                "[]",
                 getInterpreterContext().getNoteId(),
                 getInterpreterContext().getParagraphId(),
                 true
         );
         batchMsg.addWatcher(angularObjectWatcher);
 
+    }
+
+    private void draw(final String message){
+        this.message = message;
+        draw();
     }
 
     @Override
@@ -92,22 +106,24 @@ public class PerformanceIndicator extends AbstractUserInterfaceElement {
         batchMsg.emit();
     }
 
-    public void setPerformanceData(long numInputRows, long batchId, double processedRowsPerSecond, Map<String, String> currentMetrics) {
-        final StringBuilder newMessage = new StringBuilder();
+    public void setPerformanceDataset(final Dataset<Row> performanceData){
+        this.performanceData.set(performanceData);
+    }
 
-        newMessage.append("Full table input rows read from archive: ").append(numInputRows).append(" ");
-        newMessage.append("during batchId: ").append(batchId).append(" ");
-        newMessage.append("with avg EPS: ").append(processedRowsPerSecond).append("\n");
-
-        if (!currentMetrics.isEmpty()) {
-            newMessage.append("Metrics:\n");
-            for (final Map.Entry<String, String> metric : currentMetrics.entrySet()) {
-                newMessage.append(metric.getKey()).append(": ").append(metric.getValue()).append("\n");
-            }
+    public void sendPerformanceUpdate(){
+        // TODO: format dataset to uPlot format (requires ZEP_01#283)
+        // TODO: format into DataTables format as well if needed (requires ZEP_01#283)
+        final JsonArrayBuilder output = Json.createArrayBuilder();
+        // Use collect_list to turn the data into a single Spark Row containing JSON strings.
+        final Row r = performanceData.get().toJSON().agg(functions.collect_list(functions.col("value")).as("values")).first();
+        // Read the Spark Row into a JsonArray
+        final JsonArray singleRowPerformanceData = Json.createReader(new StringReader(r.json())).readObject().getJsonArray("values");
+        // Iterate over the JsonArray and read the Json Strings into Json Objects. Skipping this step leaves Java's escape character to every quotation mark in the JSON
+        for (int i = 0; i < singleRowPerformanceData.size(); i++) {
+            String value = singleRowPerformanceData.getString(i);
+            JsonObject valueObject = Json.createReader(new StringReader(value)).readObject();
+            output.add(valueObject);
         }
-
-        message = newMessage.toString();
-
-        draw();
+        draw(output.build().toString());
     }
 }
