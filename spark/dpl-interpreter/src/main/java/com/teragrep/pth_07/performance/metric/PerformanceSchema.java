@@ -50,43 +50,58 @@ import org.apache.spark.sql.types.StructField;
 import org.apache.spark.sql.types.StructType;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
+import java.util.Objects;
 
-public enum PerformanceSchemaFields {
-    ArchiveCompressedBytesProcessed(new ArchiveCompressedBytesProcessed()),
-    ArchiveDatabaseRowAvgLatency(new ArchiveDatabaseRowAvgLatency()),
-    ArchiveDatabaseRowCount(new ArchiveDatabaseRowCount()),
-    ArchiveDatabaseRowMaxLatency(new ArchiveDatabaseRowMaxLatency()),
-    ArchiveDatabaseRowMinLatency(new ArchiveDatabaseRowMinLatency()),
-    ArchiveObjectsProcessed(new ArchiveObjectsProcessed()),
-    ArchiveOffset(new ArchiveOffset()),
-    BatchId(new BatchId()),
-    BytesPerSecond(new BytesPerSecond()),
-    BytesProcessed(new BytesProcessed()),
-    Eps(new Eps()),
-    KafkaOffset(new KafkaOffset()),
-    LatestKafkaTimestamp(new LatestKafkaTimestamp()),
-    RecordsPerSecond(new RecordsPerSecond()),
-    RecordsProcessed(new RecordsProcessed()),
-    RowsReadFromArchive(new RowsReadFromArchive()),
+public final class PerformanceSchema {
+    private final List<PerformanceMetric> metrics;
 
-    Timestamp(new Timestamp());
-    private final PerformanceMetric metric;
-
-    private PerformanceSchemaFields(PerformanceMetric metric){
-        this.metric = metric;
+    public PerformanceSchema(){
+        this(Arrays.asList(
+            new ArchiveCompressedBytesProcessed(),
+            new ArchiveDatabaseRowAvgLatency(),
+            new ArchiveDatabaseRowCount(),
+            new ArchiveDatabaseRowMaxLatency(),
+            new ArchiveDatabaseRowMinLatency(),
+            new ArchiveObjectsProcessed(),
+            new ArchiveOffset(),
+            new BatchId(),
+            new BytesPerSecond(),
+            new BytesProcessed(),
+            new Eps(),
+            new KafkaOffset(),
+            new LatestKafkaTimestamp(),
+            new RecordsPerSecond(),
+            new RecordsProcessed(),
+            new RowsReadFromArchive(),
+            new Timestamp())
+        );
     }
 
-    public PerformanceMetric metric(){
-        return metric;
+    public PerformanceSchema(List<PerformanceMetric> metrics){
+        this.metrics = metrics;
     }
-    public static StructType schema(){
-        final List<StructField> fields = new ArrayList<>();
-        for (PerformanceSchemaFields schemaField: values()) {
-            PerformanceMetric metric = schemaField.metric();
+    public List<PerformanceMetric> metrics(){
+        return metrics;
+    }
+    public StructType sparkSchema(){
+        List<StructField> fields = new ArrayList<>();
+        for (PerformanceMetric metric: metrics) {
             fields.add(metric.structField());
         }
-        final StructType schema = DataTypes.createStructType(fields);
-        return schema;
+        return DataTypes.createStructType(fields);
+    }
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        PerformanceSchema that = (PerformanceSchema) o;
+        return Objects.equals(metrics, that.metrics);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(metrics);
     }
 }

@@ -51,36 +51,36 @@ import org.apache.spark.sql.Row;
 import org.apache.spark.sql.catalyst.expressions.GenericRowWithSchema;
 import org.apache.spark.sql.types.StructField;
 import org.apache.spark.sql.types.StructType;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.util.*;
 
 public final class DPLPerformanceEntry {
+    private final PerformanceSchema performanceSchema;
     private final Map<String,PerformanceMetric> metrics;
 
     public DPLPerformanceEntry(){
-        this(new HashMap<>());
+        this(new PerformanceSchema(),new HashMap<>());
     }
-    public DPLPerformanceEntry(Map<String,PerformanceMetric> metrics){
+
+    public DPLPerformanceEntry(PerformanceSchema performanceSchema, Map<String,PerformanceMetric> metrics){
+        this.performanceSchema = performanceSchema;
         this.metrics = metrics;
     }
 
     public DPLPerformanceEntry withData(final String key, final Object value) throws IncompatibleValueException{
         final Map<String, PerformanceMetric> modifiedMetrics = new HashMap<>(metrics);
-        for (PerformanceSchemaFields schemaField : PerformanceSchemaFields.values()) {
-            PerformanceMetric metric = schemaField.metric();
+        for (PerformanceMetric metric : performanceSchema.metrics()) {
             if(key.equals(metric.name()+": "+metric.description())){
                 PerformanceMetric modifiedMetric = metric.withValue(value);
                 modifiedMetrics.put(metric.name(), modifiedMetric);
                 break;
             }
         }
-        return new DPLPerformanceEntry(modifiedMetrics);
+        return new DPLPerformanceEntry(performanceSchema, modifiedMetrics);
     }
 
     public Row asRow(){
-        return asRow(PerformanceSchemaFields.schema());
+        return asRow(performanceSchema.sparkSchema());
     }
     public Row asRow(final StructType schema){
         final List<Object> values = new ArrayList<>();
@@ -97,16 +97,20 @@ public final class DPLPerformanceEntry {
         return new GenericRowWithSchema(values.toArray(),schema);
     }
 
+    public PerformanceSchema performanceSchema(){
+        return performanceSchema;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         DPLPerformanceEntry entry = (DPLPerformanceEntry) o;
-        return Objects.equals(metrics, entry.metrics);
+        return Objects.equals(performanceSchema, entry.performanceSchema) && Objects.equals(metrics, entry.metrics);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(metrics);
+        return Objects.hash(performanceSchema, metrics);
     }
 }

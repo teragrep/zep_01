@@ -45,7 +45,7 @@
  */
 package com.teragrep.pth_07.performance;
 
-import com.teragrep.pth_07.performance.metric.PerformanceSchemaFields;
+import com.teragrep.pth_07.performance.metric.*;
 import com.teragrep.pth_07.ui.UserInterfaceManager;
 import com.teragrep.zep_01.common.exception.IncompatibleValueException;
 import org.apache.spark.sql.Dataset;
@@ -54,7 +54,6 @@ import org.apache.spark.sql.SparkSession;
 import org.apache.spark.sql.execution.ui.SQLExecutionUIData;
 import org.apache.spark.sql.execution.ui.SQLPlanMetric;
 import org.apache.spark.sql.streaming.StreamingQueryListener;
-import org.apache.spark.sql.types.StructType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import scala.collection.Iterator;
@@ -95,6 +94,7 @@ public final class DPLMetricsListener extends StreamingQueryListener {
                 if (!executionsList.isEmpty()) {
                     final Iterator<SQLExecutionUIData> executionDataIterator = executionsList.iterator();
 
+                    // Add metrics from SQLExecutionUIData
                     // We want only one DPLPerformanceEntry per QueryProgressEvent. Only the latest instances of each metric encountered will be added to the entry.
                     while (executionDataIterator.hasNext()) {
                         final SQLExecutionUIData executionData = executionDataIterator.next();
@@ -107,14 +107,23 @@ public final class DPLMetricsListener extends StreamingQueryListener {
                             }
                         }
                     }
-                    entry = entry.withData(PerformanceSchemaFields.RowsReadFromArchive.metric().name()+": "+PerformanceSchemaFields.RowsReadFromArchive.metric().description(),event.progress().numInputRows());
-                    entry = entry.withData(PerformanceSchemaFields.BatchId.metric().name()+": "+PerformanceSchemaFields.BatchId.metric().description(),event.progress().batchId());
-                    entry = entry.withData(PerformanceSchemaFields.Eps.metric().name()+": "+PerformanceSchemaFields.Eps.metric().description(),event.progress().processedRowsPerSecond());
-                    entry = entry.withData(PerformanceSchemaFields.Timestamp.metric().name()+": "+PerformanceSchemaFields.Timestamp.metric().description(),Instant.now().toEpochMilli());
+
+                    // Add metrics from QueryProgressEvent
+                    RowsReadFromArchive rowsReadFromArchive = new RowsReadFromArchive();
+                    entry = entry.withData(rowsReadFromArchive.name()+": "+rowsReadFromArchive.description(),event.progress().numInputRows());
+                    BatchId batchId = new BatchId();
+                    entry = entry.withData(batchId.name()+": "+batchId.description(),event.progress().batchId());
+                    Eps eps = new Eps();
+                    entry = entry.withData(eps.name()+": "+eps.description(),event.progress().processedRowsPerSecond());
+                    Timestamp timestamp = new Timestamp();
+                    entry = entry.withData(timestamp.name()+": "+timestamp.description(),Instant.now().toEpochMilli());
+
+                    // Create a Spark Row for this performance event and add it to the list.
                     final Row row = entry.asRow();
                     rows.add(row);
                 }
-                final Dataset<Row> metricsDataset = sparkSession.createDataFrame(rows,PerformanceSchemaFields.schema());
+                // Take every row this Listener has encountered so far and prdouce a Dataset. Store the dataset within UserInterfaceManager as the latest performance dataset so that it can be accessed even after this Listener has been destroyed
+                final Dataset<Row> metricsDataset = sparkSession.createDataFrame(rows,entry.performanceSchema().sparkSchema());
                 uiManager.getPerformanceIndicator().setPerformanceDataset(metricsDataset);
                 uiManager.getPerformanceIndicator().sendPerformanceUpdate();
             }
