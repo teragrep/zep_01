@@ -48,6 +48,7 @@ package com.teragrep.pth_07.performance.metric;
 import nl.jqno.equalsverifier.EqualsVerifier;
 import org.apache.spark.sql.types.StructField;
 import org.apache.spark.sql.types.StructType;
+import org.junit.Assert;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
@@ -60,14 +61,18 @@ class PerformanceSchemaTest {
 
     @Test
     void testDefaultMetrics() {
-        PerformanceSchema performanceSchema = new PerformanceSchema();
-        Assertions.assertEquals(17,performanceSchema.metrics().size());
+        final PerformanceSchema performanceSchema = new PerformanceSchema();
+        final int expectedSchemaSize = 17;
+        Assertions.assertEquals(expectedSchemaSize,performanceSchema.metrics().size());
 
         // Default values should all be stubs
-        for (int i = 0; i < 17; i++) {
-            int metricIndex = i;
+        int i = 0;
+        while (i < expectedSchemaSize) {
+            final int metricIndex = i;
             Assertions.assertThrows(UnsupportedOperationException.class, ()-> performanceSchema.metrics().get(metricIndex).metricValue().value());
+            i++;
         }
+        Assertions.assertEquals(i,expectedSchemaSize);
 
         // Metrics list should contain all supported metrics.
         Assertions.assertEquals("ArchiveCompressedBytesProcessed",performanceSchema.metrics().get(0).name());
@@ -91,8 +96,8 @@ class PerformanceSchemaTest {
 
     @Test
     void testSparkSchema() {
-        PerformanceSchema performanceSchema = new PerformanceSchema();
-        StructType schema = performanceSchema.sparkSchema();
+        final PerformanceSchema performanceSchema = new PerformanceSchema();
+        final StructType schema = performanceSchema.sparkSchema();
 
         // Spark schema should contain all supported metrics
         Assertions.assertEquals(17,schema.size());
