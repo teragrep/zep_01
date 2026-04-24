@@ -35,4 +35,9 @@ public class TextBox extends Input<String> {
     this.defaultValue = defaultValue;
   }
 
+  @Override
+  public String inputType(){
+    return "textbox";
+  }
+
 }
