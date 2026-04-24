@@ -51,8 +51,8 @@ import org.apache.spark.sql.types.DataType;
 import org.apache.spark.sql.types.Metadata;
 import org.apache.spark.sql.types.StructField;
 
-public interface PerformanceMetric {
-    public abstract MetricValue metricValue();
+public interface PerformanceMetric<T> {
+    public abstract MetricValue<T> metricValue();
     public abstract PerformanceMetric withValue(java.lang.Object value) throws IncompatibleValueException;
     public abstract String name();
     public abstract String description();

@@ -56,7 +56,7 @@ import org.apache.spark.sql.types.StructField;
 
 import java.util.Objects;
 
-public final class Eps implements PerformanceMetric {
+public final class Eps implements PerformanceMetric<Double> {
     private final MetricValue<Double> value;
     public Eps(){
         this(new StubMetricValue<>());

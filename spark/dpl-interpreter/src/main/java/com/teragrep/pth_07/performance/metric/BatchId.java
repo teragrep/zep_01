@@ -56,7 +56,7 @@ import org.apache.spark.sql.types.StructField;
 
 import java.util.Objects;
 
-public final class BatchId implements PerformanceMetric {
+public final class BatchId implements PerformanceMetric<Long> {
     private final MetricValue<Long> value;
     public BatchId(){
         this(new StubMetricValue<>());

@@ -56,7 +56,7 @@ import org.apache.spark.sql.types.StructField;
 
 import java.util.Objects;
 
-public final class BytesPerSecond implements PerformanceMetric {
+public final class BytesPerSecond implements PerformanceMetric<Long> {
     private final MetricValue<Long> value;
     public BytesPerSecond(){
         this(new StubMetricValue<>());

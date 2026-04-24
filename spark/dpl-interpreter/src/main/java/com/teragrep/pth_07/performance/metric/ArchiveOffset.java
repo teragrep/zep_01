@@ -57,7 +57,7 @@ import org.apache.spark.sql.types.StructField;
 
 import java.util.Objects;
 
-public final class ArchiveOffset implements PerformanceMetric {
+public final class ArchiveOffset implements PerformanceMetric<Long> {
     private final MetricValue<Long> value;
     public ArchiveOffset(){
         this(new StubMetricValue<>());

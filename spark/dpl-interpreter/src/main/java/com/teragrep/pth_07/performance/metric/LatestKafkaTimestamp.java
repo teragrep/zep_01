@@ -56,7 +56,7 @@ import org.apache.spark.sql.types.StructField;
 
 import java.util.Objects;
 
-public final class LatestKafkaTimestamp implements PerformanceMetric {
+public final class LatestKafkaTimestamp implements PerformanceMetric<Long> {
     private final MetricValue<Long> value;
     public LatestKafkaTimestamp(){
         this(new StubMetricValue<>());

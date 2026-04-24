@@ -56,7 +56,7 @@ import org.apache.spark.sql.types.StructField;
 
 import java.util.Objects;
 
-public final class KafkaOffset implements PerformanceMetric {
+public final class KafkaOffset implements PerformanceMetric<Long> {
     private final MetricValue<Long> value;
     public KafkaOffset(){
         this(new StubMetricValue<>());

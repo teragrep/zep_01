@@ -56,7 +56,7 @@ import org.apache.spark.sql.types.StructField;
 
 import java.util.Objects;
 
-public final class RowsReadFromArchive implements PerformanceMetric {
+public final class RowsReadFromArchive implements PerformanceMetric<Long> {
     private final MetricValue<Long> value;
     public RowsReadFromArchive(){
         this(new StubMetricValue<>());

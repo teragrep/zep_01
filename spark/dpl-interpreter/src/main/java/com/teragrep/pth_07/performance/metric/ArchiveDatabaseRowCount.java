@@ -56,7 +56,7 @@ import org.apache.spark.sql.types.StructField;
 
 import java.util.Objects;
 
-public final class ArchiveDatabaseRowCount implements PerformanceMetric {
+public final class ArchiveDatabaseRowCount implements PerformanceMetric<Long> {
     private final MetricValue<Long> value;
     public ArchiveDatabaseRowCount(){
         this(new StubMetricValue<>());

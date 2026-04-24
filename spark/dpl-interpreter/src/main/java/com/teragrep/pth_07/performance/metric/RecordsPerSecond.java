@@ -56,7 +56,7 @@ import org.apache.spark.sql.types.StructField;
 
 import java.util.Objects;
 
-public final class RecordsPerSecond implements PerformanceMetric {
+public final class RecordsPerSecond implements PerformanceMetric<Long> {
     private final MetricValue<Long> value;
     public RecordsPerSecond(){
         this(new StubMetricValue<>());

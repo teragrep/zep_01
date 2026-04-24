@@ -56,7 +56,7 @@ import org.apache.spark.sql.types.StructField;
 
 import java.util.Objects;
 
-public final class ArchiveDatabaseRowMinLatency implements PerformanceMetric {
+public final class ArchiveDatabaseRowMinLatency implements PerformanceMetric<Long> {
     private final MetricValue<Long> value;
     public ArchiveDatabaseRowMinLatency(){
         this(new StubMetricValue<>());

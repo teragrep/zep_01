@@ -56,7 +56,7 @@ import org.apache.spark.sql.types.StructField;
 
 import java.util.Objects;
 
-public final class ArchiveCompressedBytesProcessed implements PerformanceMetric {
+public final class ArchiveCompressedBytesProcessed implements PerformanceMetric<Long> {
     private final MetricValue<Long> value;
     public ArchiveCompressedBytesProcessed(){
         this(new StubMetricValue<>());

@@ -53,7 +53,7 @@ import org.apache.spark.sql.types.*;
 
 import java.util.Objects;
 
-public final class Timestamp implements PerformanceMetric {
+public final class Timestamp implements PerformanceMetric<Long> {
     private final MetricValue<Long> value;
     public Timestamp(){
         this(new StubMetricValue<>());
