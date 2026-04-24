@@ -196,7 +196,8 @@ public class Message implements JsonSerializable {
     PARAGRAPH_EXECUTED_BY_SPELL,  // [c-s] paragraph was executed by spell
     RUN_PARAGRAPH_USING_SPELL,    // [s-c] run paragraph using spell
     PARAS_INFO,                   // [s-c] paragraph runtime infos
-    SUBMIT_FORM,                  // [c-s] submit global forms
+    SUBMIT_FORM,                  // [c-s] submit paragraph form values
+    PARAGRAPH_FORM,               // [s-c] return paragraph form values
     SAVE_NOTE_FORMS,              // [s-c] save note forms
     REMOVE_NOTE_FORMS,            // remove note forms
     INTERPRETER_INSTALL_STARTED,  // [s-c] start to download an interpreter

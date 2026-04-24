@@ -32,5 +32,8 @@ public class Select extends OptionInput<Object> {
     this.defaultValue = defaultValue;
     this.options = options;
   }
-
+  @Override
+  public String inputType(){
+    return "select";
+  }
 }

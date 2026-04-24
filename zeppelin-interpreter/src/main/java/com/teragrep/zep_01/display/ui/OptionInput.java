@@ -82,4 +82,8 @@ public abstract class OptionInput<T> extends Input<T> {
   public ParamOption[] getOptions() {
     return options;
   }
+  @Override
+  public String inputType(){
+    return "option";
+  }
 }
