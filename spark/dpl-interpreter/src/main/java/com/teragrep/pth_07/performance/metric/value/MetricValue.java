@@ -48,5 +48,5 @@ package com.teragrep.pth_07.performance.metric.value;
 import com.teragrep.stb_01.Stubable;
 
 public interface MetricValue<T> extends Stubable {
-    public abstract java.lang.Object value();
+    public abstract T value();
 }

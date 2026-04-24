@@ -55,7 +55,7 @@ public final class StubMetricValue<T> implements MetricValue<T> {
     }
 
     @Override
-    public java.lang.Object value() {
+    public T value() {
         throw new UnsupportedOperationException("Stub object does not implement value()");
     }
 
