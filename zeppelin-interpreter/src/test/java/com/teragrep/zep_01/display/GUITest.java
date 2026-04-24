@@ -23,6 +23,7 @@ import com.teragrep.zep_01.display.ui.Select;
 import com.teragrep.zep_01.display.ui.TextBox;
 import org.junit.Before;
 import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -44,6 +45,69 @@ public class GUITest {
   public void setUp() {
     checkedItems = new ArrayList<>();
     checkedItems.add("1");
+  }
+
+
+  @Test
+  public void putFormValueTest(){
+    GUI gui = new GUI();
+    String textBoxId = "textbox1";
+    String defaultValue = "";
+    String testValue = "testValue";
+
+    gui.textbox(textBoxId, defaultValue);
+    // Textbox should contain default value.
+    Assertions.assertEquals(defaultValue,gui.params.get(textBoxId));
+    Assertions.assertDoesNotThrow(()->gui.putFormValue(textBoxId,testValue));
+    // Textbox should contain test value after a successful update
+    Assertions.assertEquals(testValue,gui.params.get(textBoxId));
+  }
+
+  @Test
+  public void putFormValueWithNonexistentIdTest(){
+    GUI gui = new GUI();
+    String textBoxId = "textbox1";
+    String testValue = "testValue";
+
+    // Should not be able to add a value to an input with ID that does not exist
+    Assertions.assertThrows(DynamicFormException.class,()->gui.putFormValue(textBoxId,testValue));
+  }
+
+  @Test
+  public void removeFormValueTest(){
+    GUI gui = new GUI();
+    String textBoxId = "textbox1";
+    String textBoxWithDefaultId = "password2";
+    String defaultValue = "defaultValue";
+    String testValue = "testValue";
+
+    gui.textbox(textBoxId);
+    gui.textbox(textBoxWithDefaultId,defaultValue);
+
+    Assertions.assertTrue(gui.params.containsKey(textBoxId));
+    Assertions.assertTrue(gui.params.containsKey(textBoxWithDefaultId));
+
+    // If no default value is provided an empty string is expected as the default.
+    Assertions.assertEquals("",gui.params.get(textBoxId));
+    Assertions.assertEquals(defaultValue,gui.params.get(textBoxWithDefaultId));
+
+    Assertions.assertDoesNotThrow(()->gui.putFormValue(textBoxId,testValue));
+    Assertions.assertDoesNotThrow(()->gui.putFormValue(textBoxWithDefaultId,testValue));
+
+    // Textboxes should contain the set value.
+    Assertions.assertTrue(gui.params.containsKey(textBoxId));
+    Assertions.assertTrue(gui.params.containsKey(textBoxWithDefaultId));
+    Assertions.assertEquals(testValue,gui.params.get(textBoxId));
+    Assertions.assertEquals(testValue,gui.params.get(textBoxWithDefaultId));
+
+    // Removing a value should revert the value to default
+    gui.removeParamValue(textBoxId);
+    gui.removeParamValue(textBoxWithDefaultId);
+
+    Assertions.assertTrue(gui.params.containsKey(textBoxId));
+    Assertions.assertTrue(gui.params.containsKey(textBoxWithDefaultId));
+    Assertions.assertEquals("",gui.params.get(textBoxId));
+    Assertions.assertEquals(defaultValue,gui.params.get(textBoxWithDefaultId));
   }
 
   @Test
