@@ -649,13 +649,17 @@ public class NotebookService {
       return;
     }
 
-    p.settings.setParams(params);
+    if(params != null) {
+      p.settings.setParams(params);
+    }
     p.mergeConfig(config);
     p.setTitle(title);
     p.setText(text);
     if (note.isPersonalizedMode()) {
       p = p.getUserParagraph(context.getAutheInfo().getUser());
-      p.settings.setParams(params);
+      if(params != null){
+        p.settings.setParams(params);
+      }
       p.mergeConfig(config);
       p.setTitle(title);
       p.setText(text);

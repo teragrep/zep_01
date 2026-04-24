@@ -381,6 +381,14 @@ public class NotebookServiceTest {
     assertEquals("my_title", p.getTitle());
     assertEquals("my_text", p.getText());
 
+    // update paragraph with missing parameters
+    reset(callback);
+    notebookService.updateParagraph(note1.getId(), p.getId(), "my_title", "my_text",
+            null, new HashMap<>(), context, callback);
+    assertEquals("my_title", p.getTitle());
+    assertEquals("my_text", p.getText());
+
+
     // move paragraph
     reset(callback);
     notebookService.moveParagraph(note1.getId(), p.getId(), 0, context, callback);
