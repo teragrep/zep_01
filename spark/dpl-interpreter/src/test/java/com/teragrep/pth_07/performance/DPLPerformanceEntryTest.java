@@ -76,12 +76,16 @@ class DPLPerformanceEntryTest {
         final DPLPerformanceEntry entry = new DPLPerformanceEntry();
         final DPLPerformanceEntry modifiedEntry = Assertions.assertDoesNotThrow(()->entry.withData(inputKey,inputValue));
         final Row row = modifiedEntry.asRow();
+        final int expectedRowCount = 17;
 
         // Created row should be fully empty, containing only null values for each of the entries
-        Assertions.assertEquals(17,row.size());
-        for (int i = 0; i < row.size(); i++) {
+        Assertions.assertEquals(expectedRowCount,row.size());
+        int i = 0;
+        while (i < row.size()) {
             Assertions.assertTrue(row.isNullAt(i));
+            i++;
         }
+        Assertions.assertEquals(i,expectedRowCount);
     }
 
     @Test
