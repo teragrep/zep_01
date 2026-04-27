@@ -64,9 +64,6 @@ import org.junit.jupiter.api.Test;
 import java.io.StringReader;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.UUID;
-
-import static org.junit.jupiter.api.Assertions.*;
 final class PerformanceIndicatorTest {
     private final SparkSession sparkSession = SparkSession.builder()
             .master("local[*]")
