@@ -45,9 +45,8 @@
  */
 package com.teragrep.pth_07.performance.metric;
 
-import org.apache.spark.sql.types.DataTypes;
-import org.apache.spark.sql.types.StructField;
-import org.apache.spark.sql.types.StructType;
+import com.teragrep.pth_07.performance.metric.value.StubMetricValue;
+import org.apache.spark.sql.types.*;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -55,40 +54,41 @@ import java.util.List;
 import java.util.Objects;
 
 public final class PerformanceSchema {
-    private final List<PerformanceMetric> metrics;
+    private final List<PerformanceMetric<?>> metrics;
 
     public PerformanceSchema(){
         this(Arrays.asList(
-            new ArchiveCompressedBytesProcessed(),
-            new ArchiveDatabaseRowAvgLatency(),
-            new ArchiveDatabaseRowCount(),
-            new ArchiveDatabaseRowMaxLatency(),
-            new ArchiveDatabaseRowMinLatency(),
-            new ArchiveObjectsProcessed(),
-            new ArchiveOffset(),
-            new BatchId(),
-            new BytesPerSecond(),
-            new BytesProcessed(),
-            new Eps(),
-            new KafkaOffset(),
-            new LatestKafkaTimestamp(),
-            new RecordsPerSecond(),
-            new RecordsProcessed(),
-            new RowsReadFromArchive(),
-            new Timestamp())
+            new PerformanceMetric<Long>(new StubMetricValue<>(),"ArchiveCompressedBytesProcessed","total compressed bytes processed from archive",DataTypes.LongType, Metadata.empty(),false),
+            new PerformanceMetric<Long>(new StubMetricValue<>(),"ArchiveDatabaseRowAvgLatency","average time per row in nanoseconds",DataTypes.LongType,Metadata.empty(),false),
+            new PerformanceMetric<Long>(new StubMetricValue<>(),"ArchiveDatabaseRowCount","number of processed archive database rows",DataTypes.LongType,Metadata.empty(),false),
+            new PerformanceMetric<Long>(new StubMetricValue<>(),"ArchiveDatabaseRowMaxLatency","maximum time per row in nanoseconds",DataTypes.LongType,Metadata.empty(),false),
+            new PerformanceMetric<Long>(new StubMetricValue<>(),"ArchiveDatabaseRowMinLatency","minimum time per row in nanoseconds",DataTypes.LongType,Metadata.empty(),false),
+            new PerformanceMetric<Long>(new StubMetricValue<>(),"ArchiveObjectsProcessed","total objects processed from archive",DataTypes.LongType,Metadata.empty(),false),
+            new PerformanceMetric<Long>(new StubMetricValue<>(),"ArchiveOffset","latest archive offset processed (epoch time)",DataTypes.LongType,Metadata.empty(),false),
+            new PerformanceMetric<Long>(new StubMetricValue<>(),"BatchId","sequence number of the batch",DataTypes.LongType,Metadata.empty(),false),
+            new PerformanceMetric<Long>(new StubMetricValue<>(),"BytesPerSecond","processed bytes per second",DataTypes.LongType,Metadata.empty(),false),
+            new PerformanceMetric<Long>(new StubMetricValue<>(),"BytesProcessed","total bytes processed",DataTypes.LongType,Metadata.empty(),false),
+            new PerformanceMetric<Double>(new StubMetricValue<>(),"Eps","processed rows per second",DataTypes.DoubleType,Metadata.empty(),false),
+            new PerformanceMetric<Long>(new StubMetricValue<>(),"KafkaOffset","sum of processed kafka offsets",DataTypes.LongType,Metadata.empty(),false),
+            new PerformanceMetric<Long>(new StubMetricValue<>(),"LatestKafkaTimestamp","latest processed kafka records' timestamp",DataTypes.LongType,Metadata.empty(),false),
+            new PerformanceMetric<Long>(new StubMetricValue<>(),"RecordsPerSecond","processed records per second",DataTypes.LongType,Metadata.empty(),false),
+            new PerformanceMetric<Long>(new StubMetricValue<>(),"RecordsProcessed","total processed records",DataTypes.LongType,Metadata.empty(),false),
+            new PerformanceMetric<Long>(new StubMetricValue<>(),"RowsReadFromArchive","Full table input rows read from archive",DataTypes.LongType,Metadata.empty(),false),
+            new PerformanceMetric<Long>(new StubMetricValue<>(),"Timestamp","timestamp of when performance data was received(epochtime)",DataTypes.LongType, new MetadataBuilder().putBoolean("dpl_internal_isGroupByColumn",true).build(),false))
         );
     }
 
-    public PerformanceSchema(List<PerformanceMetric> metrics){
+    public PerformanceSchema(List<PerformanceMetric<?>> metrics){
         this.metrics = metrics;
     }
-    public List<PerformanceMetric> metrics(){
+
+    public List<PerformanceMetric<?>> metrics(){
         return metrics;
     }
     public StructType sparkSchema(){
         List<StructField> fields = new ArrayList<>();
-        for (PerformanceMetric metric: metrics) {
-            fields.add(metric.structField());
+        for (PerformanceMetric<?> metric: metrics) {
+            fields.add(metric.toStructField());
         }
         return DataTypes.createStructType(fields);
     }

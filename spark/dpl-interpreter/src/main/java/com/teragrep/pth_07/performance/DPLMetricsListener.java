@@ -109,14 +109,10 @@ public final class DPLMetricsListener extends StreamingQueryListener {
                     }
 
                     // Add metrics from QueryProgressEvent
-                    RowsReadFromArchive rowsReadFromArchive = new RowsReadFromArchive();
-                    entry = entry.withData(rowsReadFromArchive.name()+": "+rowsReadFromArchive.description(),event.progress().numInputRows());
-                    BatchId batchId = new BatchId();
-                    entry = entry.withData(batchId.name()+": "+batchId.description(),event.progress().batchId());
-                    Eps eps = new Eps();
-                    entry = entry.withData(eps.name()+": "+eps.description(),event.progress().processedRowsPerSecond());
-                    Timestamp timestamp = new Timestamp();
-                    entry = entry.withData(timestamp.name()+": "+timestamp.description(),Instant.now().toEpochMilli());
+                    entry = entry.withData("RowsReadFromArchive: Full table input rows read from archive",event.progress().numInputRows());
+                    entry = entry.withData("BatchId: sequence number of the batch",event.progress().batchId());
+                    entry = entry.withData("Eps: processed rows per second",event.progress().processedRowsPerSecond());
+                    entry = entry.withData("Timestamp: timestamp of when performance data was received(epochtime)",Instant.now().toEpochMilli());
 
                     // Create a Spark Row for this performance event and add it to the list.
                     final Row row = entry.asRow();

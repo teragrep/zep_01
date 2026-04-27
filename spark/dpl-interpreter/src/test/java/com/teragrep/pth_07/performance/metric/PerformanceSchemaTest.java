@@ -45,17 +45,14 @@
  */
 package com.teragrep.pth_07.performance.metric;
 
+import com.teragrep.pth_07.performance.metric.value.StubMetricValue;
 import nl.jqno.equalsverifier.EqualsVerifier;
-import org.apache.spark.sql.types.StructField;
+import org.apache.spark.sql.types.DataTypes;
+import org.apache.spark.sql.types.Metadata;
+import org.apache.spark.sql.types.MetadataBuilder;
 import org.apache.spark.sql.types.StructType;
-import org.junit.Assert;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
-
-import java.util.Arrays;
-import java.util.List;
-
-import static org.junit.jupiter.api.Assertions.*;
 
 class PerformanceSchemaTest {
 
@@ -99,25 +96,43 @@ class PerformanceSchemaTest {
         final PerformanceSchema performanceSchema = new PerformanceSchema();
         final StructType schema = performanceSchema.sparkSchema();
 
+        PerformanceMetric<Long> archiveCompressedBytesProcessed =  new PerformanceMetric<Long>(new StubMetricValue<>(),"ArchiveCompressedBytesProcessed","total compressed bytes processed from archive", DataTypes.LongType, Metadata.empty(),false);
+        PerformanceMetric<Long> archiveDatabaseRowAvgLatency =  new PerformanceMetric<Long>(new StubMetricValue<>(),"ArchiveDatabaseRowAvgLatency","average time per row in nanoseconds",DataTypes.LongType,Metadata.empty(),false);
+        PerformanceMetric<Long> archiveDatabaseRowCount =  new PerformanceMetric<Long>(new StubMetricValue<>(),"ArchiveDatabaseRowCount","number of processed archive database rows",DataTypes.LongType,Metadata.empty(),false);
+        PerformanceMetric<Long> archiveDatabaseRowMaxLatency =  new PerformanceMetric<Long>(new StubMetricValue<>(),"ArchiveDatabaseRowMaxLatency","maximum time per row in nanoseconds",DataTypes.LongType,Metadata.empty(),false);
+        PerformanceMetric<Long> archiveDatabaseRowMinLatency =  new PerformanceMetric<Long>(new StubMetricValue<>(),"ArchiveDatabaseRowMinLatency","minimum time per row in nanoseconds",DataTypes.LongType,Metadata.empty(),false);
+        PerformanceMetric<Long> archiveObjectsProcessed =  new PerformanceMetric<Long>(new StubMetricValue<>(),"ArchiveObjectsProcessed","total objects processed from archive",DataTypes.LongType,Metadata.empty(),false);
+        PerformanceMetric<Long> archiveOffset =  new PerformanceMetric<Long>(new StubMetricValue<>(),"ArchiveOffset","latest archive offset processed (epoch time)",DataTypes.LongType,Metadata.empty(),false);
+        PerformanceMetric<Long> batchId =  new PerformanceMetric<Long>(new StubMetricValue<>(),"BatchId","sequence number of the batch",DataTypes.LongType,Metadata.empty(),false);
+        PerformanceMetric<Long> bytesPerSecond =  new PerformanceMetric<Long>(new StubMetricValue<>(),"BytesPerSecond","processed bytes per second",DataTypes.LongType,Metadata.empty(),false);
+        PerformanceMetric<Long> bytesProcessed =  new PerformanceMetric<Long>(new StubMetricValue<>(),"BytesProcessed","total bytes processed",DataTypes.LongType,Metadata.empty(),false);
+        PerformanceMetric<Double> eps =  new PerformanceMetric<Double>(new StubMetricValue<>(),"Eps","processed rows per second",DataTypes.DoubleType,Metadata.empty(),false);
+        PerformanceMetric<Long> kafkaOffset =  new PerformanceMetric<Long>(new StubMetricValue<>(),"KafkaOffset","sum of processed kafka offsets",DataTypes.LongType,Metadata.empty(),false);
+        PerformanceMetric<Long> katestKafkaTimestamp =  new PerformanceMetric<Long>(new StubMetricValue<>(),"LatestKafkaTimestamp","latest processed kafka records' timestamp",DataTypes.LongType,Metadata.empty(),false);
+        PerformanceMetric<Long> recordsPerSecond =  new PerformanceMetric<Long>(new StubMetricValue<>(),"RecordsPerSecond","processed records per second",DataTypes.LongType,Metadata.empty(),false);
+        PerformanceMetric<Long> recordsProcessed =  new PerformanceMetric<Long>(new StubMetricValue<>(),"RecordsProcessed","total processed records",DataTypes.LongType,Metadata.empty(),false);
+        PerformanceMetric<Long> rowsReadFromArchive =  new PerformanceMetric<Long>(new StubMetricValue<>(),"RowsReadFromArchive","Full table input rows read from archive",DataTypes.LongType,Metadata.empty(),false);
+        PerformanceMetric<Long> timestamp =  new PerformanceMetric<Long>(new StubMetricValue<>(),"Timestamp","timestamp of when performance data was received(epochtime)",DataTypes.LongType, new MetadataBuilder().putBoolean("dpl_internal_isGroupByColumn",true).build(),false);
+
         // Spark schema should contain all supported metrics
         Assertions.assertEquals(17,schema.size());
-        Assertions.assertTrue(schema.contains(new ArchiveCompressedBytesProcessed().structField()));
-        Assertions.assertTrue(schema.contains(new ArchiveDatabaseRowAvgLatency().structField()));
-        Assertions.assertTrue(schema.contains(new ArchiveDatabaseRowCount().structField()));
-        Assertions.assertTrue(schema.contains(new ArchiveDatabaseRowMaxLatency().structField()));
-        Assertions.assertTrue(schema.contains(new ArchiveDatabaseRowMinLatency().structField()));
-        Assertions.assertTrue(schema.contains(new ArchiveObjectsProcessed().structField()));
-        Assertions.assertTrue(schema.contains(new ArchiveOffset().structField()));
-        Assertions.assertTrue(schema.contains(new BatchId().structField()));
-        Assertions.assertTrue(schema.contains(new BytesPerSecond().structField()));
-        Assertions.assertTrue(schema.contains(new BytesProcessed().structField()));
-        Assertions.assertTrue(schema.contains(new Eps().structField()));
-        Assertions.assertTrue(schema.contains(new KafkaOffset().structField()));
-        Assertions.assertTrue(schema.contains(new LatestKafkaTimestamp().structField()));
-        Assertions.assertTrue(schema.contains(new RecordsPerSecond().structField()));
-        Assertions.assertTrue(schema.contains(new RecordsProcessed().structField()));
-        Assertions.assertTrue(schema.contains(new RowsReadFromArchive().structField()));
-        Assertions.assertTrue(schema.contains(new Timestamp().structField()));
+        Assertions.assertTrue(schema.contains(archiveCompressedBytesProcessed.toStructField()));
+        Assertions.assertTrue(schema.contains(archiveDatabaseRowAvgLatency.toStructField()));
+        Assertions.assertTrue(schema.contains(archiveDatabaseRowCount.toStructField()));
+        Assertions.assertTrue(schema.contains(archiveDatabaseRowMaxLatency.toStructField()));
+        Assertions.assertTrue(schema.contains(archiveDatabaseRowMinLatency.toStructField()));
+        Assertions.assertTrue(schema.contains(archiveObjectsProcessed.toStructField()));
+        Assertions.assertTrue(schema.contains(archiveOffset.toStructField()));
+        Assertions.assertTrue(schema.contains(batchId.toStructField()));
+        Assertions.assertTrue(schema.contains(bytesPerSecond.toStructField()));
+        Assertions.assertTrue(schema.contains(bytesProcessed.toStructField()));
+        Assertions.assertTrue(schema.contains(eps.toStructField()));
+        Assertions.assertTrue(schema.contains(kafkaOffset.toStructField()));
+        Assertions.assertTrue(schema.contains(katestKafkaTimestamp.toStructField()));
+        Assertions.assertTrue(schema.contains(recordsPerSecond.toStructField()));
+        Assertions.assertTrue(schema.contains(recordsProcessed.toStructField()));
+        Assertions.assertTrue(schema.contains(rowsReadFromArchive.toStructField()));
+        Assertions.assertTrue(schema.contains(timestamp.toStructField()));
     }
 
     @Test

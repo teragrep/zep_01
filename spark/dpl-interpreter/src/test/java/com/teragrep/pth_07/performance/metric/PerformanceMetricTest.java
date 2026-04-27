@@ -45,85 +45,59 @@
  */
 package com.teragrep.pth_07.performance.metric;
 
-import com.teragrep.pth_07.performance.metric.value.MetricValue;
-import com.teragrep.pth_07.performance.metric.value.MetricValueImpl;
 import com.teragrep.pth_07.performance.metric.value.StubMetricValue;
 import com.teragrep.zep_01.common.exception.IncompatibleValueException;
-import org.apache.spark.sql.types.DataType;
+import nl.jqno.equalsverifier.EqualsVerifier;
 import org.apache.spark.sql.types.DataTypes;
 import org.apache.spark.sql.types.Metadata;
-import org.apache.spark.sql.types.StructField;
+import org.apache.spark.sql.types.MetadataBuilder;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 
-import java.util.Objects;
 
-public final class Eps implements PerformanceMetric<Double> {
-    private final MetricValue<Double> value;
-    public Eps(){
-        this(new StubMetricValue<>());
-    }
-    public Eps(final double value){
-        this(new MetricValueImpl<>(value));
-    }
-    private Eps(final MetricValue<Double> value){
-        this.value = value;
-    }
-    public MetricValue<Double> metricValue() {
-        return value;
-    }
-    @Override
-    public Eps withValue(java.lang.Object value) throws IncompatibleValueException {
-        final Eps modifiedMetric;
-        if(value instanceof String){
-            try{
-                double newValue = Double.parseDouble((String)value);
-                modifiedMetric = new Eps(newValue);
-            }
-            catch (NumberFormatException numberFormatException){
-                throw new IncompatibleValueException("Value "+value+" is not a compatible value for metric "+name());
-            }
-        }
-        else if(value instanceof Double){
-            modifiedMetric = new Eps((Double)value);
-        }
-        else {
-            throw new IncompatibleValueException("Value "+value+" is not a compatible value for metric "+name());
-        }
-        return modifiedMetric;
-    }
-    public String name() {
-        return "Eps";
+class PerformanceMetricTest {
+
+    @Test
+    void testWithValueLongMetric() throws IncompatibleValueException {
+        PerformanceMetric<Long> metric = new PerformanceMetric(new StubMetricValue(),"testName","desc", DataTypes.LongType, Metadata.empty(),false);
+
+        PerformanceMetric<Long> newMetric = metric.withValue(-5);
+        Assertions.assertEquals(-5,newMetric.metricValue().value());
+
+        PerformanceMetric<Long> newMetric2 = metric.withValue("-25");
+        Assertions.assertEquals(-25,newMetric2.metricValue().value());
+
+        Assertions.assertThrows(IncompatibleValueException.class, ()-> metric.withValue(1.0));
+        Assertions.assertThrows(IncompatibleValueException.class, ()-> metric.withValue("one"));
     }
 
-    
-    public String description() {
-        return "processed rows per second";
+    @Test
+    void testWithValueDoubleMetric() throws IncompatibleValueException {
+        PerformanceMetric<Double> metric = new PerformanceMetric(new StubMetricValue(),"testName","desc", DataTypes.DoubleType, Metadata.empty(),false);
+
+        PerformanceMetric<Double> newMetric = metric.withValue(1.0);
+        Assertions.assertEquals(1.0,newMetric.metricValue().value());
+
+        PerformanceMetric<Double> newMetric2 = metric.withValue("-2.5");
+        Assertions.assertEquals(-2.5,newMetric2.metricValue().value());
+
+        PerformanceMetric<Double> newMetric3 = metric.withValue(-25);
+        Assertions.assertEquals(-25.0,newMetric3.metricValue().value());
+
+        Assertions.assertThrows(IncompatibleValueException.class, ()-> metric.withValue("one point five"));
     }
 
-    
-    public DataType type() {
-        return DataTypes.DoubleType;
+    @Test
+    public void testTest(){
+        PerformanceMetric<Integer> metric = new PerformanceMetric<Integer>(new StubMetricValue<Integer>(),"test","desc",DataTypes.IntegerType,Metadata.empty(),true);
+        metric.metricValue();
     }
-
-    
-    public Metadata metadata() {
-        return Metadata.empty();
-    }
-
-    
-    public StructField structField(){
-        return DataTypes.createStructField(name(),type(),true,metadata());
-    }
-
-    
-    public boolean equals(final java.lang.Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        final Eps eps = (Eps) o;
-        return Objects.equals(value, eps.value);
-    }
-
-    
-    public int hashCode() {
-        return Objects.hash(value);
+    @Test
+    public void testContract() {
+        Metadata redMetaData = Metadata.empty();
+        Metadata blueMetaData = new MetadataBuilder().putBoolean("dpl_internal_isGroupByColumn",true).build();
+        EqualsVerifier.forClass(PerformanceMetric.class)
+                .withPrefabValues(Metadata.class,redMetaData, blueMetaData)
+                .verify();
     }
 }
