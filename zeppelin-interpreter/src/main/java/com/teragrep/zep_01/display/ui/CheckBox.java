@@ -38,5 +38,9 @@ public class CheckBox extends OptionInput<Object[]> {
   public CheckBox(String name, Collection<Object> defaultValue, ParamOption[] options) {
     this(name, defaultValue.toArray(), options);
   }
+  @Override
+  public String inputType(){
+    return "checkbox";
+  }
 
 }

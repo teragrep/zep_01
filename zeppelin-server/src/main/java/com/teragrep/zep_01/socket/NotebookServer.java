@@ -36,8 +36,6 @@ import com.teragrep.zep_01.display.*;
 import com.teragrep.zep_01.interpreter.*;
 import com.teragrep.zep_01.interpreter.remote.RemoteInterpreter;
 import com.teragrep.zep_01.rest.exception.BadRequestException;
-import jakarta.json.Json;
-import jakarta.json.JsonObject;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.apache.thrift.TException;
@@ -436,9 +434,8 @@ public class NotebookServer extends WebSocketServlet
         case WATCHER:
           getConnectionManager().switchConnectionToWatcher(conn);
           break;
-        case SAVE_NOTE_FORMS:
-          saveNoteForms(conn, context, receivedMessage);
-          break;
+        case SUBMIT_FORM:
+          submitForm(conn, context, receivedMessage);
         case REMOVE_NOTE_FORMS:
           removeNoteForms(conn, context, receivedMessage);
           break;
@@ -585,9 +582,44 @@ public class NotebookServer extends WebSocketServlet
 
     if (note.isPersonalizedMode()) {
       broadcastParagraphs(p.getUserParagraphMap(), p, msgId);
+      // send paragraph forms in a separate message
+      GUI settings = p.settings;
+      if(settings != null){
+        Message formMessage = new Message(OP.PARAGRAPH_FORM).withMsgId(msgId);
+        formMessage.put("noteId",note.getId());
+        formMessage.put("paragraphId",p.getId());
+        List<Map> formArray = new ArrayList<>();
+        for (Input form: settings.getForms().values()) {
+          Map<String,String> formObject = new HashMap<>();
+          formObject.put("type",form.inputType());
+          formObject.put("name",form.getName());
+          formObject.put("value",form.toString());
+          formArray.add(formObject);
+        }
+        formMessage.put("forms",formArray);
+        getConnectionManager().broadcast(note.getId(), formMessage);
+      }
+
     } else {
       Message message = new Message(OP.PARAGRAPH).withMsgId(msgId).put("paragraph", p);
       getConnectionManager().broadcast(note.getId(), message);
+      // send paragraph forms in a separate message
+      GUI settings = p.settings;
+      if(settings != null){
+        Message formMessage = new Message(OP.PARAGRAPH_FORM).withMsgId(msgId);
+        formMessage.put("noteId",note.getId());
+        formMessage.put("paragraphId",p.getId());
+        List<Map> formArray = new ArrayList<>();
+        for (Input form: settings.getForms().values()) {
+          Map<String,String> formObject = new HashMap<>();
+          formObject.put("type",form.inputType());
+          formObject.put("name",form.getName());
+          formObject.put("value",form.toString());
+          formArray.add(formObject);
+        }
+        formMessage.put("forms",formArray);
+        getConnectionManager().broadcast(note.getId(), formMessage);
+      }
     }
   }
 
@@ -599,8 +631,28 @@ public class NotebookServer extends WebSocketServlet
                                          String msgId) {
     if (null != userParagraphMap) {
       for (String user : userParagraphMap.keySet()) {
-        Message message = new Message(OP.PARAGRAPH).withMsgId(msgId).put("paragraph", userParagraphMap.get(user));
+        Paragraph p = userParagraphMap.get(user);
+        Message message = new Message(OP.PARAGRAPH).withMsgId(msgId).put("paragraph", p);
         getConnectionManager().multicastToUser(user, message);
+
+        // send paragraph forms in a separate message
+        Note note = p.getNote();
+        GUI settings = p.settings;
+        if(settings != null){
+          Message formMessage = new Message(OP.PARAGRAPH_FORM).withMsgId(msgId);
+          formMessage.put("noteId",note.getId());
+          formMessage.put("paragraphId",p.getId());
+          List<Map> formArray = new ArrayList<>();
+          for (Input form: settings.getForms().values()) {
+            Map<String,String> formObject = new HashMap<>();
+            formObject.put("type",form.inputType());
+            formObject.put("name",form.getName());
+            formObject.put("value",form.toString());
+            formArray.add(formObject);
+          }
+          formMessage.put("forms",formArray);
+          getConnectionManager().multicastToUser(user, formMessage);
+        }
       }
     }
   }
@@ -2153,17 +2205,31 @@ public class NotebookServer extends WebSocketServlet
         new Message(OP.SAVE_NOTE_FORMS).put("formsData", formsSettings));
   }
 
-  private void saveNoteForms(NotebookSocket conn,
-                             ServiceContext context,
-                             Message fromMessage) throws IOException {
+  private void submitForm(NotebookSocket conn,
+                          ServiceContext context,
+                          Message fromMessage) throws IOException {
     String noteId = (String) fromMessage.get("noteId");
-    Map<String, Object> noteParams = (Map<String, Object>) fromMessage.get("noteParams");
-
-    getNotebookService().saveNoteForms(noteId, noteParams, context,
-        new WebSocketServiceCallback<Note>(conn) {
+    String paragraphId = (String) fromMessage.get("paragraphId");
+    Map<String, Object> form = (Map<String, Object>) fromMessage.get("form");
+    String formId = (String) form.get("formId");
+    Object formValue = form.get("value");
+    getNotebookService().submitForm(noteId, paragraphId, formId,formValue, context,
+        new WebSocketServiceCallback<GUI>(conn) {
           @Override
-          public void onSuccess(Note note, ServiceContext context) {
-            broadcastNoteForms(note);
+          public void onSuccess(GUI updatedSettings, ServiceContext context) {
+            Message message = new Message(OP.PARAGRAPH_FORM);
+            message.put("noteId",noteId);
+            message.put("paragraphId",paragraphId);
+            List<Map> formArray = new ArrayList<>();
+            for (Input form: updatedSettings.getForms().values()) {
+              Map<String,String> formObject = new HashMap<>();
+              formObject.put("type",form.inputType());
+              formObject.put("name",form.getName());
+              formObject.put("value",form.toString());
+              formArray.add(formObject);
+            }
+            message.put("forms",formArray);
+            getConnectionManager().broadcast(noteId,message);
           }
         });
   }

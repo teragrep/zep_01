@@ -334,6 +334,27 @@ public class ConnectionManager {
     for (NotebookSocket conn : userSocketMap.get(user)) {
       Message m = new Message(Message.OP.PARAGRAPH).withMsgId(msgId).put("paragraph", p);
       unicast(m, conn);
+
+      // send paragraph forms in a separate message
+      Message formMessage = new Message(Message.OP.PARAGRAPH_FORM);
+      String noteId = note.getId();
+      String paragraphId = p.getId();
+      GUI settings = p.settings;
+      if(settings != null){
+        List<Map> formArray = new ArrayList<>();
+        for (Input form: settings.getForms().values()) {
+          Map<String,String> formObject = new HashMap<>();
+          formObject.put("type",form.inputType());
+          formObject.put("name",form.getName());
+          formObject.put("value",form.toString());
+          formArray.add(formObject);
+        }
+        formMessage.put("forms",formArray);
+      }
+
+      formMessage.put("noteId",noteId);
+      formMessage.put("paragraphId",paragraphId);
+      unicast(formMessage, conn);
     }
   }
 
@@ -376,6 +397,26 @@ public class ConnectionManager {
       broadcastParagraphs(p.getUserParagraphMap());
     } else {
       broadcast(note.getId(), new Message(Message.OP.PARAGRAPH).put("paragraph", p));
+      // send paragraph forms in a separate message
+      Message formMessage = new Message(Message.OP.PARAGRAPH_FORM);
+      String noteId = note.getId();
+      String paragraphId = p.getId();
+      GUI settings = p.settings;
+      if(settings != null){
+        List<Map> formArray = new ArrayList<>();
+        for (Input form: settings.getForms().values()) {
+          Map<String,String> formObject = new HashMap<>();
+          formObject.put("type",form.inputType());
+          formObject.put("name",form.getName());
+          formObject.put("value",form.toString());
+          formArray.add(formObject);
+        }
+        formMessage.put("forms",formArray);
+      }
+
+      formMessage.put("noteId",noteId);
+      formMessage.put("paragraphId",paragraphId);
+      broadcast(note.getId(), formMessage);
     }
   }
 
@@ -384,6 +425,31 @@ public class ConnectionManager {
       for (String user : userParagraphMap.keySet()) {
         multicastToUser(user,
             new Message(Message.OP.PARAGRAPH).put("paragraph", userParagraphMap.get(user)));
+
+        Paragraph p = userParagraphMap.get(user);
+        if(p != null){
+
+        }
+        // send paragraph forms in a separate message
+        Message formMessage = new Message(Message.OP.PARAGRAPH_FORM);
+        String noteId = p.getNote().getId();
+        String paragraphId = p.getId();
+        GUI settings = p.settings;
+        if(settings != null){
+          List<Map> formArray = new ArrayList<>();
+          for (Input form: settings.getForms().values()) {
+            Map<String,String> formObject = new HashMap<>();
+            formObject.put("type",form.inputType());
+            formObject.put("name",form.getName());
+            formObject.put("value",form.toString());
+            formArray.add(formObject);
+          }
+          formMessage.put("forms",formArray);
+        }
+
+        formMessage.put("noteId",noteId);
+        formMessage.put("paragraphId",paragraphId);
+        multicastToUser(user,formMessage);
       }
     }
   }
