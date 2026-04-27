@@ -104,15 +104,15 @@ class DPLPerformanceEntryTest {
 
         final DPLPerformanceEntry entry = new DPLPerformanceEntry();
         DPLPerformanceEntry modifiedEntry = Assertions.assertDoesNotThrow(()->entry.withData(recordsProcessedInputKey,recordsProcessedInputValue));
-        DPLPerformanceEntry finalModifiedEntry = modifiedEntry;
+        final DPLPerformanceEntry finalModifiedEntry = modifiedEntry;
         modifiedEntry = Assertions.assertDoesNotThrow(()-> finalModifiedEntry.withData(bytesPerSecondInputKey,bytesPerSecondInputValue));
-        DPLPerformanceEntry finalModifiedEntry1 = modifiedEntry;
+        final DPLPerformanceEntry finalModifiedEntry1 = modifiedEntry;
         modifiedEntry = Assertions.assertDoesNotThrow(()-> finalModifiedEntry1.withData(epsInputKey,epsValue));
-        DPLPerformanceEntry finalModifiedEntry2 = modifiedEntry;
+        final DPLPerformanceEntry finalModifiedEntry2 = modifiedEntry;
         modifiedEntry = Assertions.assertDoesNotThrow(()-> finalModifiedEntry2.withData(timestampInputKey,timestampValue));
 
         // Create a schema that contains only two of the three metrics, in different order compared to default.
-        StructType customSchema = new StructType(new StructField[]{
+        final StructType customSchema = new StructType(new StructField[]{
                 new StructField("Timestamp",DataTypes.LongType,true, new MetadataBuilder().putBoolean("dpl_internal_isGroupByColumn",true).build()),
                 new StructField("BytesPerSecond",DataTypes.LongType,true, new MetadataBuilder().build()),
                 new StructField("Eps",DataTypes.DoubleType,true, new MetadataBuilder().build()),

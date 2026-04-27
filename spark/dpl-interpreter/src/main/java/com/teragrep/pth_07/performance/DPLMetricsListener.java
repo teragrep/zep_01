@@ -123,7 +123,7 @@ public final class DPLMetricsListener extends StreamingQueryListener {
                 uiManager.getPerformanceIndicator().setPerformanceDataset(metricsDataset);
                 uiManager.getPerformanceIndicator().sendPerformanceUpdate();
             }
-        }catch (IncompatibleValueException incompatibleValueException){
+        }catch (final IncompatibleValueException incompatibleValueException){
             LOGGER.error("Failed to process performance data of query {} due to an incompatible value being encountered",queryId,incompatibleValueException);
         }
     }

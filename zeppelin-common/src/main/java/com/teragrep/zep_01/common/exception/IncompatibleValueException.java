@@ -4,10 +4,10 @@ public class IncompatibleValueException extends Throwable{
     public IncompatibleValueException(){
         super();
     }
-    public IncompatibleValueException(String message){
+    public IncompatibleValueException(final String message){
         super(message);
     }
-    public IncompatibleValueException(String message, Throwable cause){
+    public IncompatibleValueException(final String message, final Throwable cause){
         super(message, cause);
     }
 }

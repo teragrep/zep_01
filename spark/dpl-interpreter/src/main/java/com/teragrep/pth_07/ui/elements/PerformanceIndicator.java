@@ -57,7 +57,6 @@ import org.apache.spark.sql.Row;
 import org.apache.spark.sql.functions;
 
 import java.io.StringReader;
-import java.util.List;
 import java.util.concurrent.atomic.AtomicReference;
 
 public class PerformanceIndicator extends AbstractUserInterfaceElement {

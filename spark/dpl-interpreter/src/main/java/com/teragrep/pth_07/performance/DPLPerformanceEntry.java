@@ -62,16 +62,16 @@ public final class DPLPerformanceEntry {
         this(new PerformanceSchema(),new HashMap<>());
     }
 
-    public DPLPerformanceEntry(PerformanceSchema performanceSchema, Map<String,PerformanceMetric<?>> metrics){
+    public DPLPerformanceEntry(final PerformanceSchema performanceSchema, final Map<String,PerformanceMetric<?>> metrics){
         this.performanceSchema = performanceSchema;
         this.metrics = metrics;
     }
 
     public DPLPerformanceEntry withData(final String key, final Object value) throws IncompatibleValueException{
         final Map<String, PerformanceMetric<?>> modifiedMetrics = new HashMap<>(metrics);
-        for (PerformanceMetric<?> metric : performanceSchema.metrics()) {
+        for (final PerformanceMetric<?> metric : performanceSchema.metrics()) {
             if(key.equals(metric.name()+": "+metric.description())){
-                PerformanceMetric<?> modifiedMetric = metric.withValue(value);
+                final PerformanceMetric<?> modifiedMetric = metric.withValue(value);
                 modifiedMetrics.put(metric.name(), modifiedMetric);
                 break;
             }
@@ -86,8 +86,8 @@ public final class DPLPerformanceEntry {
         final List<Object> values = new ArrayList<>();
         for (final StructField field : schema.fields()) {
             if(metrics.containsKey(field.name())){
-                PerformanceMetric<?> metric = metrics.get(field.name());
-                Object value = metric.value();
+                final PerformanceMetric<?> metric = metrics.get(field.name());
+                final Object value = metric.value();
                 values.add(value);
             }
             else {
@@ -102,10 +102,10 @@ public final class DPLPerformanceEntry {
     }
 
     @Override
-    public boolean equals(Object o) {
+    public boolean equals(final Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
-        DPLPerformanceEntry entry = (DPLPerformanceEntry) o;
+        final DPLPerformanceEntry entry = (DPLPerformanceEntry) o;
         return Objects.equals(performanceSchema, entry.performanceSchema) && Objects.equals(metrics, entry.metrics);
     }
 

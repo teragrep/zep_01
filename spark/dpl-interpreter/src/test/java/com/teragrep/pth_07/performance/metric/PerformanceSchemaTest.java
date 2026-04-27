@@ -96,23 +96,23 @@ class PerformanceSchemaTest {
         final PerformanceSchema performanceSchema = new PerformanceSchema();
         final StructType schema = performanceSchema.sparkSchema();
 
-        PerformanceMetric<Long> archiveCompressedBytesProcessed =  new PerformanceMetric<Long>(new StubMetricValue<>(),"ArchiveCompressedBytesProcessed","total compressed bytes processed from archive", DataTypes.LongType, Metadata.empty(),false);
-        PerformanceMetric<Long> archiveDatabaseRowAvgLatency =  new PerformanceMetric<Long>(new StubMetricValue<>(),"ArchiveDatabaseRowAvgLatency","average time per row in nanoseconds",DataTypes.LongType,Metadata.empty(),false);
-        PerformanceMetric<Long> archiveDatabaseRowCount =  new PerformanceMetric<Long>(new StubMetricValue<>(),"ArchiveDatabaseRowCount","number of processed archive database rows",DataTypes.LongType,Metadata.empty(),false);
-        PerformanceMetric<Long> archiveDatabaseRowMaxLatency =  new PerformanceMetric<Long>(new StubMetricValue<>(),"ArchiveDatabaseRowMaxLatency","maximum time per row in nanoseconds",DataTypes.LongType,Metadata.empty(),false);
-        PerformanceMetric<Long> archiveDatabaseRowMinLatency =  new PerformanceMetric<Long>(new StubMetricValue<>(),"ArchiveDatabaseRowMinLatency","minimum time per row in nanoseconds",DataTypes.LongType,Metadata.empty(),false);
-        PerformanceMetric<Long> archiveObjectsProcessed =  new PerformanceMetric<Long>(new StubMetricValue<>(),"ArchiveObjectsProcessed","total objects processed from archive",DataTypes.LongType,Metadata.empty(),false);
-        PerformanceMetric<Long> archiveOffset =  new PerformanceMetric<Long>(new StubMetricValue<>(),"ArchiveOffset","latest archive offset processed (epoch time)",DataTypes.LongType,Metadata.empty(),false);
-        PerformanceMetric<Long> batchId =  new PerformanceMetric<Long>(new StubMetricValue<>(),"BatchId","sequence number of the batch",DataTypes.LongType,Metadata.empty(),false);
-        PerformanceMetric<Long> bytesPerSecond =  new PerformanceMetric<Long>(new StubMetricValue<>(),"BytesPerSecond","processed bytes per second",DataTypes.LongType,Metadata.empty(),false);
-        PerformanceMetric<Long> bytesProcessed =  new PerformanceMetric<Long>(new StubMetricValue<>(),"BytesProcessed","total bytes processed",DataTypes.LongType,Metadata.empty(),false);
-        PerformanceMetric<Double> eps =  new PerformanceMetric<Double>(new StubMetricValue<>(),"Eps","processed rows per second",DataTypes.DoubleType,Metadata.empty(),false);
-        PerformanceMetric<Long> kafkaOffset =  new PerformanceMetric<Long>(new StubMetricValue<>(),"KafkaOffset","sum of processed kafka offsets",DataTypes.LongType,Metadata.empty(),false);
-        PerformanceMetric<Long> katestKafkaTimestamp =  new PerformanceMetric<Long>(new StubMetricValue<>(),"LatestKafkaTimestamp","latest processed kafka records' timestamp",DataTypes.LongType,Metadata.empty(),false);
-        PerformanceMetric<Long> recordsPerSecond =  new PerformanceMetric<Long>(new StubMetricValue<>(),"RecordsPerSecond","processed records per second",DataTypes.LongType,Metadata.empty(),false);
-        PerformanceMetric<Long> recordsProcessed =  new PerformanceMetric<Long>(new StubMetricValue<>(),"RecordsProcessed","total processed records",DataTypes.LongType,Metadata.empty(),false);
-        PerformanceMetric<Long> rowsReadFromArchive =  new PerformanceMetric<Long>(new StubMetricValue<>(),"RowsReadFromArchive","Full table input rows read from archive",DataTypes.LongType,Metadata.empty(),false);
-        PerformanceMetric<Long> timestamp =  new PerformanceMetric<Long>(new StubMetricValue<>(),"Timestamp","timestamp of when performance data was received(epochtime)",DataTypes.LongType, new MetadataBuilder().putBoolean("dpl_internal_isGroupByColumn",true).build(),false);
+        final PerformanceMetric<Long> archiveCompressedBytesProcessed =  new PerformanceMetric<Long>(new StubMetricValue<>(),"ArchiveCompressedBytesProcessed","total compressed bytes processed from archive", DataTypes.LongType, Metadata.empty(),false);
+        final PerformanceMetric<Long> archiveDatabaseRowAvgLatency =  new PerformanceMetric<Long>(new StubMetricValue<>(),"ArchiveDatabaseRowAvgLatency","average time per row in nanoseconds",DataTypes.LongType,Metadata.empty(),false);
+        final PerformanceMetric<Long> archiveDatabaseRowCount =  new PerformanceMetric<Long>(new StubMetricValue<>(),"ArchiveDatabaseRowCount","number of processed archive database rows",DataTypes.LongType,Metadata.empty(),false);
+        final PerformanceMetric<Long> archiveDatabaseRowMaxLatency =  new PerformanceMetric<Long>(new StubMetricValue<>(),"ArchiveDatabaseRowMaxLatency","maximum time per row in nanoseconds",DataTypes.LongType,Metadata.empty(),false);
+        final PerformanceMetric<Long> archiveDatabaseRowMinLatency =  new PerformanceMetric<Long>(new StubMetricValue<>(),"ArchiveDatabaseRowMinLatency","minimum time per row in nanoseconds",DataTypes.LongType,Metadata.empty(),false);
+        final PerformanceMetric<Long> archiveObjectsProcessed =  new PerformanceMetric<Long>(new StubMetricValue<>(),"ArchiveObjectsProcessed","total objects processed from archive",DataTypes.LongType,Metadata.empty(),false);
+        final PerformanceMetric<Long> archiveOffset =  new PerformanceMetric<Long>(new StubMetricValue<>(),"ArchiveOffset","latest archive offset processed (epoch time)",DataTypes.LongType,Metadata.empty(),false);
+        final PerformanceMetric<Long> batchId =  new PerformanceMetric<Long>(new StubMetricValue<>(),"BatchId","sequence number of the batch",DataTypes.LongType,Metadata.empty(),false);
+        final PerformanceMetric<Long> bytesPerSecond =  new PerformanceMetric<Long>(new StubMetricValue<>(),"BytesPerSecond","processed bytes per second",DataTypes.LongType,Metadata.empty(),false);
+        final PerformanceMetric<Long> bytesProcessed =  new PerformanceMetric<Long>(new StubMetricValue<>(),"BytesProcessed","total bytes processed",DataTypes.LongType,Metadata.empty(),false);
+        final PerformanceMetric<Double> eps =  new PerformanceMetric<Double>(new StubMetricValue<>(),"Eps","processed rows per second",DataTypes.DoubleType,Metadata.empty(),false);
+        final PerformanceMetric<Long> kafkaOffset =  new PerformanceMetric<Long>(new StubMetricValue<>(),"KafkaOffset","sum of processed kafka offsets",DataTypes.LongType,Metadata.empty(),false);
+        final PerformanceMetric<Long> katestKafkaTimestamp =  new PerformanceMetric<Long>(new StubMetricValue<>(),"LatestKafkaTimestamp","latest processed kafka records' timestamp",DataTypes.LongType,Metadata.empty(),false);
+        final PerformanceMetric<Long> recordsPerSecond =  new PerformanceMetric<Long>(new StubMetricValue<>(),"RecordsPerSecond","processed records per second",DataTypes.LongType,Metadata.empty(),false);
+        final PerformanceMetric<Long> recordsProcessed =  new PerformanceMetric<Long>(new StubMetricValue<>(),"RecordsProcessed","total processed records",DataTypes.LongType,Metadata.empty(),false);
+        final PerformanceMetric<Long> rowsReadFromArchive =  new PerformanceMetric<Long>(new StubMetricValue<>(),"RowsReadFromArchive","Full table input rows read from archive",DataTypes.LongType,Metadata.empty(),false);
+        final PerformanceMetric<Long> timestamp =  new PerformanceMetric<Long>(new StubMetricValue<>(),"Timestamp","timestamp of when performance data was received(epochtime)",DataTypes.LongType, new MetadataBuilder().putBoolean("dpl_internal_isGroupByColumn",true).build(),false);
 
         // Spark schema should contain all supported metrics
         Assertions.assertEquals(17,schema.size());

@@ -78,7 +78,7 @@ public final class PerformanceSchema {
         );
     }
 
-    public PerformanceSchema(List<PerformanceMetric<?>> metrics){
+    public PerformanceSchema(final List<PerformanceMetric<?>> metrics){
         this.metrics = metrics;
     }
 
@@ -86,17 +86,17 @@ public final class PerformanceSchema {
         return metrics;
     }
     public StructType sparkSchema(){
-        List<StructField> fields = new ArrayList<>();
-        for (PerformanceMetric<?> metric: metrics) {
+        final List<StructField> fields = new ArrayList<>();
+        for (final PerformanceMetric<?> metric: metrics) {
             fields.add(metric.toStructField());
         }
         return DataTypes.createStructType(fields);
     }
     @Override
-    public boolean equals(Object o) {
+    public boolean equals(final Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
-        PerformanceSchema that = (PerformanceSchema) o;
+        final PerformanceSchema that = (PerformanceSchema) o;
         return Objects.equals(metrics, that.metrics);
     }
 

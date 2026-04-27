@@ -53,7 +53,7 @@ class StubMetricValueTest {
 
     @Test
     public void testValue(){
-        StubMetricValue stub = new StubMetricValue();
+        final StubMetricValue stub = new StubMetricValue();
         Assertions.assertThrows(UnsupportedOperationException.class, ()-> stub.value());
     }
 

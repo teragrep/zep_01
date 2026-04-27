@@ -59,12 +59,12 @@ class PerformanceMetricTest {
 
     @Test
     void testWithValueLongMetric() throws IncompatibleValueException {
-        PerformanceMetric<Long> metric = new PerformanceMetric(new StubMetricValue(),"testName","desc", DataTypes.LongType, Metadata.empty(),false);
+        final PerformanceMetric<Long> metric = new PerformanceMetric(new StubMetricValue(),"testName","desc", DataTypes.LongType, Metadata.empty(),false);
 
-        PerformanceMetric<Long> newMetric = metric.withValue(-5);
+        final PerformanceMetric<Long> newMetric = metric.withValue(-5);
         Assertions.assertEquals(-5,newMetric.metricValue().value());
 
-        PerformanceMetric<Long> newMetric2 = metric.withValue("-25");
+        final PerformanceMetric<Long> newMetric2 = metric.withValue("-25");
         Assertions.assertEquals(-25,newMetric2.metricValue().value());
 
         Assertions.assertThrows(IncompatibleValueException.class, ()-> metric.withValue(1.0));
@@ -73,15 +73,15 @@ class PerformanceMetricTest {
 
     @Test
     void testWithValueDoubleMetric() throws IncompatibleValueException {
-        PerformanceMetric<Double> metric = new PerformanceMetric(new StubMetricValue(),"testName","desc", DataTypes.DoubleType, Metadata.empty(),false);
+        final PerformanceMetric<Double> metric = new PerformanceMetric(new StubMetricValue(),"testName","desc", DataTypes.DoubleType, Metadata.empty(),false);
 
-        PerformanceMetric<Double> newMetric = metric.withValue(1.0);
+        final PerformanceMetric<Double> newMetric = metric.withValue(1.0);
         Assertions.assertEquals(1.0,newMetric.metricValue().value());
 
-        PerformanceMetric<Double> newMetric2 = metric.withValue("-2.5");
+        final PerformanceMetric<Double> newMetric2 = metric.withValue("-2.5");
         Assertions.assertEquals(-2.5,newMetric2.metricValue().value());
 
-        PerformanceMetric<Double> newMetric3 = metric.withValue(-25);
+        final PerformanceMetric<Double> newMetric3 = metric.withValue(-25);
         Assertions.assertEquals(-25.0,newMetric3.metricValue().value());
 
         Assertions.assertThrows(IncompatibleValueException.class, ()-> metric.withValue("one point five"));
@@ -89,13 +89,13 @@ class PerformanceMetricTest {
 
     @Test
     public void testTest(){
-        PerformanceMetric<Integer> metric = new PerformanceMetric<Integer>(new StubMetricValue<Integer>(),"test","desc",DataTypes.IntegerType,Metadata.empty(),true);
+        final PerformanceMetric<Integer> metric = new PerformanceMetric<Integer>(new StubMetricValue<Integer>(),"test","desc",DataTypes.IntegerType,Metadata.empty(),true);
         metric.metricValue();
     }
     @Test
     public void testContract() {
-        Metadata redMetaData = Metadata.empty();
-        Metadata blueMetaData = new MetadataBuilder().putBoolean("dpl_internal_isGroupByColumn",true).build();
+        final Metadata redMetaData = Metadata.empty();
+        final Metadata blueMetaData = new MetadataBuilder().putBoolean("dpl_internal_isGroupByColumn",true).build();
         EqualsVerifier.forClass(PerformanceMetric.class)
                 .withPrefabValues(Metadata.class,redMetaData, blueMetaData)
                 .verify();
