@@ -27,7 +27,9 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.*;
+import java.util.jar.JarFile;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
 
 import org.apache.commons.lang3.StringUtils;
@@ -260,7 +262,7 @@ public class SparkInterpreterLauncher extends StandardInterpreterLauncher {
       if (sparkAssemblyJars.length > 1) {
         throw new Exception("Multiple spark assembly file found in SPARK_HOME: " + sparkHome);
       }
-      try (URLClassLoader urlClassLoader = new URLClassLoader(new URL[]{sparkAssemblyJars[0].toURI().toURL()});){
+      try (URLClassLoader urlClassLoader = new URLClassLoader(new URL[]{sparkAssemblyJars[0].toURI().toURL()});) {
         urlClassLoader.loadClass("org.apache.spark.repl.SparkCommandLine");
         return "2.10";
       } catch (ClassNotFoundException e) {
@@ -269,18 +271,23 @@ public class SparkInterpreterLauncher extends StandardInterpreterLauncher {
     } else {
       // spark 2.x if spark/lib doesn't exists
       File sparkJarsFolder = new File(sparkHome + "/jars");
-      Optional<File> sparkReplFound = Arrays.stream(sparkJarsFolder.listFiles()).filter(file -> file.getName().contains("spark-repl")).findFirst();
-      if (sparkReplFound.isPresent()) {
-        File sparkRepl = sparkReplFound.get();
-        if (sparkRepl.getName().contains("spark-repl_2.11")) {
-          return "2.11";
-        }
-        if (sparkRepl.getName().contains("spark-repl_2.12")) {
-          return "2.12";
-        }
+      File[] fileArray = sparkJarsFolder.listFiles(file -> file.getName().contains("spark-repl"));
+      if (fileArray == null) {
+        throw new Exception("Failed to detect Scala version! An IO error occurred while accessing directory at: " + sparkJarsFolder);
       }
+      List<File> replFiles = Arrays.asList(fileArray);
+      if (replFiles.size() != 1) {
+        throw new Exception("Failed to detect Scala version! There should only be one instance of \"spark-repl.jar\" in directory at: " + sparkJarsFolder);
+      }
+      File sparkRepl = replFiles.get(0);
+      if (sparkRepl.getName().contains("spark-repl_2.11")) {
+        return "2.11";
+      }
+      if (sparkRepl.getName().contains("spark-repl_2.12")) {
+        return "2.12";
+      }
+      throw new Exception("Could not detect a valid Scala version! Filename "+sparkRepl.getName()+" does not contain a supported version number (2.11 or 2.12)");
     }
-    throw new Exception("Could not detect a valid Scala version!");
   }
 
   /**
