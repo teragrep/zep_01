@@ -28,6 +28,8 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.*;
 import java.util.jar.JarFile;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
@@ -280,13 +282,18 @@ public class SparkInterpreterLauncher extends StandardInterpreterLauncher {
         throw new Exception("Failed to detect Scala version! There should only be one instance of \"spark-repl.jar\" in directory at: " + sparkJarsFolder);
       }
       File sparkRepl = replFiles.get(0);
-      if (sparkRepl.getName().contains("spark-repl_2.11")) {
-        return "2.11";
+      String fileName = sparkRepl.getName();
+
+      Pattern pattern = Pattern.compile("spark-repl_(?<majorVersion>\\d*)\\.(?<minorVersion>\\d*)-.*\\.jar");
+      Matcher matcher = pattern.matcher(fileName);
+      if(matcher.matches()){
+        String majorVersion = matcher.group("majorVersion");
+        String minorVersion = matcher.group("minorVersion");
+        return majorVersion + "." + minorVersion;
       }
-      if (sparkRepl.getName().contains("spark-repl_2.12")) {
-        return "2.12";
+      else {
+        throw new Exception("Failed to detect Scala version! "+fileName+" in "+sparkJarsFolder+" uses an unsupported version! (expected 2.11 or 2.12) ");
       }
-      throw new Exception("Could not detect a valid Scala version! Filename "+sparkRepl.getName()+" does not contain a supported version number (2.11 or 2.12)");
     }
   }
 
