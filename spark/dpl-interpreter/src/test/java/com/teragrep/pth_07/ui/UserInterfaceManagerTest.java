@@ -62,6 +62,7 @@ import org.apache.spark.sql.types.StructType;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
@@ -123,7 +124,7 @@ class UserInterfaceManagerTest {
         UserInterfaceManager userInterfaceManager = new UserInterfaceManager(context,emptyDataset,defaultUIOption,availableFormatList);
 
         Assertions.assertDoesNotThrow(()->userInterfaceManager.updateDataset(testDs));
-        final List<InterpreterResultMessageOutput> outputs = Assertions.assertDoesNotThrow(()->testOutputListener.outputs());
+        final List<InterpreterResultMessage> outputs = Assertions.assertDoesNotThrow(()->testOutputListener.outputs());
 
         Assertions.assertEquals(1,outputs.size());
         final String expectedDTOutput = "%datatables {\"data\":" +
@@ -141,11 +142,20 @@ class UserInterfaceManagerTest {
 
         UIOption uPlotUIOption = new UIOptionImpl("{\"paragraphId\":\"paragraphId\",\"noteId\":\"dataTables\",\"type\":\"uPlot\",\"requestOptions\":{\"graphType\":\"line\"}}");
         userInterfaceManager.updateUIOption(uPlotUIOption);
-        Assertions.assertDoesNotThrow(()->userInterfaceManager.updateDataset(testDs));
 
-        final String expectedUplotOutput = "%uplot {\"data\":[[],[0,0],[0,0]],\"options\":{\"labels\":[],\"series\":[\"id\",\"offset\"],\"graphType\":\"line\"},\"isAggregated\":false,\"type\":\"uPlot\"}";
+        final Dataset<Row> testDs2 = testDataset.createDataset(2,1L,1L);
+        Assertions.assertDoesNotThrow(()->userInterfaceManager.updateDataset(testDs2));
+
+        String expectedUplotOutput = "%uplot {\"data\":[[],[1,1],[1,1]],\"options\":{\"labels\":[],\"series\":[\"id\",\"offset\"],\"graphType\":\"line\"},\"isAggregated\":false,\"type\":\"uPlot\"}";
 
         // InterpreterOutput automatically flushes it's buffer when it detects a new InterpreterResult.Type. First write does not change the type, so we must flush manually, Any subsequent writes with a new type will cause an extra flush. This is a bug in InterpreterOutput but its outside the scope of this feature.
+        Assertions.assertEquals(2,outputs.size());
+        Assertions.assertEquals(expectedUplotOutput,outputs.get(1).toString());
+
+        final Dataset<Row> testDs3 = testDataset.createDataset(5,1L,1L);
+        expectedUplotOutput = "%uplot {\"data\":[[],[1,1,1,1,1],[1,1,1,1,1]],\"options\":{\"labels\":[],\"series\":[\"id\",\"offset\"],\"graphType\":\"line\"},\"isAggregated\":false,\"type\":\"uPlot\"}";
+        Assertions.assertDoesNotThrow(()->userInterfaceManager.updateDataset(testDs3));
+
         Assertions.assertEquals(3,outputs.size());
         Assertions.assertEquals(expectedUplotOutput,outputs.get(2).toString());
     }
@@ -169,7 +179,7 @@ class UserInterfaceManagerTest {
     }
 
     private final class TestInterpreterOutputListener implements InterpreterOutputListener{
-            private List<InterpreterResultMessageOutput> outputList = new ArrayList<>();
+            private List<InterpreterResultMessage> outputList = new ArrayList<>();
 
             @Override
             public void onUpdateAll(final InterpreterOutput out) {
@@ -181,10 +191,15 @@ class UserInterfaceManagerTest {
 
             @Override
             public void onUpdate(final int index, final InterpreterResultMessageOutput out) {
-                outputList.add(out);
+                try{
+                    outputList.add(out.toInterpreterResultMessage());
+                }
+                catch (IOException e){
+                    Assertions.fail("IOException occurred while listening to output messages!");
+                }
             }
 
-            public List<InterpreterResultMessageOutput> outputs(){
+            public List<InterpreterResultMessage> outputs(){
                 return outputList;
             }
         }

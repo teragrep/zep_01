@@ -109,5 +109,6 @@ public final class DatasetStore {
     private void writeToDisk(String output) throws IOException {
         interpreterContext.out.write(output);
         interpreterContext.out.flush();
+        interpreterContext.out.clear(false);
     }
 }
