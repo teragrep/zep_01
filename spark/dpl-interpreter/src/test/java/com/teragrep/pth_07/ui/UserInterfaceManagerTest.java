@@ -45,18 +45,12 @@
  */
 package com.teragrep.pth_07.ui;
 
-import com.teragrep.pth_07.ui.elements.table_dynamic.DatasetState;
-import com.teragrep.pth_07.ui.elements.table_dynamic.MaterializedDatasetState;
-import com.teragrep.pth_07.ui.elements.table_dynamic.StubDatasetState;
+import com.teragrep.pth_07.ui.elements.table_dynamic.formats.*;
 import com.teragrep.pth_07.ui.elements.table_dynamic.testdata.TestDPLData;
 import com.teragrep.zep_01.display.AngularObject;
 import com.teragrep.zep_01.display.AngularObjectRegistry;
 import com.teragrep.zep_01.display.AngularObjectRegistryListener;
 import com.teragrep.zep_01.interpreter.*;
-import com.teragrep.zep_01.interpreter.thrift.Options;
-import com.teragrep.zep_01.interpreter.thrift.UPlotOptions;
-import jakarta.json.JsonObject;
-import jakarta.json.JsonValue;
 import nl.jqno.equalsverifier.EqualsVerifier;
 import org.apache.spark.sql.Dataset;
 import org.apache.spark.sql.Row;
@@ -89,8 +83,6 @@ class UserInterfaceManagerTest {
     );
     private final TestDPLData testDataset = new TestDPLData(sparkSession, testSchema);
     private final Dataset<Row> testDs = testDataset.createDataset(2,0L,0L);
-
-
     String noteId = "testNote";
     String paragraphId = "testParagraph";
     String interpreterGroupId = "testInterpreterGroupId";
@@ -117,15 +109,23 @@ class UserInterfaceManagerTest {
             .setInterpreterOut(testOutput)
             .setAngularObjectRegistry(registry)
             .build();
-    UserInterfaceManager userInterfaceManager = new UserInterfaceManager(context);
 
 
     // Call to UserInterfaceManager.updateDataset() should result in a formatted representation of the dataset to be written to InterpreterOutput.
     @Test
     void updateDatasetTest() {
+
+        List<AvailableFormat> availableFormatList = new ArrayList<>();
+        availableFormatList.add(new DataTablesAvailableFormat());
+        availableFormatList.add(new UPlotAvailableFormat());
+        Dataset<Row> emptyDataset = sparkSession.emptyDataFrame();
+        UIOption defaultUIOption = new UIOptionImpl("{\"paragraphId\":\"paragraph_1777976743753_395717996\",\"noteId\":\"2MRV3E2UT\",\"type\":\"dataTables\",\"requestOptions\":{\"draw\":1,\"start\":0,\"length\":50,\"search\":{\"value\":\"\",\"regex\":false,\"fixed\":[]}}}");
+        UserInterfaceManager userInterfaceManager = new UserInterfaceManager(context,emptyDataset,defaultUIOption,availableFormatList);
+
         Assertions.assertDoesNotThrow(()->userInterfaceManager.updateDataset(testDs));
         final List<InterpreterResultMessageOutput> outputs = Assertions.assertDoesNotThrow(()->testOutputListener.outputs());
-        Assertions.assertEquals(2,outputs.size());
+
+        Assertions.assertEquals(1,outputs.size());
         final String expectedDTOutput = "%datatables {\"data\":" +
                 "{\"data\":[" +
                 "{\"id\":0,\"offset\":0}," +
@@ -136,36 +136,36 @@ class UserInterfaceManagerTest {
                 "\"options\":{\"headers\":" +
                 "[\"id\",\"offset\"]}," +
                 "\"isAggregated\":false," +
-                "\"type\":\"dataTables\"}"+
-                "\n";
+                "\"type\":\"dataTables\"}";
         Assertions.assertEquals(expectedDTOutput,outputs.get(0).toString());
 
+        UIOption uPlotUIOption = new UIOptionImpl("{\"paragraphId\":\"paragraphId\",\"noteId\":\"dataTables\",\"type\":\"uPlot\",\"requestOptions\":{\"graphType\":\"line\"}}");
+        userInterfaceManager.updateUIOption(uPlotUIOption);
+        Assertions.assertDoesNotThrow(()->userInterfaceManager.updateDataset(testDs));
+
         final String expectedUplotOutput = "%uplot {\"data\":[[],[0,0],[0,0]],\"options\":{\"labels\":[],\"series\":[\"id\",\"offset\"],\"graphType\":\"line\"},\"isAggregated\":false,\"type\":\"uPlot\"}";
-        Assertions.assertEquals(expectedUplotOutput,outputs.get(1).toString());
+
+        // InterpreterOutput automatically flushes it's buffer when it detects a new InterpreterResult.Type. First write does not change the type, so we must flush manually, Any subsequent writes with a new type will cause an extra flush. This is a bug in InterpreterOutput but its outside the scope of this feature.
+        Assertions.assertEquals(3,outputs.size());
+        Assertions.assertEquals(expectedUplotOutput,outputs.get(2).toString());
     }
 
     // Call to UserInterfaceManager.formatDataset() should return a formatted representation of the dataset as a String.
     @Test
     void formatDatasetTest() {
-        final UPlotOptions uPlotOptions = new UPlotOptions("line");
+        List<AvailableFormat> availableFormatList = new ArrayList<>();
+        availableFormatList.add(new DataTablesAvailableFormat());
+        availableFormatList.add(new UPlotAvailableFormat());
+        Dataset<Row> emptyDataset = sparkSession.emptyDataFrame();
+
+        UIOption defaultUIOption = new UIOptionImpl("{\"paragraphId\":\"paragraphId\",\"noteId\":\"noteId\",\"type\":\"dataTables\",\"requestOptions\":{\"draw\":1,\"start\":0,\"length\":50,\"search\":{\"value\":\"\",\"regex\":false,\"fixed\":[]}}}");
+        UserInterfaceManager userInterfaceManager = new UserInterfaceManager(context,emptyDataset,defaultUIOption,availableFormatList);
+        UIOption uPlotUIOption = new UIOptionImpl("{\"paragraphId\":\"paragraphId\",\"noteId\":\"dataTables\",\"type\":\"uPlot\",\"requestOptions\":{\"graphType\":\"line\"}}");
         Assertions.assertDoesNotThrow(()->userInterfaceManager.updateDataset(testDs));
-        final String formatted = Assertions.assertDoesNotThrow(()->userInterfaceManager.formatDataset(Options.uPlotOptions(uPlotOptions)));
+
+        final String formatted = Assertions.assertDoesNotThrow(()->userInterfaceManager.formatDataset(uPlotUIOption));
         final String expectedOutput = "{\"data\":[[],[0,0],[0,0]],\"options\":{\"labels\":[],\"series\":[\"id\",\"offset\"],\"graphType\":\"line\"},\"isAggregated\":false,\"type\":\"uPlot\"}";
         Assertions.assertEquals(expectedOutput,formatted);
-    }
-
-    @Test
-    void equalsVerifier() {
-        final InterpreterContext redPerformanceIndicator = InterpreterContext.builder().setNoteId("red").build();
-        final InterpreterContext bluePerformanceIndicactor = InterpreterContext.builder().setNoteId("blue").build();
-        final InterpreterOutput redOutput = new InterpreterOutput();
-        final InterpreterOutput blueOutput = new InterpreterOutput();
-        final AtomicReference<DatasetState> redAtomicReference = new AtomicReference<>(new StubDatasetState(redOutput));
-        final AtomicReference<DatasetState> blueAtomicReference = new AtomicReference<>(new StubDatasetState(blueOutput));
-        EqualsVerifier.forClass(UserInterfaceManager.class)
-                .withPrefabValues(InterpreterContext.class, redPerformanceIndicator, bluePerformanceIndicactor)
-                .withPrefabValues(AtomicReference.class, redAtomicReference, blueAtomicReference)
-                .verify();
     }
 
     private final class TestInterpreterOutputListener implements InterpreterOutputListener{

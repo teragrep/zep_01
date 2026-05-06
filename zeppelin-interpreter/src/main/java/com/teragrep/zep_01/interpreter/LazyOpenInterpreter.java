@@ -22,7 +22,6 @@ import java.util.List;
 import java.util.Properties;
 
 import com.teragrep.zep_01.interpreter.thrift.InterpreterCompletion;
-import com.teragrep.zep_01.interpreter.thrift.Options;
 import com.teragrep.zep_01.scheduler.Scheduler;
 
 /**
@@ -213,7 +212,7 @@ public class LazyOpenInterpreter
   }
 
   @Override
-  public String formatDataset(final String noteId, final String paragraphId, final Options options) throws InterpreterException{
+  public String formatDataset(final String noteId, final String paragraphId, final String options) throws InterpreterException{
     return this.intp.formatDataset(noteId, paragraphId, options);
   }
 }

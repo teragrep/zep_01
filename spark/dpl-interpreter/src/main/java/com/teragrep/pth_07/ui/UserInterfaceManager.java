@@ -47,19 +47,21 @@ package com.teragrep.pth_07.ui;
 
 import com.teragrep.pth_07.ui.elements.MessageLog;
 import com.teragrep.pth_07.ui.elements.PerformanceIndicator;
-import com.teragrep.pth_07.ui.elements.table_dynamic.DatasetState;
-import com.teragrep.pth_07.ui.elements.table_dynamic.StubDatasetState;
+import com.teragrep.pth_07.ui.elements.table_dynamic.DatasetStore;
+import com.teragrep.pth_07.ui.elements.table_dynamic.formats.AvailableFormat;
+import com.teragrep.pth_07.ui.elements.table_dynamic.formats.RenderFormat;
+import com.teragrep.pth_07.ui.elements.table_dynamic.formats.UIOption;
+import com.teragrep.pth_07.ui.elements.table_dynamic.formats.UIOptionImpl;
 import com.teragrep.zep_01.interpreter.InterpreterContext;
 import com.teragrep.zep_01.interpreter.InterpreterException;
-import com.teragrep.zep_01.interpreter.thrift.Options;
 import jakarta.json.JsonObject;
 import org.apache.spark.sql.Dataset;
 import org.apache.spark.sql.Row;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.List;
 import java.util.Objects;
-import java.util.concurrent.atomic.AtomicReference;
 
 
 /**
@@ -68,15 +70,16 @@ import java.util.concurrent.atomic.AtomicReference;
  */
 public final class UserInterfaceManager {
     private static final Logger LOGGER = LoggerFactory.getLogger(UserInterfaceManager.class);
-    private final AtomicReference<DatasetState> datasetState;
+    private final DatasetStore datasetStore;
     private final PerformanceIndicator performanceIndicator;
     private final MessageLog messageLog;
-    public UserInterfaceManager(final InterpreterContext interpreterContext) {
-        this(new AtomicReference<>(new StubDatasetState(interpreterContext.out())), new PerformanceIndicator(interpreterContext), new MessageLog(interpreterContext));
+
+    public UserInterfaceManager(final InterpreterContext interpreterContext, Dataset<Row> emptyDataset, UIOption defaultUIOption,List<AvailableFormat> availableFormats) {
+        this(new DatasetStore(emptyDataset, availableFormats, interpreterContext, defaultUIOption), new PerformanceIndicator(interpreterContext), new MessageLog(interpreterContext));
     }
 
-    public UserInterfaceManager(final AtomicReference<DatasetState> datasetState, final PerformanceIndicator performanceIndicator, final MessageLog messageLog){
-        this.datasetState = datasetState;
+    public UserInterfaceManager(final DatasetStore datasetStore, final PerformanceIndicator performanceIndicator, final MessageLog messageLog){
+        this.datasetStore = datasetStore;
         this.performanceIndicator = performanceIndicator;
         this.messageLog = messageLog;
     }
@@ -95,20 +98,23 @@ public final class UserInterfaceManager {
      * @throws InterpreterException Thrown if trying to write a StubDatasetState
      */
     public void updateDataset(final Dataset<Row> dataset) throws InterpreterException {
-        datasetState.set(datasetState.get().withDataset(dataset));
-        datasetState.get().writeDataUpdate();
+        datasetStore.updateDataset(dataset);
     }
 
 
     /**
      * Formats the current dataset with given formatting options. Used when UI requests the current dataset in a different format.
-     * @param options Thrift union object containing the wanted formatting options.
+     *
+     * @param uiOption UIOption containing the wanted formatting options
      * @return String representing the formatted dataset.
-     * @throws InterpreterException Thrown if an error occurs during formatting of data.
      */
-    public String formatDataset(final Options options) throws InterpreterException{
-            final JsonObject formattedDataset = datasetState.get().formatDataset(options);
-            return formattedDataset.toString();
+    public String formatDataset(UIOption uiOption){
+        RenderFormat renderFormat = datasetStore.toUI(uiOption);
+        return renderFormat.toJson().toString();
+    }
+
+    public void updateUIOption(UIOption uiOption){
+        datasetStore.updateUIOptions(uiOption);
     }
 
     @Override
@@ -116,13 +122,13 @@ public final class UserInterfaceManager {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         final UserInterfaceManager that = (UserInterfaceManager) o;
-        return Objects.equals(datasetState != null ? datasetState.get() : null, that.datasetState != null ? that.datasetState.get() : null)
+        return Objects.equals(datasetStore != null ? datasetStore : null, that.datasetStore != null ? that.datasetStore : null)
                 && Objects.equals(performanceIndicator, that.performanceIndicator)
                 && Objects.equals(messageLog, that.messageLog);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(datasetState != null ? datasetState.get() : null, performanceIndicator, messageLog);
+        return Objects.hash(datasetStore != null ? datasetStore : null, performanceIndicator, messageLog);
     }
 }

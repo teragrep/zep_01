@@ -48,10 +48,10 @@ package com.teragrep.pth_07;
 
 import com.teragrep.pth_07.stream.BatchHandler;
 import com.teragrep.pth_07.ui.UserInterfaceManager;
+import com.teragrep.pth_07.ui.elements.table_dynamic.formats.*;
 import com.teragrep.pth_15.DPLExecutor;
 import com.teragrep.pth_15.DPLExecutorFactory;
 import com.teragrep.pth_15.DPLExecutorResult;
-import com.teragrep.zep_01.interpreter.thrift.Options;
 import com.typesafe.config.Config;
 import com.typesafe.config.ConfigFactory;
 import org.apache.spark.SparkContext;
@@ -61,15 +61,14 @@ import com.teragrep.zep_01.interpreter.thrift.InterpreterCompletion;
 import com.teragrep.zep_01.scheduler.Scheduler;
 import com.teragrep.zep_01.scheduler.SchedulerFactory;
 import com.teragrep.zep_01.spark.SparkInterpreter;
+import org.apache.spark.sql.Dataset;
+import org.apache.spark.sql.Row;
 import org.apache.spark.sql.SparkSession;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.lang.reflect.InvocationTargetException;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Properties;
+import java.util.*;
 import java.util.concurrent.TimeoutException;
 import java.util.concurrent.atomic.AtomicInteger;
 
@@ -92,6 +91,8 @@ public class DPLInterpreter extends AbstractInterpreter {
     private final DPLKryo dplKryo;
 
     private final HashMap<String, HashMap<String, UserInterfaceManager>> notebookParagraphUserInterfaceManager;
+    private final List<AvailableFormat> availableFormats;
+    private final UIOption defaultUIOption;
 
 
     public DPLInterpreter(final Properties properties) {
@@ -106,6 +107,11 @@ public class DPLInterpreter extends AbstractInterpreter {
         dplKryo = new DPLKryo();
         LOGGER.info("DPL-interpreter initialize properties: {}", properties);
         notebookParagraphUserInterfaceManager = new HashMap<>();
+        List<AvailableFormat> availableFormatList = new ArrayList<>();
+        availableFormatList.add(new DataTablesAvailableFormat());
+        availableFormatList.add(new UPlotAvailableFormat());
+        availableFormats = availableFormatList;
+        defaultUIOption = new UIOptionImpl("{\"type\":\"dataTables\",\"requestOptions\":{\"draw\":1,\"start\":0,\"length\":50,\"search\":{\"value\":\"\",\"regex\":false,\"fixed\":[]}}}");
     }
 
     @Override
@@ -158,9 +164,10 @@ public class DPLInterpreter extends AbstractInterpreter {
         // clear old output
         interpreterContext.out.clear();
         // FIXME clear fron NgDPLRenderer too
-
         // setup UserInterfaceManager
-        final UserInterfaceManager userInterfaceManager = new UserInterfaceManager(interpreterContext);
+        final SparkSession sparkSession = sparkInterpreter.getSparkSession();
+        final Dataset<Row> emptyDataset = sparkSession.emptyDataFrame();
+        final UserInterfaceManager userInterfaceManager = new UserInterfaceManager(interpreterContext,emptyDataset,defaultUIOption,availableFormats);
 
         // store UserInterfaceManager
         if (!notebookParagraphUserInterfaceManager.containsKey(interpreterContext.getNoteId())) {
@@ -205,7 +212,6 @@ public class DPLInterpreter extends AbstractInterpreter {
 
         // execute query
         final InterpreterResult output;
-        final SparkSession sparkSession = sparkInterpreter.getSparkSession();
         final String appId = sparkSession.sparkContext().applicationId();
         final String queryId = appId + "-" + runIncrement++;
 
@@ -310,9 +316,9 @@ public class DPLInterpreter extends AbstractInterpreter {
     }
 
     @Override
-    public String formatDataset(final String noteId, final String paragraphId, final Options options) throws InterpreterException{
+    public String formatDataset(final String noteId, final String paragraphId, final String options) throws InterpreterException{
         final UserInterfaceManager userInterfaceManager = findUserInterfacemanger(noteId,paragraphId);
-        // set new options only.
-        return userInterfaceManager.formatDataset(options);
+        final UIOption option = new UIOptionImpl(options);
+        return userInterfaceManager.formatDataset(option);
     }
 }

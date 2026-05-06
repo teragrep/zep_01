@@ -43,16 +43,30 @@
  * Teragrep, the applicable Commercial License may apply to this file if you as
  * a licensee so wish it.
  */
-package com.teragrep.pth_07.ui.elements.table_dynamic;
+package com.teragrep.pth_07.ui.elements.table_dynamic.formats;
 
-import com.teragrep.zep_01.interpreter.InterpreterException;
-import com.teragrep.zep_01.interpreter.thrift.Options;
 import jakarta.json.JsonObject;
+import jakarta.json.JsonValue;
 import org.apache.spark.sql.Dataset;
 import org.apache.spark.sql.Row;
 
-public interface DatasetState {
-    public abstract DatasetState withDataset(final Dataset<Row> rowDataset);
-    public abstract JsonObject formatDataset(final Options options) throws InterpreterException;
-    public abstract void writeDataUpdate() throws InterpreterException;
+public final class DataTablesAvailableFormat implements AvailableFormat {
+
+    private static final RenderFormat renderFormatStub = new RenderFormatStub();
+
+    @Override
+    public boolean isStub() {
+        return false;
+    }
+
+    @Override
+    public RenderFormat asRenderFormat(final UIOption uiOption, final Dataset<Row> rowDataset) {
+        RenderFormat rv = renderFormatStub;
+        JsonObject json = uiOption.toJson();
+        if(json.containsKey("type") && json.get("type").getValueType().equals(JsonValue.ValueType.STRING) && json.getString("type").equals("dataTables")){
+            rv = new DataTablesFormat(uiOption, rowDataset);
+        }
+        return rv;
+    }
+
 }

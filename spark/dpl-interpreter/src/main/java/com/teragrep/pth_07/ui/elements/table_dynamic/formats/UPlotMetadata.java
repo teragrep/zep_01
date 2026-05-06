@@ -45,7 +45,6 @@
  */
 package com.teragrep.pth_07.ui.elements.table_dynamic.formats;
 
-import com.teragrep.zep_01.interpreter.thrift.UPlotOptions;
 import jakarta.json.*;
 import org.apache.spark.sql.Row;
 import org.apache.spark.sql.types.StructField;
@@ -65,10 +64,6 @@ public final class UPlotMetadata {
         this.collectedData = collectedData;
         this.graphType = graphType;
         this.isAggregated = isAggregated;
-    }
-
-    public UPlotMetadata withOptions(final UPlotOptions options){
-        return new UPlotMetadata(schema,collectedData,options.getGraphType(),isAggregated);
     }
 
     /**

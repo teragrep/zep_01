@@ -44,9 +44,7 @@
  * a licensee so wish it.
  */
 package com.teragrep.pth_07.ui.elements.table_dynamic.formats;
-import com.teragrep.zep_01.interpreter.InterpreterException;
 import com.teragrep.zep_01.interpreter.InterpreterResult;
-import com.teragrep.zep_01.interpreter.thrift.UPlotOptions;
 import jakarta.json.*;
 import org.apache.spark.sql.*;
 import org.apache.spark.sql.types.*;
@@ -57,63 +55,29 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
-public final class UPlotFormat{
+public final class UPlotFormat implements RenderFormat{
 
-    private final UPlotData data;
-    private final UPlotMetadata metadata;
+    private final UIOption option;
+    private final Dataset<Row> dataset;
     private static final Logger LOGGER = LoggerFactory.getLogger(UPlotFormat.class);
     /**
      * Formats a given Dataset to expected format for uPlot visualization library.
      */
-    public UPlotFormat(){
-        this(new UPlotData(new ArrayList<>(),false), new UPlotMetadata(new StructType(),new ArrayList<>(),"line",false));
-    }
 
-    public UPlotFormat(final UPlotData data, final UPlotMetadata metadata){
-        this.data = data;
-        this.metadata = metadata;
+    public UPlotFormat(UIOption option, Dataset<Row> rowDataset){
+        this.dataset = rowDataset;
+        this.option = option;
     }
 
     /**
-     * Create a new instance of UPlotFormat with an updated Dataset. This function calculates any required transformations UPlot format might need for the dataset and caches a UPlotData and UPlotMetadata objects for later use in formatting.
-     * Caching is done to avoid repeated calls to Dataset.collectAsList() when using format() method for switching between graph types when the underlying dataset has not changed.
-     * @param newDataset The updated Dataset
-     * @return A new instance of UPlotFormat, containing an updated UPlotData and UPlotMetadata objects ready for formatting.
-     */
-    public UPlotFormat withDataset(final Dataset<Row> newDataset) {
-        final StructType schema = newDataset.schema();
-        final List<String> groupByColumnNames = new ArrayList<>();
-        final List<String> valueColumnNames = new ArrayList<>();
-        for (final StructField field:schema.fields()) {
-            // We detect grouping columns by metadata instead of LogicalPlan because StreamingQueries created in batches have their LogicalPlans overwritten.
-            if (field.metadata().contains("dpl_internal_isGroupByColumn")) {
-                groupByColumnNames.add(field.name());
-            }
-            else {
-                valueColumnNames.add(field.name());
-            }
-        }
-        final UPlotFormat updatedFormat;
-        // Datasets grouped by _time column (such as those created using timechart command) require different formatting than datasets without such grouping.
-        if(groupByColumnNames.contains("_time")){
-            updatedFormat = timechartTransformation(newDataset,groupByColumnNames,valueColumnNames);
-        }
-        else {
-            updatedFormat = aggregationTransformation(newDataset,groupByColumnNames);
-        }
-        return updatedFormat;
-    }
-
-    /**
-     * Creates a new instance of UPlotFormat when a dataset's X-axis should be a timescale. Dataset should contain a column named "_time"
+     * Creates a appropriately transformed dataset when a dataset's X-axis should be a timescale. Dataset should contain a column named "_time"
      * This method pivots the dataset so that only "_time" is used as the X-axis, and combinations of unique values in other group by columns are combined into different series on the Y-axis.
      * @param dataset The dataset to transform
      * @param groupByColumnNames List of column names used in group by clauses
      * @param valueColumnNames List of column names used outside of group by clauses
-     * @return A new instance of UPlotFormat ready for formatting.
+     * @return A transformed dataset ready for formatting.
      */
-    private UPlotFormat timechartTransformation(final Dataset<Row> dataset, final List<String> groupByColumnNames, final List<String> valueColumnNames){
-        final boolean aggsUsed = !groupByColumnNames.isEmpty();
+    private Dataset<Row> timechartTransformation(final Dataset<Row> dataset, final List<String> groupByColumnNames, final List<String> valueColumnNames){
         final Dataset<Row> transformedDataset;
         if(groupByColumnNames.size() < 2){
             transformedDataset = dataset;
@@ -156,21 +120,18 @@ public final class UPlotFormat{
             }
             transformedDataset = pivotedDataset;
         }
-
-        final List<Row> collectedData = transformedDataset.collectAsList();
-        return new UPlotFormat(new UPlotData(collectedData,aggsUsed),new UPlotMetadata(transformedDataset.schema(),collectedData,"line",aggsUsed));
+        return transformedDataset;
     }
 
     /**
-     * Creates a new instance of UPlotFormat when a dataset's X-axis should consist of the combinations of all used grouping labels.
+     * Creates a transformed dataset when a dataset's X-axis should consist of the combinations of all used grouping labels.
      * This method transforms the dataset so that
      * @param dataset Dataset to transform
      * @param groupByColumnNames List of names used in group by clauses
-     * @return A new instance of UPlotFormat ready for formatting.
+     * @return A new dataset ready for formatting.
      */
 
-    private UPlotFormat aggregationTransformation(final Dataset<Row> dataset, final List<String> groupByColumnNames){
-        final boolean aggsUsed = !groupByColumnNames.isEmpty();
+    private Dataset<Row> aggregationTransformation(final Dataset<Row> dataset, final List<String> groupByColumnNames){
         final Dataset<Row> transformedDataset;
         // If trying to concatenate less than two columns, we don't need to do any transformations to the data,
         if(groupByColumnNames.size() < 2){
@@ -188,24 +149,58 @@ public final class UPlotFormat{
                     .drop(groupByColumnNames.toArray(new String[0]))
                     .withMetadata("label",new MetadataBuilder().putBoolean("dpl_internal_isGroupByColumn",true).build());
         }
-        final List<Row> collectedData = transformedDataset.collectAsList();
-        return new UPlotFormat(new UPlotData(collectedData,aggsUsed),new UPlotMetadata(transformedDataset.schema(),collectedData,"line",aggsUsed));
+        return transformedDataset;
     }
 
 
-    public JsonObject format(final UPlotOptions options) throws InterpreterException{
-        final UPlotMetadata updatedMetadata = metadata.withOptions(options);
+    public JsonObject format(){
+        final StructType schema = dataset.schema();
+        final List<String> groupByColumnNames = new ArrayList<>();
+        final List<String> valueColumnNames = new ArrayList<>();
+        for (final StructField field:schema.fields()) {
+            // We detect grouping columns by metadata instead of LogicalPlan because StreamingQueries created in batches have their LogicalPlans overwritten.
+            if (field.metadata().contains("dpl_internal_isGroupByColumn")) {
+                groupByColumnNames.add(field.name());
+            }
+            else {
+                valueColumnNames.add(field.name());
+            }
+        }
+        final boolean aggsUsed = !groupByColumnNames.isEmpty();
+        final Dataset<Row> transformedDataset;
+        // Datasets grouped by _time column (such as those created using timechart command) require different formatting than datasets without such grouping.
+        if(groupByColumnNames.contains("_time")){
+            transformedDataset = timechartTransformation(dataset,groupByColumnNames,valueColumnNames);
+        }
+        else {
+            transformedDataset = aggregationTransformation(dataset,groupByColumnNames);
+        }
+
+        List<Row> rows = transformedDataset.collectAsList();
+        String graphType = option.toJson().getJsonObject("requestOptions").getString("graphType");
+        final UPlotMetadata uPlotMetadata = new UPlotMetadata(dataset.schema(),rows,graphType,aggsUsed);
+        UPlotData uplotData = new UPlotData(rows,aggsUsed);
+
         final JsonObjectBuilder builder = Json.createObjectBuilder()
-                .add("data",data.asJson())
-                .add("options",updatedMetadata.asJson())
-                .add("isAggregated",updatedMetadata.isAggregated())
+                .add("data",uplotData.asJson())
+                .add("options",uPlotMetadata.asJson())
+                .add("isAggregated",uPlotMetadata.isAggregated())
                 .add("type", InterpreterResult.Type.UPLOT.label);
-        final JsonObject json = builder.build();
-        return json;
+        return builder.build();
     }
 
-    public String type(){
-        return InterpreterResult.Type.UPLOT.label;
+    public InterpreterResult.Type type(){
+        return InterpreterResult.Type.UPLOT;
+    }
+
+    @Override
+    public JsonObject toJson() {
+        return format();
+    }
+
+    @Override
+    public boolean isStub() {
+        return false;
     }
 
     @Override
@@ -213,11 +208,11 @@ public final class UPlotFormat{
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         UPlotFormat format = (UPlotFormat) o;
-        return Objects.equals(data, format.data) && Objects.equals(metadata, format.metadata);
+        return Objects.equals(option, format.option) && Objects.equals(dataset, format.dataset);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(data, metadata);
+        return Objects.hash(option, dataset);
     }
 }

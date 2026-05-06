@@ -46,7 +46,6 @@
 package com.teragrep.pth_07.ui.elements.table_dynamic.formats;
 
 import com.teragrep.zep_01.interpreter.InterpreterResult;
-import com.teragrep.zep_01.interpreter.thrift.DataTablesOptions;
 import jakarta.json.*;
 import org.apache.spark.sql.Dataset;
 import org.apache.spark.sql.Row;
@@ -57,7 +56,6 @@ import org.slf4j.LoggerFactory;
 
 import java.io.StringReader;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 
@@ -68,61 +66,38 @@ import java.util.Objects;
  * Keeps the rows of a Dataset in a cache to avoid unnecessary calls to Dataset.collectAsList() when performing for example pagination requests.
  * Cache is updated when a new Dataset is received
  */
-public final class DataTablesFormat{
+public final class DataTablesFormat implements RenderFormat{
     private static final Logger LOGGER = LoggerFactory.getLogger(DataTablesFormat.class);
-    private final StructType schema;
-    private final List<String> cachedRows;
-    private final int draw;
 
-    public DataTablesFormat(){
-        this(new StructType(), new ArrayList<>() , 0);
-    }
+    private final UIOption option;
+    private final Dataset<Row> dataset;
 
-    public DataTablesFormat(final StructType schema, final List<String> cachedRows, final int draw){
-        this.schema = schema;
-        this.cachedRows = Collections.unmodifiableList(cachedRows);
-        this.draw = draw;
-    }
-
-    /**
-     * Create a new instance of DataTablesFormat with an updated Dataset. This function calculates any required updates to draw based on dataset schema and caches the rows of the Dataset.
-     * Caching is done to avoid repeated calls to Dataset.collectAsList() when using format() method for pagination requests when the underlying dataset has not changed.
-     * @param newDataset The updated Dataset
-     * @return A new instance of DataTablesFormat, containing an updated draw value and cache of rows based on the given dataset.
-     */
-    public DataTablesFormat withDataset(final Dataset<Row> newDataset) {
-        final int updatedDraw;
-        final List<String> updatedCache;
-        if(schema.equals(newDataset.schema())){
-            updatedDraw = draw +1;
-        }
-        else {
-            updatedDraw = 1;
-        }
-        updatedCache = newDataset.toJSON().collectAsList();
-        return new DataTablesFormat(newDataset.schema(), updatedCache, updatedDraw);
+    public DataTablesFormat(UIOption option, Dataset<Row> dataset){
+        this.option = option;
+        this.dataset = dataset;
     }
 
     /**
      * Format the current Dataset into DataTables format using the parameters in the given Options object.
      * This will paginate the cached rows based on Options parameters.
      * Operates on the cached rows of this DataTablesFormat object. Repeated calls paginates the same data with given parameter. If the cache needs to be updated, use .withDataset() to create a new DataTablesFormat object.
-     * @param options A DataTablesOptions object that contains pagination parameters to use.
      * @return JsonObject formatted to the style expected by DataTables visualization library, with requested pagination performed.
      */
-    public JsonObject format(final DataTablesOptions options){
+    public JsonObject format(){
+        JsonObject optionJson = option.toJson().getJsonObject("requestOptions");
         // headers
         final JsonArrayBuilder headersBuilder = Json.createArrayBuilder();
-        for (final StructField header: schema.fields()) {
+        for (final StructField header: dataset.schema().fields()) {
             headersBuilder.add(header.name());
         }
         final JsonArray headers = headersBuilder.build();
 
-        // search
-        final List<String> searchedRows = search(cachedRows, options.getSearch().getValue());
+        // search, not implemented yet
+        final List<String> rows = dataset.toJSON().collectAsList();
+        final List<String> searchedRows = search(rows, "");
 
         // paginate
-        final List<String> paginatedRows = paginate(searchedRows, options.getStart(), options.getLength());
+        final List<String> paginatedRows = paginate(searchedRows, optionJson.getInt("start"), optionJson.getInt("length"));
 
         // json
         final JsonArrayBuilder dataBuilder = Json.createArrayBuilder();
@@ -130,11 +105,10 @@ public final class DataTablesFormat{
             dataBuilder.add(Json.createReader(new StringReader(jsonRow)).readObject());
         }
         final JsonArray data = dataBuilder.build();
-        final long recordsTotal = cachedRows.size();
+        final long recordsTotal = rows.size();
         final long recordsFiltered = searchedRows.size();
-        final boolean isAggregated = isAggregated(schema);
-
-        final int draw = Math.max(this.draw,options.getDraw());
+        final boolean isAggregated = isAggregated(dataset.schema());
+        final int draw = optionJson.getInt("draw");
 
         final JsonObject json = Json.createObjectBuilder()
                 .add("data",Json.createObjectBuilder()
@@ -160,8 +134,8 @@ public final class DataTablesFormat{
         return false;
     }
 
-    public String type(){
-        return InterpreterResult.Type.DATATABLES.label;
+    public InterpreterResult.Type type(){
+        return InterpreterResult.Type.DATATABLES;
     }
 
     private List<String> search(final List<String> rows, final String searchString){
@@ -216,15 +190,25 @@ public final class DataTablesFormat{
     }
 
     @Override
-    public boolean equals(final Object o) {
+    public JsonObject toJson() {
+        return format();
+    }
+
+    @Override
+    public boolean isStub() {
+        return false;
+    }
+
+    @Override
+    public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
-        final DataTablesFormat format = (DataTablesFormat) o;
-        return draw == format.draw && Objects.equals(schema, format.schema) && Objects.equals(cachedRows, format.cachedRows);
+        DataTablesFormat format = (DataTablesFormat) o;
+        return Objects.equals(option, format.option) && Objects.equals(dataset, format.dataset);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(schema, cachedRows, draw);
+        return Objects.hash(option, dataset);
     }
 }

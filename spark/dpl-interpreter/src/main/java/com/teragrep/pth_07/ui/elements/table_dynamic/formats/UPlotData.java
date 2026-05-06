@@ -90,9 +90,8 @@ public final class UPlotData {
      * Builds a list of JsonArrays representing the Y-Axis in uPlot
      * @param rows List of Rows in the Dataset to be formatted. Rows must contain only numerical data (or stringified numerical data). Any columns containing metadata boolean "dpl-internal_isGroupByColumn" will be ignored.
      * @return A list of JsonArrays, each representing columnar data of a single series.
-     * @throws InterpreterException Thrown when receiving non-numerical data, which is invalid for uPlot.
      */
-    private List<JsonArray> yAxis(final List<Row> rows) throws InterpreterException {
+    private List<JsonArray> yAxis(final List<Row> rows) {
         final List<JsonArray> yAxis = new ArrayList<>();
         if(!rows.isEmpty()){
             final StructType schema = rows.get(0).schema();
@@ -155,7 +154,7 @@ public final class UPlotData {
     return yAxis;
     }
 
-    public JsonValue asJson() throws InterpreterException {
+    public JsonValue asJson() {
         if(cachedJson.get().getValueType().equals(JsonValue.ValueType.NULL)){
             final JsonArray xAxis = xAxis(collectedData, aggsUsed);
             final List<JsonArray> yAxisArray = yAxis(collectedData);

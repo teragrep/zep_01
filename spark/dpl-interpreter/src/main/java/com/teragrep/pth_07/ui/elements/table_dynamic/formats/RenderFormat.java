@@ -43,55 +43,16 @@
  * Teragrep, the applicable Commercial License may apply to this file if you as
  * a licensee so wish it.
  */
-package com.teragrep.pth_07.ui.elements.table_dynamic;
+package com.teragrep.pth_07.ui.elements.table_dynamic.formats;
 
-import com.teragrep.pth_07.ui.elements.table_dynamic.formats.DataTablesFormat;
-import com.teragrep.pth_07.ui.elements.table_dynamic.formats.UPlotFormat;
-import com.teragrep.zep_01.interpreter.InterpreterException;
-import com.teragrep.zep_01.interpreter.InterpreterOutput;
-import com.teragrep.zep_01.interpreter.thrift.Options;
+import com.teragrep.stb_01.Stubable;
+import com.teragrep.zep_01.interpreter.InterpreterResult;
 import jakarta.json.JsonObject;
-import org.apache.spark.sql.Dataset;
-import org.apache.spark.sql.Row;
 
-import java.util.Objects;
+public interface RenderFormat extends Stubable {
 
-public final class StubDatasetState implements DatasetState{
-    private final InterpreterOutput output;
-    public StubDatasetState(final InterpreterOutput output){
-        this.output = output;
-    }
+    JsonObject toJson();
 
-    /**
-     * Use this method to turn a StubDatasetState into a MaterializedDatasetState using the given Dataset. Initializes every supported format with the given data
-     * @param rowDataset The Dataset to use
-     * @return A new MaterializedDatasetState that contains the same InterpreterOutput as this StubDatasetState, the given Dataset.
-     */
-    @Override
-    public DatasetState withDataset(final Dataset<Row> rowDataset){
-        return new MaterializedDatasetState(rowDataset,output,new DataTablesFormat().withDataset(rowDataset),new UPlotFormat().withDataset(rowDataset));
-    }
+    InterpreterResult.Type type();
 
-    @Override
-    public JsonObject formatDataset(final Options options) throws InterpreterException {
-        throw new InterpreterException("Attempting to format an empty dataset!");
-    }
-
-    @Override
-    public void writeDataUpdate() throws InterpreterException {
-        throw new InterpreterException("Attempting to write an empty dataset!");
-    }
-
-    @Override
-    public boolean equals(final Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        final StubDatasetState that = (StubDatasetState) o;
-        return Objects.equals(output, that.output);
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(output);
-    }
 }

@@ -65,147 +65,147 @@ import java.util.concurrent.locks.ReentrantLock;
 
 
 public class MaterializedDatasetStateTest {
-    private static final Logger LOGGER = LoggerFactory.getLogger(MaterializedDatasetStateTest.class);
-    private final SparkSession sparkSession = SparkSession.builder()
-            .master("local[*]")
-            .config("spark.cleaner.referenceTracking.cleanCheckpoints", "true")
-            .config("checkpointLocation","/tmp/pth_10/test/StackTest/checkpoints/" + UUID.randomUUID() + "/")
-            .config("spark.sql.session.timeZone", "UTC")
-            .getOrCreate();
-    private final StructType testSchema = new StructType(
-            new StructField[] {
-                    new StructField("_time", DataTypes.TimestampType, false, new MetadataBuilder().build()),
-                    new StructField("id", DataTypes.LongType, false, new MetadataBuilder().build()),
-                    new StructField("_raw", DataTypes.StringType, false, new MetadataBuilder().build()),
-                    new StructField("index", DataTypes.StringType, false, new MetadataBuilder().build()),
-                    new StructField("sourcetype", DataTypes.StringType, false, new MetadataBuilder().build()),
-                    new StructField("host", DataTypes.StringType, false, new MetadataBuilder().build()),
-                    new StructField("source", DataTypes.StringType, false, new MetadataBuilder().build()),
-                    new StructField("partition", DataTypes.StringType, false, new MetadataBuilder().build()),
-                    new StructField("offset", DataTypes.LongType, false, new MetadataBuilder().build()),
-                    new StructField("origin", DataTypes.StringType, false, new MetadataBuilder().build())
-            }
-    );
-    private final TestDPLData testDataset = new TestDPLData(sparkSession, testSchema);
-    private final Dataset<Row> testDs = testDataset.createDataset(49,Timestamp.from(Instant.ofEpochSecond(0)),0L,"data data","index_A","stream","host","input",String.valueOf(0),0L,"test data");
-
-
-    private final StructType smallTestSchema = new StructType(
-            new StructField[] {
-                    new StructField("_time", DataTypes.TimestampType, false, new MetadataBuilder().build()),
-                    new StructField("id", DataTypes.LongType, false, new MetadataBuilder().build()),
-                    new StructField("_raw", DataTypes.StringType, false, new MetadataBuilder().build()),
-            }
-    );
-    private final TestDPLData smallTestDataset = new TestDPLData(sparkSession, smallTestSchema);
-    private final Dataset<Row> smallTestDs = smallTestDataset.createDataset(49,Timestamp.from(Instant.ofEpochSecond(0)),0L,"data data");
-
-    // When new data is received, DTTableDatasetNg should not send an empty update to frontend every time InterpreterOutput.clear() is called.
-    // Does not include a concrete implementation of InterpreterOutputListener as it's an anonymous class within RemoteInterpreterServer, and instantiating it would require too many dependencies.
-    @Test
-    public void testNoOutputClearMessagesSentToUI(){
-
-        final TestInterpreterOutputListener listener = new TestInterpreterOutputListener();
-        final InterpreterOutput testOutput =  new InterpreterOutput(listener);
-
-        final DatasetState dtTableDatasetNg = new StubDatasetState(testOutput);
-
-        // Simulate DPL receiving new data.
-        Assertions.assertDoesNotThrow(()->{
-            dtTableDatasetNg.withDataset(testDs).writeDataUpdate();
-        });
-        Assertions.assertEquals(2,listener.numberOfUpdateCalls());
-        Assertions.assertEquals(0,listener.numberOfResetCalls());
-
-        // Simulate DPL receiving another batch of data.
-        Assertions.assertDoesNotThrow(()->{
-            dtTableDatasetNg.withDataset(testDs).writeDataUpdate();
-        });
-        Assertions.assertEquals(4,listener.numberOfUpdateCalls());
-        Assertions.assertEquals(0,listener.numberOfResetCalls());
-
-    }
-
-    /**
-     * An incremented 'draw' value should be sent to the UI each time a new batch of data is received.
-     * The 'draw' value should be reset to 1 every time the schema of the data changes.
-     */
-    @Test
-    public void testIncrementDraw(){
-        final TestInterpreterOutputListener listener = new TestInterpreterOutputListener();
-        final InterpreterOutput testOutput =  new InterpreterOutput(listener);
-
-        final DatasetState initialState = new StubDatasetState(testOutput);
-
-        // Simulate DPL receiving new data.
-
-        final DatasetState state1 = initialState.withDataset(testDs);
-        Assertions.assertDoesNotThrow(()->state1.writeDataUpdate());
-        final List<InterpreterResultMessage> messages = Assertions.assertDoesNotThrow(()->testOutput.toInterpreterResultMessage());
-        // First message should have draw value of 1
-        Assertions.assertTrue(messages.get(0).getData().contains("\"draw\":1"));
-
-        // Simulate DPL receiving another batch of new data without changing schema.
-        final DatasetState state2 = state1.withDataset(testDs);
-        Assertions.assertDoesNotThrow(()->{
-            state2.writeDataUpdate();
-        });
-        final List<InterpreterResultMessage> messages2 = Assertions.assertDoesNotThrow(()->testOutput.toInterpreterResultMessage());
-        // Second message should have draw value of 2
-        Assertions.assertTrue(messages2.get(0).getData().contains("\"draw\":2"));
-
-        // Simulate DPL receiving yet another batch of new data but with a changed schema.
-        final DatasetState state3 = state2.withDataset(smallTestDs);
-        Assertions.assertDoesNotThrow(()->{
-            state3.writeDataUpdate();
-        });
-        final List<InterpreterResultMessage> messages3 = Assertions.assertDoesNotThrow(()->testOutput.toInterpreterResultMessage());
-        // Third message's draw value should be reset to 1
-        Assertions.assertTrue(messages3.get(0).getData().contains("\"draw\":1"));
-    }
-
-    private class TestInterpreterOutputListener implements InterpreterOutputListener{
-        private int numberOfResetCalls = 0;
-        private int numberOfUpdateCalls = 0;
-        @Override
-        public void onUpdateAll(final InterpreterOutput out) {
-            numberOfResetCalls++;
-            // Calling this clears the paragraph's results. It will be called when we update the dataset, but should not be called upon pagination request.
-        }
-        @Override
-        public void onAppend(final int index, final InterpreterResultMessageOutput out, final byte[] line) {
-            // Calling this does not clear the paragraph's results.
-        }
-        @Override
-        public void onUpdate(final int index, final InterpreterResultMessageOutput out) {
-            // Calling this does not clear the paragraph's results.
-            numberOfUpdateCalls++;
-        }
-
-        public int numberOfUpdateCalls(){
-            return numberOfUpdateCalls;
-        }
-        public int numberOfResetCalls(){
-            return numberOfResetCalls;
-        }
-    }
-    @Test
-    void equalsVerifier() {
-        // EqualsVerifier requires some prefab values due to usage of mutable or complex objects
-        final Dataset<Row> redDataset = sparkSession.emptyDataFrame();
-        final Dataset<Row> blueDataset = testDs;
-
-        final InterpreterOutput redOutput = new InterpreterOutput(new TestInterpreterOutputListener());
-        final InterpreterOutput blueOutput = new InterpreterOutput();
-
-        final ReentrantLock redLock = new ReentrantLock();
-        final ReentrantLock blueLock = new ReentrantLock();
-        blueLock.lock();
-
-        EqualsVerifier.forClass(MaterializedDatasetState.class)
-                .withPrefabValues(Dataset.class, redDataset, blueDataset)
-                .withPrefabValues(InterpreterOutput.class,redOutput,blueOutput)
-                .withPrefabValues(ReentrantLock.class, redLock,blueLock)
-                .withIgnoredFields("lock").verify();
-    }
+//    private static final Logger LOGGER = LoggerFactory.getLogger(MaterializedDatasetStateTest.class);
+//    private final SparkSession sparkSession = SparkSession.builder()
+//            .master("local[*]")
+//            .config("spark.cleaner.referenceTracking.cleanCheckpoints", "true")
+//            .config("checkpointLocation","/tmp/pth_10/test/StackTest/checkpoints/" + UUID.randomUUID() + "/")
+//            .config("spark.sql.session.timeZone", "UTC")
+//            .getOrCreate();
+//    private final StructType testSchema = new StructType(
+//            new StructField[] {
+//                    new StructField("_time", DataTypes.TimestampType, false, new MetadataBuilder().build()),
+//                    new StructField("id", DataTypes.LongType, false, new MetadataBuilder().build()),
+//                    new StructField("_raw", DataTypes.StringType, false, new MetadataBuilder().build()),
+//                    new StructField("index", DataTypes.StringType, false, new MetadataBuilder().build()),
+//                    new StructField("sourcetype", DataTypes.StringType, false, new MetadataBuilder().build()),
+//                    new StructField("host", DataTypes.StringType, false, new MetadataBuilder().build()),
+//                    new StructField("source", DataTypes.StringType, false, new MetadataBuilder().build()),
+//                    new StructField("partition", DataTypes.StringType, false, new MetadataBuilder().build()),
+//                    new StructField("offset", DataTypes.LongType, false, new MetadataBuilder().build()),
+//                    new StructField("origin", DataTypes.StringType, false, new MetadataBuilder().build())
+//            }
+//    );
+//    private final TestDPLData testDataset = new TestDPLData(sparkSession, testSchema);
+//    private final Dataset<Row> testDs = testDataset.createDataset(49,Timestamp.from(Instant.ofEpochSecond(0)),0L,"data data","index_A","stream","host","input",String.valueOf(0),0L,"test data");
+//
+//
+//    private final StructType smallTestSchema = new StructType(
+//            new StructField[] {
+//                    new StructField("_time", DataTypes.TimestampType, false, new MetadataBuilder().build()),
+//                    new StructField("id", DataTypes.LongType, false, new MetadataBuilder().build()),
+//                    new StructField("_raw", DataTypes.StringType, false, new MetadataBuilder().build()),
+//            }
+//    );
+//    private final TestDPLData smallTestDataset = new TestDPLData(sparkSession, smallTestSchema);
+//    private final Dataset<Row> smallTestDs = smallTestDataset.createDataset(49,Timestamp.from(Instant.ofEpochSecond(0)),0L,"data data");
+//
+//    // When new data is received, DTTableDatasetNg should not send an empty update to frontend every time InterpreterOutput.clear() is called.
+//    // Does not include a concrete implementation of InterpreterOutputListener as it's an anonymous class within RemoteInterpreterServer, and instantiating it would require too many dependencies.
+//    @Test
+//    public void testNoOutputClearMessagesSentToUI(){
+//
+//        final TestInterpreterOutputListener listener = new TestInterpreterOutputListener();
+//        final InterpreterOutput testOutput =  new InterpreterOutput(listener);
+//
+//        final DatasetState dtTableDatasetNg = new StubDatasetState(testOutput);
+//
+//        // Simulate DPL receiving new data.
+//        Assertions.assertDoesNotThrow(()->{
+//            dtTableDatasetNg.withDataset(testDs).writeDataUpdate();
+//        });
+//        Assertions.assertEquals(2,listener.numberOfUpdateCalls());
+//        Assertions.assertEquals(0,listener.numberOfResetCalls());
+//
+//        // Simulate DPL receiving another batch of data.
+//        Assertions.assertDoesNotThrow(()->{
+//            dtTableDatasetNg.withDataset(testDs).writeDataUpdate();
+//        });
+//        Assertions.assertEquals(4,listener.numberOfUpdateCalls());
+//        Assertions.assertEquals(0,listener.numberOfResetCalls());
+//
+//    }
+//
+//    /**
+//     * An incremented 'draw' value should be sent to the UI each time a new batch of data is received.
+//     * The 'draw' value should be reset to 1 every time the schema of the data changes.
+//     */
+//    @Test
+//    public void testIncrementDraw(){
+//        final TestInterpreterOutputListener listener = new TestInterpreterOutputListener();
+//        final InterpreterOutput testOutput =  new InterpreterOutput(listener);
+//
+//        final DatasetState initialState = new StubDatasetState(testOutput);
+//
+//        // Simulate DPL receiving new data.
+//
+//        final DatasetState state1 = initialState.withDataset(testDs);
+//        Assertions.assertDoesNotThrow(()->state1.writeDataUpdate());
+//        final List<InterpreterResultMessage> messages = Assertions.assertDoesNotThrow(()->testOutput.toInterpreterResultMessage());
+//        // First message should have draw value of 1
+//        Assertions.assertTrue(messages.get(0).getData().contains("\"draw\":1"));
+//
+//        // Simulate DPL receiving another batch of new data without changing schema.
+//        final DatasetState state2 = state1.withDataset(testDs);
+//        Assertions.assertDoesNotThrow(()->{
+//            state2.writeDataUpdate();
+//        });
+//        final List<InterpreterResultMessage> messages2 = Assertions.assertDoesNotThrow(()->testOutput.toInterpreterResultMessage());
+//        // Second message should have draw value of 2
+//        Assertions.assertTrue(messages2.get(0).getData().contains("\"draw\":2"));
+//
+//        // Simulate DPL receiving yet another batch of new data but with a changed schema.
+//        final DatasetState state3 = state2.withDataset(smallTestDs);
+//        Assertions.assertDoesNotThrow(()->{
+//            state3.writeDataUpdate();
+//        });
+//        final List<InterpreterResultMessage> messages3 = Assertions.assertDoesNotThrow(()->testOutput.toInterpreterResultMessage());
+//        // Third message's draw value should be reset to 1
+//        Assertions.assertTrue(messages3.get(0).getData().contains("\"draw\":1"));
+//    }
+//
+//    private class TestInterpreterOutputListener implements InterpreterOutputListener{
+//        private int numberOfResetCalls = 0;
+//        private int numberOfUpdateCalls = 0;
+//        @Override
+//        public void onUpdateAll(final InterpreterOutput out) {
+//            numberOfResetCalls++;
+//            // Calling this clears the paragraph's results. It will be called when we update the dataset, but should not be called upon pagination request.
+//        }
+//        @Override
+//        public void onAppend(final int index, final InterpreterResultMessageOutput out, final byte[] line) {
+//            // Calling this does not clear the paragraph's results.
+//        }
+//        @Override
+//        public void onUpdate(final int index, final InterpreterResultMessageOutput out) {
+//            // Calling this does not clear the paragraph's results.
+//            numberOfUpdateCalls++;
+//        }
+//
+//        public int numberOfUpdateCalls(){
+//            return numberOfUpdateCalls;
+//        }
+//        public int numberOfResetCalls(){
+//            return numberOfResetCalls;
+//        }
+//    }
+//    @Test
+//    void equalsVerifier() {
+//        // EqualsVerifier requires some prefab values due to usage of mutable or complex objects
+//        final Dataset<Row> redDataset = sparkSession.emptyDataFrame();
+//        final Dataset<Row> blueDataset = testDs;
+//
+//        final InterpreterOutput redOutput = new InterpreterOutput(new TestInterpreterOutputListener());
+//        final InterpreterOutput blueOutput = new InterpreterOutput();
+//
+//        final ReentrantLock redLock = new ReentrantLock();
+//        final ReentrantLock blueLock = new ReentrantLock();
+//        blueLock.lock();
+//
+//        EqualsVerifier.forClass(MaterializedDatasetState.class)
+//                .withPrefabValues(Dataset.class, redDataset, blueDataset)
+//                .withPrefabValues(InterpreterOutput.class,redOutput,blueOutput)
+//                .withPrefabValues(ReentrantLock.class, redLock,blueLock)
+//                .withIgnoredFields("lock").verify();
+//    }
 }

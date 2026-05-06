@@ -43,49 +43,15 @@
  * Teragrep, the applicable Commercial License may apply to this file if you as
  * a licensee so wish it.
  */
-package com.teragrep.pth_07.ui.elements.table_dynamic;
+package com.teragrep.pth_07.ui.elements.table_dynamic.formats;
 
-import com.teragrep.zep_01.interpreter.InterpreterException;
-import com.teragrep.zep_01.interpreter.InterpreterOutput;
+
+import com.teragrep.stb_01.Stubable;
 import org.apache.spark.sql.Dataset;
 import org.apache.spark.sql.Row;
-import org.apache.spark.sql.SparkSession;
-import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.Test;
 
-import java.util.UUID;
+public interface AvailableFormat extends Stubable {
 
+    RenderFormat asRenderFormat(UIOption uiOption, Dataset<Row> rowDataset);
 
-class StubDatasetStateTest {
-
-//    private final SparkSession sparkSession = SparkSession.builder()
-//            .master("local[*]")
-//            .config("spark.cleaner.referenceTracking.cleanCheckpoints", "true")
-//            .config("checkpointLocation","/tmp/pth_10/test/StackTest/checkpoints/" + UUID.randomUUID() + "/")
-//            .config("spark.sql.session.timeZone", "UTC")
-//            .getOrCreate();
-//
-//    // Calling .withDataset(Dataset) on a StubDatasetState should return a MaterializedDatasetState object.
-//    @Test
-//    void withDatasetTest() {
-//        final Dataset<Row> emptyData = sparkSession.emptyDataFrame();
-//        final StubDatasetState stubState = new StubDatasetState(new InterpreterOutput());
-//        final DatasetState materializedState = Assertions.assertDoesNotThrow(() -> stubState.withDataset(emptyData));
-//        Assertions.assertEquals(MaterializedDatasetState.class,materializedState.getClass());
-//    }
-//
-//    // Trying to format a StubDatasetState should throw an error.
-//    @Test
-//    void formatDatasetTest() {
-//        final StubDatasetState stubState = new StubDatasetState(new InterpreterOutput());
-//        final Options options = Options.dataTablesOptions(new DataTablesOptions());
-//        Assertions.assertThrows(InterpreterException.class,()->stubState.formatDataset(options));
-//    }
-//
-//    // Trying to write to a StubDatasetState's InterpreterOutput should throw an error.
-//    @Test
-//    void writeDataUpdateTest() {
-//        final StubDatasetState stubState = new StubDatasetState(new InterpreterOutput());
-//        Assertions.assertThrows(InterpreterException.class,()->stubState.writeDataUpdate());
-//    }
 }

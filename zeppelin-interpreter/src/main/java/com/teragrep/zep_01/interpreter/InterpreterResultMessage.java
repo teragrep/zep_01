@@ -17,9 +17,6 @@
 package com.teragrep.zep_01.interpreter;
 
 import com.teragrep.zep_01.common.Jsonable;
-import com.teragrep.zep_01.interpreter.thrift.DataTablesOptions;
-import com.teragrep.zep_01.interpreter.thrift.Options;
-import com.teragrep.zep_01.interpreter.thrift.UPlotOptions;
 import jakarta.json.*;
 
 import javax.swing.text.html.Option;
@@ -57,19 +54,20 @@ public class InterpreterResultMessage implements Serializable, Jsonable {
    * @return JsonObject with required transformations based on given Options object
    * @throws InterpreterException If given an unsupported options type, or if InterpreterResultMessages data is malformed.
    */
-  public JsonObject format(final Options options) throws InterpreterException {
+  public JsonObject format(final String options) throws InterpreterException {
     return format(Json.createReader(new StringReader(data)).readObject(), options);
   }
 
-  private JsonObject format(JsonObject resultAsJson, Options options) throws InterpreterException {
+  private JsonObject format(JsonObject resultAsJson, String options) throws InterpreterException {
     if(type == null){
       throw new InterpreterException("Result has no type assigned!");
     }
-    if (options.isSetDataTablesOptions() && type.equals(InterpreterResult.Type.DATATABLES)){
-      final DataTablesOptions dtOptions = options.getDataTablesOptions();
-      final int draw = dtOptions.isSetDraw() ? dtOptions.getDraw() : 1;
-      final int start = dtOptions.isSetStart() ? dtOptions.getStart() : 0;
-      final int length = dtOptions.isSetLength() ? dtOptions.getLength() : 50;
+    JsonObject json = Json.createReader(new StringReader(options)).readObject();
+    if (json.getString("type").equals("dataTables") && type.equals(InterpreterResult.Type.DATATABLES)){
+      final JsonObject jsonOptions = json.getJsonObject("options");
+      final int draw = jsonOptions.containsKey("draw") ? jsonOptions.getInt("draw") : 1;
+      final int start = jsonOptions.containsKey("start") ? jsonOptions.getInt("start") : 0;
+      final int length = jsonOptions.containsKey("length") ? jsonOptions.getInt("length") : 50;
       final JsonObject dataObject = resultAsJson.getJsonObject("data");
       final JsonArray dataArray = dataObject.getJsonArray("data");
 
@@ -88,9 +86,9 @@ public class InterpreterResultMessage implements Serializable, Jsonable {
       responseBuilder.add("data",dataBuilder.build());
       return responseBuilder.build();
     }
-    else if(options.isSetUPlotOptions() && type.equals(InterpreterResult.Type.UPLOT)){
-      final UPlotOptions uPlotOptions = options.getUPlotOptions();
-      final String graphType = uPlotOptions.isSetGraphType() ? uPlotOptions.getGraphType() : "line";
+    else if(json.getString("type").equals("uPlot") && type.equals(InterpreterResult.Type.UPLOT)){
+      final JsonObject jsonOptions = json.getJsonObject("options");
+      final String graphType = jsonOptions.containsKey("graphType") ? jsonOptions.getString("graphType") : "line";
 
       final JsonObject responseOptions = resultAsJson.getJsonObject("options");
       final JsonObjectBuilder responseOptionsBuilder = Json.createObjectBuilder(responseOptions);
@@ -110,27 +108,34 @@ public class InterpreterResultMessage implements Serializable, Jsonable {
     final JsonObject json;
     if(type != null){
       try{
+        JsonObjectBuilder options = Json.createObjectBuilder();
         if(type.equals(InterpreterResult.Type.DATATABLES)){
-          DataTablesOptions options = new DataTablesOptions();
+          options.add("type","dataTables");
+          JsonObjectBuilder optionsJson = Json.createObjectBuilder()
+                  .add("draw",1);
+          options.add("options",optionsJson);
           JsonObject resultAsJson = Json.createReader(new StringReader(data)).readObject();
           if(resultAsJson.containsKey("data") && resultAsJson.get("data").getValueType().equals(JsonValue.ValueType.OBJECT)){
             JsonObject dataObject = resultAsJson.getJsonObject("data");
             if(dataObject.containsKey("draw") && dataObject.get("draw").getValueType().equals(JsonValue.ValueType.NUMBER)){
-              options.setDraw(dataObject.getInt("draw"));
+              optionsJson.add("draw",dataObject.getInt("draw"));
             }
           }
-          json = format(resultAsJson, Options.dataTablesOptions(options));
+          json = format(resultAsJson, options.build().toString());
         }
         else if(type.equals(InterpreterResult.Type.UPLOT)){
-          UPlotOptions options = new UPlotOptions();
+          options.add("type","uPlot");
+          JsonObjectBuilder optionsJson = Json.createObjectBuilder()
+                  .add("draw",1);
+          optionsJson.add("graphType","line");
           JsonObject resultAsJson = Json.createReader(new StringReader(data)).readObject();
           if(resultAsJson.containsKey("options") && resultAsJson.get("options").getValueType().equals(JsonValue.ValueType.OBJECT)){
             JsonObject optionsObject = resultAsJson.getJsonObject("options");
             if(optionsObject.containsKey("graphType") && optionsObject.get("graphType").getValueType().equals(JsonValue.ValueType.STRING)){
-              options.setGraphType(optionsObject.getString("graphType"));
+              optionsJson.add("graphType",optionsObject.getString("graphType"));
             }
           }
-          json = format(resultAsJson, Options.uPlotOptions(options));
+          json = format(resultAsJson, options.build().toString());
         }
         else {
           // If the data is some other type, there is no guarantee that the data is even in JSON format, so we build a response assuming that data is a simple String.

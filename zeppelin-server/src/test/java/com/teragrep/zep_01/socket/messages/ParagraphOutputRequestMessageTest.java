@@ -1,7 +1,5 @@
 package com.teragrep.zep_01.socket.messages;
 
-import com.teragrep.zep_01.interpreter.thrift.DataTablesOptions;
-import com.teragrep.zep_01.interpreter.thrift.UPlotOptions;
 import jakarta.json.Json;
 import jakarta.json.JsonException;
 import jakarta.json.JsonObject;
@@ -36,8 +34,8 @@ class ParagraphOutputRequestMessageTest {
         Assertions.assertEquals(noteId, message.noteId());
         Assertions.assertEquals(paragraphId, message.paragraphId());
         Assertions.assertEquals(type, message.type());
-        final UPlotOptions options = Assertions.assertDoesNotThrow(()->message.options().getUPlotOptions());
-        Assertions.assertEquals(graphType,options.getGraphType());
+        final String data = Assertions.assertDoesNotThrow(()->message.data());
+        Assertions.assertTrue(data.contains(graphType));
     }
 
     @Test
@@ -107,11 +105,10 @@ class ParagraphOutputRequestMessageTest {
         Assertions.assertEquals(noteId, message.noteId());
         Assertions.assertEquals(paragraphId, message.paragraphId());
         Assertions.assertEquals(type, message.type());
-        final DataTablesOptions options = Assertions.assertDoesNotThrow(()->message.options().getDataTablesOptions());
-        Assertions.assertEquals(draw,options.getDraw());
-        Assertions.assertEquals(start,options.getStart());
-        Assertions.assertEquals(length,options.getLength());
-        Assertions.assertEquals(searchString,options.getSearch().getValue());
+        final String data = Assertions.assertDoesNotThrow(()->message.data());
+        Assertions.assertTrue(data.contains(Integer.toString(draw)));
+        Assertions.assertTrue(data.contains(Integer.toString(start)));
+        Assertions.assertTrue(data.contains(Integer.toString(length)));
     }
 
     @Test
@@ -125,24 +122,8 @@ class ParagraphOutputRequestMessageTest {
         Assertions.assertThrows(JsonException.class,()-> message.paragraphId());
         Assertions.assertThrows(JsonException.class,()-> message.messageId());
         Assertions.assertThrows(JsonException.class,()-> message.noteId());
-        Assertions.assertThrows(JsonException.class,()-> message.options());
+        Assertions.assertThrows(JsonException.class,()-> message.data());
         Assertions.assertThrows(JsonException.class,()-> message.type());
-    }
-
-    @Test
-    public void invalidOptionsRequestTest(){
-        final String type = "dataTables";
-        // JsonObject contains an options, but it does not have any of the required values.
-        final JsonObject messageJson = Json.createObjectBuilder()
-                .add("data",Json.createObjectBuilder()
-                        .add("type",type)
-                        .add("requestOptions",Json.createObjectBuilder()
-                                        .build())
-                        .build())
-                .build();
-        final ParagraphOutputRequestMessage message = new ParagraphOutputRequestMessage(messageJson);
-        // Should throw an error when trying to retrieve the options
-        Assertions.assertThrows(JsonException.class,()-> message.options());
     }
     @Test
     void equalsVerifier() {

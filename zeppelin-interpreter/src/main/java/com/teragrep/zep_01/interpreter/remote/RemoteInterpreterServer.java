@@ -373,7 +373,7 @@ public class RemoteInterpreterServer extends Thread
   }
 
   @Override
-  public String formatDataset(final String sessionId, final String className, final String noteId, final String paragraphId, final Options options) throws InterpreterRPCException, TException {
+  public String formatDataset(final String sessionId, final String className, final String noteId, final String paragraphId, final String options) throws InterpreterRPCException, TException {
     try{
       final Interpreter intp = getInterpreter(sessionId, className);
       return intp.formatDataset(noteId, paragraphId, options);

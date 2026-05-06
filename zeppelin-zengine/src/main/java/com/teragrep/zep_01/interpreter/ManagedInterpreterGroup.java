@@ -20,7 +20,6 @@ package com.teragrep.zep_01.interpreter;
 
 import com.teragrep.zep_01.conf.ZeppelinConfiguration;
 import com.teragrep.zep_01.interpreter.remote.RemoteInterpreterProcess;
-import com.teragrep.zep_01.interpreter.thrift.Options;
 import com.teragrep.zep_01.scheduler.Job;
 import com.teragrep.zep_01.scheduler.Scheduler;
 import com.teragrep.zep_01.scheduler.SchedulerFactory;
@@ -183,7 +182,7 @@ public class ManagedInterpreterGroup extends InterpreterGroup {
     }
   }
 
-  public String formatDataset(String sessionId, String classname, String noteId, String paragraphId, Options options) throws InterpreterException{
+  public String formatDataset(String sessionId, String classname, String noteId, String paragraphId, String options) throws InterpreterException{
     if(remoteInterpreterProcess == null){
       throw new InterpreterException("InterpreterGroup "+id+" does not have a running Interpreter process!");
     }

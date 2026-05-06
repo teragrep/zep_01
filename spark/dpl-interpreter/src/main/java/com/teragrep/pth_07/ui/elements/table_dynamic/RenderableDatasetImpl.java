@@ -45,47 +45,43 @@
  */
 package com.teragrep.pth_07.ui.elements.table_dynamic;
 
-import com.teragrep.zep_01.interpreter.InterpreterException;
-import com.teragrep.zep_01.interpreter.InterpreterOutput;
+import com.teragrep.pth_07.ui.elements.table_dynamic.formats.AvailableFormat;
+import com.teragrep.pth_07.ui.elements.table_dynamic.formats.RenderFormat;
+import com.teragrep.pth_07.ui.elements.table_dynamic.formats.RenderFormatStub;
+import com.teragrep.pth_07.ui.elements.table_dynamic.formats.UIOption;
+import jakarta.json.JsonObject;
 import org.apache.spark.sql.Dataset;
 import org.apache.spark.sql.Row;
-import org.apache.spark.sql.SparkSession;
-import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.Test;
 
-import java.util.UUID;
+import java.util.List;
+import java.util.concurrent.atomic.AtomicReference;
 
+public final class RenderableDatasetImpl implements RenderableDataset {
 
-class StubDatasetStateTest {
+    private static final RenderFormat renderFormatStub = new RenderFormatStub();
+    private final List<AvailableFormat> availableFormats;
+    private final Dataset<Row> rowDataset;
 
-//    private final SparkSession sparkSession = SparkSession.builder()
-//            .master("local[*]")
-//            .config("spark.cleaner.referenceTracking.cleanCheckpoints", "true")
-//            .config("checkpointLocation","/tmp/pth_10/test/StackTest/checkpoints/" + UUID.randomUUID() + "/")
-//            .config("spark.sql.session.timeZone", "UTC")
-//            .getOrCreate();
-//
-//    // Calling .withDataset(Dataset) on a StubDatasetState should return a MaterializedDatasetState object.
-//    @Test
-//    void withDatasetTest() {
-//        final Dataset<Row> emptyData = sparkSession.emptyDataFrame();
-//        final StubDatasetState stubState = new StubDatasetState(new InterpreterOutput());
-//        final DatasetState materializedState = Assertions.assertDoesNotThrow(() -> stubState.withDataset(emptyData));
-//        Assertions.assertEquals(MaterializedDatasetState.class,materializedState.getClass());
-//    }
-//
-//    // Trying to format a StubDatasetState should throw an error.
-//    @Test
-//    void formatDatasetTest() {
-//        final StubDatasetState stubState = new StubDatasetState(new InterpreterOutput());
-//        final Options options = Options.dataTablesOptions(new DataTablesOptions());
-//        Assertions.assertThrows(InterpreterException.class,()->stubState.formatDataset(options));
-//    }
-//
-//    // Trying to write to a StubDatasetState's InterpreterOutput should throw an error.
-//    @Test
-//    void writeDataUpdateTest() {
-//        final StubDatasetState stubState = new StubDatasetState(new InterpreterOutput());
-//        Assertions.assertThrows(InterpreterException.class,()->stubState.writeDataUpdate());
-//    }
+    RenderableDatasetImpl(final List<AvailableFormat> availableFormats, Dataset<Row> rowDataset) {
+        this.availableFormats = availableFormats;
+        this.rowDataset = rowDataset;
+    }
+
+    @Override
+    public RenderFormat toRenderFormat(UIOption uiOption) {
+        RenderFormat rv = renderFormatStub;
+        for (AvailableFormat availableFormat : this.availableFormats) {
+            rv = availableFormat.asRenderFormat(uiOption, rowDataset);
+            if (!rv.isStub()) {
+                break;
+            }
+        }
+        return rv;
+    }
+
+    @Override
+    public boolean isStub() {
+        return false;
+    }
+
 }
