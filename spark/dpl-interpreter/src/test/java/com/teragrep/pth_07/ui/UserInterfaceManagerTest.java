@@ -123,10 +123,14 @@ class UserInterfaceManagerTest {
         UIOption defaultUIOption = new UIOptionImpl("{\"paragraphId\":\"paragraph_1777976743753_395717996\",\"noteId\":\"2MRV3E2UT\",\"type\":\"dataTables\",\"requestOptions\":{\"draw\":1,\"start\":0,\"length\":50,\"search\":{\"value\":\"\",\"regex\":false,\"fixed\":[]}}}");
         UserInterfaceManager userInterfaceManager = new UserInterfaceManager(context,emptyDataset,defaultUIOption,availableFormatList);
 
+        //TestOutput should be empty. Results of testOutput are stored to disk, so there can only be one or no results.
+        Assertions.assertEquals(0,testOutput.size());
         Assertions.assertDoesNotThrow(()->userInterfaceManager.updateDataset(testDs));
-        final List<InterpreterResultMessage> outputs = Assertions.assertDoesNotThrow(()->testOutputListener.outputs());
+        final List<InterpreterResultMessage> outputList = Assertions.assertDoesNotThrow(()->testOutputListener.outputs());
 
-        Assertions.assertEquals(1,outputs.size());
+        // First batch of data should be retained in InterpreterOutput
+        Assertions.assertEquals(1,testOutput.size());
+        Assertions.assertEquals(1,outputList.size());
         final String expectedDTOutput = "%datatables {\"data\":" +
                 "{\"data\":[" +
                 "{\"id\":0,\"offset\":0}," +
@@ -138,7 +142,7 @@ class UserInterfaceManagerTest {
                 "[\"id\",\"offset\"]}," +
                 "\"isAggregated\":false," +
                 "\"type\":\"dataTables\"}";
-        Assertions.assertEquals(expectedDTOutput,outputs.get(0).toString());
+        Assertions.assertEquals(expectedDTOutput,outputList.get(0).toString());
 
         UIOption uPlotUIOption = new UIOptionImpl("{\"paragraphId\":\"paragraphId\",\"noteId\":\"dataTables\",\"type\":\"uPlot\",\"requestOptions\":{\"graphType\":\"line\"}}");
         userInterfaceManager.updateUIOption(uPlotUIOption);
@@ -148,16 +152,18 @@ class UserInterfaceManagerTest {
 
         String expectedUplotOutput = "%uplot {\"data\":[[],[1,1],[1,1]],\"options\":{\"labels\":[],\"series\":[\"id\",\"offset\"],\"graphType\":\"line\"},\"isAggregated\":false,\"type\":\"uPlot\"}";
 
-        // InterpreterOutput automatically flushes it's buffer when it detects a new InterpreterResult.Type. First write does not change the type, so we must flush manually, Any subsequent writes with a new type will cause an extra flush. This is a bug in InterpreterOutput but its outside the scope of this feature.
-        Assertions.assertEquals(2,outputs.size());
-        Assertions.assertEquals(expectedUplotOutput,outputs.get(1).toString());
+        Assertions.assertEquals(1,testOutput.size());
+        Assertions.assertEquals(2,outputList.size());
+        Assertions.assertEquals(expectedUplotOutput,outputList.get(1).toString());
 
         final Dataset<Row> testDs3 = testDataset.createDataset(5,1L,1L);
         expectedUplotOutput = "%uplot {\"data\":[[],[1,1,1,1,1],[1,1,1,1,1]],\"options\":{\"labels\":[],\"series\":[\"id\",\"offset\"],\"graphType\":\"line\"},\"isAggregated\":false,\"type\":\"uPlot\"}";
         Assertions.assertDoesNotThrow(()->userInterfaceManager.updateDataset(testDs3));
 
-        Assertions.assertEquals(3,outputs.size());
-        Assertions.assertEquals(expectedUplotOutput,outputs.get(2).toString());
+
+        Assertions.assertEquals(1,testOutput.size());
+        Assertions.assertEquals(3,outputList.size());
+        Assertions.assertEquals(expectedUplotOutput,outputList.get(2).toString());
     }
 
     // Call to UserInterfaceManager.formatDataset() should return a formatted representation of the dataset as a String.

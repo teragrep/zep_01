@@ -107,8 +107,8 @@ public final class DatasetStore {
 
     // Write given String to disk via InterpreterOutput. NotebookServer catches this event in onOutputUpdate() / onOutputAppend()
     private void writeToDisk(String output) throws IOException {
+        interpreterContext.out.clear(false);
         interpreterContext.out.write(output);
         interpreterContext.out.flush();
-        interpreterContext.out.clear(false);
     }
 }
