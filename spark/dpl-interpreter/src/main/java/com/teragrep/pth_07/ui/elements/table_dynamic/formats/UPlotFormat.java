@@ -178,7 +178,7 @@ public final class UPlotFormat implements RenderFormat{
 
         List<Row> rows = transformedDataset.collectAsList();
         String graphType = option.toJson().getJsonObject("requestOptions").getString("graphType");
-        final UPlotMetadata uPlotMetadata = new UPlotMetadata(dataset.schema(),rows,graphType,aggsUsed);
+        final UPlotMetadata uPlotMetadata = new UPlotMetadata(transformedDataset.schema(),rows,graphType,aggsUsed);
         UPlotData uplotData = new UPlotData(rows,aggsUsed);
 
         final JsonObjectBuilder builder = Json.createObjectBuilder()
