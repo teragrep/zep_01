@@ -97,23 +97,18 @@ public class InterpreterResultMessage implements Serializable, Jsonable {
 
   @Override
   public JsonObject asJson() {
-    // If the data within this resultMessage is in a JSON formatted type, perform the necessary formatting based on the information saved on the result.
-    JsonObject rv = JsonValue.EMPTY_JSON_OBJECT;
-    if(data != null){
-      try{
-        JsonObject dataJson = Json.createReader(new StringReader(data)).readObject();
-        if(dataJson.containsKey("data") && dataJson.get("data").getValueType().equals(JsonValue.ValueType.OBJECT)){
-          rv = dataJson;
-        }
-      }
-      catch (JsonParsingException e){
-        // Encountered data, but it was not in JSON format. Non-JSON data is returned as a string.
-        JsonObjectBuilder builder = Json.createObjectBuilder();
-        builder.add("data",data);
-        builder.add("type",type.label);
-        builder.add("isAggregated",false);
-        rv = builder.build();
-      }
+    // If the data within this resultMessage is in a JSON formatted type, read the String into a JSON object.
+    // If the data is in some other format, create a JSON object with the keys expected by UI, and the data as a simple String.
+    final JsonObject rv;
+    if(type.equals(InterpreterResult.Type.DATATABLES) || type.equals(InterpreterResult.Type.UPLOT)){
+      rv = Json.createReader(new StringReader(data)).readObject();
+    }
+    else {
+      JsonObjectBuilder builder = Json.createObjectBuilder();
+      builder.add("data",data);
+      builder.add("type",type.label);
+      builder.add("isAggregated",false);
+      rv = builder.build();
     }
     return rv;
   }
