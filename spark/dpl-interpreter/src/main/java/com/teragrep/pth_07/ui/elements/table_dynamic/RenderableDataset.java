@@ -52,5 +52,7 @@ import com.teragrep.stb_01.Stubable;
 public interface RenderableDataset extends Stubable {
 
     RenderFormat toRenderFormat(UIOption uiOption);
+    void persist();
+    void unpersist();
 
 }

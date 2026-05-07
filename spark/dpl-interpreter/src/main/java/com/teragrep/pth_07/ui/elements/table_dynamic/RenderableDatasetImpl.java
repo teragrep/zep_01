@@ -52,6 +52,7 @@ import com.teragrep.pth_07.ui.elements.table_dynamic.formats.UIOption;
 import jakarta.json.JsonObject;
 import org.apache.spark.sql.Dataset;
 import org.apache.spark.sql.Row;
+import org.apache.spark.storage.StorageLevel;
 
 import java.util.List;
 import java.util.concurrent.atomic.AtomicReference;
@@ -77,6 +78,16 @@ public final class RenderableDatasetImpl implements RenderableDataset {
             }
         }
         return rv;
+    }
+
+    @Override
+    public void persist(){
+        rowDataset.persist(StorageLevel.MEMORY_AND_DISK());
+    }
+
+    @Override
+    public void unpersist(){
+        rowDataset.unpersist();
     }
 
     @Override

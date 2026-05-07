@@ -79,8 +79,11 @@ public final class DatasetStore {
     }
 
     public void updateDataset(Dataset<Row> rowDataset) throws InterpreterException {
+        datasetRef.get().unpersist();
         RenderableDataset rd = new RenderableDatasetImpl(availableFormats, rowDataset);
         datasetRef.set(rd);
+        rd.persist();
+
         RenderFormat uiResponse = datasetRef.get().toRenderFormat(uiOptionsRef.get());
         StringBuilder output = new StringBuilder();
         // Prepend "%{InterpreterResult.Type}\n so that InterpreterOutput.write() parses the type correctly instead of treating the output as TEXT
