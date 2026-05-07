@@ -98,19 +98,23 @@ public class InterpreterResultMessage implements Serializable, Jsonable {
   @Override
   public JsonObject asJson() {
     // If the data within this resultMessage is in a JSON formatted type, perform the necessary formatting based on the information saved on the result.
-    final JsonObjectBuilder json = Json.createObjectBuilder();
-    if(type != null){
-      json.add("type",type.label.toLowerCase());
-    }
+    JsonObject rv = JsonValue.EMPTY_JSON_OBJECT;
     if(data != null){
       try{
         JsonObject dataJson = Json.createReader(new StringReader(data)).readObject();
-        json.add("data",dataJson);
-      } catch (JsonParsingException e){
+        if(dataJson.containsKey("data") && dataJson.get("data").getValueType().equals(JsonValue.ValueType.OBJECT)){
+          rv = dataJson;
+        }
+      }
+      catch (JsonParsingException e){
         // Encountered data, but it was not in JSON format. Non-JSON data is returned as a string.
-        json.add("data",data);
+        JsonObjectBuilder builder = Json.createObjectBuilder();
+        builder.add("data",data);
+        builder.add("type",type.label);
+        builder.add("isAggregated",false);
+        rv = builder.build();
       }
     }
-    return json.build();
+    return rv;
   }
 }
