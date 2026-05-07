@@ -1108,7 +1108,7 @@ public class NotebookServer extends WebSocketServlet
     final String msgId = fromMessage.messageId();
     final String noteId = fromMessage.noteId();
     final String paragraphId = fromMessage.paragraphId();
-    final String options = fromMessage.data();
+    final String payload = fromMessage.data();
 
     // Get interpreterGroup
     Note note = getNotebook().getNote(noteId);
@@ -1140,31 +1140,15 @@ public class NotebookServer extends WebSocketServlet
 
     try {
       // Format the dataset within RemoteInterpreter, then return the output
-      final String output = managedInterpreterGroup.formatDataset(sessionId, interpreter.getClassName(), noteId, paragraphId, options);
+      final String output = managedInterpreterGroup.formatDataset(sessionId, interpreter.getClassName(), noteId, paragraphId, payload);
       final JsonObject outputJson = Json.createReader(new StringReader(output)).readObject();
       final ParagraphOutputResponseMessage paragraphOutputResponse = new ParagraphOutputResponseMessage(noteId, paragraphId, outputJson);
       final JsonMessage msg = new JsonMessage(new SimpleMessageId(msgId), OP.PARAGRAPH_OUTPUT, paragraphOutputResponse);
       conn.send(msg.asJson().toString());
     } catch (InterpreterException e) {
-      // If unable to retrieve formatted data from Interpreter, try to retrieve latest formatted data from Notebook object.
-      InterpreterResult result = paragraph.getReturn();
-      if(result != null) {
-        for (InterpreterResultMessage resultMessage:result.message()) {
-          try{
-            JsonObject outputJson = resultMessage.format(options);
-            final ParagraphOutputResponseMessage paragraphOutputResponse = new ParagraphOutputResponseMessage(noteId, paragraphId, outputJson);
-            final JsonMessage msg = new JsonMessage(new SimpleMessageId(msgId), OP.PARAGRAPH_OUTPUT, paragraphOutputResponse);
-            conn.send(msg.asJson().toString());
-            return;
-          }catch (InterpreterException exception){
-            // continue until all results have been exhausted
-          }
-        }
-      }
-      // If unable to retrieve data from Notebook object, throw an exception and log as an error.
       LOG.error("Failed to retrieve output for note: {} paragraph: {} cause: {}", noteId, paragraphId, e.getCause(), e);
       final JsonObject errorJson = Json.createObjectBuilder()
-              .add("message", "Failed to retrieve data. Please rerun the paragraph and try again or see technical log for details!")
+              .add("message", "Failed to retrieve data from Interpreter. Please rerun the paragraph and try again or see technical log for details!")
               .build();
       final JsonMessage msg = new JsonMessage(new SimpleMessageId(msgId), OP.INTERPRETER_ERROR, errorJson);
       conn.send(msg.asJson().toString());

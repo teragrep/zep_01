@@ -18,6 +18,8 @@ package com.teragrep.zep_01.interpreter;
 
 import com.teragrep.zep_01.common.Jsonable;
 import jakarta.json.*;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.swing.text.html.Option;
 import java.io.Serializable;
@@ -46,16 +48,6 @@ public class InterpreterResultMessage implements Serializable, Jsonable {
 
   public String toString() {
     return "%" + type.name().toLowerCase() + " " + data;
-  }
-
-  /**
-   * This method is used for performing pagination and formatting requests on saved data when Interpreter is not running.
-   * @param options Thrift union object containing a supported formatting type's options
-   * @return JsonObject with required transformations based on given Options object
-   * @throws InterpreterException If given an unsupported options type, or if InterpreterResultMessages data is malformed.
-   */
-  public JsonObject format(final String options) throws InterpreterException {
-    return format(Json.createReader(new StringReader(data)).readObject(), options);
   }
 
   private JsonObject format(JsonObject resultAsJson, String options) throws InterpreterException {
@@ -105,55 +97,11 @@ public class InterpreterResultMessage implements Serializable, Jsonable {
   @Override
   public JsonObject asJson() {
     // If the data within this resultMessage is in a JSON formatted type, perform the necessary formatting based on the information saved on the result.
-    final JsonObject json;
+    final JsonObjectBuilder json = Json.createObjectBuilder();
     if(type != null){
-      try{
-        JsonObjectBuilder options = Json.createObjectBuilder();
-        if(type.equals(InterpreterResult.Type.DATATABLES)){
-          options.add("type","dataTables");
-          JsonObjectBuilder optionsJson = Json.createObjectBuilder()
-                  .add("draw",1);
-          options.add("options",optionsJson);
-          JsonObject resultAsJson = Json.createReader(new StringReader(data)).readObject();
-          if(resultAsJson.containsKey("data") && resultAsJson.get("data").getValueType().equals(JsonValue.ValueType.OBJECT)){
-            JsonObject dataObject = resultAsJson.getJsonObject("data");
-            if(dataObject.containsKey("draw") && dataObject.get("draw").getValueType().equals(JsonValue.ValueType.NUMBER)){
-              optionsJson.add("draw",dataObject.getInt("draw"));
-            }
-          }
-          json = format(resultAsJson, options.build().toString());
-        }
-        else if(type.equals(InterpreterResult.Type.UPLOT)){
-          options.add("type","uPlot");
-          JsonObjectBuilder optionsJson = Json.createObjectBuilder()
-                  .add("draw",1);
-          optionsJson.add("graphType","line");
-          JsonObject resultAsJson = Json.createReader(new StringReader(data)).readObject();
-          if(resultAsJson.containsKey("options") && resultAsJson.get("options").getValueType().equals(JsonValue.ValueType.OBJECT)){
-            JsonObject optionsObject = resultAsJson.getJsonObject("options");
-            if(optionsObject.containsKey("graphType") && optionsObject.get("graphType").getValueType().equals(JsonValue.ValueType.STRING)){
-              optionsJson.add("graphType",optionsObject.getString("graphType"));
-            }
-          }
-          json = format(resultAsJson, options.build().toString());
-        }
-        else {
-          // If the data is some other type, there is no guarantee that the data is even in JSON format, so we build a response assuming that data is a simple String.
-          final JsonObjectBuilder resultBuilder = Json.createObjectBuilder();
-          resultBuilder.add("data",data);
-          resultBuilder.add("isAggregated",false);
-          if(type != null){
-            resultBuilder.add("type",type.label);
-          }
-          json = resultBuilder.build();
-        }
-      } catch (InterpreterException interpreterException){
-        return JsonValue.EMPTY_JSON_OBJECT;
-      }
+      json.add("type",type.label.toLowerCase());
     }
-    else {
-      json = JsonValue.EMPTY_JSON_OBJECT;
-    }
-    return json;
+    json.add("data",data);
+    return json.build();
   }
 }
