@@ -18,6 +18,7 @@ package com.teragrep.zep_01.interpreter;
 
 import com.teragrep.zep_01.common.Jsonable;
 import jakarta.json.*;
+import jakarta.json.stream.JsonParsingException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -101,7 +102,15 @@ public class InterpreterResultMessage implements Serializable, Jsonable {
     if(type != null){
       json.add("type",type.label.toLowerCase());
     }
-    json.add("data",data);
+    if(data != null){
+      try{
+        JsonObject dataJson = Json.createReader(new StringReader(data)).readObject();
+        json.add("data",dataJson);
+      } catch (JsonParsingException e){
+        // Encountered data, but it was not in JSON format. Non-JSON data is returned as a string.
+        json.add("data",data);
+      }
+    }
     return json.build();
   }
 }

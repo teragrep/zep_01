@@ -1672,27 +1672,8 @@ public class NotebookServer extends WebSocketServlet
     if (!sendParagraphStatusToFrontend) {
       return;
     }
-    // As formatted data is passed as a String via Thrift, we have to parse it with JsonReader to make sure the data types are represented correctly.
+    // As formatted data is passed as a String via Thrift, we have to parse it with JsonReader
     JsonObject outputJson = Json.createReader(new StringReader(output)).readObject();
-
-    // Since output contains the entire dataset in order to be saved on disk for offline use, we need to make it so that we only return the first 50 rows to UI instead of the entire dataset.
-    // This can be refactored so that UI will send a pagination request when it receives a batch update from server. Alternatively refactor how notebooks are saved to disk to allow offline usage.
-    if(type.equals(InterpreterResult.Type.DATATABLES)){
-      JsonObject data = outputJson.getJsonObject("data");
-      JsonArray dataArray = data.getJsonArray("data");
-      if(dataArray.size() > 50){
-        JsonArrayBuilder truncatedDataArrayBuilder = Json.createArrayBuilder();
-        for (int i = 0; i < 50; i++) {
-          truncatedDataArrayBuilder.add(dataArray.get(i));
-        }
-        JsonObjectBuilder truncatedDataBuilder = Json.createObjectBuilder(data);
-        truncatedDataBuilder.add("data",truncatedDataArrayBuilder.build());
-
-        JsonObjectBuilder truncatedOutputBuilder = Json.createObjectBuilder(outputJson);
-        truncatedOutputBuilder.add("data",truncatedDataBuilder.build());
-        outputJson = truncatedOutputBuilder.build();
-      }
-    }
     final ParagraphOutputResponseMessage paragraphOutputResponse = new ParagraphOutputResponseMessage(noteId,paragraphId,outputJson);
     final JsonMessage msg = new JsonMessage(OP.PARAGRAPH_OUTPUT, paragraphOutputResponse);
     try {
