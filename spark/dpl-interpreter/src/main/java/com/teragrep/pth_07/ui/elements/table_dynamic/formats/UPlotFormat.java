@@ -69,6 +69,62 @@ public final class UPlotFormat implements RenderFormat{
         this.option = option;
     }
 
+    public JsonObject format(){
+        final JsonObject requestOptions = option.toJson().getJsonObject("requestOptions");
+        final StructType schema = dataset.schema();
+        final List<String> groupByColumnNames = new ArrayList<>();
+        final List<String> valueColumnNames = new ArrayList<>();
+        for (final StructField field:schema.fields()) {
+            // We detect grouping columns by metadata instead of LogicalPlan because StreamingQueries created in batches have their LogicalPlans overwritten.
+            if (field.metadata().contains("dpl_internal_isGroupByColumn")) {
+                groupByColumnNames.add(field.name());
+            }
+            else {
+                valueColumnNames.add(field.name());
+            }
+        }
+        final boolean aggsUsed = !groupByColumnNames.isEmpty();
+        // Datasets grouped by _time column (such as those created using timechart command) require different formatting than datasets without such grouping.
+
+
+        final List<String> xAxisColumnNames = new ArrayList<>();
+        if(!requestOptions.containsKey("xAxisFields")){
+            xAxisColumnNames.addAll(groupByColumnNames);
+            groupByColumnNames.clear();
+        }
+        else {
+            JsonArray xAxisFields = requestOptions.getJsonArray("xAxisFields");
+            for (JsonValue value : xAxisFields) {
+                if(value.getValueType().equals(JsonValue.ValueType.STRING)){
+                    String stringValue = ((JsonString)value).getString();
+                    xAxisColumnNames.add(stringValue);
+                    groupByColumnNames.remove(stringValue);
+                }
+            }
+        }
+        final Dataset<Row> concatenatedDataset = concatenateGroupByColumns(dataset,xAxisColumnNames);
+        final Dataset<Row> transformedDataset;
+        if(!groupByColumnNames.isEmpty()){
+            groupByColumnNames.add("label");
+            transformedDataset = pivotByColumns(concatenatedDataset,groupByColumnNames,valueColumnNames);
+        }
+        else {
+            transformedDataset = concatenatedDataset;
+        }
+
+        List<Row> rows = transformedDataset.collectAsList();
+        String graphType = requestOptions.getString("graphType");
+        final UPlotMetadata uPlotMetadata = new UPlotMetadata(transformedDataset.schema(),rows,graphType,aggsUsed);
+        UPlotData uplotData = new UPlotData(rows,aggsUsed);
+
+        final JsonObjectBuilder builder = Json.createObjectBuilder()
+                .add("data",uplotData.asJson())
+                .add("options",uPlotMetadata.asJson())
+                .add("isAggregated",uPlotMetadata.isAggregated())
+                .add("type", InterpreterResult.Type.UPLOT.label);
+        return builder.build();
+    }
+
     /**
      * Creates a appropriately transformed dataset when a dataset's X-axis should be a timescale. Dataset should contain a column named "_time"
      * This method pivots the dataset so that only "_time" is used as the X-axis, and combinations of unique values in other group by columns are combined into different series on the Y-axis.
@@ -77,7 +133,7 @@ public final class UPlotFormat implements RenderFormat{
      * @param valueColumnNames List of column names used outside of group by clauses
      * @return A transformed dataset ready for formatting.
      */
-    private Dataset<Row> timechartTransformation(final Dataset<Row> dataset, final List<String> groupByColumnNames, final List<String> valueColumnNames){
+    private Dataset<Row> pivotByColumns(final Dataset<Row> dataset, final List<String> groupByColumnNames, final List<String> valueColumnNames){
         final Dataset<Row> transformedDataset;
         if(groupByColumnNames.size() < 2){
             transformedDataset = dataset;
@@ -85,7 +141,7 @@ public final class UPlotFormat implements RenderFormat{
         else {
             // Grouping columns as Column array for transformation
             final List<String> timechartGroupByColumnNames = new ArrayList<>(groupByColumnNames);
-            timechartGroupByColumnNames.remove("_time");
+            timechartGroupByColumnNames.remove("label");
 
             final List<Column> columns = new ArrayList<>();
             for (int i = 0; i < valueColumnNames.size(); i++) {
@@ -102,7 +158,7 @@ public final class UPlotFormat implements RenderFormat{
             final Column[] groupByColumnArray = groupByColumns.toArray(new Column[0]);
             Dataset<Row> pivotedDataset = dataset
                     .withColumn("pivot", org.apache.spark.sql.functions.concat_ws(".",groupByColumnArray))
-                    .groupBy("_time")
+                    .groupBy("label")
                     .pivot("pivot")
                     .agg(first,rest);
 
@@ -131,13 +187,9 @@ public final class UPlotFormat implements RenderFormat{
      * @return A new dataset ready for formatting.
      */
 
-    private Dataset<Row> aggregationTransformation(final Dataset<Row> dataset, final List<String> groupByColumnNames){
+    private Dataset<Row> concatenateGroupByColumns(final Dataset<Row> dataset, final List<String> groupByColumnNames){
         final Dataset<Row> transformedDataset;
         // If trying to concatenate less than two columns, we don't need to do any transformations to the data,
-        if(groupByColumnNames.size() < 2){
-            transformedDataset = dataset;
-        }
-        else {
             // Get columns that were used in grouping of data. These will be concatenated to a new column and then dropped.
             final List<Column> groupByColumns = new ArrayList<>();
             for (final String columnName:groupByColumnNames) {
@@ -148,45 +200,7 @@ public final class UPlotFormat implements RenderFormat{
             transformedDataset = dataset.withColumn("label",functions.concat_ws(".",groupByColumns.toArray(new Column[]{})))
                     .drop(groupByColumnNames.toArray(new String[0]))
                     .withMetadata("label",new MetadataBuilder().putBoolean("dpl_internal_isGroupByColumn",true).build());
-        }
         return transformedDataset;
-    }
-
-
-    public JsonObject format(){
-        final StructType schema = dataset.schema();
-        final List<String> groupByColumnNames = new ArrayList<>();
-        final List<String> valueColumnNames = new ArrayList<>();
-        for (final StructField field:schema.fields()) {
-            // We detect grouping columns by metadata instead of LogicalPlan because StreamingQueries created in batches have their LogicalPlans overwritten.
-            if (field.metadata().contains("dpl_internal_isGroupByColumn")) {
-                groupByColumnNames.add(field.name());
-            }
-            else {
-                valueColumnNames.add(field.name());
-            }
-        }
-        final boolean aggsUsed = !groupByColumnNames.isEmpty();
-        final Dataset<Row> transformedDataset;
-        // Datasets grouped by _time column (such as those created using timechart command) require different formatting than datasets without such grouping.
-        if(groupByColumnNames.contains("_time")){
-            transformedDataset = timechartTransformation(dataset,groupByColumnNames,valueColumnNames);
-        }
-        else {
-            transformedDataset = aggregationTransformation(dataset,groupByColumnNames);
-        }
-
-        List<Row> rows = transformedDataset.collectAsList();
-        String graphType = option.toJson().getJsonObject("requestOptions").getString("graphType");
-        final UPlotMetadata uPlotMetadata = new UPlotMetadata(transformedDataset.schema(),rows,graphType,aggsUsed);
-        UPlotData uplotData = new UPlotData(rows,aggsUsed);
-
-        final JsonObjectBuilder builder = Json.createObjectBuilder()
-                .add("data",uplotData.asJson())
-                .add("options",uPlotMetadata.asJson())
-                .add("isAggregated",uPlotMetadata.isAggregated())
-                .add("type", InterpreterResult.Type.UPLOT.label);
-        return builder.build();
     }
 
     public InterpreterResult.Type type(){
