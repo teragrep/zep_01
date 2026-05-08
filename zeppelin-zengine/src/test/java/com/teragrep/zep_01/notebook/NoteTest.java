@@ -213,34 +213,33 @@ public class NoteTest {
 
   @Test
   public void testAsJson(){
-    //TODO: disabled test as no usages
-  //  final Note note = new Note("test", "", interpreterFactory, interpreterSettingManager, paragraphJobListener, credentials, noteEventListener);
-  //  note.setName("test_note");
-  //  note.getConfig().put("config_1", "value_1");
-  //  note.getInfo().put("info_1", "value_1");
-  //  final String pText = "%spark sc.version";
-  //  final Paragraph p = note.addNewParagraph(AuthenticationInfo.ANONYMOUS);
-  //  p.setText(pText);
-  //  p.setResult(new InterpreterResult(InterpreterResult.Code.SUCCESS, "1.6.2"));
-  //  p.settings.getForms().put("textbox_1", new TextBox("name", "default_name"));
-  //  p.settings.getParams().put("textbox_1", "my_name");
-  //  note.getAngularObjects().put("ao_1", Arrays.asList(new AngularObject("name_1", "value_1", note.getId(), p.getId(), null)));
-//
-  //  final JsonObject noteJson = note.asJson();
-//
-  //  // Assert that keys exist
-  //  Assertions.assertTrue(noteJson.containsKey("id"));
-  //  Assertions.assertTrue(noteJson.containsKey("name"));
-  //  Assertions.assertTrue(noteJson.containsKey("path"));
-  //  Assertions.assertTrue(noteJson.containsKey("config"));
-  //  Assertions.assertTrue(noteJson.containsKey("defaultInterpreterGroup"));
-  //  Assertions.assertTrue(noteJson.containsKey("paragraphs"));
-//
-  //  Assertions.assertEquals("test_note", noteJson.getString("name"));
-  //  Assertions.assertEquals(note.getId(), noteJson.getString("id"));
-  //  Assertions.assertEquals("/test_note", noteJson.getString("path"));
-  //  final JsonObject config = Assertions.assertDoesNotThrow(()->noteJson.getJsonObject("config"));
-  //  Assertions.assertEquals(1, config.size());
-  //  Assertions.assertEquals(false, config.getBoolean("isZeppelinNotebookCronEnable"));
+    final Note note = new Note("test", "", interpreterFactory, interpreterSettingManager, paragraphJobListener, credentials, noteEventListener);
+    note.setName("test_note");
+    note.getConfig().put("config_1", "value_1");
+    note.getInfo().put("info_1", "value_1");
+    final String pText = "%spark sc.version";
+    final Paragraph p = note.addNewParagraph(AuthenticationInfo.ANONYMOUS);
+    p.setText(pText);
+    p.setResult(new InterpreterResult(InterpreterResult.Code.SUCCESS, "1.6.2"));
+    p.settings.getForms().put("textbox_1", new TextBox("name", "default_name"));
+    p.settings.getParams().put("textbox_1", "my_name");
+    note.getAngularObjects().put("ao_1", Arrays.asList(new AngularObject("name_1", "value_1", note.getId(), p.getId(), null)));
+
+    final JsonObject noteJson = note.asJson();
+
+    // Assert that keys exist
+    Assertions.assertTrue(noteJson.containsKey("id"));
+    Assertions.assertTrue(noteJson.containsKey("name"));
+    Assertions.assertTrue(noteJson.containsKey("path"));
+    Assertions.assertTrue(noteJson.containsKey("config"));
+    Assertions.assertTrue(noteJson.containsKey("defaultInterpreterGroup"));
+    Assertions.assertTrue(noteJson.containsKey("paragraphs"));
+
+    Assertions.assertEquals("test_note", noteJson.getString("name"));
+    Assertions.assertEquals(note.getId(), noteJson.getString("id"));
+    Assertions.assertEquals("/test_note", noteJson.getString("path"));
+    final JsonObject config = Assertions.assertDoesNotThrow(()->noteJson.getJsonObject("config"));
+    Assertions.assertEquals(1, config.size());
+    Assertions.assertEquals(false, config.getBoolean("isZeppelinNotebookCronEnable"));
   }
 }
