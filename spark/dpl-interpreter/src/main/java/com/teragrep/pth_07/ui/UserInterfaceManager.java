@@ -110,7 +110,7 @@ public final class UserInterfaceManager {
      */
     public String formatDataset(UIOption uiOption){
         datasetStore.updateUIOptions(uiOption);
-        RenderFormat renderFormat = datasetStore.toUI(uiOption);
+        RenderFormat renderFormat = datasetStore.toRenderFormat(uiOption);
         return renderFormat.toJson().toString();
     }
 

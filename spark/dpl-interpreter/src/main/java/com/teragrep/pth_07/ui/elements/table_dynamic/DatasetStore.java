@@ -83,12 +83,12 @@ public final class DatasetStore {
         RenderableDataset rd = new RenderableDatasetImpl(availableFormats, rowDataset);
         datasetRef.set(rd);
         rd.persist();
-        RenderFormat uiResponse = datasetRef.get().toRenderFormat(uiOptionsRef.get());
+        RenderFormat renderFormat = toRenderFormat(uiOptionsRef.get());
         StringBuilder output = new StringBuilder();
         // Prepend "%{InterpreterResult.Type}\n so that InterpreterOutput.write() parses the type correctly instead of treating the output as TEXT
-        output.append("%"+uiResponse.type().label.toLowerCase());
+        output.append("%"+renderFormat.type().label.toLowerCase());
         output.append("\n");
-        output.append(uiResponse.toJson().toString());
+        output.append(renderFormat.toJson().toString());
         try{
             writeToDisk(output.toString());
         }
@@ -103,7 +103,7 @@ public final class DatasetStore {
     }
 
     // Format current dataset to given format
-    public RenderFormat toUI(UIOption uiOption) {
+    public RenderFormat toRenderFormat(UIOption uiOption) {
         return datasetRef.get().toRenderFormat(uiOption);
     }
 
