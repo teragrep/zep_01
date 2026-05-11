@@ -68,7 +68,6 @@ import java.util.Objects;
  */
 public final class DataTablesFormat implements RenderFormat{
     private static final Logger LOGGER = LoggerFactory.getLogger(DataTablesFormat.class);
-
     private final UIOption option;
     private final Dataset<Row> dataset;
 
@@ -85,45 +84,23 @@ public final class DataTablesFormat implements RenderFormat{
      */
     public JsonObject format(){
         JsonObject optionJson = option.toJson().getJsonObject("requestOptions");
-        // headers
-        final JsonArrayBuilder headersBuilder = Json.createArrayBuilder();
-        for (final StructField header: dataset.schema().fields()) {
-            headersBuilder.add(header.name());
-        }
-        final JsonArray headers = headersBuilder.build();
-
-        // search, not implemented yet
         final List<String> rows = dataset.toJSON().collectAsList();
-        final List<String> searchedRows = search(rows, "");
+        final int pageStart = optionJson.getInt("start");
+        final int pageLength = optionJson.getInt("length");
 
-        // paginate
-        final List<String> paginatedRows = paginate(searchedRows, optionJson.getInt("start"), optionJson.getInt("length"));
-
-        // json
-        final JsonArrayBuilder dataBuilder = Json.createArrayBuilder();
-        for (final String jsonRow:paginatedRows) {
-            dataBuilder.add(Json.createReader(new StringReader(jsonRow)).readObject());
-        }
-        final JsonArray data = dataBuilder.build();
-        final long recordsTotal = rows.size();
-        final long recordsFiltered = searchedRows.size();
         final boolean isAggregated = isAggregated(dataset.schema());
         final int draw = optionJson.getInt("draw");
 
-        final JsonObject json = Json.createObjectBuilder()
-                .add("data",Json.createObjectBuilder()
-                        .add("data", data)
-                        .add("draw", draw)
-                        .add("recordsTotal", recordsTotal)
-                        .add("recordsFiltered", recordsFiltered)
-                        .build())
-                .add("options",Json.createObjectBuilder()
-                        .add("headers",headers)
-                        .build())
+        final DataTablesMetadata dataTablesMetadata = new DataTablesMetadata(dataset.schema());
+        final DataTablesData dataTablesData = new DataTablesData(rows,draw,pageStart,pageLength,"");
+
+        final JsonObjectBuilder json = Json.createObjectBuilder()
+                .add("data",dataTablesData.asJson())
+                .add("options",dataTablesMetadata.asJson())
                 .add("isAggregated",isAggregated)
-                .add("type",InterpreterResult.Type.DATATABLES.label)
-                .build();
-        return json;
+                .add("type", InterpreterResult.Type.DATATABLES.label);
+
+        return json.build();
     }
     private boolean isAggregated(final StructType schema) {
         for (final StructField field:schema.fields()) {

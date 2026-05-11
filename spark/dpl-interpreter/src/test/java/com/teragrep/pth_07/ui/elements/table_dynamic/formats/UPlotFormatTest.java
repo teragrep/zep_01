@@ -691,9 +691,12 @@ class UPlotFormatTest {
 
         Assertions.assertEquals(InterpreterResult.Type.UPLOT.label,formatted.getString("type"));
     }
-    //@Test
-    //void equalsVerifier() {
-    //    EqualsVerifier.forClass(UPlotFormat.class)
-    //            .verify();
-    //}
+    @Test
+    void equalsVerifier() {
+        Dataset<Row> redDataset = sparkSession.emptyDataFrame();
+        Dataset<Row> blueDataset = sourceData;
+        EqualsVerifier.forClass(UPlotFormat.class)
+                .withPrefabValues(Dataset.class,redDataset,blueDataset)
+                .verify();
+    }
 }
