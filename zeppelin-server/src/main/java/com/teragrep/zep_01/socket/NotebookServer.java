@@ -594,7 +594,7 @@ public class NotebookServer extends WebSocketServlet
         messageId = new StubMessageId();
       }
       else {
-        messageId = new SimpleMessageId(msgId);
+        messageId = new MessageIdImpl(msgId);
       }
       final JsonObject message = new JsonMessage(messageId,OP.PARAGRAPH,p).asJson();
       getConnectionManager().broadcast(note.getId(),message.toString());
@@ -1143,14 +1143,14 @@ public class NotebookServer extends WebSocketServlet
       final String output = managedInterpreterGroup.formatDataset(sessionId, interpreter.getClassName(), noteId, paragraphId, options);
       final JsonObject outputJson = Json.createReader(new StringReader(output)).readObject();
       final ParagraphOutputResponseMessage paragraphOutputResponse = new ParagraphOutputResponseMessage(noteId, paragraphId, outputJson);
-      final JsonMessage msg = new JsonMessage(new SimpleMessageId(msgId), OP.PARAGRAPH_OUTPUT, paragraphOutputResponse);
+      final JsonMessage msg = new JsonMessage(new MessageIdImpl(msgId), OP.PARAGRAPH_OUTPUT, paragraphOutputResponse);
       conn.send(msg.asJson().toString());
     } catch (InterpreterException e) {
       LOG.error("Failed to retrieve output for note: {} paragraph: {} cause: {}", noteId, paragraphId, e.getCause(), e);
       final JsonObject errorJson = Json.createObjectBuilder()
               .add("message", "Failed to retrieve data from Interpreter. Please rerun the paragraph and try again or see technical log for details!")
               .build();
-      final JsonMessage msg = new JsonMessage(new SimpleMessageId(msgId), OP.INTERPRETER_ERROR, errorJson);
+      final JsonMessage msg = new JsonMessage(new MessageIdImpl(msgId), OP.INTERPRETER_ERROR, errorJson);
       conn.send(msg.asJson().toString());
     }
   }

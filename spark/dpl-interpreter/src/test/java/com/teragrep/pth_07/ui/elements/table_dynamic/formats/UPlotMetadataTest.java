@@ -86,13 +86,13 @@ class UPlotMetadataTest {
 
     @Test
     void asJsonTest(){
-        List<Row> rows = sourceData.collectAsList();
-        UPlotMetadata metaData = new UPlotMetadata(sourceData.schema(),rows,"line",false);
-        JsonObject json = Assertions.assertDoesNotThrow(()->metaData.asJson().asJsonObject());
+        final List<Row> rows = sourceData.collectAsList();
+        final UPlotMetadata metaData = new UPlotMetadata(sourceData.schema(),rows,"line",false);
+        final JsonObject json = Assertions.assertDoesNotThrow(()->metaData.asJson().asJsonObject());
         Assertions.assertEquals(3,json.size());
-        JsonArray series = Assertions.assertDoesNotThrow(()->json.getJsonArray("series"));
-        JsonArray labels = Assertions.assertDoesNotThrow(()->json.getJsonArray("labels"));
-        String graphType = Assertions.assertDoesNotThrow(()->json.getString("graphType"));
+        final JsonArray series = Assertions.assertDoesNotThrow(()->json.getJsonArray("series"));
+        final JsonArray labels = Assertions.assertDoesNotThrow(()->json.getJsonArray("labels"));
+        final String graphType = Assertions.assertDoesNotThrow(()->json.getString("graphType"));
 
         // Data is not aggregated, so there should be no labels. Series count should match with schema size
         Assertions.assertEquals(0, labels.size());
@@ -102,14 +102,14 @@ class UPlotMetadataTest {
 
     @Test
     void aggregatedAsJsonTest() {
-        List<Row> rows = sourceData.groupBy("_time").agg(functions.max("filesModified")).withMetadata("_time", new MetadataBuilder().putBoolean("dpl_internal_isGroupByColumn", true).build()).collectAsList();
-        StructType aggSchema = rows.get(0).schema();
-        UPlotMetadata metaData = new UPlotMetadata(aggSchema,rows,"line",true);
-        JsonObject json = Assertions.assertDoesNotThrow(()->metaData.asJson().asJsonObject());
+        final List<Row> rows = sourceData.groupBy("_time").agg(functions.max("filesModified")).withMetadata("_time", new MetadataBuilder().putBoolean("dpl_internal_isGroupByColumn", true).build()).collectAsList();
+        final StructType aggSchema = rows.get(0).schema();
+        final UPlotMetadata metaData = new UPlotMetadata(aggSchema,rows,"line",true);
+        final JsonObject json = Assertions.assertDoesNotThrow(()->metaData.asJson().asJsonObject());
         Assertions.assertEquals(3,json.size());
-        JsonArray series = Assertions.assertDoesNotThrow(()->json.getJsonArray("series"));
-        JsonArray labels = Assertions.assertDoesNotThrow(()->json.getJsonArray("labels"));
-        String graphType = Assertions.assertDoesNotThrow(()->json.getString("graphType"));
+        final JsonArray series = Assertions.assertDoesNotThrow(()->json.getJsonArray("series"));
+        final JsonArray labels = Assertions.assertDoesNotThrow(()->json.getJsonArray("labels"));
+        final String graphType = Assertions.assertDoesNotThrow(()->json.getString("graphType"));
 
         // Data is aggregated, so there should be a label for each row in the dataset. Series count should be one as there is only one aggregation (max) used.
         Assertions.assertEquals(rows.size(), labels.size());

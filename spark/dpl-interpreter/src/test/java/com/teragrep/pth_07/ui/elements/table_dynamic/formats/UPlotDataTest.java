@@ -85,15 +85,15 @@ class UPlotDataTest {
 
     @Test
     void asJsonTest(){
-        List<Row> rows = sourceData.collectAsList();
-        UPlotData data = new UPlotData(rows,false);
-        JsonArray json = Assertions.assertDoesNotThrow(()->data.asJson().asJsonArray());
+        final List<Row> rows = sourceData.collectAsList();
+        final UPlotData data = new UPlotData(rows,false);
+        final JsonArray json = Assertions.assertDoesNotThrow(()->data.asJson().asJsonArray());
         Assertions.assertEquals(5,json.size());
-        JsonArray xAxis = Assertions.assertDoesNotThrow(()->json.getJsonArray(0));
-        JsonArray time = Assertions.assertDoesNotThrow(()->json.getJsonArray(1));
-        JsonArray operation = Assertions.assertDoesNotThrow(()->json.getJsonArray(2));
-        JsonArray success = Assertions.assertDoesNotThrow(()->json.getJsonArray(3));
-        JsonArray filesModified = Assertions.assertDoesNotThrow(()->json.getJsonArray(4));
+        final JsonArray xAxis = Assertions.assertDoesNotThrow(()->json.getJsonArray(0));
+        final JsonArray time = Assertions.assertDoesNotThrow(()->json.getJsonArray(1));
+        final JsonArray operation = Assertions.assertDoesNotThrow(()->json.getJsonArray(2));
+        final JsonArray success = Assertions.assertDoesNotThrow(()->json.getJsonArray(3));
+        final JsonArray filesModified = Assertions.assertDoesNotThrow(()->json.getJsonArray(4));
 
         // Data is not aggregated, so X-axis should be 0, others should contain one value for every row
         Assertions.assertEquals(0, xAxis.size());
@@ -111,12 +111,12 @@ class UPlotDataTest {
 
     @Test
     void aggregatedAsJsonTest() {
-        List<Row> rows = sourceData.groupBy("_time").agg(functions.max("filesModified")).withMetadata("_time", new MetadataBuilder().putBoolean("dpl_internal_isGroupByColumn", true).build()).collectAsList();
-        UPlotData data = new UPlotData(rows, true);
-        JsonArray json = Assertions.assertDoesNotThrow(() -> data.asJson().asJsonArray());
+        final List<Row> rows = sourceData.groupBy("_time").agg(functions.max("filesModified")).withMetadata("_time", new MetadataBuilder().putBoolean("dpl_internal_isGroupByColumn", true).build()).collectAsList();
+        final UPlotData data = new UPlotData(rows, true);
+        final JsonArray json = Assertions.assertDoesNotThrow(() -> data.asJson().asJsonArray());
         Assertions.assertEquals(2, json.size());
-        JsonArray xAxis = Assertions.assertDoesNotThrow(() -> json.getJsonArray(0));
-        JsonArray maxFilesModified = Assertions.assertDoesNotThrow(() -> json.getJsonArray(1));
+        final JsonArray xAxis = Assertions.assertDoesNotThrow(() -> json.getJsonArray(0));
+        final JsonArray maxFilesModified = Assertions.assertDoesNotThrow(() -> json.getJsonArray(1));
 
         // Data is  aggregated, so X-axis should be the same size as rows in the dataset.
         Assertions.assertEquals(rows.size(), xAxis.size());

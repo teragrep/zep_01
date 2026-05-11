@@ -5,10 +5,10 @@ import jakarta.json.JsonValue;
 
 import java.util.Objects;
 
-public final class SimpleMessageId implements MessageId{
+public final class MessageIdImpl implements MessageId{
 
     private final String id;
-    public SimpleMessageId(final String id){
+    public MessageIdImpl(final String id){
         this.id = id;
     }
     @Override
@@ -25,7 +25,7 @@ public final class SimpleMessageId implements MessageId{
     public boolean equals(final Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
-        final SimpleMessageId that = (SimpleMessageId) o;
+        final MessageIdImpl that = (MessageIdImpl) o;
         return Objects.equals(id, that.id);
     }
 

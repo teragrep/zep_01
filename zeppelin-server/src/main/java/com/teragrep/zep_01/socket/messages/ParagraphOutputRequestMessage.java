@@ -1,12 +1,8 @@
 package com.teragrep.zep_01.socket.messages;
 
 import com.teragrep.zep_01.common.Jsonable;
-import com.teragrep.zep_01.interpreter.InterpreterResult;
-import com.teragrep.zep_01.interpreter.thrift.*;
 import jakarta.json.*;
 
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Objects;
 
 // CLient-to-Server message that must minimally contain all the required pieces of information for a dataset formatting request.

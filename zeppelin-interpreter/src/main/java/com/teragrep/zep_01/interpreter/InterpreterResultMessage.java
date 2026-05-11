@@ -19,10 +19,8 @@ package com.teragrep.zep_01.interpreter;
 import com.teragrep.zep_01.common.Jsonable;
 import jakarta.json.*;
 
-import javax.swing.text.html.Option;
 import java.io.Serializable;
 import java.io.StringReader;
-import java.util.IllegalFormatException;
 
 /**
  * Interpreter result message

@@ -52,12 +52,12 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
 
-class SimpleMessageIdTest {
+class MessageIdImplTest {
 
     @Test
     void asJson() {
         final String testId = "test";
-        final SimpleMessageId id = new SimpleMessageId(testId);
+        final MessageIdImpl id = new MessageIdImpl(testId);
         final JsonValue expectedJson = Json.createValue(testId);
         Assertions.assertEquals(expectedJson,id.asJson());
     }

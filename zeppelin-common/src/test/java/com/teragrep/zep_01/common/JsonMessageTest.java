@@ -29,7 +29,7 @@ class JsonMessageTest {
         final Message.OP op = Message.OP.ERROR_INFO;
         final JsonObject json = Json.createObjectBuilder().add("message","Something went wrong").build();
         final String messageId = "testId";
-        final SimpleMessageId id = new SimpleMessageId(messageId);
+        final MessageIdImpl id = new MessageIdImpl(messageId);
         final JsonMessage message = new JsonMessage(id,op,json);
 
         final JsonObject expectedJson = Json.createObjectBuilder()
@@ -64,7 +64,7 @@ class JsonMessageTest {
         final Message.OP op = Message.OP.ERROR_INFO;
         final Jsonable jsonable = new JsonMessage(Message.OP.PARAGRAPH,Json.createObjectBuilder().build());
                 final String messageId = "testId";
-        final SimpleMessageId id = new SimpleMessageId(messageId);
+        final MessageIdImpl id = new MessageIdImpl(messageId);
         final JsonMessage message = new JsonMessage(id,op,jsonable);
 
         final JsonObject expectedJson = Json.createObjectBuilder()

@@ -32,7 +32,7 @@ import java.util.List;
 /**
  * Interpreter result template.
  */
-public class InterpreterResult implements Serializable, JsonSerializable {
+public class InterpreterResult implements Serializable, JsonSerializable, Jsonable {
   transient Logger logger = LoggerFactory.getLogger(InterpreterResult.class);
   private static final Gson gson = new Gson();
 
