@@ -245,50 +245,58 @@ public class SparkInterpreterLauncher extends StandardInterpreterLauncher {
   }
 
   private String detectSparkScalaVersionByReplClass(String sparkHome) throws IOException {
-    File sparkLibFolder = new File(sparkHome + "/lib");
-    if (sparkLibFolder.exists()) {
-      // spark 1.6 if spark/lib exists
-      File[] sparkAssemblyJars = new File(sparkHome + "/lib").listFiles(new FilenameFilter() {
-        @Override
-        public boolean accept(File dir, String name) {
-          return name.contains("spark-assembly");
-        }
-      });
-      if (sparkAssemblyJars.length == 0) {
-        throw new IOException("Failed to detect Scala version! No spark assembly file found in SPARK_HOME: " + sparkHome);
-      }
-      if (sparkAssemblyJars.length > 1) {
-        throw new IOException("Failed to detect Scala version! Multiple spark assembly file found in SPARK_HOME: " + sparkHome);
-      }
-      try (URLClassLoader urlClassLoader = new URLClassLoader(new URL[]{sparkAssemblyJars[0].toURI().toURL()});) {
-        urlClassLoader.loadClass("org.apache.spark.repl.SparkCommandLine");
-        return "2.10";
-      } catch (ClassNotFoundException e) {
-        return "2.11";
-      }
-    } else {
-      // spark 2.x if spark/lib doesn't exists
-      File sparkJarsFolder = new File(sparkHome + "/jars");
-      File[] fileArray = sparkJarsFolder.listFiles(file -> file.getName().contains("spark-repl"));
-      if (fileArray == null) {
-        throw new IOException("Failed to detect Scala version! An IO error occurred while accessing directory at: " + sparkJarsFolder);
-      }
-      if (fileArray.length != 1) {
-        throw new IOException("Failed to detect Scala version! There should only be one instance of \"spark-repl.jar\" in directory at: " + sparkJarsFolder);
-      }
-      File sparkRepl = fileArray[0];
-      String fileName = sparkRepl.getName();
+    Path sparkPath = Paths.get(sparkHome);
+    String sparkDirectoryName = sparkPath.getFileName().toString();
+    final String scalaVersion;
+    // Spark 1 is not supported.
+    if(sparkDirectoryName.equals("spk_02")){
+      // All Spark 2 versions can use Scala 2.11, but from Spark 2.4 onwards 2.12 is supported.
+      File sparkJarsFolder = new File(sparkPath.toString(),"jars");
+      scalaVersion = extractScalaversionFromJarFileName(sparkJarsFolder);
+    }
+    else if(sparkDirectoryName.equals("spk_03")){
+      // All Spark 3 versions can use Scala 2.12, but from Spark 3.2 onwards 2.13 is supported.
+      File sparkJarsFolder = new File(sparkPath.toString(),"jars");
+      scalaVersion = extractScalaversionFromJarFileName(sparkJarsFolder);
+    }
+    else if(sparkDirectoryName.equals("spk_04")){
+      // Spark 4 uses scala version 2.13.
+      scalaVersion = "2.13";
+    }
+    else {
+        throw new IOException("Failed to detect Scala version! SPARK_HOME should be a path pointing to a directory called \"spk_02\" or \"spk_03\"!");
+    }
+    return scalaVersion;
+  }
 
-      Pattern pattern = Pattern.compile("spark-repl_(?<majorVersion>\\d*)\\.(?<minorVersion>\\d*)-.*\\.jar");
-      Matcher matcher = pattern.matcher(fileName);
-      if(matcher.matches()){
-        String majorVersion = matcher.group("majorVersion");
-        String minorVersion = matcher.group("minorVersion");
-        return majorVersion + "." + minorVersion;
-      }
-      else {
-        throw new IOException("Failed to detect Scala version! "+fileName+" in "+sparkJarsFolder+" uses an unsupported version! (expected 2.11 or 2.12) ");
-      }
+  /**
+   * Some Spark versions can support multiple Scala versions. To figure out which is in use, this function checks the scala version Spark was built against from a .jar file's filename.
+   * @param jarDirectory Directory where spark jars are located
+   * @return String indicating expected scala version. eg. "2.12"
+   * @throws IOException When an IO exception occurs, such as the given directory doesn't exist.
+   */
+  private String extractScalaversionFromJarFileName(File jarDirectory) throws IOException{
+    if(!jarDirectory.exists()){
+      throw new IOException("Failed to detect Scala version! Spark jar directory at " + jarDirectory + " doesn't exist!");
+    }
+    File[] fileArray = jarDirectory.listFiles(file -> file.getName().startsWith("spark-") && file.getName().endsWith(".jar"));
+    if (fileArray == null || fileArray.length == 0) {
+      throw new IOException("Failed to detect Scala version! An IO error occurred while accessing directory at: " + jarDirectory);
+    }
+    // Get the first spark jar file name
+    File sparkJarFile = fileArray[0];
+    String fileName = sparkJarFile.getName();
+
+    // Extract scala version from jar filename
+    Pattern pattern = Pattern.compile("(?<jarName>spark-.*)_(?<majorVersion>\\d*)\\.(?<minorVersion>\\d*)-(?<sparkVersion>.*)\\.jar");
+    Matcher matcher = pattern.matcher(fileName);
+    if(matcher.matches()){
+      String majorVersion = matcher.group("majorVersion");
+      String minorVersion = matcher.group("minorVersion");
+      return majorVersion + "." + minorVersion;
+    }
+    else {
+      throw new IOException("Failed to detect Scala version! "+fileName+" in "+jarDirectory+" uses an unsupported version! (expected 2.11 or 2.12) ");
     }
   }
 
