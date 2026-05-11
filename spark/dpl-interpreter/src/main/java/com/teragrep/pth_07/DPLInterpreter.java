@@ -91,8 +91,8 @@ public class DPLInterpreter extends AbstractInterpreter {
     private final DPLKryo dplKryo;
 
     private final HashMap<String, HashMap<String, UserInterfaceManager>> notebookParagraphUserInterfaceManager;
-    private final List<AvailableFormat> availableFormats;
-    private final UIOption defaultUIOption;
+    private final List<AvailableFormat> availableFormats = Arrays.asList(new DataTablesAvailableFormat(), new UPlotAvailableFormat());
+    private final UIOption defaultUIOption = new UIOptionImpl("{\"type\":\"dataTables\",\"requestOptions\":{\"draw\":1,\"start\":0,\"length\":50,\"search\":{\"value\":\"\",\"regex\":false,\"fixed\":[]}}}");
 
 
     public DPLInterpreter(final Properties properties) {
@@ -107,11 +107,6 @@ public class DPLInterpreter extends AbstractInterpreter {
         dplKryo = new DPLKryo();
         LOGGER.info("DPL-interpreter initialize properties: {}", properties);
         notebookParagraphUserInterfaceManager = new HashMap<>();
-        List<AvailableFormat> availableFormatList = new ArrayList<>();
-        availableFormatList.add(new DataTablesAvailableFormat());
-        availableFormatList.add(new UPlotAvailableFormat());
-        availableFormats = availableFormatList;
-        defaultUIOption = new UIOptionImpl("{\"type\":\"dataTables\",\"requestOptions\":{\"draw\":1,\"start\":0,\"length\":50,\"search\":{\"value\":\"\",\"regex\":false,\"fixed\":[]}}}");
     }
 
     @Override
