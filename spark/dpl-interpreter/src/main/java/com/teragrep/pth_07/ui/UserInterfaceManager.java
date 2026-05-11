@@ -119,17 +119,15 @@ public final class UserInterfaceManager {
     }
 
     @Override
-    public boolean equals(final Object o) {
+    public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
-        final UserInterfaceManager that = (UserInterfaceManager) o;
-        return Objects.equals(datasetStore != null ? datasetStore : null, that.datasetStore != null ? that.datasetStore : null)
-                && Objects.equals(performanceIndicator, that.performanceIndicator)
-                && Objects.equals(messageLog, that.messageLog);
+        UserInterfaceManager that = (UserInterfaceManager) o;
+        return Objects.equals(datasetStore, that.datasetStore) && Objects.equals(performanceIndicator, that.performanceIndicator) && Objects.equals(messageLog, that.messageLog);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(datasetStore != null ? datasetStore : null, performanceIndicator, messageLog);
+        return Objects.hash(datasetStore, performanceIndicator, messageLog);
     }
 }

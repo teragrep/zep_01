@@ -45,6 +45,7 @@
  */
 package com.teragrep.pth_07.ui;
 
+import com.teragrep.pth_07.ui.elements.table_dynamic.DatasetStore;
 import com.teragrep.pth_07.ui.elements.table_dynamic.formats.*;
 import com.teragrep.pth_07.ui.elements.table_dynamic.testdata.TestDPLData;
 import com.teragrep.zep_01.display.AngularObject;
@@ -62,6 +63,7 @@ import org.apache.spark.sql.types.StructType;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
+import javax.xml.crypto.Data;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
@@ -207,5 +209,13 @@ class UserInterfaceManagerTest {
             public List<InterpreterResultMessage> outputs(){
                 return outputList;
             }
+        }
+    @Test
+    void equalsVerifier() {
+        InterpreterContext redInterpreterContext = InterpreterContext.builder().setNoteId("note1").build();
+        InterpreterContext blueInterpreterContext = InterpreterContext.builder().setNoteId("note2").build();
+        EqualsVerifier.forClass(UserInterfaceManager.class)
+                .withPrefabValues(InterpreterContext.class, redInterpreterContext, blueInterpreterContext)
+                .verify();
         }
     }
