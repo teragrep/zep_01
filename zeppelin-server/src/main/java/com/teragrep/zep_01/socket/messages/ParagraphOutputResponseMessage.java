@@ -29,15 +29,15 @@ public final class ParagraphOutputResponseMessage implements Jsonable {
     }
 
     @Override
-    public boolean equals(final Object o) {
+    public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
-        final ParagraphOutputResponseMessage that = (ParagraphOutputResponseMessage) o;
-        return Objects.equals(output, that.output);
+        ParagraphOutputResponseMessage that = (ParagraphOutputResponseMessage) o;
+        return Objects.equals(noteId, that.noteId) && Objects.equals(paragraphId, that.paragraphId) && Objects.equals(output, that.output);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(output);
+        return Objects.hash(noteId, paragraphId, output);
     }
 }

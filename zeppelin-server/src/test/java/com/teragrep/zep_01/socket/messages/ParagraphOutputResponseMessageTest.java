@@ -31,6 +31,6 @@ class ParagraphOutputResponseMessageTest {
 
     @Test
     void equalsVerifier() {
-        EqualsVerifier.forClass(ParagraphOutputRequestMessage.class).verify();
+        EqualsVerifier.forClass(ParagraphOutputResponseMessage.class).verify();
     }
 }
