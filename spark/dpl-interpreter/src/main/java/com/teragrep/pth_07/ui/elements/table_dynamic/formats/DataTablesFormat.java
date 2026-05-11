@@ -68,10 +68,11 @@ import java.util.Objects;
  */
 public final class DataTablesFormat implements RenderFormat{
     private static final Logger LOGGER = LoggerFactory.getLogger(DataTablesFormat.class);
+
     private final UIOption option;
     private final Dataset<Row> dataset;
 
-    public DataTablesFormat(UIOption option, Dataset<Row> dataset){
+    public DataTablesFormat(final UIOption option, final Dataset<Row> dataset){
         this.option = option;
         this.dataset = dataset;
     }
@@ -83,7 +84,7 @@ public final class DataTablesFormat implements RenderFormat{
      * @return JsonObject formatted to the style expected by DataTables visualization library, with requested pagination performed.
      */
     public JsonObject format(){
-        JsonObject optionJson = option.toJson().getJsonObject("requestOptions");
+        final JsonObject optionJson = option.toJson().getJsonObject("requestOptions");
         final List<String> rows = dataset.toJSON().collectAsList();
         final int pageStart = optionJson.getInt("start");
         final int pageLength = optionJson.getInt("length");
@@ -133,7 +134,7 @@ public final class DataTablesFormat implements RenderFormat{
                         }
                     }
                 }
-                catch (JsonException e){
+                catch (final JsonException e){
                     LOGGER.error(e.toString());
                 }
             }
@@ -177,10 +178,10 @@ public final class DataTablesFormat implements RenderFormat{
     }
 
     @Override
-    public boolean equals(Object o) {
+    public boolean equals(final Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
-        DataTablesFormat format = (DataTablesFormat) o;
+        final DataTablesFormat format = (DataTablesFormat) o;
         return Objects.equals(option, format.option) && Objects.equals(dataset, format.dataset);
     }
 

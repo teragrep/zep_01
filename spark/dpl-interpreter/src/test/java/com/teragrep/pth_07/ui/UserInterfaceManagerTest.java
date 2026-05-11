@@ -66,7 +66,6 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
-import java.util.concurrent.atomic.AtomicReference;
 
 
 class UserInterfaceManagerTest {
@@ -116,12 +115,12 @@ class UserInterfaceManagerTest {
     @Test
     void updateDatasetTest() {
 
-        List<AvailableFormat> availableFormatList = new ArrayList<>();
+        final List<AvailableFormat> availableFormatList = new ArrayList<>();
         availableFormatList.add(new DataTablesAvailableFormat());
         availableFormatList.add(new UPlotAvailableFormat());
-        Dataset<Row> emptyDataset = sparkSession.emptyDataFrame();
-        UIOption defaultUIOption = new UIOptionImpl("{\"paragraphId\":\"paragraph_1777976743753_395717996\",\"noteId\":\"2MRV3E2UT\",\"type\":\"dataTables\",\"requestOptions\":{\"draw\":1,\"start\":0,\"length\":50,\"search\":{\"value\":\"\",\"regex\":false,\"fixed\":[]}}}");
-        UserInterfaceManager userInterfaceManager = new UserInterfaceManager(context,emptyDataset,defaultUIOption,availableFormatList);
+        final Dataset<Row> emptyDataset = sparkSession.emptyDataFrame();
+        final UIOption defaultUIOption = new UIOptionImpl("{\"paragraphId\":\"paragraph_1777976743753_395717996\",\"noteId\":\"2MRV3E2UT\",\"type\":\"dataTables\",\"requestOptions\":{\"draw\":1,\"start\":0,\"length\":50,\"search\":{\"value\":\"\",\"regex\":false,\"fixed\":[]}}}");
+        final UserInterfaceManager userInterfaceManager = new UserInterfaceManager(context,emptyDataset,defaultUIOption,availableFormatList);
 
         //TestOutput should be empty. Results of testOutput are stored to disk, so there can only be one or no results.
         Assertions.assertEquals(0,testOutput.size());
@@ -144,7 +143,7 @@ class UserInterfaceManagerTest {
                 "\"type\":\"dataTables\"}";
         Assertions.assertEquals(expectedDTOutput,outputList.get(0).toString());
 
-        UIOption uPlotUIOption = new UIOptionImpl("{\"paragraphId\":\"paragraphId\",\"noteId\":\"dataTables\",\"type\":\"uPlot\",\"requestOptions\":{\"graphType\":\"line\"}}");
+        final UIOption uPlotUIOption = new UIOptionImpl("{\"paragraphId\":\"paragraphId\",\"noteId\":\"dataTables\",\"type\":\"uPlot\",\"requestOptions\":{\"graphType\":\"line\"}}");
         userInterfaceManager.updateUIOption(uPlotUIOption);
 
         final Dataset<Row> testDs2 = testDataset.createDataset(2,1L,1L);
@@ -169,14 +168,14 @@ class UserInterfaceManagerTest {
     // Call to UserInterfaceManager.formatDataset() should return a formatted representation of the dataset as a String.
     @Test
     void formatDatasetTest() {
-        List<AvailableFormat> availableFormatList = new ArrayList<>();
+        final List<AvailableFormat> availableFormatList = new ArrayList<>();
         availableFormatList.add(new DataTablesAvailableFormat());
         availableFormatList.add(new UPlotAvailableFormat());
-        Dataset<Row> emptyDataset = sparkSession.emptyDataFrame();
+        final Dataset<Row> emptyDataset = sparkSession.emptyDataFrame();
 
-        UIOption defaultUIOption = new UIOptionImpl("{\"paragraphId\":\"paragraphId\",\"noteId\":\"noteId\",\"type\":\"dataTables\",\"requestOptions\":{\"draw\":1,\"start\":0,\"length\":50,\"search\":{\"value\":\"\",\"regex\":false,\"fixed\":[]}}}");
-        UserInterfaceManager userInterfaceManager = new UserInterfaceManager(context,emptyDataset,defaultUIOption,availableFormatList);
-        UIOption uPlotUIOption = new UIOptionImpl("{\"paragraphId\":\"paragraphId\",\"noteId\":\"dataTables\",\"type\":\"uPlot\",\"requestOptions\":{\"graphType\":\"line\"}}");
+        final UIOption defaultUIOption = new UIOptionImpl("{\"paragraphId\":\"paragraphId\",\"noteId\":\"noteId\",\"type\":\"dataTables\",\"requestOptions\":{\"draw\":1,\"start\":0,\"length\":50,\"search\":{\"value\":\"\",\"regex\":false,\"fixed\":[]}}}");
+        final UserInterfaceManager userInterfaceManager = new UserInterfaceManager(context,emptyDataset,defaultUIOption,availableFormatList);
+        final UIOption uPlotUIOption = new UIOptionImpl("{\"paragraphId\":\"paragraphId\",\"noteId\":\"dataTables\",\"type\":\"uPlot\",\"requestOptions\":{\"graphType\":\"line\"}}");
         Assertions.assertDoesNotThrow(()->userInterfaceManager.updateDataset(testDs));
 
         final String formatted = Assertions.assertDoesNotThrow(()->userInterfaceManager.formatDataset(uPlotUIOption));
@@ -200,7 +199,7 @@ class UserInterfaceManagerTest {
                 try{
                     outputList.add(out.toInterpreterResultMessage());
                 }
-                catch (IOException e){
+                catch (final IOException e){
                     Assertions.fail("IOException occurred while listening to output messages!");
                 }
             }

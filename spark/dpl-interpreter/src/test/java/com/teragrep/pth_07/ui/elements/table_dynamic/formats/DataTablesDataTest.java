@@ -88,14 +88,14 @@ class DataTablesDataTest {
         rowList.add(RowFactory.create(5,6));
         final Dataset<Row> sourceData = sparkSession.createDataFrame(rowList,schema);
 
-        List<String> rows = sourceData.toJSON().collectAsList();
+        final List<String> rows = sourceData.toJSON().collectAsList();
 
         final int recordsTotal = 3;
         final int recordsFiltered = 3;
 
-        DataTablesData dataTablesData = new DataTablesData(rows, draw, start, length, search);
+        final DataTablesData dataTablesData = new DataTablesData(rows, draw, start, length, search);
 
-        JsonObject expectedJson = Json.createObjectBuilder()
+        final JsonObject expectedJson = Json.createObjectBuilder()
                 .add("data",Json.createArrayBuilder()
                         .add(Json.createObjectBuilder().add("column1",1).add("column2",2))
                         .add(Json.createObjectBuilder().add("column1",3).add("column2",4))

@@ -18,9 +18,6 @@ package com.teragrep.zep_01.interpreter;
 
 import com.teragrep.zep_01.common.Jsonable;
 import jakarta.json.*;
-import jakarta.json.stream.JsonParsingException;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import javax.swing.text.html.Option;
 import java.io.Serializable;
@@ -49,50 +46,6 @@ public class InterpreterResultMessage implements Serializable, Jsonable {
 
   public String toString() {
     return "%" + type.name().toLowerCase() + " " + data;
-  }
-
-  private JsonObject format(JsonObject resultAsJson, String options) throws InterpreterException {
-    if(type == null){
-      throw new InterpreterException("Result has no type assigned!");
-    }
-    JsonObject json = Json.createReader(new StringReader(options)).readObject();
-    if (json.getString("type").equals("dataTables") && type.equals(InterpreterResult.Type.DATATABLES)){
-      final JsonObject jsonOptions = json.getJsonObject("options");
-      final int draw = jsonOptions.containsKey("draw") ? jsonOptions.getInt("draw") : 1;
-      final int start = jsonOptions.containsKey("start") ? jsonOptions.getInt("start") : 0;
-      final int length = jsonOptions.containsKey("length") ? jsonOptions.getInt("length") : 50;
-      final JsonObject dataObject = resultAsJson.getJsonObject("data");
-      final JsonArray dataArray = dataObject.getJsonArray("data");
-
-      final int startIndex = Math.min(Math.max(start,0),dataArray.size());
-      final int endIndex = Math.min(startIndex + Math.max(length,0),dataArray.size());
-
-      final JsonArrayBuilder dataArrayBuilder = Json.createArrayBuilder();
-      for (int i = startIndex; i < endIndex; i++) {
-        dataArrayBuilder.add(dataArray.get(i));
-      }
-      final JsonObjectBuilder dataBuilder = Json.createObjectBuilder(resultAsJson.getJsonObject("data"));
-      dataBuilder.add("draw",draw);
-      dataBuilder.add("data",dataArrayBuilder.build());
-
-      final JsonObjectBuilder responseBuilder = Json.createObjectBuilder(resultAsJson);
-      responseBuilder.add("data",dataBuilder.build());
-      return responseBuilder.build();
-    }
-    else if(json.getString("type").equals("uPlot") && type.equals(InterpreterResult.Type.UPLOT)){
-      final JsonObject jsonOptions = json.getJsonObject("options");
-      final String graphType = jsonOptions.containsKey("graphType") ? jsonOptions.getString("graphType") : "line";
-
-      final JsonObject responseOptions = resultAsJson.getJsonObject("options");
-      final JsonObjectBuilder responseOptionsBuilder = Json.createObjectBuilder(responseOptions);
-      responseOptionsBuilder.add("graphType",graphType);
-      final JsonObjectBuilder responseBuilder = Json.createObjectBuilder(resultAsJson);
-      responseBuilder.add("options",responseOptionsBuilder.build());
-      return responseBuilder.build();
-    }
-    else {
-      throw new InterpreterException("Result does not match with given options!");
-    }
   }
 
   @Override

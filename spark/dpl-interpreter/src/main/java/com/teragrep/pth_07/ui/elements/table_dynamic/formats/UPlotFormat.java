@@ -64,7 +64,7 @@ public final class UPlotFormat implements RenderFormat{
      * Formats a given Dataset to expected format for uPlot visualization library.
      */
 
-    public UPlotFormat(UIOption option, Dataset<Row> rowDataset){
+    public UPlotFormat(final UIOption option, final Dataset<Row> rowDataset){
         this.dataset = rowDataset;
         this.option = option;
     }
@@ -93,10 +93,10 @@ public final class UPlotFormat implements RenderFormat{
             groupByColumnNames.clear();
         }
         else {
-            JsonArray xAxisFields = requestOptions.getJsonArray("xAxisFields");
-            for (JsonValue value : xAxisFields) {
+            final JsonArray xAxisFields = requestOptions.getJsonArray("xAxisFields");
+            for (final JsonValue value : xAxisFields) {
                 if(value.getValueType().equals(JsonValue.ValueType.STRING)){
-                    String stringValue = ((JsonString)value).getString();
+                    final String stringValue = ((JsonString)value).getString();
                     xAxisColumnNames.add(stringValue);
                     groupByColumnNames.remove(stringValue);
                 }
@@ -112,10 +112,10 @@ public final class UPlotFormat implements RenderFormat{
             transformedDataset = concatenatedDataset;
         }
 
-        List<Row> rows = transformedDataset.collectAsList();
-        String graphType = requestOptions.getString("graphType");
+        final List<Row> rows = transformedDataset.collectAsList();
+        final String graphType = requestOptions.getString("graphType");
         final UPlotMetadata uPlotMetadata = new UPlotMetadata(transformedDataset.schema(),rows,graphType,aggsUsed);
-        UPlotData uplotData = new UPlotData(rows,aggsUsed);
+        final UPlotData uplotData = new UPlotData(rows,aggsUsed);
 
         final JsonObjectBuilder builder = Json.createObjectBuilder()
                 .add("data",uplotData.asJson())
@@ -218,10 +218,10 @@ public final class UPlotFormat implements RenderFormat{
     }
 
     @Override
-    public boolean equals(Object o) {
+    public boolean equals(final Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
-        UPlotFormat format = (UPlotFormat) o;
+        final UPlotFormat format = (UPlotFormat) o;
         return Objects.equals(option, format.option) && Objects.equals(dataset, format.dataset);
     }
 

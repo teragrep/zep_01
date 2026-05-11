@@ -68,8 +68,8 @@ class DataTablesMetadataTest {
 
     @Test
     void asJson() {
-        DataTablesMetadata metadata = new DataTablesMetadata(testSchema);
-        JsonObject expectedJson = Json.createObjectBuilder()
+        final DataTablesMetadata metadata = new DataTablesMetadata(testSchema);
+        final JsonObject expectedJson = Json.createObjectBuilder()
                 .add("headers", Json.createArrayBuilder()
                         .add("testColumn1")
                         .add("testColumn2")

@@ -770,8 +770,8 @@ class UPlotFormatTest {
     }
     @Test
     void equalsVerifier() {
-        Dataset<Row> redDataset = sparkSession.emptyDataFrame();
-        Dataset<Row> blueDataset = sourceData;
+        final Dataset<Row> redDataset = sparkSession.emptyDataFrame();
+        final Dataset<Row> blueDataset = sourceData;
         EqualsVerifier.forClass(UPlotFormat.class)
                 .withPrefabValues(Dataset.class,redDataset,blueDataset)
                 .verify();

@@ -6,7 +6,6 @@ import jakarta.json.JsonObject;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
-import static org.junit.jupiter.api.Assertions.*;
 
 class InterpreterResultMessageTest {
     /**
@@ -16,7 +15,7 @@ class InterpreterResultMessageTest {
     void testDataTablesResultAsJson() {
 
         final String resultJsonString = "{\"type\":\"dataTables\",\"options\":{\"headers\":[\"_time\",\"operation\",\"count\"]},\"data\":{\"data\":[{\"_time\":\"2021-02-24T02:00:00.000+02:00\",\"operation\":\"create\",\"count\":722},{\"_time\":\"2021-03-26T02:00:00.000+02:00\",\"operation\":\"create\",\"count\":693},{\"_time\":\"2021-03-27T02:00:00.000+02:00\",\"operation\":\"create\",\"count\":673}],\"draw\":1,\"recordsTotal\":10,\"recordsFiltered\":3},\"isAggregated\":false}";
-        InterpreterResultMessage testMessage = new InterpreterResultMessage(InterpreterResult.Type.DATATABLES,resultJsonString);
+        final InterpreterResultMessage testMessage = new InterpreterResultMessage(InterpreterResult.Type.DATATABLES,resultJsonString);
 
         final JsonObject resultJson = testMessage.asJson();
         Assertions.assertEquals(false,resultJson.getBoolean("isAggregated"));
@@ -63,7 +62,7 @@ class InterpreterResultMessageTest {
     void testUPlotResultAsJson() {
 
         final String resultJsonString = "{\"type\":\"uPlot\",\"options\":{\"labels\":[\"minTemperature\",\"maxTemperature\"],\"series\":[\"bedroom\",\"kitchen\",\"balcony\"]},\"data\":[[0,1,2],[[18,25],[19,28],[10,22]]],\"isAggregated\":true}";
-        InterpreterResultMessage testMessage = new InterpreterResultMessage(InterpreterResult.Type.UPLOT,resultJsonString);
+        final InterpreterResultMessage testMessage = new InterpreterResultMessage(InterpreterResult.Type.UPLOT,resultJsonString);
 
         final JsonObject resultJson = testMessage.asJson();
         Assertions.assertEquals(true,resultJson.getBoolean("isAggregated"));
@@ -106,7 +105,7 @@ class InterpreterResultMessageTest {
     @Test
     void testPlaintextResultAsJson() {
         final String resultJsonString = "plain text result";
-        InterpreterResultMessage testMessage = new InterpreterResultMessage(InterpreterResult.Type.TEXT,resultJsonString);
+        final InterpreterResultMessage testMessage = new InterpreterResultMessage(InterpreterResult.Type.TEXT,resultJsonString);
         final JsonObject resultJson = testMessage.asJson();
         Assertions.assertEquals(false,resultJson.getBoolean("isAggregated"));
         Assertions.assertEquals(InterpreterResult.Type.TEXT.label,resultJson.getString("type"));
@@ -119,7 +118,7 @@ class InterpreterResultMessageTest {
     @Test
     void testPlainJSONtextResultAsJson() {
         final String resultJsonString = "{\"data\":\"plain text result\"}";
-        InterpreterResultMessage testMessage = new InterpreterResultMessage(InterpreterResult.Type.TEXT,resultJsonString);
+        final InterpreterResultMessage testMessage = new InterpreterResultMessage(InterpreterResult.Type.TEXT,resultJsonString);
         final JsonObject resultJson = testMessage.asJson();
         Assertions.assertEquals(false,resultJson.getBoolean("isAggregated"));
         Assertions.assertEquals(InterpreterResult.Type.TEXT.label,resultJson.getString("type"));

@@ -1108,7 +1108,7 @@ public class NotebookServer extends WebSocketServlet
     final String msgId = fromMessage.messageId();
     final String noteId = fromMessage.noteId();
     final String paragraphId = fromMessage.paragraphId();
-    final String payload = fromMessage.data();
+    final String options = fromMessage.data();
 
     // Get interpreterGroup
     Note note = getNotebook().getNote(noteId);
@@ -1140,7 +1140,7 @@ public class NotebookServer extends WebSocketServlet
 
     try {
       // Format the dataset within RemoteInterpreter, then return the output
-      final String output = managedInterpreterGroup.formatDataset(sessionId, interpreter.getClassName(), noteId, paragraphId, payload);
+      final String output = managedInterpreterGroup.formatDataset(sessionId, interpreter.getClassName(), noteId, paragraphId, options);
       final JsonObject outputJson = Json.createReader(new StringReader(output)).readObject();
       final ParagraphOutputResponseMessage paragraphOutputResponse = new ParagraphOutputResponseMessage(noteId, paragraphId, outputJson);
       final JsonMessage msg = new JsonMessage(new SimpleMessageId(msgId), OP.PARAGRAPH_OUTPUT, paragraphOutputResponse);
