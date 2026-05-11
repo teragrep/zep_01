@@ -277,11 +277,10 @@ public class SparkInterpreterLauncher extends StandardInterpreterLauncher {
       if (fileArray == null) {
         throw new Exception("Failed to detect Scala version! An IO error occurred while accessing directory at: " + sparkJarsFolder);
       }
-      List<File> replFiles = Arrays.asList(fileArray);
-      if (replFiles.size() != 1) {
+      if (fileArray.length != 1) {
         throw new Exception("Failed to detect Scala version! There should only be one instance of \"spark-repl.jar\" in directory at: " + sparkJarsFolder);
       }
-      File sparkRepl = replFiles.get(0);
+      File sparkRepl = fileArray[0];
       String fileName = sparkRepl.getName();
 
       Pattern pattern = Pattern.compile("spark-repl_(?<majorVersion>\\d*)\\.(?<minorVersion>\\d*)-.*\\.jar");
