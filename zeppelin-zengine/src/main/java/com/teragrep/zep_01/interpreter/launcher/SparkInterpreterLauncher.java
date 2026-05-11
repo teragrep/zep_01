@@ -114,13 +114,9 @@ public class SparkInterpreterLauncher extends StandardInterpreterLauncher {
         && getDeployMode().equals("cluster")) {
 
       String scalaVersion = null;
-      try {
-        scalaVersion = detectSparkScalaVersionByReplClass(getEnv("SPARK_HOME"));
-        LOGGER.info("Scala version: {}", scalaVersion);
-        context.getProperties().put("zeppelin.spark.scala.version", scalaVersion);
-      } catch (Exception e) {
-        throw new IOException("Fail to detect scala version, the reason is:"+ e.getMessage());
-      }
+      scalaVersion = detectSparkScalaVersionByReplClass(getEnv("SPARK_HOME"));
+      LOGGER.info("Scala version: {}", scalaVersion);
+      context.getProperties().put("zeppelin.spark.scala.version", scalaVersion);
 
       try {
         List<String> additionalJars = new ArrayList<>();
@@ -248,7 +244,7 @@ public class SparkInterpreterLauncher extends StandardInterpreterLauncher {
     return env;
   }
 
-  private String detectSparkScalaVersionByReplClass(String sparkHome) throws Exception {
+  private String detectSparkScalaVersionByReplClass(String sparkHome) throws IOException {
     File sparkLibFolder = new File(sparkHome + "/lib");
     if (sparkLibFolder.exists()) {
       // spark 1.6 if spark/lib exists
@@ -259,10 +255,10 @@ public class SparkInterpreterLauncher extends StandardInterpreterLauncher {
         }
       });
       if (sparkAssemblyJars.length == 0) {
-        throw new Exception("No spark assembly file found in SPARK_HOME: " + sparkHome);
+        throw new IOException("Failed to detect Scala version! No spark assembly file found in SPARK_HOME: " + sparkHome);
       }
       if (sparkAssemblyJars.length > 1) {
-        throw new Exception("Multiple spark assembly file found in SPARK_HOME: " + sparkHome);
+        throw new IOException("Failed to detect Scala version! Multiple spark assembly file found in SPARK_HOME: " + sparkHome);
       }
       try (URLClassLoader urlClassLoader = new URLClassLoader(new URL[]{sparkAssemblyJars[0].toURI().toURL()});) {
         urlClassLoader.loadClass("org.apache.spark.repl.SparkCommandLine");
@@ -275,10 +271,10 @@ public class SparkInterpreterLauncher extends StandardInterpreterLauncher {
       File sparkJarsFolder = new File(sparkHome + "/jars");
       File[] fileArray = sparkJarsFolder.listFiles(file -> file.getName().contains("spark-repl"));
       if (fileArray == null) {
-        throw new Exception("Failed to detect Scala version! An IO error occurred while accessing directory at: " + sparkJarsFolder);
+        throw new IOException("Failed to detect Scala version! An IO error occurred while accessing directory at: " + sparkJarsFolder);
       }
       if (fileArray.length != 1) {
-        throw new Exception("Failed to detect Scala version! There should only be one instance of \"spark-repl.jar\" in directory at: " + sparkJarsFolder);
+        throw new IOException("Failed to detect Scala version! There should only be one instance of \"spark-repl.jar\" in directory at: " + sparkJarsFolder);
       }
       File sparkRepl = fileArray[0];
       String fileName = sparkRepl.getName();
@@ -291,7 +287,7 @@ public class SparkInterpreterLauncher extends StandardInterpreterLauncher {
         return majorVersion + "." + minorVersion;
       }
       else {
-        throw new Exception("Failed to detect Scala version! "+fileName+" in "+sparkJarsFolder+" uses an unsupported version! (expected 2.11 or 2.12) ");
+        throw new IOException("Failed to detect Scala version! "+fileName+" in "+sparkJarsFolder+" uses an unsupported version! (expected 2.11 or 2.12) ");
       }
     }
   }
