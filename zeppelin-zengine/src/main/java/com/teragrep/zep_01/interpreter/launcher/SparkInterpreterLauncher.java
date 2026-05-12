@@ -114,7 +114,7 @@ public class SparkInterpreterLauncher extends StandardInterpreterLauncher {
         && getDeployMode().equals("cluster")) {
 
       String scalaVersion = null;
-      scalaVersion = detectSparkScalaVersionByReplClass(getEnv("SPARK_HOME"));
+      scalaVersion = extractScalaversionFromJarFileName(getEnv("SPARK_HOME"));
       LOGGER.info("Scala version: {}", scalaVersion);
       context.getProperties().put("zeppelin.spark.scala.version", scalaVersion);
 
@@ -244,38 +244,15 @@ public class SparkInterpreterLauncher extends StandardInterpreterLauncher {
     return env;
   }
 
-  private String detectSparkScalaVersionByReplClass(String sparkHome) throws IOException {
-    Path sparkPath = Paths.get(sparkHome);
-    String sparkDirectoryName = sparkPath.getFileName().toString();
-    final String scalaVersion;
-    // Spark 1 is not supported.
-    if(sparkDirectoryName.equals("spk_02")){
-      // All Spark 2 versions can use Scala 2.11, but from Spark 2.4 onwards 2.12 is supported.
-      File sparkJarsFolder = new File(sparkPath.toString(),"jars");
-      scalaVersion = extractScalaversionFromJarFileName(sparkJarsFolder);
-    }
-    else if(sparkDirectoryName.equals("spk_03")){
-      // All Spark 3 versions can use Scala 2.12, but from Spark 3.2 onwards 2.13 is supported.
-      File sparkJarsFolder = new File(sparkPath.toString(),"jars");
-      scalaVersion = extractScalaversionFromJarFileName(sparkJarsFolder);
-    }
-    else if(sparkDirectoryName.equals("spk_04")){
-      // Spark 4 uses scala version 2.13.
-      scalaVersion = "2.13";
-    }
-    else {
-        throw new IOException("Failed to detect Scala version! SPARK_HOME should be a path pointing to a directory called \"spk_02\" or \"spk_03\"!");
-    }
-    return scalaVersion;
-  }
-
   /**
    * Some Spark versions can support multiple Scala versions. To figure out which is in use, this function checks the scala version Spark was built against from a .jar file's filename.
-   * @param jarDirectory Directory where spark jars are located
+   * @param sparkHome Configuration value pointing to a Directory where spark jars are located
    * @return String indicating expected scala version. eg. "2.12"
    * @throws IOException When an IO exception occurs, such as the given directory doesn't exist.
    */
-  private String extractScalaversionFromJarFileName(File jarDirectory) throws IOException{
+  private String extractScalaversionFromJarFileName(String sparkHome) throws IOException{
+    Path sparkPath = Paths.get(sparkHome);
+    File jarDirectory = new File(sparkPath.toString(),"jars");
     if(!jarDirectory.exists()){
       throw new IOException("Failed to detect Scala version! Spark jar directory at " + jarDirectory + " doesn't exist!");
     }
