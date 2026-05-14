@@ -64,7 +64,7 @@ a licensee so wish it.
     <changelist>-SNAPSHOT</changelist>
     <sha1/>
     <!--library versions-->
-    <interpreter.name>java</interpreter.name>
+    <interpreter.name>regex</interpreter.name>
   </properties>
   
   <build>
