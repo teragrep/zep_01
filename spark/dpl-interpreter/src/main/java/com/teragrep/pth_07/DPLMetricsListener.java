@@ -85,12 +85,17 @@ public final class DPLMetricsListener extends StreamingQueryListener {
                 final Iterator<SQLExecutionUIData> executionDataIterator = sparkSession.sharedState().statusStore().executionsList().iterator();
                 while (executionDataIterator.hasNext()) {
                     final SQLExecutionUIData executionData = executionDataIterator.next();
-                    final Map<Object, String> metricValues = JavaConverters.mapAsJavaMap(executionData.metricValues());
-                    for (final SQLPlanMetric metric : JavaConverters.asJavaIterable(executionData.metrics())) {
-                        final long id = metric.accumulatorId();
-                        final Object value = metricValues.get(id);
-                        if (metric.metricType().startsWith("v2Custom_") && value != null) {
-                            currentMetrics.put(metric.name(), value.toString());
+                    final scala.collection.Map<Object, String> scalaMetricValues = executionData.metricValues();
+                    final Seq<SQLPlanMetric> scalaMetrics = executionData.metrics();
+                    if(scalaMetricValues != null && scalaMetrics != null){
+                        final Map<Object, String> metricValues = JavaConverters.mapAsJavaMap(scalaMetricValues);
+                        final Iterable<SQLPlanMetric> metrics = JavaConverters.asJavaIterable(scalaMetrics);
+                        for (final SQLPlanMetric metric : metrics) {
+                            final long id = metric.accumulatorId();
+                            final Object value = metricValues.get(id);
+                            if (metric.metricType().startsWith("v2Custom_") && value != null) {
+                                currentMetrics.put(metric.name(), value.toString());
+                            }
                         }
                     }
                 }
