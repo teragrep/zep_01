@@ -89,18 +89,28 @@ public class RegexInterpreter extends Interpreter {
   @Override
   public InterpreterResult interpret(String prompt, InterpreterContext context) {
     try {
-      LOGGER.info("Interpreting prompt <[{}]>", prompt);
+      LOGGER.trace("Interpreting prompt <[{}]>", prompt);
 
       int newlineIndex = prompt.indexOf('\n');
 
       if (newlineIndex == -1) {
+        throw new RegexInterpreterException("unrecognized prompt, please newline after interpreter declaration and use regex on the first line and content on subsequent line(s)");
+      }
+      String omitted = prompt.substring(0, newlineIndex);
+      LOGGER.trace("omitting <[{}]>",  omitted);
+
+      String cleanPrompt = prompt.substring(newlineIndex + 1);
+
+      int cleanPromptNewlineIndex = cleanPrompt.indexOf('\n');
+
+      if (cleanPromptNewlineIndex == -1) {
         throw new RegexInterpreterException("unrecognized prompt, please use regex on the first line and content on subsequent line(s)");
       }
 
-      String regex = prompt.substring(0, newlineIndex);
-      LOGGER.info("Extracted regex <[{}]>", regex);
-      String content = prompt.substring(newlineIndex + 1);
-      LOGGER.info("Extracted content <[{}]>", content);
+      String regex = cleanPrompt.substring(0, cleanPromptNewlineIndex);
+      LOGGER.trace("Extracted regex <[{}]>", regex);
+      String content = cleanPrompt.substring(cleanPromptNewlineIndex + 1);
+      LOGGER.trace("Extracted content <[{}]>", content);
 
       final Pattern pattern;
       try {

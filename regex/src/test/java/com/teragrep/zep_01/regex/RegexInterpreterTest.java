@@ -81,6 +81,7 @@ public class RegexInterpreterTest {
 
     StringWriter writer = new StringWriter();
     PrintWriter out = new PrintWriter(writer);
+    out.println(); // first line is after %regex\s so it is skipped
     out.println("^(?<line>.*)$");
     out.print("my-content-to-test-with");
     out.close();
@@ -108,7 +109,7 @@ public class RegexInterpreterTest {
 
   @Test
   public void testEmpty() {
-    InterpreterResult res = regexInterpreter.interpret("", context);
+    InterpreterResult res = regexInterpreter.interpret("\n", context);
 
     assertEquals(InterpreterResult.Code.ERROR, res.code());
     assertEquals("unrecognized prompt, please use regex on the first line and content on subsequent line(s)", res.message().get(0).getData());
