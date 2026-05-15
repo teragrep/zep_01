@@ -1,0 +1,14 @@
+[
+  {
+    "group": "regex",
+    "name": "regex",
+    "className": "com.teragrep.zep_01.regex.RegexInterpreter",
+    "defaultInterpreter": true,
+    "properties": {
+    },
+    "editor": {
+      "language": "java",
+      "editOnDblClick": false
+    }
+  }
+]
