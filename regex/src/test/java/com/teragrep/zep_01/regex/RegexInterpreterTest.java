@@ -61,7 +61,7 @@ import static org.junit.Assert.assertEquals;
 
 public class RegexInterpreterTest {
 
-  private static RegexInterpreter java;
+  private static RegexInterpreter regexInterpreter;
   private static InterpreterContext context;
 
   @BeforeClass
@@ -95,7 +95,7 @@ public class RegexInterpreterTest {
 
   @Test
   public void testEmpty() {
-    InterpreterResult res = java.interpret("", context);
+    InterpreterResult res = regexInterpreter.interpret("", context);
 
     assertEquals(InterpreterResult.Code.ERROR, res.code());
     assertEquals("expected regex on the first line", res.message().get(0));
