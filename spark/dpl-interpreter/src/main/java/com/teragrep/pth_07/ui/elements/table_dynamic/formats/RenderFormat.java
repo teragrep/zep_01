@@ -43,41 +43,16 @@
  * Teragrep, the applicable Commercial License may apply to this file if you as
  * a licensee so wish it.
  */
-package com.teragrep.pth_07.ui.elements;
+package com.teragrep.pth_07.ui.elements.table_dynamic.formats;
 
-import com.teragrep.zep_01.interpreter.InterpreterContext;
+import com.teragrep.stb_01.Stubable;
+import com.teragrep.zep_01.interpreter.InterpreterResult;
+import jakarta.json.JsonObject;
 
-import java.io.IOException;
+public interface RenderFormat extends Stubable {
 
-public class OutputContent extends AbstractUserInterfaceElement {
+    JsonObject toJson();
 
-    private String outputContent = "";
+    InterpreterResult.Type type();
 
-    public OutputContent(InterpreterContext interpreterContext) {
-        super(interpreterContext);
-    }
-
-    @Override
-    protected void draw() {
-        getInterpreterContext().out().clear(false);
-        try {
-            getInterpreterContext().out().write(outputContent);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-    }
-
-    @Override
-    public void emit() {
-        // no angular in this one
-    }
-
-    public void setOutputContent(String outputContent) {
-        this.outputContent = outputContent;
-        draw();
-    }
-
-    public void clear() {
-        getInterpreterContext().out().clear(true);
-    }
 }

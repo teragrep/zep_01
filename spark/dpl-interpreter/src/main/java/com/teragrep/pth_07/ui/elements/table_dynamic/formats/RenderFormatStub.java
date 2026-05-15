@@ -43,52 +43,26 @@
  * Teragrep, the applicable Commercial License may apply to this file if you as
  * a licensee so wish it.
  */
-package com.teragrep.pth_07.ui.elements.table_dynamic;
+package com.teragrep.pth_07.ui.elements.table_dynamic.formats;
 
-import jakarta.json.Json;
-import jakarta.json.JsonArray;
-import jakarta.json.JsonArrayBuilder;
-import org.apache.spark.sql.types.StructField;
-import org.apache.spark.sql.types.StructType;
-import scala.collection.Iterator;
+import com.teragrep.zep_01.interpreter.InterpreterResult;
+import jakarta.json.JsonObject;
 
-import java.util.Objects;
+public final class RenderFormatStub implements RenderFormat {
 
-public final class DTHeader {
-
-    private final StructType schema;
-    public DTHeader(){
-        this(new StructType());
-    }
-    public DTHeader(StructType schema){
-        this.schema = schema;
-    }
-
-    public JsonArray json() {
-
-        JsonArrayBuilder builder = Json.createArrayBuilder();
-        Iterator<StructField> it = schema.iterator();
-        while(it.hasNext()) {
-            StructField column = it.next();
-            builder.add(column.name());
-        }
-        return builder.build();
-    }
-
-    public StructType schema(){
-        return schema;
+    @Override
+    public JsonObject toJson() {
+        throw new IllegalArgumentException("No available formats found");
     }
 
     @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        DTHeader dtHeader = (DTHeader) o;
-        return Objects.equals(schema, dtHeader.schema);
+    public InterpreterResult.Type type() {
+        throw new IllegalArgumentException("StubRenderFormat does not have a type!");
     }
 
     @Override
-    public int hashCode() {
-        return Objects.hash(schema);
+    public boolean isStub() {
+        return true;
     }
+
 }

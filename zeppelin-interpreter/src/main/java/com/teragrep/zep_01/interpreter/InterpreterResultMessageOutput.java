@@ -43,7 +43,6 @@ public class InterpreterResultMessageOutput extends OutputStream {
   private InterpreterOutputChangeWatcher watcher;
   private final InterpreterResultMessageOutputListener flushListener;
   private InterpreterResult.Type type = InterpreterResult.Type.TEXT;
-  private boolean firstWrite = true;
   private boolean enableTableAppend = true;
 
   public InterpreterResultMessageOutput(
@@ -105,15 +104,6 @@ public class InterpreterResultMessageOutput extends OutputStream {
     synchronized (outList) {
       buffer.write(b);
       if (b == NEW_LINE_CHAR) {
-        // first time use of this outputstream.
-        if (firstWrite) {
-          // clear the output on gui
-          if (flushListener != null) {
-            flushListener.onUpdate(this);
-          }
-          firstWrite = false;
-        }
-
         if (isAppendSupported()) {
           flush(true);
         }

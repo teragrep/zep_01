@@ -22,14 +22,15 @@ import com.teragrep.zep_01.display.ui.OptionInput.ParamOption;
 import com.teragrep.zep_01.display.ui.Password;
 import com.teragrep.zep_01.display.ui.Select;
 import com.teragrep.zep_01.display.ui.TextBox;
+import jakarta.json.JsonObject;
 import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
 
 import java.util.HashMap;
 import java.util.Map;
 
 import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
 public class InputTest {
@@ -149,6 +150,49 @@ public class InputTest {
     params = new HashMap<>();
     replaced = Input.getSimpleQuery(params, script, false);
     assertEquals("INPUT=''", replaced);
+  }
+
+  @Test
+  public void testJson(){
+    // textbox
+    String script = "${input_form=}";
+    Map<String, Input> forms = Input.extractSimpleQueryForm(script, false);
+    assertEquals(1, forms.size());
+    Input form = forms.get("input_form");
+    assertTrue(form instanceof TextBox);
+    JsonObject json = form.asJson();
+    Assertions.assertEquals(form.getName(),json.getString("name"));
+    Assertions.assertEquals(form.getDisplayName(),json.getString("displayName"));
+
+    // password
+    script = "${password:my_pwd(My Password)}";
+    forms = Input.extractSimpleQueryForm(script, false);
+    form = forms.get("my_pwd");
+    assertTrue(form instanceof Password);
+    json = form.asJson();
+    Assertions.assertEquals(form.getName(),json.getString("name"));
+    Assertions.assertEquals(form.getDisplayName(),json.getString("displayName"));
+
+    // selection
+    script = "${select_form(Selection Form)=op1,op1|op2(Option 2)|op3}";
+    form = Input.extractSimpleQueryForm(script, false).get("select_form");
+    assertEquals("select_form", form.name);
+    assertEquals("op1", form.defaultValue);
+    assertEquals("Selection Form", form.getDisplayName());
+    assertTrue(form instanceof Select);
+    json = form.asJson();
+    Assertions.assertEquals(form.getName(),json.getString("name"));
+    Assertions.assertEquals(form.getDisplayName(),json.getString("displayName"));
+
+    // checkbox
+    script = "${checkbox:checkbox_form=op1,op1|op2|op3}";
+    form = Input.extractSimpleQueryForm(script, false).get("checkbox_form");
+    assertEquals("checkbox_form", form.name);
+    assertEquals("checkbox_form", form.displayName);
+    assertTrue(form instanceof CheckBox);
+    json = form.asJson();
+    Assertions.assertEquals(form.getName(),json.getString("name"));
+    Assertions.assertEquals(form.getDisplayName(),json.getString("displayName"));
   }
 
 }

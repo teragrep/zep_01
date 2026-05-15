@@ -1,0 +1,219 @@
+/*
+ * Teragrep DPL Spark Integration PTH-07
+ * Copyright (C) 2022  Suomen Kanuuna Oy
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Affero General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Affero General Public License for more details.
+ *
+ * You should have received a copy of the GNU Affero General Public License
+ * along with this program.  If not, see <https://github.com/teragrep/teragrep/blob/main/LICENSE>.
+ *
+ *
+ * Additional permission under GNU Affero General Public License version 3
+ * section 7
+ *
+ * If you modify this Program, or any covered work, by linking or combining it
+ * with other code, such other code is not for that reason alone subject to any
+ * of the requirements of the GNU Affero GPL version 3 as long as this Program
+ * is the same Program as licensed from Suomen Kanuuna Oy without any additional
+ * modifications.
+ *
+ * Supplemented terms under GNU Affero General Public License version 3
+ * section 7
+ *
+ * Origin of the software must be attributed to Suomen Kanuuna Oy. Any modified
+ * versions must be marked as "Modified version of" The Program.
+ *
+ * Names of the licensors and authors may not be used for publicity purposes.
+ *
+ * No rights are granted for use of trade names, trademarks, or service marks
+ * which are in The Program if any.
+ *
+ * Licensee must indemnify licensors and authors for any liability that these
+ * contractual assumptions impose on licensors and authors.
+ *
+ * To the extent this program is licensed as part of the Commercial versions of
+ * Teragrep, the applicable Commercial License may apply to this file if you as
+ * a licensee so wish it.
+ */
+package com.teragrep.pth_07.ui;
+
+import com.teragrep.pth_07.ui.elements.table_dynamic.formats.*;
+import com.teragrep.pth_07.ui.elements.table_dynamic.testdata.TestDPLData;
+import com.teragrep.zep_01.display.AngularObject;
+import com.teragrep.zep_01.display.AngularObjectRegistry;
+import com.teragrep.zep_01.display.AngularObjectRegistryListener;
+import com.teragrep.zep_01.interpreter.*;
+import nl.jqno.equalsverifier.EqualsVerifier;
+import org.apache.spark.sql.Dataset;
+import org.apache.spark.sql.Row;
+import org.apache.spark.sql.SparkSession;
+import org.apache.spark.sql.types.DataTypes;
+import org.apache.spark.sql.types.MetadataBuilder;
+import org.apache.spark.sql.types.StructField;
+import org.apache.spark.sql.types.StructType;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
+
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.UUID;
+
+
+class UserInterfaceManagerTest {
+    private final SparkSession sparkSession = SparkSession.builder()
+            .master("local[*]")
+            .config("spark.cleaner.referenceTracking.cleanCheckpoints", "true")
+            .config("checkpointLocation","/tmp/pth_10/test/StackTest/checkpoints/" + UUID.randomUUID() + "/")
+            .config("spark.sql.session.timeZone", "UTC")
+            .getOrCreate();
+    private final StructType testSchema = new StructType(
+            new StructField[] {
+                    new StructField("id", DataTypes.LongType, false, new MetadataBuilder().build()),
+                    new StructField("offset", DataTypes.LongType, false, new MetadataBuilder().build())
+            }
+    );
+    private final TestDPLData testDataset = new TestDPLData(sparkSession, testSchema);
+    private final Dataset<Row> testDs = testDataset.createDataset(2,0L,0L);
+    String noteId = "testNote";
+    String paragraphId = "testParagraph";
+    String interpreterGroupId = "testInterpreterGroupId";
+    TestInterpreterOutputListener testOutputListener = new TestInterpreterOutputListener();
+    InterpreterOutput testOutput = new InterpreterOutput(testOutputListener);
+    AngularObjectRegistryListener testRegistryListener = new AngularObjectRegistryListener() {
+
+        @Override
+        public void onAddAngularObject(final String interpreterGroupId, final AngularObject angularObject) {
+        }
+
+        @Override
+        public void onUpdateAngularObject(final String interpreterGroupId, final AngularObject angularObject) {
+        }
+
+        @Override
+        public void onRemoveAngularObject(final String interpreterGroupId, final AngularObject angularObject) {
+        }
+    };
+    AngularObjectRegistry registry = new AngularObjectRegistry(interpreterGroupId, testRegistryListener);
+    InterpreterContext context = InterpreterContext.builder()
+            .setNoteId(noteId)
+            .setParagraphId(paragraphId)
+            .setInterpreterOut(testOutput)
+            .setAngularObjectRegistry(registry)
+            .build();
+
+
+    // Call to UserInterfaceManager.updateDataset() should result in a formatted representation of the dataset to be written to InterpreterOutput.
+    @Test
+    void updateDatasetTest() {
+
+        final List<AvailableFormat> availableFormatList = new ArrayList<>();
+        availableFormatList.add(new DataTablesAvailableFormat());
+        availableFormatList.add(new UPlotAvailableFormat());
+        final Dataset<Row> emptyDataset = sparkSession.emptyDataFrame();
+        final UIOption defaultUIOption = new UIOptionImpl("{\"paragraphId\":\"paragraph_1777976743753_395717996\",\"noteId\":\"2MRV3E2UT\",\"type\":\"dataTables\",\"requestOptions\":{\"draw\":1,\"start\":0,\"length\":50,\"search\":{\"value\":\"\",\"regex\":false,\"fixed\":[]}}}");
+        final UserInterfaceManager userInterfaceManager = new UserInterfaceManager(context,emptyDataset,defaultUIOption,availableFormatList);
+
+        //TestOutput should be empty. Results of testOutput are stored to disk, so there can only be one or no results.
+        Assertions.assertEquals(0,testOutput.size());
+        Assertions.assertDoesNotThrow(()->userInterfaceManager.updateDataset(testDs));
+        final List<InterpreterResultMessage> outputList = Assertions.assertDoesNotThrow(()->testOutputListener.outputs());
+
+        // First batch of data should be retained in InterpreterOutput
+        Assertions.assertEquals(1,testOutput.size());
+        Assertions.assertEquals(1,outputList.size());
+        final String expectedDTOutput = "%datatables {\"data\":" +
+                "{\"data\":[" +
+                "{\"id\":0,\"offset\":0}," +
+                "{\"id\":0,\"offset\":0}]," +
+                "\"draw\":1," +
+                "\"recordsTotal\":2," +
+                "\"recordsFiltered\":2}," +
+                "\"options\":{\"headers\":" +
+                "[\"id\",\"offset\"]}," +
+                "\"isAggregated\":false," +
+                "\"type\":\"dataTables\"}";
+        Assertions.assertEquals(expectedDTOutput,outputList.get(0).toString());
+
+        final UIOption uPlotUIOption = new UIOptionImpl("{\"paragraphId\":\"paragraphId\",\"noteId\":\"dataTables\",\"type\":\"uPlot\",\"requestOptions\":{\"graphType\":\"line\"}}");
+        userInterfaceManager.updateUIOption(uPlotUIOption);
+
+        final Dataset<Row> testDs2 = testDataset.createDataset(2,1L,1L);
+        Assertions.assertDoesNotThrow(()->userInterfaceManager.updateDataset(testDs2));
+
+        String expectedUplotOutput = "%uplot {\"data\":[[],[1,1],[1,1]],\"options\":{\"labels\":[],\"series\":[\"id\",\"offset\"],\"graphType\":\"line\"},\"isAggregated\":false,\"type\":\"uPlot\"}";
+
+        Assertions.assertEquals(1,testOutput.size());
+        Assertions.assertEquals(2,outputList.size());
+        Assertions.assertEquals(expectedUplotOutput,outputList.get(1).toString());
+
+        final Dataset<Row> testDs3 = testDataset.createDataset(5,1L,1L);
+        expectedUplotOutput = "%uplot {\"data\":[[],[1,1,1,1,1],[1,1,1,1,1]],\"options\":{\"labels\":[],\"series\":[\"id\",\"offset\"],\"graphType\":\"line\"},\"isAggregated\":false,\"type\":\"uPlot\"}";
+        Assertions.assertDoesNotThrow(()->userInterfaceManager.updateDataset(testDs3));
+
+
+        Assertions.assertEquals(1,testOutput.size());
+        Assertions.assertEquals(3,outputList.size());
+        Assertions.assertEquals(expectedUplotOutput,outputList.get(2).toString());
+    }
+
+    // Call to UserInterfaceManager.formatDataset() should return a formatted representation of the dataset as a String.
+    @Test
+    void formatDatasetTest() {
+        final List<AvailableFormat> availableFormatList = new ArrayList<>();
+        availableFormatList.add(new DataTablesAvailableFormat());
+        availableFormatList.add(new UPlotAvailableFormat());
+        final Dataset<Row> emptyDataset = sparkSession.emptyDataFrame();
+
+        final UIOption defaultUIOption = new UIOptionImpl("{\"paragraphId\":\"paragraphId\",\"noteId\":\"noteId\",\"type\":\"dataTables\",\"requestOptions\":{\"draw\":1,\"start\":0,\"length\":50,\"search\":{\"value\":\"\",\"regex\":false,\"fixed\":[]}}}");
+        final UserInterfaceManager userInterfaceManager = new UserInterfaceManager(context,emptyDataset,defaultUIOption,availableFormatList);
+        final UIOption uPlotUIOption = new UIOptionImpl("{\"paragraphId\":\"paragraphId\",\"noteId\":\"dataTables\",\"type\":\"uPlot\",\"requestOptions\":{\"graphType\":\"line\"}}");
+        Assertions.assertDoesNotThrow(()->userInterfaceManager.updateDataset(testDs));
+
+        final String formatted = Assertions.assertDoesNotThrow(()->userInterfaceManager.formatDataset(uPlotUIOption));
+        final String expectedOutput = "{\"data\":[[],[0,0],[0,0]],\"options\":{\"labels\":[],\"series\":[\"id\",\"offset\"],\"graphType\":\"line\"},\"isAggregated\":false,\"type\":\"uPlot\"}";
+        Assertions.assertEquals(expectedOutput,formatted);
+    }
+
+    private final class TestInterpreterOutputListener implements InterpreterOutputListener{
+            private List<InterpreterResultMessage> outputList = new ArrayList<>();
+
+            @Override
+            public void onUpdateAll(final InterpreterOutput out) {
+            }
+
+            @Override
+            public void onAppend(final int index, final InterpreterResultMessageOutput out, final byte[] line) {
+            }
+
+            @Override
+            public void onUpdate(final int index, final InterpreterResultMessageOutput out) {
+                try{
+                    outputList.add(out.toInterpreterResultMessage());
+                }
+                catch (final IOException e){
+                    Assertions.fail("IOException occurred while listening to output messages!");
+                }
+            }
+
+            public List<InterpreterResultMessage> outputs(){
+                return outputList;
+            }
+        }
+    @Test
+    void equalsVerifier() {
+        InterpreterContext redInterpreterContext = InterpreterContext.builder().setNoteId("note1").build();
+        InterpreterContext blueInterpreterContext = InterpreterContext.builder().setNoteId("note2").build();
+        EqualsVerifier.forClass(UserInterfaceManager.class)
+                .withPrefabValues(InterpreterContext.class, redInterpreterContext, blueInterpreterContext)
+                .verify();
+        }
+    }

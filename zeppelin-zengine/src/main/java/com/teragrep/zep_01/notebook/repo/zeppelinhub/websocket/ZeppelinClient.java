@@ -73,7 +73,7 @@ public class ZeppelinClient {
       "PROGRESS",
       "NOTE",
       "PARAGRAPH",
-      "PARAGRAPH_UPDATE_OUTPUT",
+      "PARAGRAPH_OUTPUT",
       "PARAGRAPH_APPEND_OUTPUT",
       "PARAGRAPH_CLEAR_OUTPUT",
       "PARAGRAPH_REMOVE",

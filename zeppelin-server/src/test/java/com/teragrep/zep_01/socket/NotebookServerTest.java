@@ -602,9 +602,9 @@ public class NotebookServerTest extends AbstractTestRestApi {
 
     // check RuntimeInfos
     assertTrue(paragraph.getRuntimeInfos().containsKey("jobUrl"));
-    List<Object> list = paragraph.getRuntimeInfos().get("jobUrl").getValue();
+    List<Map<String,String>> list = paragraph.getRuntimeInfos().get("jobUrl").getValue();
     assertEquals(1, list.size());
-    Map<String, String> map = (Map<String, String>) list.get(0);
+    Map<String, String> map = list.get(0);
     assertEquals(2, map.size());
     assertEquals("jobUrl_value", map.get("jobUrl"));
     assertEquals("jobLabel_value", map.get("jobLabel"));

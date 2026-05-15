@@ -16,12 +16,16 @@
  */
 package com.teragrep.zep_01.interpreter;
 
+import com.teragrep.zep_01.common.Jsonable;
+import jakarta.json.*;
+
 import java.io.Serializable;
+import java.io.StringReader;
 
 /**
  * Interpreter result message
  */
-public class InterpreterResultMessage implements Serializable {
+public class InterpreterResultMessage implements Serializable, Jsonable {
   InterpreterResult.Type type;
   String data;
 
@@ -40,5 +44,23 @@ public class InterpreterResultMessage implements Serializable {
 
   public String toString() {
     return "%" + type.name().toLowerCase() + " " + data;
+  }
+
+  @Override
+  public JsonObject asJson() {
+    // If the data within this resultMessage is in a JSON formatted type, read the String into a JSON object.
+    // If the data is in some other format, create a JSON object with the keys expected by UI, and the data as a simple String.
+    final JsonObject rv;
+    if(type.equals(InterpreterResult.Type.DATATABLES) || type.equals(InterpreterResult.Type.UPLOT)){
+      rv = Json.createReader(new StringReader(data)).readObject();
+    }
+    else {
+      JsonObjectBuilder builder = Json.createObjectBuilder();
+      builder.add("data",data);
+      builder.add("type",type.label);
+      builder.add("isAggregated",false);
+      rv = builder.build();
+    }
+    return rv;
   }
 }

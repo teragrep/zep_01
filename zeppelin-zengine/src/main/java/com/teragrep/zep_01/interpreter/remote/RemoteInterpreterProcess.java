@@ -31,7 +31,6 @@ import org.slf4j.LoggerFactory;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
-import java.util.List;
 
 /**
  * Abstract class for interpreter process
@@ -109,12 +108,9 @@ public abstract class RemoteInterpreterProcess implements InterpreterClient, Aut
     });
   }
 
-  public String getDataset(String sessionId, String className, String noteId, String paragraphId, int start, int length, String searchString, int draw) throws InterpreterException {
+  public String formatDataset(String sessionId, String classname, String noteId, String paragraphId, String options) throws InterpreterException{
     try{
-      String dataset = callRemoteFunction(client -> {
-        return client.getDataset(sessionId, className, noteId, paragraphId, start, length, searchString, draw);
-      });
-      return dataset;
+      return callRemoteFunction(client -> client.formatDataset(sessionId, classname, noteId, paragraphId, options));
     } catch (Exception e){
       // Re-throw any Exception received via Thrift.
       throw new InterpreterException("Failed to get dataset from RemoteInterpreter!",e);
