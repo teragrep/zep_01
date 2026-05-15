@@ -48,6 +48,7 @@ package com.teragrep.zep_01.regex;
 
 import com.teragrep.zep_01.interpreter.InterpreterContext;
 import com.teragrep.zep_01.interpreter.InterpreterResult;
+import com.teragrep.zep_01.regex.RegexInterpreter;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
