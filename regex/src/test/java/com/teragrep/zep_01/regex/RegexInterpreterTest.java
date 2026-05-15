@@ -87,7 +87,20 @@ public class RegexInterpreterTest {
 
     InterpreterResult res = regexInterpreter.interpret(writer.toString(), context);
 
-    assertEquals("adasd", res.message().get(0).getData());
+    StringBuilder expectedBuilder = new StringBuilder()
+            .append("{\n")
+            .append("    \"recordType\": null,\n")
+            .append("    \"columns\": [\n")
+            .append("        {\n")
+            .append("            \"line\": \"my-content-to-test-with\",\n")
+            .append("            \"columnDescription\": null\n")
+            .append("        }\n")
+            .append("    ]\n")
+            .append("}");
+
+    String expected = expectedBuilder.toString();
+
+    assertEquals(expected, res.message().get(0).getData());
     assertEquals(InterpreterResult.Type.TEXT, res.message().get(0).getType());
     assertEquals(InterpreterResult.Code.SUCCESS, res.code());
   }

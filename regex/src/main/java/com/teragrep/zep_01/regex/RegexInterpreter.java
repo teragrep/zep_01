@@ -141,21 +141,29 @@ public class RegexInterpreter extends Interpreter {
         throw new RegexInterpreterException("Provided regex\n----\n" + regex + "\n----\nDoes not match provided content\n----\n" + content + "\n----");
       }
 
-      final JsonObjectBuilder builder = Json.createObjectBuilder();
+      final JsonObjectBuilder recordSchemaBuilder = Json.createObjectBuilder();
+
+      recordSchemaBuilder.addNull("recordType");
+
+      final JsonArrayBuilder recordSchemeDataBuilder = Json.createArrayBuilder();
 
       for (String key : groupMap.keySet()) {
-
+        final JsonObjectBuilder recordSchemaDatumBuilder = Json.createObjectBuilder();
         final String value = matcher.group(key);
 
         if (value == null) {
-          builder.addNull(key);
+          recordSchemaDatumBuilder.addNull(key);
         }
         else {
-          builder.add(key, value);
+          recordSchemaDatumBuilder.add(key, value);
         }
+        recordSchemaDatumBuilder.addNull("columnDescription");
+        recordSchemeDataBuilder.add(recordSchemaDatumBuilder.build());
       }
 
-      final JsonObject jsonObject = builder.build();
+      recordSchemaBuilder.add("columns", recordSchemeDataBuilder.build());
+
+      final JsonObject jsonObject = recordSchemaBuilder.build();
 
       final Map<String, Boolean> config = Collections.singletonMap(JsonGenerator.PRETTY_PRINTING, true);
 
