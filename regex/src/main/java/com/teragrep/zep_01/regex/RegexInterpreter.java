@@ -52,6 +52,7 @@ import java.lang.reflect.Method;
 import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.util.regex.PatternSyntaxException;
 import java.util.stream.Stream;
 
 import com.teragrep.zep_01.interpreter.Interpreter;
@@ -87,69 +88,88 @@ public class RegexInterpreter extends Interpreter {
 
   @Override
   public InterpreterResult interpret(String prompt, InterpreterContext context) {
+    try {
+      LOGGER.info("Interpreting prompt <[{}]>", prompt);
 
-    final InterpreterResult rv;
+      int newlineIndex = prompt.indexOf('\n');
 
-    int newlineIndex= prompt.indexOf('\n');
-    if (newlineIndex != -1) {
+      if (newlineIndex == -1) {
+        throw new RegexInterpreterException("unrecognized prompt, please use regex on the first line and content on subsequent line(s)");
+      }
+
       String regex = prompt.substring(0, newlineIndex);
+      LOGGER.info("Extracted regex <[{}]>", regex);
       String content = prompt.substring(newlineIndex + 1);
+      LOGGER.info("Extracted content <[{}]>", content);
 
-      Pattern pattern = Pattern.compile(regex);
+      final Pattern pattern;
+      try {
+        pattern = Pattern.compile(regex);
+      }
+      catch (PatternSyntaxException e) {
+        LOGGER.error("regex compilation failed", e);
+        throw new RegexInterpreterException("regex compilation failed", e);
+      }
+
       Matcher matcher = pattern.matcher(content);
 
-      InterpreterResult rvLocal;
+      final Method namedGroupsMethod;
       try {
         // java 11 does not have namedGroups as public so reflection is needed
-        Method namedGroupsMethod = Pattern.class.getDeclaredMethod("namedGroups");
+        namedGroupsMethod = Pattern.class.getDeclaredMethod("namedGroups");
+      }
+      catch (NoSuchMethodException e) {
+        LOGGER.error("reflection error getDeclaredMethod", e);
+        throw new RegexInterpreterException("reflection error getDeclaredMethod", e);
+      }
 
-        namedGroupsMethod.setAccessible(true);
+      namedGroupsMethod.setAccessible(true);
 
+      final Map<String, Integer> groupMap;
+      try {
         @SuppressWarnings("unchecked")
-        Map<String, Integer> groupMap = (Map<String, Integer>) namedGroupsMethod.invoke(pattern);
+        final Map<String, Integer> groupMapLocal = (Map<String, Integer>) namedGroupsMethod.invoke(pattern);
+        groupMap = groupMapLocal;
+      }
+      catch (InvocationTargetException | IllegalAccessException e) {
+        LOGGER.error("reflection error invoke", e);
+        throw new RegexInterpreterException("reflection error invoke", e);
+      }
 
+      if (!matcher.matches()) {
+        LOGGER.warn("regex does not match content");
+        throw new RegexInterpreterException("regex \n\n" + regex + "\n\n does not match content\n\n" + content);
+      }
 
-        if (matcher.find()) {
-          JsonObjectBuilder builder = Json.createObjectBuilder();
+      final JsonObjectBuilder builder = Json.createObjectBuilder();
 
-          for (String key : groupMap.keySet()) {
-            String value = matcher.group(key);
+      for (String key : groupMap.keySet()) {
+        final String value = matcher.group(key);
 
-            if (value == null) {
-              builder.addNull(key);
-            } else {
-              builder.add(key, value);
-            }
-          }
-
-          JsonObject jsonObject = builder.build();
-
-          Map<String, Boolean> config = Collections.singletonMap(JsonGenerator.PRETTY_PRINTING, true);
-          JsonWriterFactory writerFactory = Json.createWriterFactory(config);
-
-          StringWriter stringWriter = new StringWriter();
-          try (JsonWriter jsonWriter = writerFactory.createWriter(stringWriter)) {
-            jsonWriter.writeObject(jsonObject);
-          }
-
-          rvLocal = new InterpreterResult(InterpreterResult.Code.SUCCESS, stringWriter.toString());
-
+        if (value == null) {
+          builder.addNull(key);
         }
         else {
-          rvLocal = new InterpreterResult(InterpreterResult.Code.ERROR, "regex \n\n" + regex + "\n\n does not match content\n\n" + content);
+          builder.add(key, value);
         }
       }
-      catch (InvocationTargetException | NoSuchMethodException | IllegalAccessException e) {
-        LOGGER.error("namedGroups reflection access error", e);
-        rvLocal = new InterpreterResult(InterpreterResult.Code.ERROR, "namedGroups reflection access error");
-      }
-      rv = rvLocal;
-    }
-    else {
-      rv = new InterpreterResult(InterpreterResult.Code.ERROR, "expected regex on the first line");
-    }
 
-    return rv;
+      final JsonObject jsonObject = builder.build();
+
+      final Map<String, Boolean> config = Collections.singletonMap(JsonGenerator.PRETTY_PRINTING, true);
+
+      final JsonWriterFactory writerFactory = Json.createWriterFactory(config);
+
+      final StringWriter stringWriter = new StringWriter();
+      try (JsonWriter jsonWriter = writerFactory.createWriter(stringWriter)) {
+        jsonWriter.writeObject(jsonObject);
+      }
+
+      return new InterpreterResult(InterpreterResult.Code.SUCCESS, stringWriter.toString());
+    }
+    catch (RegexInterpreterException rie) {
+      return new InterpreterResult(InterpreterResult.Code.ERROR, rie.getMessage());
+    }
   }
 
   @Override
