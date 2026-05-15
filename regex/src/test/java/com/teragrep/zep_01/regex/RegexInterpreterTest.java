@@ -48,7 +48,6 @@ package com.teragrep.zep_01.regex;
 
 import com.teragrep.zep_01.interpreter.InterpreterContext;
 import com.teragrep.zep_01.interpreter.InterpreterResult;
-import com.teragrep.zep_01.regex.RegexInterpreter;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -78,18 +77,19 @@ public class RegexInterpreterTest {
   }
 
   @Test
-  public void testStaticRepl() {
+  public void testSuccess() {
 
     StringWriter writer = new StringWriter();
     PrintWriter out = new PrintWriter(writer);
     out.println("^(?<line>.*)$");
-    out.println("content that matches really well to this regex");
+    out.print("my-content-to-test-with");
     out.close();
 
     InterpreterResult res = regexInterpreter.interpret(writer.toString(), context);
 
-    assertEquals(InterpreterResult.Code.SUCCESS, res.code());
+    assertEquals("adasd", res.message().get(0).getData());
     assertEquals(InterpreterResult.Type.TEXT, res.message().get(0).getType());
+    assertEquals(InterpreterResult.Code.SUCCESS, res.code());
   }
 
 
@@ -98,7 +98,7 @@ public class RegexInterpreterTest {
     InterpreterResult res = regexInterpreter.interpret("", context);
 
     assertEquals(InterpreterResult.Code.ERROR, res.code());
-    assertEquals("expected regex on the first line", res.message().get(0));
+    assertEquals("unrecognized prompt, please use regex on the first line and content on subsequent line(s)", res.message().get(0).getData());
 
   }
 

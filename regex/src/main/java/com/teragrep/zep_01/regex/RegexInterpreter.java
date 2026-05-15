@@ -138,12 +138,13 @@ public class RegexInterpreter extends Interpreter {
 
       if (!matcher.matches()) {
         LOGGER.warn("regex does not match content");
-        throw new RegexInterpreterException("regex \n\n" + regex + "\n\n does not match content\n\n" + content);
+        throw new RegexInterpreterException("Provided regex\n----\n" + regex + "\n----\nDoes not match provided content\n----\n" + content + "\n----");
       }
 
       final JsonObjectBuilder builder = Json.createObjectBuilder();
 
       for (String key : groupMap.keySet()) {
+
         final String value = matcher.group(key);
 
         if (value == null) {
