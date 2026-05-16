@@ -317,8 +317,6 @@ public class Notebook {
     newNote.setConfig(new HashMap<>(sourceNote.getConfig()));
     newNote.setInfo(new HashMap<>(sourceNote.getInfo()));
     newNote.setDefaultInterpreterGroup(sourceNote.getDefaultInterpreterGroup());
-    newNote.setNoteForms(new HashMap<>(sourceNote.getNoteForms()));
-    newNote.setNoteParams(new HashMap<>(sourceNote.getNoteParams()));
     newNote.setRunning(false);
 
     saveNote(newNote, subject);

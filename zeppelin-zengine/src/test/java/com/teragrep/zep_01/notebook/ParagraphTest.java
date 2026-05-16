@@ -32,15 +32,10 @@ import static org.mockito.Mockito.when;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import org.apache.commons.lang3.tuple.Triple;
-import com.teragrep.zep_01.display.AngularObject;
-import com.teragrep.zep_01.display.AngularObjectBuilder;
 import com.teragrep.zep_01.display.AngularObjectRegistry;
-import com.teragrep.zep_01.display.Input;
 import com.teragrep.zep_01.interpreter.AbstractInterpreterTest;
 import com.teragrep.zep_01.interpreter.Constants;
 import com.teragrep.zep_01.interpreter.Interpreter;
@@ -203,45 +198,6 @@ public class ParagraphTest extends AbstractInterpreterTest {
     paragraph.setText("%\r\n###Hello");
     assertEquals("", paragraph.getIntpText());
     assertEquals("%\r\n###Hello", paragraph.getScriptText());
-  }
-
-  @Test
-  public void should_extract_variable_from_angular_object_registry() throws Exception {
-    //Given
-    final String noteId = "noteId";
-
-    final AngularObjectRegistry registry = mock(AngularObjectRegistry.class);
-    final Note note = mock(Note.class);
-    final Map<String, Input> inputs = new HashMap<>();
-    inputs.put("name", null);
-    inputs.put("age", null);
-    inputs.put("job", null);
-
-    final String scriptBody = "My name is ${name} and I am ${age=20} years old. " +
-            "My occupation is ${ job = engineer | developer | artists}";
-
-    final Paragraph paragraph = new Paragraph(note, null);
-    final String paragraphId = paragraph.getId();
-
-    final AngularObject<String> nameAO = AngularObjectBuilder.build("name", "DuyHai DOAN", noteId,
-            paragraphId);
-
-    final AngularObject<Integer> ageAO = AngularObjectBuilder.build("age", 34, noteId, null);
-
-    when(note.getId()).thenReturn(noteId);
-    when(registry.get("name", noteId, paragraphId)).thenReturn(nameAO);
-    when(registry.get("age", noteId, null)).thenReturn(ageAO);
-
-    final String expected = "My name is DuyHai DOAN and I am 34 years old. " +
-            "My occupation is ${ job = engineer | developer | artists}";
-    //When
-    final String actual = paragraph.extractVariablesFromAngularRegistry(scriptBody, inputs,
-            registry);
-
-    //Then
-    verify(registry).get("name", noteId, paragraphId);
-    verify(registry).get("age", noteId, null);
-    assertEquals(expected, actual);
   }
 
   @Test

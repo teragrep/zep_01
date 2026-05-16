@@ -1052,23 +1052,6 @@ public class NotebookRestApi extends AbstractRestApi {
     return new JsonResponse<>(Status.OK, response).build();
   }
 
-
-
-  private void handleParagraphParams(String message, Note note, Paragraph paragraph)
-      throws IOException {
-    // handle params if presented
-    if (!StringUtils.isEmpty(message)) {
-      ParametersRequest request =
-          ParametersRequest.fromJson(message);
-      Map<String, Object> paramsForUpdating = request.getParams();
-      if (paramsForUpdating != null) {
-        paragraph.settings.getParams().putAll(paramsForUpdating);
-        AuthenticationInfo subject = new AuthenticationInfo(authenticationService.getPrincipal());
-        notebook.saveNote(note, subject);
-      }
-    }
-  }
-
   private void initParagraph(Paragraph p, NewParagraphRequest request, String user) {
     LOGGER.info("Init Paragraph for user {}", user);
     checkIfParagraphIsNotNull(p, "");

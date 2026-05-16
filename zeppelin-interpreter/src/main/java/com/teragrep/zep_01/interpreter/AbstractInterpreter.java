@@ -35,8 +35,6 @@ public abstract class AbstractInterpreter extends Interpreter {
     InterpreterContext.set(context);
     ZeppelinContext z = getZeppelinContext();
     if (z != null) {
-      z.setGui(context.getGui());
-      z.setNoteGui(context.getNoteGui());
       z.setInterpreterContext(context);
     }
     boolean interpolate = isInterpolate() ||

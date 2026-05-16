@@ -21,9 +21,6 @@ import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.apache.thrift.transport.TTransportException;
 import com.teragrep.zep_01.conf.ZeppelinConfiguration;
 import com.teragrep.zep_01.display.AngularObjectRegistry;
-import com.teragrep.zep_01.display.GUI;
-import com.teragrep.zep_01.display.Input;
-import com.teragrep.zep_01.display.ui.OptionInput;
 import com.teragrep.zep_01.interpreter.AbstractInterpreterTest;
 import com.teragrep.zep_01.interpreter.Interpreter;
 import com.teragrep.zep_01.interpreter.InterpreterContext;
@@ -40,10 +37,6 @@ import org.junit.Ignore;
 import org.junit.Test;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
 
 import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertEquals;
@@ -382,27 +375,6 @@ public class RemoteInterpreterTest extends AbstractInterpreterTest {
 
     assertEquals("value_1", interpreter1.interpret("getProperty property_1", context1).message().get(0).getData());
     assertEquals("null", interpreter1.interpret("getProperty not_existed_property", context1).message().get(0).getData());
-  }
-
-  @Test
-  public void testConvertDynamicForms() throws InterpreterException {
-    GUI gui = new GUI();
-    OptionInput.ParamOption[] paramOptions = {
-        new OptionInput.ParamOption("value1", "param1"),
-        new OptionInput.ParamOption("value2", "param2")
-    };
-    List<Object> defaultValues = new ArrayList<>();
-    defaultValues.add("default1");
-    defaultValues.add("default2");
-    gui.checkbox("checkbox_id", paramOptions, defaultValues);
-    gui.select("select_id", paramOptions, "default");
-    gui.textbox("textbox_id");
-    Map<String, Input> expected = new LinkedHashMap<>(gui.getForms());
-    Interpreter interpreter = interpreterSetting.getDefaultInterpreter("user1", "note1");
-    InterpreterContext context = createDummyInterpreterContext();
-
-    interpreter.interpret("text", context);
-    assertArrayEquals(expected.values().toArray(), gui.getForms().values().toArray());
   }
 
   @Ignore(value="Seems to depend on SleepInterpreter")

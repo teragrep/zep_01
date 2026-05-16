@@ -18,7 +18,6 @@
 package com.teragrep.zep_01.notebook;
 
 import com.teragrep.zep_01.display.AngularObject;
-import com.teragrep.zep_01.display.ui.TextBox;
 import com.teragrep.zep_01.interpreter.Interpreter;
 import com.teragrep.zep_01.interpreter.InterpreterFactory;
 import com.teragrep.zep_01.interpreter.InterpreterNotFoundException;
@@ -195,13 +194,10 @@ public class NoteTest {
     Paragraph p = note.addNewParagraph(AuthenticationInfo.ANONYMOUS);
     p.setText(pText);
     p.setResult(new InterpreterResult(InterpreterResult.Code.SUCCESS, "1.6.2"));
-    p.settings.getForms().put("textbox_1", new TextBox("name", "default_name"));
-    p.settings.getParams().put("textbox_1", "my_name");
     note.getAngularObjects().put("ao_1", Arrays.asList(new AngularObject("name_1", "value_1", note.getId(), p.getId(), null)));
 
     // test Paragraph Json
     Paragraph p2 = Paragraph.fromJson(p.toJson());
-    assertEquals(p2.settings, p.settings);
     assertEquals(p2, p);
 
     // test Note Json

@@ -341,8 +341,6 @@ public class PythonInterpreter extends Interpreter {
     outputStream.setInterpreterOutput(context.out);
     ZeppelinContext z = getZeppelinContext();
     z.setInterpreterContext(context);
-    z.setGui(context.getGui());
-    z.setNoteGui(context.getNoteGui());
     InterpreterContext.set(context);
 
     preCallPython(context);

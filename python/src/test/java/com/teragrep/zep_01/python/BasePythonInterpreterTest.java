@@ -18,10 +18,6 @@
 package com.teragrep.zep_01.python;
 
 import net.jodah.concurrentunit.ConcurrentTestCase;
-import com.teragrep.zep_01.display.ui.CheckBox;
-import com.teragrep.zep_01.display.ui.Password;
-import com.teragrep.zep_01.display.ui.Select;
-import com.teragrep.zep_01.display.ui.TextBox;
 import com.teragrep.zep_01.interpreter.Interpreter;
 import com.teragrep.zep_01.interpreter.InterpreterContext;
 import com.teragrep.zep_01.interpreter.InterpreterException;
@@ -235,61 +231,10 @@ public abstract class BasePythonInterpreterTest extends ConcurrentTestCase {
   }
 
   @Test
-  public void testZeppelinContext() throws InterpreterException, InterruptedException, IOException {
-    // TextBox
-    InterpreterContext context = getInterpreterContext();
-    InterpreterResult result =
-        interpreter.interpret("z.input(name='text_1', defaultValue='value_1')", context);
-    Thread.sleep(100);
-    assertEquals(InterpreterResult.Code.SUCCESS, result.code());
-    List<InterpreterResultMessage> interpreterResultMessages =
-        context.out.toInterpreterResultMessage();
-    assertTrue(interpreterResultMessages.get(0).getData().contains("'value_1'"));
-    assertEquals(1, context.getGui().getForms().size());
-    assertInstanceOf(TextBox.class, context.getGui().getForms().get("text_1"));
-    TextBox textbox = (TextBox) context.getGui().getForms().get("text_1");
-    assertEquals("text_1", textbox.getName());
-    assertEquals("value_1", textbox.getDefaultValue());
-
-    // Password
-    context = getInterpreterContext();
-    result =
-        interpreter.interpret("z.password(name='pwd_1')", context);
-    Thread.sleep(100);
-    assertEquals(InterpreterResult.Code.SUCCESS, result.code());
-    assertInstanceOf(Password.class, context.getGui().getForms().get("pwd_1"));
-    Password password = (Password) context.getGui().getForms().get("pwd_1");
-    assertEquals("pwd_1", password.getName());
-
-    // Select
-    context = getInterpreterContext();
-    result = interpreter.interpret("z.select(name='select_1'," +
-        " options=[('value_1', 'name_1'), ('value_2', 'name_2')])", context);
-    assertEquals(InterpreterResult.Code.SUCCESS, result.code());
-    assertEquals(1, context.getGui().getForms().size());
-    assertInstanceOf(Select.class, context.getGui().getForms().get("select_1"));
-    Select select = (Select) context.getGui().getForms().get("select_1");
-    assertEquals("select_1", select.getName());
-    assertEquals(2, select.getOptions().length);
-    assertEquals("name_1", select.getOptions()[0].getDisplayName());
-    assertEquals("value_1", select.getOptions()[0].getValue());
-
-    // CheckBox
-    context = getInterpreterContext();
-    result = interpreter.interpret("z.checkbox(name='checkbox_1'," +
-        "options=[('value_1', 'name_1'), ('value_2', 'name_2')])", context);
-    assertEquals(InterpreterResult.Code.SUCCESS, result.code());
-    assertEquals(1, context.getGui().getForms().size());
-    assertInstanceOf(CheckBox.class, context.getGui().getForms().get("checkbox_1"));
-    CheckBox checkbox = (CheckBox) context.getGui().getForms().get("checkbox_1");
-    assertEquals("checkbox_1", checkbox.getName());
-    assertEquals(2, checkbox.getOptions().length);
-    assertEquals("name_1", checkbox.getOptions()[0].getDisplayName());
-    assertEquals("value_1", checkbox.getOptions()[0].getValue());
-    
+  public void testZeppelinContext() throws InterpreterException {
     // clear output
-    context = getInterpreterContext();
-    result = interpreter.interpret("import time\nprint(\"Hello\")\n" +
+    InterpreterContext context = getInterpreterContext();
+    InterpreterResult result = interpreter.interpret("import time\nprint(\"Hello\")\n" +
         "time.sleep(0.5)\nz.getInterpreterContext().out().clear()\nprint(\"world\")\n", context);
     assertEquals("%text world\n", context.out.getCurrentOutput().toString());
   }
