@@ -54,7 +54,7 @@ public class GUI implements Serializable {
     this.params = values;
   }
 
-  public void putFormValue(String id, Object value) throws DynamicFormException {
+  public void putFormValue(final String id, final Object value) throws DynamicFormException {
     if(forms.containsKey(id)){
       this.params.put(id,value);
     }
@@ -63,9 +63,9 @@ public class GUI implements Serializable {
     }
   }
 
-  public void removeFormValue(String id) {
+  public void removeFormValue(final String id) {
     if(forms.containsKey(id)){
-      Object defaultValue = forms.get(id).defaultValue;
+      final Object defaultValue = forms.get(id).defaultValue;
       if(defaultValue != null){
         this.params.put(id,defaultValue);
       }

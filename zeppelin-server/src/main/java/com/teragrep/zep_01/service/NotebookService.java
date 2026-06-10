@@ -796,12 +796,12 @@ public class NotebookService {
   }
 
 
-  public void submitForm(String noteId,
-                         String paragraphId,
-                         String formId,
-                         Object value,
-                         ServiceContext context,
-                         ServiceCallback<GUI> callback) throws IOException{
+  public void submitForm(final String noteId,
+                         final String paragraphId,
+                         final String formId,
+                         final Object value,
+                         final ServiceContext context,
+                         final ServiceCallback<GUI> callback) throws IOException{
     if (!checkPermission(noteId, Permission.WRITER, Message.OP.SAVE_NOTE_FORMS, context,
             callback)) {
       return;
@@ -811,17 +811,17 @@ public class NotebookService {
       callback.onFailure(new DynamicFormException("Request must contain \"formId\" and \"value\" objects!"),context);
       return;
     }
-    Note note = notebook.getNote(noteId);
+    final Note note = notebook.getNote(noteId);
     if (note == null) {
       callback.onFailure(new NoteNotFoundException(noteId), context);
       return;
     }
-    Paragraph paragraph = note.getParagraph(paragraphId);
+    final Paragraph paragraph = note.getParagraph(paragraphId);
     if(paragraph == null){
       callback.onFailure(new ParagraphNotFoundException(paragraphId), context);
       return;
     }
-    GUI settings = paragraph.settings;
+    final GUI settings = paragraph.settings;
     if(settings == null){
       callback.onFailure(new IllegalStateException("Failed to add form parameters! Paragraph "+paragraphId+" does not have an assigned settings object!"), context);
       return;

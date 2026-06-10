@@ -336,12 +336,12 @@ public class ConnectionManager {
       unicast(m, conn);
 
       // send paragraph forms in a separate message
-      Message formMessage = new Message(Message.OP.PARAGRAPH_FORM);
-      String noteId = note.getId();
-      String paragraphId = p.getId();
-      GUI settings = p.settings;
+      final Message formMessage = new Message(Message.OP.PARAGRAPH_FORM);
+      final String noteId = note.getId();
+      final String paragraphId = p.getId();
+      final GUI settings = p.settings;
       if(settings != null){
-        List<Map> formArray = new ArrayList<>();
+        final List<Map> formArray = new ArrayList<>();
         for (Input form: settings.getForms().values()) {
           Map<String,String> formObject = new HashMap<>();
           formObject.put("type",form.inputType());

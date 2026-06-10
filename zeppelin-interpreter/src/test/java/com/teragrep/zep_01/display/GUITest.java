@@ -50,10 +50,10 @@ public class GUITest {
 
   @Test
   public void putFormValueTest(){
-    GUI gui = new GUI();
-    String textBoxId = "textbox1";
-    String defaultValue = "";
-    String testValue = "testValue";
+    final GUI gui = new GUI();
+    final String textBoxId = "textbox1";
+    final String defaultValue = "";
+    final String testValue = "testValue";
 
     gui.textbox(textBoxId, defaultValue);
     // Textbox should contain default value.
@@ -65,9 +65,9 @@ public class GUITest {
 
   @Test
   public void putFormValueWithNonexistentIdTest(){
-    GUI gui = new GUI();
-    String textBoxId = "textbox1";
-    String testValue = "testValue";
+    final GUI gui = new GUI();
+    final String textBoxId = "textbox1";
+    final String testValue = "testValue";
 
     // Should not be able to add a value to an input with ID that does not exist
     Assertions.assertThrows(DynamicFormException.class,()->gui.putFormValue(textBoxId,testValue));
@@ -75,11 +75,11 @@ public class GUITest {
 
   @Test
   public void removeFormValueTest(){
-    GUI gui = new GUI();
-    String textBoxId = "textbox1";
-    String textBoxWithDefaultId = "password2";
-    String defaultValue = "defaultValue";
-    String testValue = "testValue";
+    final GUI gui = new GUI();
+    final String textBoxId = "textbox1";
+    final String textBoxWithDefaultId = "password2";
+    final String defaultValue = "defaultValue";
+    final String testValue = "testValue";
 
     gui.textbox(textBoxId);
     gui.textbox(textBoxWithDefaultId,defaultValue);

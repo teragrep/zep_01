@@ -583,14 +583,14 @@ public class NotebookServer extends WebSocketServlet
     if (note.isPersonalizedMode()) {
       broadcastParagraphs(p.getUserParagraphMap(), p, msgId);
       // send paragraph forms in a separate message
-      GUI settings = p.settings;
+      final GUI settings = p.settings;
       if(settings != null){
-        Message formMessage = new Message(OP.PARAGRAPH_FORM).withMsgId(msgId);
+        final Message formMessage = new Message(OP.PARAGRAPH_FORM).withMsgId(msgId);
         formMessage.put("noteId",note.getId());
         formMessage.put("paragraphId",p.getId());
-        List<Map> formArray = new ArrayList<>();
+        final List<Map> formArray = new ArrayList<>();
         for (Input form: settings.getForms().values()) {
-          Map<String,String> formObject = new HashMap<>();
+          final Map<String,String> formObject = new HashMap<>();
           formObject.put("type",form.inputType());
           formObject.put("name",form.getName());
           formObject.put("value",form.toString());
@@ -604,14 +604,14 @@ public class NotebookServer extends WebSocketServlet
       Message message = new Message(OP.PARAGRAPH).withMsgId(msgId).put("paragraph", p);
       getConnectionManager().broadcast(note.getId(), message);
       // send paragraph forms in a separate message
-      GUI settings = p.settings;
+      final GUI settings = p.settings;
       if(settings != null){
-        Message formMessage = new Message(OP.PARAGRAPH_FORM).withMsgId(msgId);
+        final Message formMessage = new Message(OP.PARAGRAPH_FORM).withMsgId(msgId);
         formMessage.put("noteId",note.getId());
         formMessage.put("paragraphId",p.getId());
-        List<Map> formArray = new ArrayList<>();
+        final List<Map> formArray = new ArrayList<>();
         for (Input form: settings.getForms().values()) {
-          Map<String,String> formObject = new HashMap<>();
+          final Map<String,String> formObject = new HashMap<>();
           formObject.put("type",form.inputType());
           formObject.put("name",form.getName());
           formObject.put("value",form.toString());
@@ -631,18 +631,18 @@ public class NotebookServer extends WebSocketServlet
                                          String msgId) {
     if (null != userParagraphMap) {
       for (String user : userParagraphMap.keySet()) {
-        Paragraph p = userParagraphMap.get(user);
-        Message message = new Message(OP.PARAGRAPH).withMsgId(msgId).put("paragraph", p);
+        final Paragraph p = userParagraphMap.get(user);
+        final Message message = new Message(OP.PARAGRAPH).withMsgId(msgId).put("paragraph", p);
         getConnectionManager().multicastToUser(user, message);
 
         // send paragraph forms in a separate message
-        Note note = p.getNote();
-        GUI settings = p.settings;
+        final Note note = p.getNote();
+        final GUI settings = p.settings;
         if(settings != null){
-          Message formMessage = new Message(OP.PARAGRAPH_FORM).withMsgId(msgId);
+          final Message formMessage = new Message(OP.PARAGRAPH_FORM).withMsgId(msgId);
           formMessage.put("noteId",note.getId());
           formMessage.put("paragraphId",p.getId());
-          List<Map> formArray = new ArrayList<>();
+          final List<Map> formArray = new ArrayList<>();
           for (Input form: settings.getForms().values()) {
             Map<String,String> formObject = new HashMap<>();
             formObject.put("type",form.inputType());
@@ -2205,24 +2205,24 @@ public class NotebookServer extends WebSocketServlet
         new Message(OP.SAVE_NOTE_FORMS).put("formsData", formsSettings));
   }
 
-  private void submitForm(NotebookSocket conn,
-                          ServiceContext context,
-                          Message fromMessage) throws IOException {
-    String noteId = (String) fromMessage.get("noteId");
-    String paragraphId = (String) fromMessage.get("paragraphId");
-    Map<String, Object> form = (Map<String, Object>) fromMessage.get("form");
-    String formId = (String) form.get("formId");
-    Object formValue = form.get("value");
+  private void submitForm(final NotebookSocket conn,
+                          final ServiceContext context,
+                          final Message fromMessage) throws IOException {
+    final String noteId = (String) fromMessage.get("noteId");
+    final String paragraphId = (String) fromMessage.get("paragraphId");
+    final Map<String, Object> form = (Map<String, Object>) fromMessage.get("form");
+    final String formId = (String) form.get("formId");
+    final Object formValue = form.get("value");
     getNotebookService().submitForm(noteId, paragraphId, formId,formValue, context,
         new WebSocketServiceCallback<GUI>(conn) {
           @Override
           public void onSuccess(GUI updatedSettings, ServiceContext context) {
-            Message message = new Message(OP.PARAGRAPH_FORM);
+            final Message message = new Message(OP.PARAGRAPH_FORM);
             message.put("noteId",noteId);
             message.put("paragraphId",paragraphId);
-            List<Map> formArray = new ArrayList<>();
+            final List<Map> formArray = new ArrayList<>();
             for (Input form: updatedSettings.getForms().values()) {
-              Map<String,String> formObject = new HashMap<>();
+              final Map<String,String> formObject = new HashMap<>();
               formObject.put("type",form.inputType());
               formObject.put("name",form.getName());
               formObject.put("value",form.toString());
