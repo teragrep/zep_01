@@ -63,7 +63,7 @@ public class GUI implements Serializable {
     }
   }
 
-  public void removeParamValue(String id) {
+  public void removeFormValue(String id) {
     if(forms.containsKey(id)){
       Object defaultValue = forms.get(id).defaultValue;
       if(defaultValue != null){

@@ -101,8 +101,8 @@ public class GUITest {
     Assertions.assertEquals(testValue,gui.params.get(textBoxWithDefaultId));
 
     // Removing a value should revert the value to default
-    gui.removeParamValue(textBoxId);
-    gui.removeParamValue(textBoxWithDefaultId);
+    gui.removeFormValue(textBoxId);
+    gui.removeFormValue(textBoxWithDefaultId);
 
     Assertions.assertTrue(gui.params.containsKey(textBoxId));
     Assertions.assertTrue(gui.params.containsKey(textBoxWithDefaultId));
