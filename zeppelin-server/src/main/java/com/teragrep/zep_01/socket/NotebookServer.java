@@ -436,6 +436,7 @@ public class NotebookServer extends WebSocketServlet
           break;
         case SUBMIT_FORM:
           submitForm(conn, context, receivedMessage);
+          break;
         case REMOVE_NOTE_FORMS:
           removeNoteForms(conn, context, receivedMessage);
           break;
