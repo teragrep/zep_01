@@ -19,10 +19,6 @@ package com.teragrep.zep_01.spark;
 
 import org.apache.commons.lang3.StringUtils;
 import com.teragrep.zep_01.display.AngularObjectRegistry;
-import com.teragrep.zep_01.display.ui.CheckBox;
-import com.teragrep.zep_01.display.ui.Password;
-import com.teragrep.zep_01.display.ui.Select;
-import com.teragrep.zep_01.display.ui.TextBox;
 import com.teragrep.zep_01.interpreter.InterpreterContext;
 import com.teragrep.zep_01.interpreter.InterpreterException;
 import com.teragrep.zep_01.interpreter.InterpreterGroup;
@@ -259,53 +255,6 @@ class SparkInterpreterTest {
     assertEquals(InterpreterResult.Type.TABLE, messageOutput.getType());
     messageOutput.flush();
     assertEquals("_1\t_2\n1\ta\n2\tnull\n", messageOutput.toInterpreterResultMessage().getData());
-
-    context = getInterpreterContext();
-    result = interpreter.interpret("z.input(\"name\", \"default_name\")", context);
-    assertEquals(InterpreterResult.Code.SUCCESS, result.code());
-    assertEquals(1, context.getGui().getForms().size());
-    assertInstanceOf(TextBox.class, context.getGui().getForms().get("name"));
-    TextBox textBox = (TextBox) context.getGui().getForms().get("name");
-    assertEquals("name", textBox.getName());
-    assertEquals("default_name", textBox.getDefaultValue());
-
-    context = getInterpreterContext();
-    result = interpreter.interpret("z.password(\"pwd\")", context);
-    assertEquals(InterpreterResult.Code.SUCCESS, result.code());
-    assertEquals(1, context.getGui().getForms().size());
-    assertInstanceOf(Password.class, context.getGui().getForms().get("pwd"));
-    Password pwd = (Password) context.getGui().getForms().get("pwd");
-    assertEquals("pwd", pwd.getName());
-
-    context = getInterpreterContext();
-    result = interpreter.interpret("z.checkbox(\"checkbox_1\", Seq((\"value_1\", \"name_1\"), (\"value_2\", \"name_2\")), Seq(\"value_2\"))", context);
-    assertEquals(InterpreterResult.Code.SUCCESS, result.code());
-    assertEquals(1, context.getGui().getForms().size());
-    assertInstanceOf(CheckBox.class, context.getGui().getForms().get("checkbox_1"));
-    CheckBox checkBox = (CheckBox) context.getGui().getForms().get("checkbox_1");
-    assertEquals("checkbox_1", checkBox.getName());
-    assertEquals(1, checkBox.getDefaultValue().length);
-    assertEquals("value_2", checkBox.getDefaultValue()[0]);
-    assertEquals(2, checkBox.getOptions().length);
-    assertEquals("value_1", checkBox.getOptions()[0].getValue());
-    assertEquals("name_1", checkBox.getOptions()[0].getDisplayName());
-    assertEquals("value_2", checkBox.getOptions()[1].getValue());
-    assertEquals("name_2", checkBox.getOptions()[1].getDisplayName());
-
-    context = getInterpreterContext();
-    result = interpreter.interpret("z.select(\"select_1\", Seq((\"value_1\", \"name_1\"), (\"value_2\", \"name_2\")), Seq(\"value_2\"))", context);
-    assertEquals(InterpreterResult.Code.SUCCESS, result.code());
-    assertEquals(1, context.getGui().getForms().size());
-    assertInstanceOf(Select.class, context.getGui().getForms().get("select_1"));
-    Select select = (Select) context.getGui().getForms().get("select_1");
-    assertEquals("select_1", select.getName());
-    // TODO(zjffdu) it seems a bug of GUI, the default value should be 'value_2', but it is List(value_2)
-    // assertEquals("value_2", select.getDefaultValue());
-    assertEquals(2, select.getOptions().length);
-    assertEquals("value_1", select.getOptions()[0].getValue());
-    assertEquals("name_1", select.getOptions()[0].getDisplayName());
-    assertEquals("value_2", select.getOptions()[1].getValue());
-    assertEquals("name_2", select.getOptions()[1].getDisplayName());
 
     // completions
     List<InterpreterCompletion> completions = interpreter.completion("a.", 2, getInterpreterContext());

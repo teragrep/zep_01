@@ -22,24 +22,16 @@ import java.security.SecureRandom;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
-import java.util.HashSet;
-import java.util.LinkedHashMap;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import com.teragrep.zep_01.common.JsonSerializable;
-import com.teragrep.zep_01.display.AngularObject;
 import com.teragrep.zep_01.display.AngularObjectRegistry;
-import com.teragrep.zep_01.display.GUI;
-import com.teragrep.zep_01.display.Input;
 import com.teragrep.zep_01.interpreter.Constants;
 import com.teragrep.zep_01.interpreter.ExecutionContext;
 import com.teragrep.zep_01.interpreter.Interpreter;
-import com.teragrep.zep_01.interpreter.Interpreter.FormType;
 import com.teragrep.zep_01.interpreter.InterpreterContext;
 import com.teragrep.zep_01.interpreter.InterpreterException;
 import com.teragrep.zep_01.interpreter.InterpreterNotFoundException;
@@ -78,8 +70,6 @@ public class Paragraph extends JobWithProgressPoller<InterpreterResult> implemen
   private int progress;
   // paragraph configs like isOpen, colWidth, etc
   private Map<String, Object> config = new HashMap<>();
-  // form and parameter settings
-  public GUI settings = new GUI();
   private InterpreterResult results;
   // Application states in this paragraph
 
@@ -117,8 +107,6 @@ public class Paragraph extends JobWithProgressPoller<InterpreterResult> implemen
   public Paragraph(Paragraph p2) {
     super(p2.getId(), null);
     this.note = p2.note;
-    this.settings.setParams(new HashMap<>(p2.settings.getParams()));
-    this.settings.setForms(new LinkedHashMap<>(p2.settings.getForms()));
     this.setConfig(new HashMap<>(p2.getConfig()));
     this.setAuthenticationInfo(p2.getAuthenticationInfo());
     this.title = p2.title;
@@ -430,36 +418,7 @@ public class Paragraph extends JobWithProgressPoller<InterpreterResult> implemen
       for (Paragraph p : userParagraphMap.values()) {
         p.setText(getText());
       }
-
-      // inject form
       String script = this.scriptText;
-      String form = localProperties.getOrDefault("form", interpreter.getFormType().name());
-      if (form.equalsIgnoreCase("simple")) {
-        // inputs will be built from script body
-        LinkedHashMap<String, Input> inputs = Input.extractSimpleQueryForm(script, false);
-        LinkedHashMap<String, Input> noteInputs = Input.extractSimpleQueryForm(script, true);
-        final AngularObjectRegistry angularRegistry =
-                interpreter.getInterpreterGroup().getAngularObjectRegistry();
-        String scriptBody = extractVariablesFromAngularRegistry(script, inputs, angularRegistry);
-
-        settings.setForms(inputs);
-        if (!noteInputs.isEmpty()) {
-          if (!note.getNoteForms().isEmpty()) {
-            Map<String, Input> currentNoteForms = note.getNoteForms();
-            for (String s : noteInputs.keySet()) {
-              if (!currentNoteForms.containsKey(s)) {
-                currentNoteForms.put(s, noteInputs.get(s));
-              }
-            }
-          } else {
-            note.setNoteForms(noteInputs);
-          }
-        }
-        script = Input.getSimpleQuery(note.getNoteParams(), scriptBody, true);
-        script = Input.getSimpleQuery(settings.getParams(), script, false);
-      } else {
-        settings.clear();
-      }
 
       LOGGER.debug("RUN : " + script);
       try {
@@ -482,11 +441,6 @@ public class Paragraph extends JobWithProgressPoller<InterpreterResult> implemen
           ret = interpreter.interpret(script, context);
         }
 
-        if (interpreter.getFormType() == FormType.NATIVE) {
-          note.setNoteParams(context.getNoteGui().getParams());
-          note.setNoteForms(context.getNoteGui().getForms());
-        }
-
         if (Code.KEEP_PREVIOUS_RESULT == ret.code()) {
           return getReturn();
         }
@@ -494,7 +448,6 @@ public class Paragraph extends JobWithProgressPoller<InterpreterResult> implemen
         Paragraph p = getUserParagraph(getUser());
         if (null != p) {
           p.setResult(ret);
-          p.settings.setParams(settings.getParams());
         }
 
         return ret;
@@ -556,8 +509,6 @@ public class Paragraph extends JobWithProgressPoller<InterpreterResult> implemen
             .setAuthenticationInfo(subject)
             .setLocalProperties(localProperties)
             .setConfig(config)
-            .setGUI(settings)
-            .setNoteGUI(getNoteGui())
             .setAngularObjectRegistry(registry)
             .setResourcePool(resourcePool)
             .build();
@@ -602,27 +553,6 @@ public class Paragraph extends JobWithProgressPoller<InterpreterResult> implemen
   public void setReturn(InterpreterResult value, Throwable t) {
     setResult(value);
     setException(t);
-  }
-
-  String extractVariablesFromAngularRegistry(String scriptBody, Map<String, Input> inputs,
-      AngularObjectRegistry angularRegistry) {
-
-    final String noteId = this.getNote().getId();
-    final String paragraphId = this.getId();
-
-    final Set<String> keys = new HashSet<>(inputs.keySet());
-
-    for (String varName : keys) {
-      final AngularObject paragraphScoped = angularRegistry.get(varName, noteId, paragraphId);
-      final AngularObject noteScoped = angularRegistry.get(varName, noteId, null);
-      final AngularObject angularObject = paragraphScoped != null ? paragraphScoped : noteScoped;
-      if (angularObject != null) {
-        inputs.remove(varName);
-        final String pattern = "[$][{]\\s*" + varName + "\\s*(?:=[^}]+)?[}]";
-        scriptBody = scriptBody.replaceAll(pattern, angularObject.get().toString());
-      }
-    }
-    return scriptBody;
   }
 
   public boolean isValidInterpreter(String replName) {
@@ -694,13 +624,6 @@ public class Paragraph extends JobWithProgressPoller<InterpreterResult> implemen
     }
   }
 
-  private GUI getNoteGui() {
-    GUI gui = new GUI();
-    gui.setParams(this.note.getNoteParams());
-    gui.setForms(this.note.getNoteForms());
-    return gui;
-  }
-
   @Override
   public boolean equals(Object o) {
     if (this == o) {
@@ -731,9 +654,6 @@ public class Paragraph extends JobWithProgressPoller<InterpreterResult> implemen
     if (config != null ? !config.equals(paragraph.config) : paragraph.config != null) {
       return false;
     }
-    if (settings != null ? !settings.equals(paragraph.settings) : paragraph.settings != null) {
-      return false;
-    }
 
     return results != null ?
         results.equals(paragraph.results) : paragraph.results == null;
@@ -748,7 +668,6 @@ public class Paragraph extends JobWithProgressPoller<InterpreterResult> implemen
     result1 = 31 * result1 + (user != null ? user.hashCode() : 0);
     result1 = 31 * result1 + (dateUpdated != null ? dateUpdated.hashCode() : 0);
     result1 = 31 * result1 + (config != null ? config.hashCode() : 0);
-    result1 = 31 * result1 + (settings != null ? settings.hashCode() : 0);
     result1 = 31 * result1 + (results != null ? results.hashCode() : 0);
     return result1;
   }

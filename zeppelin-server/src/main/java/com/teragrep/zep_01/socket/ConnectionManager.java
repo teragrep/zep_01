@@ -22,8 +22,6 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import org.apache.commons.lang3.StringUtils;
 import com.teragrep.zep_01.conf.ZeppelinConfiguration;
-import com.teragrep.zep_01.display.GUI;
-import com.teragrep.zep_01.display.Input;
 import com.teragrep.zep_01.notebook.Note;
 import com.teragrep.zep_01.notebook.NoteInfo;
 import com.teragrep.zep_01.notebook.NotebookImportDeserializer;
@@ -60,8 +58,7 @@ public class ConnectionManager {
   private static final Gson gson = new GsonBuilder()
       .setDateFormat("yyyy-MM-dd'T'HH:mm:ssZ")
       .registerTypeAdapter(Date.class, new NotebookImportDeserializer())
-      .setPrettyPrinting()
-      .registerTypeAdapterFactory(Input.TypeAdapterFactory).create();
+      .setPrettyPrinting().create();
 
   final Queue<NotebookSocket> connectedSockets = new ConcurrentLinkedQueue<>();
   // noteId -> connection
@@ -370,7 +367,6 @@ public class ConnectionManager {
   }
 
   public void broadcastParagraph(Note note, Paragraph p) {
-    broadcastNoteForms(note);
 
     if (note.isPersonalizedMode()) {
       broadcastParagraphs(p.getUserParagraphMap());
@@ -406,15 +402,6 @@ public class ConnectionManager {
   //    //to others afterwards
   //    broadcastNoteListExcept(notesInfo, subject);
   //  }
-
-
-  private void broadcastNoteForms(Note note) {
-    GUI formsSettings = new GUI();
-    formsSettings.setForms(note.getNoteForms());
-    formsSettings.setParams(note.getNoteParams());
-    broadcast(note.getId(), new Message(Message.OP.SAVE_NOTE_FORMS)
-        .put("formsData", formsSettings));
-  }
 
   public void switchConnectionToWatcher(NotebookSocket conn) {
     if (!isSessionAllowedToSwitchToWatcher(conn)) {

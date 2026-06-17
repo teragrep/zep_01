@@ -343,8 +343,6 @@ public class NotebookTest extends AbstractInterpreterTest implements ParagraphJo
     assertEquals(notes.get(0).getParagraphs().size(), copiedNote.getParagraphs().size());
     assertEquals(notes.get(0).getParagraphs().get(0).getText(),
         copiedNote.getParagraphs().get(0).getText());
-    assertEquals(notes.get(0).getParagraphs().get(0).settings,
-        copiedNote.getParagraphs().get(0).settings);
     assertEquals(notes.get(0).getParagraphs().get(0).getTitle(),
         copiedNote.getParagraphs().get(0).getTitle());
 

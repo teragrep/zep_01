@@ -136,8 +136,6 @@ public class RemoteInterpreterServerTest {
     final RemoteInterpreterContext intpContext = new RemoteInterpreterContext();
     intpContext.setNoteId("note_1");
     intpContext.setParagraphId("paragraph_1");
-    intpContext.setGui("{}");
-    intpContext.setNoteGui("{}");
     intpContext.setLocalProperties(new HashMap<>());
 
     // single output of SUCCESS

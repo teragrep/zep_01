@@ -18,7 +18,6 @@
 package com.teragrep.zep_01.interpreter;
 
 import com.teragrep.zep_01.display.AngularObjectRegistry;
-import com.teragrep.zep_01.display.GUI;
 import com.teragrep.zep_01.interpreter.remote.RemoteInterpreterEventClient;
 import com.teragrep.zep_01.resource.ResourcePool;
 import com.teragrep.zep_01.user.AuthenticationInfo;
@@ -62,8 +61,6 @@ public class InterpreterContext {
   private String paragraphText;
   private AuthenticationInfo authenticationInfo;
   private Map<String, Object> config = new HashMap<>();
-  private GUI gui = new GUI();
-  private GUI noteGui = new GUI();
   private AngularObjectRegistry angularObjectRegistry;
   private ResourcePool resourcePool;
   private String interpreterClassName;
@@ -125,16 +122,6 @@ public class InterpreterContext {
       if (config != null) {
         context.config = new HashMap<>(config);
       }
-      return this;
-    }
-
-    public Builder setGUI(GUI gui) {
-      context.gui = gui;
-      return this;
-    }
-
-    public Builder setNoteGUI(GUI noteGUI) {
-      context.noteGui = noteGUI;
       return this;
     }
 
@@ -240,14 +227,6 @@ public class InterpreterContext {
 
   public Map<String, Object> getConfig() {
     return config;
-  }
-
-  public GUI getGui() {
-    return gui;
-  }
-
-  public GUI getNoteGui() {
-    return noteGui;
   }
 
   public AngularObjectRegistry getAngularObjectRegistry() {

@@ -24,8 +24,6 @@ import com.teragrep.zep_01.interpreter.*;
 import org.apache.thrift.TException;
 import com.teragrep.zep_01.display.AngularObject;
 import com.teragrep.zep_01.display.AngularObjectRegistry;
-import com.teragrep.zep_01.display.GUI;
-import com.teragrep.zep_01.display.Input;
 import com.teragrep.zep_01.interpreter.thrift.InterpreterCompletion;
 import com.teragrep.zep_01.interpreter.thrift.RemoteInterpreterContext;
 import com.teragrep.zep_01.interpreter.thrift.RemoteInterpreterResult;
@@ -209,26 +207,6 @@ public class RemoteInterpreter extends Interpreter {
           if (remoteConfig != null) {
             context.getConfig().putAll(remoteConfig);
           }
-          GUI currentGUI = context.getGui();
-          GUI currentNoteGUI = context.getNoteGui();
-          if (form == FormType.NATIVE) {
-            GUI remoteGui = GUI.fromJson(remoteResult.getGui());
-            GUI remoteNoteGui = GUI.fromJson(remoteResult.getNoteGui());
-            currentGUI.clear();
-            currentGUI.setParams(remoteGui.getParams());
-            currentGUI.setForms(remoteGui.getForms());
-            currentNoteGUI.setParams(remoteNoteGui.getParams());
-            currentNoteGUI.setForms(remoteNoteGui.getForms());
-          } else if (form == FormType.SIMPLE) {
-            final Map<String, Input> currentForms = currentGUI.getForms();
-            final Map<String, Object> currentParams = currentGUI.getParams();
-            final GUI remoteGUI = GUI.fromJson(remoteResult.getGui());
-            final Map<String, Input> remoteForms = remoteGUI.getForms();
-            final Map<String, Object> remoteParams = remoteGUI.getParams();
-            currentForms.putAll(remoteForms);
-            currentParams.putAll(remoteParams);
-          }
-
           return convert(remoteResult);
         }
     );
@@ -357,8 +335,7 @@ public class RemoteInterpreter extends Interpreter {
   private RemoteInterpreterContext convert(InterpreterContext ic) {
     return new RemoteInterpreterContext(ic.getNoteId(), ic.getNoteName(), ic.getParagraphId(),
         ic.getReplName(), ic.getParagraphTitle(), ic.getParagraphText(),
-        GSON.toJson(ic.getAuthenticationInfo()), GSON.toJson(ic.getConfig()), ic.getGui().toJson(),
-        GSON.toJson(ic.getNoteGui()),
+        GSON.toJson(ic.getAuthenticationInfo()), GSON.toJson(ic.getConfig()),
         ic.getLocalProperties());
   }
 
