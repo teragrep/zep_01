@@ -43,24 +43,31 @@
  * Teragrep, the applicable Commercial License may apply to this file if you as
  * a licensee so wish it.
  */
-package com.teragrep.pth_07;
+package com.teragrep.pth_07.performance;
 
 import com.teragrep.pth_07.ui.UserInterfaceManager;
+import com.teragrep.zep_01.common.exception.IncompatibleValueException;
+import org.apache.spark.sql.Dataset;
+import org.apache.spark.sql.Row;
 import org.apache.spark.sql.SparkSession;
 import org.apache.spark.sql.execution.ui.SQLExecutionUIData;
 import org.apache.spark.sql.execution.ui.SQLPlanMetric;
 import org.apache.spark.sql.streaming.StreamingQueryListener;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import scala.collection.Iterator;
 import scala.collection.JavaConverters;
 import scala.collection.Seq;
 
-import java.util.HashMap;
-import java.util.Map;
+import java.time.Instant;
+import java.util.*;
 
 public final class DPLMetricsListener extends StreamingQueryListener {
+    private static final Logger LOGGER = LoggerFactory.getLogger(DPLMetricsListener.class);
     private final SparkSession sparkSession;
     private final UserInterfaceManager uiManager;
     private final String queryId;
+    private final List<Row> rows;
 
     public DPLMetricsListener(
             final SparkSession sparkSession,
@@ -69,6 +76,7 @@ public final class DPLMetricsListener extends StreamingQueryListener {
         this.sparkSession = sparkSession;
         this.uiManager = uiManager;
         this.queryId = queryId;
+        this.rows = new ArrayList<Row>();
     }
 
     @Override
@@ -78,31 +86,42 @@ public final class DPLMetricsListener extends StreamingQueryListener {
 
     @Override
     public void onQueryProgress(final QueryProgressEvent event) {
-        if (event.progress().name().equals(queryId)) {
-            final Map<String, String> currentMetrics = new HashMap<>();
-            final Seq<SQLExecutionUIData> executionsList = sparkSession.sharedState().statusStore().executionsList();
-            if (!executionsList.isEmpty()) {
-                final Iterator<SQLExecutionUIData> executionDataIterator = sparkSession.sharedState().statusStore().executionsList().iterator();
-                while (executionDataIterator.hasNext()) {
-                    final SQLExecutionUIData executionData = executionDataIterator.next();
-                    final Map<Object, String> metricValues = JavaConverters.mapAsJavaMap(executionData.metricValues());
-                    for (final SQLPlanMetric metric : JavaConverters.asJavaIterable(executionData.metrics())) {
-                        final long id = metric.accumulatorId();
-                        final Object value = metricValues.get(id);
-                        if (metric.metricType().startsWith("v2Custom_") && value != null) {
-                            currentMetrics.put(metric.name(), value.toString());
+            if (event.progress().name().equals(queryId)) {
+                final Seq<SQLExecutionUIData> executionsList = sparkSession.sharedState().statusStore().executionsList();
+                DPLPerformanceEntry entry = new DPLPerformanceEntry(new DefaultMetricsSchema());
+                if (!executionsList.isEmpty()) {
+                    final Iterator<SQLExecutionUIData> executionDataIterator = executionsList.iterator();
+
+                    // Add metrics from SQLExecutionUIData
+                    // We want only one DPLPerformanceEntry per QueryProgressEvent. Only the latest instances of each metric encountered will be added to the entry.
+                    while (executionDataIterator.hasNext()) {
+                        final SQLExecutionUIData executionData = executionDataIterator.next();
+                        final Map<Object, String> metricValues = JavaConverters.mapAsJavaMap(executionData.metricValues());
+                        for (final SQLPlanMetric metric : JavaConverters.asJavaIterable(executionData.metrics())) {
+                            final long id = metric.accumulatorId();
+                            final String value = metricValues.get(id);
+                            if (metric.metricType().startsWith("v2Custom_") && value != null && !"null".equals(value)) {
+                                // Custom metrics must be longs.
+                                entry = entry.withData(metric.name(), Long.parseLong(value));
+                            }
                         }
                     }
-                }
-            }
 
-            uiManager.getPerformanceIndicator().setPerformanceData(
-                    event.progress().numInputRows(),
-                    event.progress().batchId(),
-                    event.progress().processedRowsPerSecond(),
-                    currentMetrics
-            );
-        }
+                    // Add metrics from QueryProgressEvent
+                    entry = entry.withData("RowsReadFromArchive: Full table input rows read from archive", event.progress().numInputRows());
+                    entry = entry.withData("BatchId: sequence number of the batch", event.progress().batchId());
+                    entry = entry.withData("Eps: processed rows per second", event.progress().processedRowsPerSecond());
+                    entry = entry.withData("Timestamp: timestamp of when performance data was received(epochtime)", Instant.now().toEpochMilli());
+
+                    // Create a Spark Row for this performance event and add it to the list.
+                    final Row row = entry.asRow();
+                    rows.add(row);
+                }
+                // Take every row this Listener has encountered so far and prdouce a Dataset. Store the dataset within UserInterfaceManager as the latest performance dataset so that it can be accessed even after this Listener has been destroyed
+                final Dataset<Row> metricsDataset = sparkSession.createDataFrame(rows, entry.performanceSchema());
+                uiManager.getPerformanceIndicator().setPerformanceDataset(metricsDataset);
+                uiManager.getPerformanceIndicator().sendPerformanceUpdate();
+            }
     }
 
     @Override
