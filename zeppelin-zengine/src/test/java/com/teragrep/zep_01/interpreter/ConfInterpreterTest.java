@@ -17,84 +17,101 @@
 
 package com.teragrep.zep_01.interpreter;
 
-import com.teragrep.zep_01.interpreter.remote.RemoteInterpreter;
-import org.junit.Before;
 import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
-
-public class ConfInterpreterTest extends AbstractInterpreterTest {
+public final class ConfInterpreterTest extends AbstractInterpreterTest {
 
   private ExecutionContext executionContext = new ExecutionContext("user1", "note1", "test");
 
-
   @Test
-  public void testCorrectConf() throws InterpreterException {
-    assertTrue(interpreterFactory.getInterpreter("test.conf", executionContext) instanceof ConfInterpreter);
-    ConfInterpreter confInterpreter = (ConfInterpreter) interpreterFactory.getInterpreter("test.conf", executionContext);
+  public void testCorrectConf(){
+    // Properties should exist in the Interpreters setting before they are updated by ConfInterpreter.
+    final InterpreterSetting testSetting = interpreterSettingManager.getByName("test");
+    testSetting.setProperty("property_1","default_value");
+    testSetting.setProperty("new_property","default_value");
 
-    InterpreterContext context = InterpreterContext.builder()
-        .setNoteId("noteId")
-        .setParagraphId("paragraphId")
-        .build();
+    final Interpreter confInterpreter = Assertions.assertDoesNotThrow(()->interpreterFactory.getInterpreter("test.conf", executionContext));
 
-    InterpreterResult result = confInterpreter.interpret("property_1\tnew_value\nnew_property\tdummy_value", context);
-    assertEquals(InterpreterResult.Code.SUCCESS, result.code);
+    final InterpreterContext context = InterpreterContext.builder()
+              .setNoteId("noteId")
+              .setParagraphId("paragraphId")
+              .build();
 
-    assertTrue(interpreterFactory.getInterpreter("test", executionContext) instanceof RemoteInterpreter);
-    RemoteInterpreter remoteInterpreter = (RemoteInterpreter) interpreterFactory.getInterpreter("test", executionContext);
-    remoteInterpreter.interpret("hello world", context);
-    assertEquals(6, remoteInterpreter.getProperties().size());
-    assertEquals("new_value", remoteInterpreter.getProperty("property_1"));
-    assertEquals("dummy_value", remoteInterpreter.getProperty("new_property"));
-    assertEquals("value_3", remoteInterpreter.getProperty("property_3"));
+
+    final InterpreterResult confResult = Assertions.assertDoesNotThrow(()->confInterpreter.interpret("property_1\tnew_value\nnew_property\tdummy_value", context));
+    Assertions.assertEquals(InterpreterResult.Code.SUCCESS, confResult.code);
+
+    final Interpreter interpreter = Assertions.assertDoesNotThrow(()->interpreterFactory.getInterpreter("test", executionContext));
+    final InterpreterResult result = Assertions.assertDoesNotThrow(()->interpreter.interpret("hello world",context));
+    Assertions.assertEquals(InterpreterResult.Code.SUCCESS, result.code);
+
+    Assertions.assertEquals(6, interpreter.getProperties().size());
+    Assertions.assertEquals("new_value", interpreter.getProperty("property_1"));
+    Assertions.assertEquals("dummy_value", interpreter.getProperty("new_property"));
+    Assertions.assertEquals("value_3", interpreter.getProperty("property_3"));
 
     // rerun the paragraph with the same properties would result in SUCCESS
-    result = confInterpreter.interpret("property_1\tnew_value\nnew_property\tdummy_value", context);
-    assertEquals(InterpreterResult.Code.SUCCESS, result.code);
+    final InterpreterResult confResult2 = Assertions.assertDoesNotThrow(()->confInterpreter.interpret("property_1\tnew_value\nnew_property\tdummy_value", context));
+    Assertions.assertEquals(InterpreterResult.Code.SUCCESS, confResult2.code);
 
-    // run the paragraph with the same properties would result in ERROR
-    result = confInterpreter.interpret("property_1\tnew_value_2\nnew_property\tdummy_value", context);
-    assertEquals(InterpreterResult.Code.ERROR, result.code);
+    // trying to modify properties after interpreter is running would result in ERROR
+    final InterpreterResult confResult3 = Assertions.assertDoesNotThrow(()->confInterpreter.interpret("property_1\tnew_value_2\nnew_property\tdummy_value", context));
+    Assertions.assertEquals(InterpreterResult.Code.ERROR, confResult3.code);
   }
 
   @Test
-  public void testEmptyConf() throws InterpreterException {
-    assertTrue(interpreterFactory.getInterpreter("test.conf", executionContext) instanceof ConfInterpreter);
-    ConfInterpreter confInterpreter = (ConfInterpreter) interpreterFactory.getInterpreter("test.conf", executionContext);
+  public void testEmptyConf(){
+    final Interpreter confInterpreter = Assertions.assertDoesNotThrow(()->interpreterFactory.getInterpreter("test.conf", executionContext));
 
-    InterpreterContext context = InterpreterContext.builder()
-        .setNoteId("noteId")
-        .setParagraphId("paragraphId")
-        .build();
-    InterpreterResult result = confInterpreter.interpret("", context);
-    assertEquals(InterpreterResult.Code.SUCCESS, result.code);
+    final InterpreterContext context = InterpreterContext.builder()
+            .setNoteId("noteId")
+            .setParagraphId("paragraphId")
+            .build();
+    final InterpreterResult result = Assertions.assertDoesNotThrow(()->confInterpreter.interpret("", context));
+    Assertions.assertEquals(InterpreterResult.Code.SUCCESS, result.code);
 
-    assertTrue(interpreterFactory.getInterpreter("test", executionContext) instanceof RemoteInterpreter);
-    RemoteInterpreter remoteInterpreter = (RemoteInterpreter) interpreterFactory.getInterpreter("test", executionContext);
-    assertEquals(5, remoteInterpreter.getProperties().size());
-    assertEquals("value_1", remoteInterpreter.getProperty("property_1"));
-    assertEquals("value_3", remoteInterpreter.getProperty("property_3"));
+    final Interpreter interpreter = Assertions.assertDoesNotThrow(()->interpreterFactory.getInterpreter("test", executionContext));
+    Assertions.assertEquals(5, interpreter.getProperties().size());
+    Assertions.assertEquals("value_1", interpreter.getProperty("property_1"));
+    Assertions.assertEquals("value_3", interpreter.getProperty("property_3"));
   }
 
 
   @Test
-  public void testRunningAfterOtherInterpreter() throws InterpreterException {
-    assertTrue(interpreterFactory.getInterpreter("test.conf", executionContext) instanceof ConfInterpreter);
-    ConfInterpreter confInterpreter = (ConfInterpreter) interpreterFactory.getInterpreter("test.conf", executionContext);
+  public void testRunningAfterOtherInterpreter(){
+    // Properties should exist in the Interpreters setting before they are updated by ConfInterpreter.
+    final InterpreterSetting testSetting = interpreterSettingManager.getByName("test");
+    testSetting.setProperty("property_1","default_value");
+    testSetting.setProperty("new_property","default_value");
 
-    InterpreterContext context = InterpreterContext.builder()
-        .setNoteId("noteId")
-        .setParagraphId("paragraphId")
-        .build();
+    final Interpreter confInterpreter = Assertions.assertDoesNotThrow(()->interpreterFactory.getInterpreter("test.conf", executionContext));
 
-    RemoteInterpreter remoteInterpreter = (RemoteInterpreter) interpreterFactory.getInterpreter("test", executionContext);
-    InterpreterResult result = remoteInterpreter.interpret("hello world", context);
-    assertEquals(InterpreterResult.Code.SUCCESS, result.code);
 
-    result = confInterpreter.interpret("property_1\tnew_value\nnew_property\tdummy_value", context);
-    assertEquals(InterpreterResult.Code.ERROR, result.code);
+    final InterpreterContext context = InterpreterContext.builder()
+              .setNoteId("noteId")
+              .setParagraphId("paragraphId")
+              .build();
+
+    final Interpreter interpreter = Assertions.assertDoesNotThrow(()->interpreterFactory.getInterpreter("test", executionContext));
+    InterpreterResult result = Assertions.assertDoesNotThrow(()->interpreter.interpret("hello world",context));
+    Assertions.assertEquals(InterpreterResult.Code.SUCCESS, result.code);
+
+    final InterpreterResult confResult = Assertions.assertDoesNotThrow(()->confInterpreter.interpret("property_1\tnew_value\nnew_property\tdummy_value", context));
+    Assertions.assertEquals(InterpreterResult.Code.ERROR, confResult.code);
   }
 
+  @Test
+  public void testAddUndefinedProperty() throws InterpreterException {
+    final String key = "unexpected_key";
+    final String value = "nefarious_value";
+    final ConfInterpreter confInterpreter = (ConfInterpreter) interpreterFactory.getInterpreter("test.conf", executionContext);
+    final InterpreterContext context = InterpreterContext.builder()
+            .setNoteId("noteId")
+            .setParagraphId("paragraphId")
+            .build();
+    final InterpreterResult result = Assertions.assertDoesNotThrow(()->confInterpreter.interpret(key + "\t" + value, context));
+    Assertions.assertEquals(InterpreterResult.Code.ERROR,result.code());
+    Assertions.assertTrue(result.message().get(0).getData().contains("Tried to add an unknown key to Interpreter's properties: "+key+" Please make sure that the key is listed as a property in the Interpreters page"));
+  }
 }
