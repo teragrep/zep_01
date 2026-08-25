@@ -37,8 +37,6 @@ import java.util.Map;
 import java.util.Set;
 import javax.inject.Inject;
 
-import jakarta.json.Json;
-import jakarta.json.JsonObject;
 import org.apache.commons.lang3.StringUtils;
 import com.teragrep.zep_01.conf.ZeppelinConfiguration;
 import com.teragrep.zep_01.display.AngularObject;
@@ -107,7 +105,7 @@ public class NotebookService {
     if (noteId != null) {
       note = notebook.getNote(noteId);
       if (note != null) {
-        if (!checkPermission(noteId, Permission.READER, Message.OP.GET_HOME_NOTE, context,
+        if (!checkPermission(noteId, Permission.READER, context,
                 callback)) {
           return null;
         }
@@ -133,7 +131,7 @@ public class NotebookService {
       return null;
     }
 
-    if (!checkPermission(noteId, Permission.READER, Message.OP.GET_NOTE, context,
+    if (!checkPermission(noteId, Permission.READER, context,
         callback)) {
       return null;
     }
@@ -212,7 +210,7 @@ public class NotebookService {
   public void removeNote(String noteId,
                          ServiceContext context,
                          ServiceCallback<String> callback) throws IOException {
-    if (!checkPermission(noteId, Permission.OWNER, Message.OP.DEL_NOTE, context, callback)) {
+    if (!checkPermission(noteId, Permission.OWNER, context, callback)) {
       return;
     }
 
@@ -255,7 +253,7 @@ public class NotebookService {
                          boolean isRelative,
                          ServiceContext context,
                          ServiceCallback<Note> callback) throws IOException {
-    if (!checkPermission(noteId, Permission.OWNER, Message.OP.NOTE_RENAME, context, callback)) {
+    if (!checkPermission(noteId, Permission.OWNER, context, callback)) {
       return;
     }
     Note note = notebook.getNote(noteId);
@@ -346,7 +344,7 @@ public class NotebookService {
                               ServiceCallback<Paragraph> callback) throws IOException {
 
     LOGGER.info("Start to run paragraph: {} of note: {}", paragraphId, noteId);
-    if (!checkPermission(noteId, Permission.RUNNER, Message.OP.RUN_PARAGRAPH, context, callback)) {
+    if (!checkPermission(noteId, Permission.RUNNER, context, callback)) {
       return false;
     }
 
@@ -418,7 +416,7 @@ public class NotebookService {
                                   List<Map<String, Object>> paragraphs,
                                   ServiceContext context,
                                   ServiceCallback<Paragraph> callback) throws IOException {
-    if (!checkPermission(noteId, Permission.RUNNER, Message.OP.RUN_ALL_PARAGRAPHS, context,
+    if (!checkPermission(noteId, Permission.RUNNER, context,
         callback)) {
       return false;
     }
@@ -484,7 +482,7 @@ public class NotebookService {
                               String paragraphId,
                               ServiceContext context,
                               ServiceCallback<Paragraph> callback) throws IOException {
-    if (!checkPermission(noteId, Permission.RUNNER, Message.OP.CANCEL_PARAGRAPH, context,
+    if (!checkPermission(noteId, Permission.RUNNER, context,
         callback)) {
       return;
     }
@@ -505,7 +503,7 @@ public class NotebookService {
                             int newIndex,
                             ServiceContext context,
                             ServiceCallback<Paragraph> callback) throws IOException {
-    if (!checkPermission(noteId, Permission.WRITER, Message.OP.MOVE_PARAGRAPH, context,
+    if (!checkPermission(noteId, Permission.WRITER, context,
         callback)) {
       return;
     }
@@ -530,7 +528,7 @@ public class NotebookService {
                               String paragraphId,
                               ServiceContext context,
                               ServiceCallback<Paragraph> callback) throws IOException {
-    if (!checkPermission(noteId, Permission.WRITER, Message.OP.PARAGRAPH_REMOVE, context,
+    if (!checkPermission(noteId, Permission.WRITER, context,
         callback)) {
       return;
     }
@@ -551,7 +549,7 @@ public class NotebookService {
                                    Map<String, Object> config,
                                    ServiceContext context,
                                    ServiceCallback<Paragraph> callback) throws IOException {
-    if (!checkPermission(noteId, Permission.WRITER, Message.OP.INSERT_PARAGRAPH, context,
+    if (!checkPermission(noteId, Permission.WRITER, context,
         callback)) {
       return null;
     }
@@ -569,7 +567,7 @@ public class NotebookService {
   public void restoreNote(String noteId,
                           ServiceContext context,
                           ServiceCallback<Note> callback) throws IOException {
-    if (!checkPermission(noteId, Permission.WRITER, Message.OP.RESTORE_NOTE, context,
+    if (!checkPermission(noteId, Permission.WRITER, context,
         callback)) {
       return;
     }
@@ -634,7 +632,7 @@ public class NotebookService {
                               Map<String, Object> config,
                               ServiceContext context,
                               ServiceCallback<Paragraph> callback) throws IOException {
-    if (!checkPermission(noteId, Permission.WRITER, Message.OP.COMMIT_PARAGRAPH, context,
+    if (!checkPermission(noteId, Permission.WRITER, context,
         callback)) {
       return;
     }
@@ -668,7 +666,7 @@ public class NotebookService {
                                         int maxParagraph,
                                         ServiceContext context,
                                         ServiceCallback<Paragraph> callback) throws IOException {
-    if (!checkPermission(noteId, Permission.WRITER, Message.OP.PARAGRAPH_CLEAR_OUTPUT, context,
+    if (!checkPermission(noteId, Permission.WRITER, context,
             callback)) {
       throw new IOException("No privilege to access this note");
     }
@@ -699,7 +697,7 @@ public class NotebookService {
                                    String paragraphId,
                                    ServiceContext context,
                                    ServiceCallback<Paragraph> callback) throws IOException {
-    if (!checkPermission(noteId, Permission.WRITER, Message.OP.PARAGRAPH_CLEAR_OUTPUT, context,
+    if (!checkPermission(noteId, Permission.WRITER, context,
         callback)) {
       return;
     }
@@ -727,7 +725,7 @@ public class NotebookService {
   public void clearAllParagraphOutput(String noteId,
                                       ServiceContext context,
                                       ServiceCallback<Note> callback) throws IOException {
-    if (!checkPermission(noteId, Permission.WRITER, Message.OP.PARAGRAPH_CLEAR_ALL_OUTPUT, context,
+    if (!checkPermission(noteId, Permission.WRITER, context,
         callback)) {
       return;
     }
@@ -748,7 +746,7 @@ public class NotebookService {
                          Map<String, Object> config,
                          ServiceContext context,
                          ServiceCallback<Note> callback) throws IOException {
-    if (!checkPermission(noteId, Permission.WRITER, Message.OP.NOTE_UPDATE, context,
+    if (!checkPermission(noteId, Permission.WRITER, context,
         callback)) {
       return;
     }
@@ -788,47 +786,6 @@ public class NotebookService {
     return cronUpdated;
   }
 
-  public void saveNoteForms(String noteId,
-                            Map<String, Object> noteParams,
-                            ServiceContext context,
-                            ServiceCallback<Note> callback) throws IOException {
-    if (!checkPermission(noteId, Permission.WRITER, Message.OP.SAVE_NOTE_FORMS, context,
-        callback)) {
-      return;
-    }
-
-    Note note = notebook.getNote(noteId);
-    if (note == null) {
-      callback.onFailure(new NoteNotFoundException(noteId), context);
-      return;
-    }
-
-    note.setNoteParams(noteParams);
-    notebook.saveNote(note, context.getAutheInfo());
-    callback.onSuccess(note, context);
-  }
-
-  public void removeNoteForms(String noteId,
-                              String formName,
-                              ServiceContext context,
-                              ServiceCallback<Note> callback) throws IOException {
-    Note note = notebook.getNote(noteId);
-    if (note == null) {
-      callback.onFailure(new NoteNotFoundException(noteId), context);
-      return;
-    }
-
-    if (!checkPermission(noteId, Permission.WRITER, Message.OP.REMOVE_NOTE_FORMS, context,
-        callback)) {
-      return;
-    }
-
-    note.getNoteForms().remove(formName);
-    note.getNoteParams().remove(formName);
-    notebook.saveNote(note, context.getAutheInfo());
-    callback.onSuccess(note, context);
-  }
-
   public NotebookRepoWithVersionControl.Revision checkpointNote(
       String noteId,
       String commitMessage,
@@ -841,7 +798,7 @@ public class NotebookService {
       return null;
     }
 
-    if (!checkPermission(noteId, Permission.WRITER, Message.OP.REMOVE_NOTE_FORMS, context,
+    if (!checkPermission(noteId, Permission.WRITER, context,
         callback)) {
       return null;
     }
@@ -886,7 +843,7 @@ public class NotebookService {
       return null;
     }
 
-    if (!checkPermission(noteId, Permission.WRITER, Message.OP.SET_NOTE_REVISION, context,
+    if (!checkPermission(noteId, Permission.WRITER, context,
         callback)) {
       return null;
     }
@@ -913,7 +870,7 @@ public class NotebookService {
       return;
     }
 
-    if (!checkPermission(noteId, Permission.READER, Message.OP.NOTE_REVISION, context,
+    if (!checkPermission(noteId, Permission.READER, context,
         callback)) {
       return;
     }
@@ -933,7 +890,7 @@ public class NotebookService {
       return;
     }
 
-    if (!checkPermission(noteId, Permission.READER, Message.OP.NOTE_REVISION_FOR_COMPARE, context,
+    if (!checkPermission(noteId, Permission.READER, context,
         callback)) {
       return;
     }
@@ -961,7 +918,7 @@ public class NotebookService {
       return null;
     }
 
-    if (!checkPermission(noteId, Permission.WRITER, Message.OP.COMPLETION, context,
+    if (!checkPermission(noteId, Permission.WRITER, context,
         callback)) {
       return null;
     }
@@ -1006,7 +963,7 @@ public class NotebookService {
       return;
     }
 
-    if (!checkPermission(noteId, Permission.WRITER, Message.OP.UPDATE_PERSONALIZED_MODE, context,
+    if (!checkPermission(noteId, Permission.WRITER, context,
         callback)) {
       return;
     }
@@ -1019,7 +976,7 @@ public class NotebookService {
   public void moveNoteToTrash(String noteId,
                               ServiceContext context,
                               ServiceCallback<Note> callback) throws IOException {
-    if (!checkPermission(noteId, Permission.OWNER, Message.OP.MOVE_NOTE_TO_TRASH, context, callback)) {
+    if (!checkPermission(noteId, Permission.OWNER, context, callback)) {
       return;
     }
 
@@ -1116,7 +1073,7 @@ public class NotebookService {
                     ServiceCallback<Paragraph> callback) throws IOException {
 
     try {
-      if (!checkPermission(noteId, Permission.RUNNER, Message.OP.RUN_PARAGRAPH_USING_SPELL, context,
+      if (!checkPermission(noteId, Permission.RUNNER, context,
           callback)) {
         return;
       }
@@ -1259,7 +1216,7 @@ public class NotebookService {
                              ServiceCallback<String> callback) throws IOException {
 
     try {
-      if (!checkPermission(noteId, Permission.WRITER, Message.OP.PATCH_PARAGRAPH, context,
+      if (!checkPermission(noteId, Permission.WRITER, context,
           callback)) {
         return;
       }
@@ -1307,14 +1264,12 @@ public class NotebookService {
    * propagated to frontend
    *
    * @param noteId
-   * @param context
    * @param permission
-   * @param op
+   * @param context
    * @return
    */
   private <T> boolean checkPermission(String noteId,
                                       Permission permission,
-                                      Message.OP op,
                                       ServiceContext context,
                                       ServiceCallback<T> callback) throws IOException {
     boolean isAllowed = false;

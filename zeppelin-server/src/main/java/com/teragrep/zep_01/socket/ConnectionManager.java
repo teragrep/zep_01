@@ -370,8 +370,6 @@ public class ConnectionManager {
   }
 
   public void broadcastParagraph(Note note, Paragraph p) {
-    broadcastNoteForms(note);
-
     if (note.isPersonalizedMode()) {
       broadcastParagraphs(p.getUserParagraphMap());
     } else {
@@ -406,15 +404,6 @@ public class ConnectionManager {
   //    //to others afterwards
   //    broadcastNoteListExcept(notesInfo, subject);
   //  }
-
-
-  private void broadcastNoteForms(Note note) {
-    GUI formsSettings = new GUI();
-    formsSettings.setForms(note.getNoteForms());
-    formsSettings.setParams(note.getNoteParams());
-    broadcast(note.getId(), new Message(Message.OP.SAVE_NOTE_FORMS)
-        .put("formsData", formsSettings));
-  }
 
   public void switchConnectionToWatcher(NotebookSocket conn) {
     if (!isSessionAllowedToSwitchToWatcher(conn)) {
