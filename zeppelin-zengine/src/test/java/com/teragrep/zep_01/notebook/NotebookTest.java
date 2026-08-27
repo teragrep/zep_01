@@ -17,6 +17,7 @@
 
 package com.teragrep.zep_01.notebook;
 
+import com.teragrep.zep_01.notebook.repo.*;
 import org.apache.commons.io.IOUtils;
 import com.teragrep.zep_01.conf.ZeppelinConfiguration;
 import com.teragrep.zep_01.conf.ZeppelinConfiguration.ConfVars;
@@ -30,10 +31,6 @@ import com.teragrep.zep_01.interpreter.InterpreterOption;
 import com.teragrep.zep_01.interpreter.InterpreterResult;
 import com.teragrep.zep_01.interpreter.InterpreterSetting;
 import com.teragrep.zep_01.interpreter.remote.RemoteInterpreter;
-import com.teragrep.zep_01.notebook.repo.NotebookRepo;
-import com.teragrep.zep_01.notebook.repo.NotebookRepoSettingsInfo;
-import com.teragrep.zep_01.notebook.repo.NotebookRepoWithVersionControl;
-import com.teragrep.zep_01.notebook.repo.VFSNotebookRepo;
 import com.teragrep.zep_01.notebook.scheduler.QuartzSchedulerService;
 import com.teragrep.zep_01.resource.LocalResourcePool;
 import com.teragrep.zep_01.scheduler.Job;

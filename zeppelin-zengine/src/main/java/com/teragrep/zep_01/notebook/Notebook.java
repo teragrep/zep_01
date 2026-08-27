@@ -48,7 +48,7 @@ import com.teragrep.zep_01.interpreter.ManagedInterpreterGroup;
 import com.teragrep.zep_01.notebook.repo.NotebookRepo;
 import com.teragrep.zep_01.notebook.repo.NotebookRepoSync;
 import com.teragrep.zep_01.notebook.repo.NotebookRepoWithVersionControl;
-import com.teragrep.zep_01.notebook.repo.NotebookRepoWithVersionControl.Revision;
+import com.teragrep.zep_01.notebook.repo.Revision;
 import com.teragrep.zep_01.scheduler.Job;
 import com.teragrep.zep_01.user.AuthenticationInfo;
 import com.teragrep.zep_01.user.Credentials;
@@ -440,7 +440,7 @@ public class Notebook {
   }
 
   public Revision checkpointNote(String noteId, String notePath, String checkpointMessage,
-      AuthenticationInfo subject) throws IOException {
+                                 AuthenticationInfo subject) throws IOException {
     if (((NotebookRepoSync) notebookRepo).isRevisionSupportedInDefaultRepo()) {
       return ((NotebookRepoWithVersionControl) notebookRepo)
           .checkpoint(noteId, notePath, checkpointMessage, subject);
