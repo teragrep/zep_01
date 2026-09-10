@@ -19,7 +19,7 @@ package com.teragrep.zep_01.interpreter;
 
 import com.teragrep.zep_01.display.AngularObjectRegistry;
 import com.teragrep.zep_01.display.GUI;
-import com.teragrep.zep_01.interpreter.remote.RemoteInterpreterEventClient;
+import com.teragrep.zep_01.interpreter.remote.InterpreterEventClient;
 import com.teragrep.zep_01.resource.ResourcePool;
 import com.teragrep.zep_01.user.AuthenticationInfo;
 
@@ -69,7 +69,7 @@ public class InterpreterContext {
   private String interpreterClassName;
   private Map<String, Integer> progressMap;
   private Map<String, String> localProperties = new HashMap<>();
-  private RemoteInterpreterEventClient intpEventClient;
+  private InterpreterEventClient intpEventClient;
 
   /**
    * Builder class for InterpreterContext
@@ -143,7 +143,7 @@ public class InterpreterContext {
       return this;
     }
 
-    public Builder setIntpEventClient(RemoteInterpreterEventClient intpEventClient) {
+    public Builder setIntpEventClient(final InterpreterEventClient intpEventClient) {
       context.intpEventClient = intpEventClient;
       return this;
     }
@@ -274,11 +274,11 @@ public class InterpreterContext {
     this.interpreterClassName = className;
   }
 
-  public RemoteInterpreterEventClient getIntpEventClient() {
+  public InterpreterEventClient getIntpEventClient() {
     return intpEventClient;
   }
 
-  public void setIntpEventClient(RemoteInterpreterEventClient intpEventClient) {
+  public void setIntpEventClient(final InterpreterEventClient intpEventClient) {
     this.intpEventClient = intpEventClient;
   }
 

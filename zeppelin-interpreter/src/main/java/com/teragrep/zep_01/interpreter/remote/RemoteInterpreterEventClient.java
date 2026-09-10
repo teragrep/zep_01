@@ -22,7 +22,6 @@ import org.apache.thrift.protocol.TProtocol;
 import org.apache.thrift.transport.TSocket;
 import org.apache.thrift.transport.TTransportException;
 import com.teragrep.zep_01.display.AngularObject;
-import com.teragrep.zep_01.display.AngularObjectRegistryListener;
 import com.teragrep.zep_01.interpreter.InterpreterResult;
 import com.teragrep.zep_01.interpreter.InterpreterResultMessage;
 import com.teragrep.zep_01.interpreter.thrift.LibraryMetadata;
@@ -37,7 +36,6 @@ import com.teragrep.zep_01.interpreter.thrift.WebUrlInfo;
 import com.teragrep.zep_01.resource.RemoteResource;
 import com.teragrep.zep_01.resource.Resource;
 import com.teragrep.zep_01.resource.ResourceId;
-import com.teragrep.zep_01.resource.ResourcePoolConnector;
 import com.teragrep.zep_01.resource.ResourceSet;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -52,8 +50,8 @@ import java.util.Map;
  * This class is used to communicate with ZeppelinServer via thrift.
  * All the methods are synchronized because thrift client is not thread safe.
  */
-public class RemoteInterpreterEventClient implements ResourcePoolConnector,
-    AngularObjectRegistryListener, AutoCloseable {
+public class RemoteInterpreterEventClient implements
+        InterpreterEventClient {
   private static final Logger LOGGER = LoggerFactory.getLogger(RemoteInterpreterEventClient.class);
   private static final Gson GSON = new Gson();
 
@@ -73,14 +71,17 @@ public class RemoteInterpreterEventClient implements ResourcePoolConnector,
     }, connectionPoolSize);
   }
 
+  @Override
   public <R> R callRemoteFunction(PooledRemoteClient.RemoteFunction<R, RemoteInterpreterEventService.Client> func) {
     return remoteClient.callRemoteFunction(func);
   }
 
+  @Override
   public void setIntpGroupId(String intpGroupId) {
     this.intpGroupId = intpGroupId;
   }
 
+  @Override
   public void registerInterpreterProcess(RegisterInfo registerInfo) {
     callRemoteFunction(client -> {
       client.registerInterpreterProcess(registerInfo);
@@ -88,6 +89,7 @@ public class RemoteInterpreterEventClient implements ResourcePoolConnector,
     });
   }
 
+  @Override
   public void unRegisterInterpreterProcess() {
     callRemoteFunction(client -> {
       client.unRegisterInterpreterProcess(intpGroupId);
@@ -95,6 +97,7 @@ public class RemoteInterpreterEventClient implements ResourcePoolConnector,
     });
   }
 
+  @Override
   public void sendWebUrlInfo(String webUrl) {
     callRemoteFunction(client -> {
       client.sendWebUrl(new WebUrlInfo(intpGroupId, webUrl));
@@ -124,14 +127,17 @@ public class RemoteInterpreterEventClient implements ResourcePoolConnector,
     }
   }
 
+  @Override
   public List<ParagraphInfo> getParagraphList(String user, String noteId) {
     return callRemoteFunction(client -> client.getParagraphList(user, noteId));
   }
 
+  @Override
   public List<LibraryMetadata> getAllLibraryMetadatas(String interpreter) {
     return callRemoteFunction(client -> client.getAllLibraryMetadatas(interpreter));
   }
 
+  @Override
   public ByteBuffer getLibrary(String interpreter, String libraryName) {
     return callRemoteFunction(client -> client.getLibrary(interpreter, libraryName));
   }
@@ -158,10 +164,10 @@ public class RemoteInterpreterEventClient implements ResourcePoolConnector,
    */
   @Override
   public Object invokeMethod(
-      ResourceId resourceId,
-      String methodName,
-      Class[] paramTypes,
-      Object[] params) {
+          final ResourceId resourceId,
+          final String methodName,
+          final Class[] paramTypes,
+          final Object[] params) {
     LOGGER.debug("Request Invoke method {} of Resource {}", methodName, resourceId.getName());
 
     InvokeResourceMethodEventMessage invokeMethod = new InvokeResourceMethodEventMessage(
@@ -191,11 +197,11 @@ public class RemoteInterpreterEventClient implements ResourcePoolConnector,
    */
   @Override
   public Resource invokeMethod(
-      ResourceId resourceId,
-      String methodName,
-      Class[] paramTypes,
-      Object[] params,
-      String returnResourceName) {
+          final ResourceId resourceId,
+          final String methodName,
+          final Class[] paramTypes,
+          final Object[] params,
+          final String returnResourceName) {
     LOGGER.debug("Request Invoke method {} of Resource {}", methodName, resourceId.getName());
 
     InvokeResourceMethodEventMessage invokeMethod = new InvokeResourceMethodEventMessage(
@@ -218,8 +224,9 @@ public class RemoteInterpreterEventClient implements ResourcePoolConnector,
     }
   }
 
+  @Override
   public void onInterpreterOutputAppend(
-      String noteId, String paragraphId, int outputIndex, String output) {
+          final String noteId, final String paragraphId, final int outputIndex, final String output) {
     try {
       callRemoteFunction(client -> {
         client.appendOutput(
@@ -231,9 +238,10 @@ public class RemoteInterpreterEventClient implements ResourcePoolConnector,
     }
   }
 
+  @Override
   public void onInterpreterOutputUpdate(
-      String noteId, String paragraphId, int outputIndex,
-      InterpreterResult.Type type, String output) {
+          final String noteId, final String paragraphId, final int outputIndex,
+          final InterpreterResult.Type type, final String output) {
     try {
       callRemoteFunction(client -> {
         client.updateOutput(
@@ -246,8 +254,9 @@ public class RemoteInterpreterEventClient implements ResourcePoolConnector,
     }
   }
 
+  @Override
   public void onInterpreterOutputUpdateAll(
-      String noteId, String paragraphId, List<InterpreterResultMessage> messages) {
+          final String noteId, final String paragraphId, final List<InterpreterResultMessage> messages) {
     try {
       callRemoteFunction(client -> {
         client.updateAllOutput(
@@ -272,10 +281,11 @@ public class RemoteInterpreterEventClient implements ResourcePoolConnector,
     return thriftMessages;
   }
 
+  @Override
   public void runParagraphs(String noteId,
-                                         List<String> paragraphIds,
-                                         List<Integer> paragraphIndices,
-                                         String curParagraphId) {
+                            final List<String> paragraphIds,
+                            final List<Integer> paragraphIndices,
+                            final String curParagraphId) {
     RunParagraphsEvent event =
         new RunParagraphsEvent(noteId, paragraphIds, paragraphIndices, curParagraphId);
     try {
@@ -288,6 +298,7 @@ public class RemoteInterpreterEventClient implements ResourcePoolConnector,
     }
   }
 
+  @Override
   public void checkpointOutput(String noteId, String paragraphId) {
     try {
       callRemoteFunction(client -> {
@@ -300,6 +311,7 @@ public class RemoteInterpreterEventClient implements ResourcePoolConnector,
     }
   }
 
+  @Override
   public void onParaInfosReceived(Map<String, String> infos) {
     try {
       callRemoteFunction(client -> {
@@ -350,6 +362,7 @@ public class RemoteInterpreterEventClient implements ResourcePoolConnector,
     }
   }
 
+  @Override
   public void updateParagraphConfig(String noteId, String paragraphId, Map<String, String> config) {
     try {
       callRemoteFunction(client -> {

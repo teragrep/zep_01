@@ -17,16 +17,15 @@
 
 package com.teragrep.zep_01.interpreter.remote;
 
+import com.teragrep.zep_01.fakes.FakeFailingRemoteInterpreterEventClient;
+import com.teragrep.zep_01.fakes.FakeRemoteInterpreterEventClient;
+import com.teragrep.zep_01.interpreter.*;
 import org.apache.thrift.TException;
-import com.teragrep.zep_01.interpreter.Interpreter;
-import com.teragrep.zep_01.interpreter.InterpreterContext;
-import com.teragrep.zep_01.interpreter.InterpreterException;
-import com.teragrep.zep_01.interpreter.InterpreterResult;
-import com.teragrep.zep_01.interpreter.LazyOpenInterpreter;
 import com.teragrep.zep_01.interpreter.thrift.RemoteInterpreterContext;
 import com.teragrep.zep_01.interpreter.thrift.RemoteInterpreterResult;
 import org.junit.Ignore;
 import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
 
 import java.io.IOException;
 import java.util.HashMap;
@@ -41,9 +40,9 @@ import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 import static org.mockito.Mockito.mock;
 
-@Ignore("Contains bunch of sleeps and timeouts")
 public class RemoteInterpreterServerTest {
 
+  @Ignore("Contains bunch of sleeps and timeouts")
   @Test
   public void testStartStop() throws Exception {
     RemoteInterpreterServer server = new RemoteInterpreterServer("localhost",
@@ -53,6 +52,7 @@ public class RemoteInterpreterServerTest {
     stopRemoteInterpreterServer(server, 10 * 10000);
   }
 
+  @Ignore("Contains bunch of sleeps and timeouts")
   @Test
   public void testStartStopWithQueuedEvents() throws Exception {
     RemoteInterpreterServer server = new RemoteInterpreterServer("localhost",
@@ -99,6 +99,7 @@ public class RemoteInterpreterServerTest {
               server.getPort()));
   }
 
+  @Ignore("Contains bunch of sleeps and timeouts")
   @Test
   public void testInterpreter() throws Exception {
     final RemoteInterpreterServer server = new RemoteInterpreterServer("localhost",
@@ -195,12 +196,165 @@ public class RemoteInterpreterServerTest {
     assertTrue(interpreter1.closed.get());
   }
 
+  // Shutdownhook should stop the server and unregister InterpreterProcess in case of ungraceful exit
+  @Test
+  public void testUngracefulShutdownHook() {
+    // Start a server
+    final RemoteInterpreterServer server = Assertions.assertDoesNotThrow(()->new RemoteInterpreterServer("localhost",
+            RemoteInterpreterUtils.findRandomAvailablePortOnAllLocalInterfaces(), ":", "groupId", true));
+    Assertions.assertDoesNotThrow(()->server.init(new HashMap<>()));
+    final FakeRemoteInterpreterEventClient eventClient = new FakeRemoteInterpreterEventClient();
+    server.intpEventClient = eventClient;
+    final Thread serverThread = new Thread(server::start);
+    serverThread.start();
+
+    // Assert that server was started
+    Assertions.assertTrue(serverThread.isAlive());
+    final RemoteInterpreterServer.ShutdownThread shutdownThread = server.new ShutdownThread(RemoteInterpreterServer.ShutdownThread.CAUSE_SHUTDOWN_HOOK);
+    Assertions.assertFalse(eventClient.unregistered());
+    // Wait for server to be initialized. Timeout after 0.5s
+    final long timeout = System.currentTimeMillis() + 500;
+    while(System.currentTimeMillis() < timeout){
+      if(server.isRunning()){
+        break;
+      }
+    }
+    if(!server.isRunning()){
+      Assertions.fail("Timeout was reached before server startup was finished!");
+    }
+
+    // Simulate a SIGTERM by calling shutdown in another thread
+    shutdownThread.start();
+
+    // Wait for 250 ms before SIGKILL is sent
+    Assertions.assertDoesNotThrow(()->Thread.sleep(250));;
+
+    // Assert that shutdown hook has finished in time and that the server has been closed properly
+    Assertions.assertFalse(shutdownThread.isAlive());
+    Assertions.assertFalse(serverThread.isAlive());
+    Assertions.assertTrue(eventClient.unregistered());
+    }
+
+  // Shutdownhook should stop the server even if InterpreterEventClient is not assigned in case of ungraceful exit
+  @Test
+  public void testShutdownHookWithNoEventClient() {
+    // Start a server
+    final RemoteInterpreterServer server = Assertions.assertDoesNotThrow(()->new RemoteInterpreterServer("localhost",
+            RemoteInterpreterUtils.findRandomAvailablePortOnAllLocalInterfaces(), ":", "groupId", true));
+    Assertions.assertDoesNotThrow(()->server.init(new HashMap<>()));
+
+    // If intpEventClient is not assigned, the server should still be shut down.
+    server.intpEventClient = null;
+    final Thread serverThread = new Thread(server::start);
+    serverThread.start();
+
+    // Assert that server was started
+    Assertions.assertTrue(serverThread.isAlive());
+    final RemoteInterpreterServer.ShutdownThread shutdownThread = server.new ShutdownThread(RemoteInterpreterServer.ShutdownThread.CAUSE_SHUTDOWN_HOOK);
+    // Wait for server to be initialized. Timeout after 0.5s
+    final long timeout = System.currentTimeMillis() + 5000;
+    while(System.currentTimeMillis() < timeout){
+      if(server.isRunning()){
+        break;
+      }
+    }
+    if(!server.isRunning()){
+      Assertions.fail("Timeout was reached before server startup was finished!");
+    }
+    // Simulate a SIGTERM by calling shutdown in another thread
+    shutdownThread.start();
+
+    // Wait for 250 ms before SIGKILL is sent
+    Assertions.assertDoesNotThrow(()->Thread.sleep(250));;
+
+    // Assert that shutdown hook has finished in time and that the server has been closed properly
+    Assertions.assertFalse(shutdownThread.isAlive());
+    Assertions.assertFalse(serverThread.isAlive());
+  }
+
+  // Failing to unregister interpreterProcess should throw an Exception, but server should still be shut down.
+  @Test
+  public void testFailedUnregister() {
+    // Start a server
+    final RemoteInterpreterServer server = Assertions.assertDoesNotThrow(()->new RemoteInterpreterServer("localhost",
+            RemoteInterpreterUtils.findRandomAvailablePortOnAllLocalInterfaces(), ":", "groupId", true));
+    Assertions.assertDoesNotThrow(()->server.init(new HashMap<>()));
+    final RuntimeException exception = new RuntimeException("Failed to unregister Interpreter!");
+    final FakeFailingRemoteInterpreterEventClient eventClient = new FakeFailingRemoteInterpreterEventClient(exception);
+    server.intpEventClient = eventClient;
+    final Thread serverThread = new Thread(server::start);
+    serverThread.start();
+
+    // Assert that server was started
+    Assertions.assertTrue(serverThread.isAlive());
+    final RemoteInterpreterServer.ShutdownThread shutdownThread = server.new ShutdownThread(RemoteInterpreterServer.ShutdownThread.CAUSE_SHUTDOWN_HOOK);
+    // Wait for server to be initialized. Timeout after 0.5s
+    final long timeout = System.currentTimeMillis() + 500;
+    while(System.currentTimeMillis() < timeout){
+      if(server.isRunning()){
+        break;
+      }
+    }
+    if(!server.isRunning()){
+      Assertions.fail("Timeout was reached before server startup was finished!");
+    }
+    // Simulate a SIGTERM by calling shutdown in another thread
+    shutdownThread.start();
+
+    // Wait for 250 ms before SIGKILL is sent
+    Assertions.assertDoesNotThrow(()->Thread.sleep(250));;
+
+    // Assert that shutdown hook has finished in time and that the server has been closed properly
+    Assertions.assertFalse(shutdownThread.isAlive());
+    Assertions.assertFalse(serverThread.isAlive());
+    Assertions.assertEquals(exception, eventClient.exception());
+  }
+
+  // Shutdownhook should stop the server, but registration should not be done in case of graceful exit
+  @Test
+  public void testGracefulShutdownHook() {
+    // Start a server
+    final RemoteInterpreterServer server = Assertions.assertDoesNotThrow(()->new RemoteInterpreterServer("localhost",
+            RemoteInterpreterUtils.findRandomAvailablePortOnAllLocalInterfaces(), ":", "groupId", true));
+    Assertions.assertDoesNotThrow(()->server.init(new HashMap<>()));
+    final FakeRemoteInterpreterEventClient eventClient = new FakeRemoteInterpreterEventClient();
+    server.intpEventClient = eventClient;
+    final Thread serverThread = new Thread(server::start);
+    serverThread.start();
+
+    // Assert that server was started
+    Assertions.assertTrue(serverThread.isAlive());
+    final RemoteInterpreterServer.ShutdownThread shutdownThread = server.new ShutdownThread(RemoteInterpreterServer.ShutdownThread.CAUSE_SHUTDOWN_CALL);
+    // Assert that unregisterInterpreterProcess has not been called.
+    Assertions.assertFalse(eventClient.unregistered());
+    // Wait for server to be initialized. Timeout after 0.5s
+    final long timeout = System.currentTimeMillis() + 500;
+    while(System.currentTimeMillis() < timeout){
+      if(server.isRunning()){
+        break;
+      }
+    }
+    if(!server.isRunning()){
+      Assertions.fail("Timeout was reached before server startup was finished!");
+    }
+    // Simulate a SIGTERM by calling shutdown in another thread
+    shutdownThread.start();
+
+    // Wait for 250 ms before SIGKILL is sent
+    Assertions.assertDoesNotThrow(()->Thread.sleep(250));;
+
+    // Assert that shutdown hook has finished in time and that the server has been closed properly
+    Assertions.assertFalse(shutdownThread.isAlive());
+    Assertions.assertFalse(serverThread.isAlive());
+    // Assert that unregisterInterpreterProcess has still not been called.
+    Assertions.assertFalse(eventClient.unregistered());
+  }
   public static class Test1Interpreter extends Interpreter {
 
     AtomicBoolean cancelled = new AtomicBoolean();
     AtomicBoolean closed = new AtomicBoolean();
 
-    public Test1Interpreter(Properties properties) {
+    public Test1Interpreter(final Properties properties) {
       super(properties);
     }
 
@@ -210,7 +364,7 @@ public class RemoteInterpreterServerTest {
     }
 
     @Override
-    public InterpreterResult interpret(String st, InterpreterContext context) {
+    public InterpreterResult interpret(final String st, final InterpreterContext context) {
       if (st.equals("SINGLE_OUTPUT_SUCCESS")) {
         return new InterpreterResult(InterpreterResult.Code.SUCCESS, "SINGLE_OUTPUT_SUCCESS");
       } else if (st.equals("SINGLE_OUTPUT_ERROR")) {
@@ -218,14 +372,14 @@ public class RemoteInterpreterServerTest {
       } else if (st.equals("COMBO_OUTPUT_SUCCESS")) {
         try {
           context.out.write("INTERPRETER_OUT");
-        } catch (IOException e) {
+        } catch (final IOException e) {
           fail("Failure happened: " + e.getMessage());
         }
         return new InterpreterResult(InterpreterResult.Code.SUCCESS, "SINGLE_OUTPUT_SUCCESS");
       } else if (st.equals("SLEEP")) {
         try {
           Thread.sleep(3 * 1000);
-        } catch (InterruptedException e) {
+        } catch (final InterruptedException e) {
           fail("Failure happened: " + e.getMessage());
         }
         return new InterpreterResult(InterpreterResult.Code.SUCCESS, "SLEEP_SUCCESS");
@@ -234,7 +388,7 @@ public class RemoteInterpreterServerTest {
     }
 
     @Override
-    public void cancel(InterpreterContext context) throws InterpreterException {
+    public void cancel(final InterpreterContext context) throws InterpreterException {
       cancelled.set(true);
     }
 
@@ -244,7 +398,7 @@ public class RemoteInterpreterServerTest {
     }
 
     @Override
-    public int getProgress(InterpreterContext context) throws InterpreterException {
+    public int getProgress(final InterpreterContext context) throws InterpreterException {
       return 10;
     }
 
@@ -258,7 +412,7 @@ public class RemoteInterpreterServerTest {
   public static class Test2Interpreter extends Interpreter {
 
 
-    public Test2Interpreter(Properties properties) {
+    public Test2Interpreter(final Properties properties) {
       super(properties);
     }
 
@@ -268,12 +422,12 @@ public class RemoteInterpreterServerTest {
     }
 
     @Override
-    public InterpreterResult interpret(String st, InterpreterContext context) {
+    public InterpreterResult interpret(final String st, final InterpreterContext context) {
       return null;
     }
 
     @Override
-    public void cancel(InterpreterContext context) throws InterpreterException {
+    public void cancel(final InterpreterContext context) throws InterpreterException {
 
     }
 
@@ -283,7 +437,7 @@ public class RemoteInterpreterServerTest {
     }
 
     @Override
-    public int getProgress(InterpreterContext context) throws InterpreterException {
+    public int getProgress(final InterpreterContext context) throws InterpreterException {
       return 0;
     }
 

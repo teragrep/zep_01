@@ -35,7 +35,6 @@ import com.teragrep.zep_01.interpreter.InterpreterResult.Code;
 import com.teragrep.zep_01.interpreter.thrift.InterpreterCompletion;
 import com.teragrep.zep_01.interpreter.thrift.InterpreterRPCException;
 import com.teragrep.zep_01.interpreter.thrift.RegisterInfo;
-import com.teragrep.zep_01.interpreter.thrift.RemoteApplicationResult;
 import com.teragrep.zep_01.interpreter.thrift.RemoteInterpreterContext;
 import com.teragrep.zep_01.interpreter.thrift.RemoteInterpreterResult;
 import com.teragrep.zep_01.interpreter.thrift.RemoteInterpreterResultMessage;
@@ -60,7 +59,6 @@ import java.net.URL;
 import java.nio.ByteBuffer;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedList;
@@ -98,7 +96,7 @@ public class RemoteInterpreterServer extends Thread
   private String host;
   private int port;
   private TThreadPoolServer server;
-  RemoteInterpreterEventClient intpEventClient;
+  InterpreterEventClient intpEventClient;
   private LifecycleManager lifecycleManager;
 
 
@@ -346,7 +344,7 @@ public class RemoteInterpreterServer extends Thread
     return resourcePool;
   }
 
-  protected RemoteInterpreterEventClient getIntpEventClient() {
+  protected InterpreterEventClient getIntpEventClient() {
     return intpEventClient;
   }
 
@@ -588,13 +586,23 @@ public class RemoteInterpreterServer extends Thread
       LOGGER.info("Shutting down...");
       LOGGER.info("Shutdown initialized by {}", cause);
 
+      // Try to unregister the interpreter process in case the interpreter process exit unpredictable via ShutdownHook
+      if (intpEventClient != null && CAUSE_SHUTDOWN_HOOK.equals(cause)) {
+        try {
+          LOGGER.info("Unregister interpreter process");
+          intpEventClient.unRegisterInterpreterProcess();
+        } catch (final Exception e) {
+          LOGGER.error("Fail to unregister remote interpreter process", e);
+        }
+      }
+
       if (interpreterGroup != null) {
         synchronized (interpreterGroup) {
           for (List<Interpreter> session : interpreterGroup.values()) {
             for (Interpreter interpreter : session) {
               try {
                 interpreter.close();
-              } catch (InterpreterException e) {
+              } catch (final InterpreterException e) {
                 LOGGER.warn("Fail to close interpreter", e);
               }
             }
@@ -613,15 +621,6 @@ public class RemoteInterpreterServer extends Thread
           LOGGER.error("Fail to unregister yarn app", e);
         }
       }
-      // Try to unregister the interpreter process in case the interpreter process exit unpredictable via ShutdownHook
-      if (intpEventClient != null && CAUSE_SHUTDOWN_HOOK.equals(cause)) {
-        try {
-          LOGGER.info("Unregister interpreter process");
-          intpEventClient.unRegisterInterpreterProcess();
-        } catch (Exception e) {
-          LOGGER.error("Fail to unregister remote interpreter process", e);
-        }
-      }
 
       server.stop();
 
@@ -633,7 +632,7 @@ public class RemoteInterpreterServer extends Thread
       while (System.currentTimeMillis() - startTime < (DEFAULT_SHUTDOWN_TIMEOUT + 100) &&
               server.isServing()) {
         try {
-          Thread.sleep(300);
+          Thread.sleep(25);
         } catch (InterruptedException e) {
           LOGGER.info("Exception in RemoteInterpreterServer while shutdown, Thread.sleep", e);
           Thread.currentThread().interrupt();
