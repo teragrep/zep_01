@@ -1028,7 +1028,7 @@ public class NotebookServer extends WebSocketServlet
   private void updateParagraph(NotebookSocket conn,
                                ServiceContext context,
                                Message fromMessage) throws IOException {
-    String paragraphId = (String) fromMessage.get("paragraphId");
+    String paragraphId = (String) fromMessage.get("id");
     String noteId = getConnectionManager().getAssociatedNoteId(conn);
     if (noteId == null) {
       noteId = (String) fromMessage.get("noteId");
