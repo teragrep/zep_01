@@ -63,6 +63,7 @@
     <module>jdbc</module>
     <module>python</module>
     <module>java</module>
+    <module>regex</module>
     <module>zeppelin-common</module>
     <module>zeppelin-client</module>
     <module>zeppelin-server</module>
