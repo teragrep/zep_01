@@ -37,6 +37,8 @@ import java.util.Map;
 import java.util.Set;
 import javax.inject.Inject;
 
+import com.teragrep.zep_01.display.DynamicFormException;
+import com.teragrep.zep_01.display.GUI;
 import com.teragrep.zep_01.notebook.repo.Revision;
 import jakarta.json.Json;
 import jakarta.json.JsonObject;
