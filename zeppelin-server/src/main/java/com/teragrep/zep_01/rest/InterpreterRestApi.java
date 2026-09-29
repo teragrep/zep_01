@@ -20,19 +20,19 @@ package com.teragrep.zep_01.rest;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 
+import com.teragrep.zep_01.interpreter.*;
+import com.teragrep.zep_01.notebook.Note;
+import com.teragrep.zep_01.notebook.Paragraph;
+import com.teragrep.zep_01.rest.message.*;
+import jakarta.json.Json;
+import jakarta.json.JsonException;
+import jakarta.json.JsonObject;
+import jakarta.json.stream.JsonParsingException;
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import com.teragrep.zep_01.annotation.ZeppelinApi;
-import com.teragrep.zep_01.interpreter.InterpreterException;
-import com.teragrep.zep_01.interpreter.InterpreterPropertyType;
-import com.teragrep.zep_01.interpreter.InterpreterSetting;
-import com.teragrep.zep_01.interpreter.InterpreterSettingManager;
 import com.teragrep.zep_01.notebook.AuthorizationService;
 import com.teragrep.zep_01.common.Message;
 import com.teragrep.zep_01.common.Message.OP;
-import com.teragrep.zep_01.rest.message.InterpreterInstallationRequest;
-import com.teragrep.zep_01.rest.message.NewInterpreterSettingRequest;
-import com.teragrep.zep_01.rest.message.RestartInterpreterRequest;
-import com.teragrep.zep_01.rest.message.UpdateInterpreterSettingRequest;
 import com.teragrep.zep_01.server.JsonResponse;
 import com.teragrep.zep_01.service.AuthenticationService;
 import com.teragrep.zep_01.service.InterpreterService;
@@ -44,16 +44,11 @@ import org.slf4j.LoggerFactory;
 import org.eclipse.aether.repository.RemoteRepository;
 
 import javax.validation.constraints.NotNull;
-import javax.ws.rs.DELETE;
-import javax.ws.rs.GET;
-import javax.ws.rs.POST;
-import javax.ws.rs.PUT;
-import javax.ws.rs.Path;
-import javax.ws.rs.PathParam;
-import javax.ws.rs.Produces;
+import javax.ws.rs.*;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
 import java.io.IOException;
+import java.io.StringReader;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -186,6 +181,70 @@ public class InterpreterRestApi {
     LOGGER.info("Remove interpreterSetting {}", settingId);
     interpreterSettingManager.remove(settingId);
     return new JsonResponse<>(Status.OK).build();
+  }
+
+  /**
+   * Open interpreter setting.
+   */
+  @PUT
+  @Path("setting/open/{settingId}")
+  @ZeppelinApi
+  public Response openSetting(String message, @PathParam("settingId") String settingId) {
+    final Response response;
+    try {
+      // parse message
+      final String userName = authenticationService.getPrincipal();
+      final JsonObject json = Json.createReader(new StringReader(message)).readObject();
+      final OpenInterpreterRequest request = new OpenInterpreterRequest(json);
+      final String noteId = request.getNoteId();
+      final Note note = notebookServer.getNotebook().getNote(noteId);
+      final InterpreterSetting setting = interpreterSettingManager.get(settingId);
+
+      // check permissions and nulls
+      final Set<String> entities = new HashSet<>();
+      entities.add(userName);
+      entities.addAll(authenticationService.getAssociatedRoles());
+      if (!authorizationService.hasRunPermission(entities, noteId) && !authorizationService.hasWritePermission(entities, noteId) && !authorizationService.isOwner(entities, noteId)) {
+        OpenInterpreterResponse interpreterResponse = new OpenInterpreterResponse(Status.UNAUTHORIZED,"ERROR","No permission to open Interpreter " + settingId);
+        throw new NotAuthorizedException(interpreterResponse.toResponse());
+      }
+      if (setting == null) {
+        OpenInterpreterResponse errorJson = new OpenInterpreterResponse(Status.NOT_FOUND,"ERROR","No such InterpreterSetting " + settingId);
+        throw new NotFoundException(errorJson.toResponse());
+      }
+      if (noteId == null || note == null) {
+        OpenInterpreterResponse errorJson = new OpenInterpreterResponse(Status.NOT_FOUND,"ERROR","No such note " + noteId);
+        throw new NotFoundException(errorJson.toResponse());
+      }
+
+      // check for presence of ConfInterpreter
+      for (Paragraph paragraph:note.getParagraphs()) {
+        if(paragraph.getBindedInterpreter() instanceof ConfInterpreter){
+          OpenInterpreterResponse errorJson = new OpenInterpreterResponse(Status.BAD_REQUEST,"ERROR","Cannot open Interpreter! Note "+noteId+" contains a paragraph with a ConfInterpreter!");
+          throw new BadRequestException(errorJson.toResponse());
+        }
+      }
+
+      // get interpreter instance and open
+      Interpreter defaultInterpreter = setting.getDefaultInterpreter(authenticationService.getPrincipal(), noteId);
+      defaultInterpreter.open();
+      response = new OpenInterpreterResponse(Status.OK,setting.getStatus().toString(),"").toResponse();
+    }
+    catch (JsonParsingException jsonParsingException) {
+      OpenInterpreterResponse errorJson = new OpenInterpreterResponse(Status.BAD_REQUEST,"ERROR","Malformed request");
+      throw new BadRequestException(errorJson.toResponse());
+    }
+    catch (IOException ioException) {
+      LOGGER.error("Failed to get notebook while opening Interpreter <[{}]>",settingId,ioException);
+      OpenInterpreterResponse errorJson = new OpenInterpreterResponse(Status.INTERNAL_SERVER_ERROR,"ERROR","Internal server error while opening Interpreter "+settingId+"! Check technical logs for details.");
+      throw new InternalServerErrorException(errorJson.toResponse());
+    }
+    catch (InterpreterException interpreterException){
+      LOGGER.error("Failed to open Interpreter <[{}]>",settingId,interpreterException);
+      OpenInterpreterResponse errorJson = new OpenInterpreterResponse(Status.INTERNAL_SERVER_ERROR,"ERROR","Internal server error while opening Interpreter "+settingId+"! Check technical logs for details.");
+      throw new InternalServerErrorException(errorJson.toResponse());
+    }
+    return response;
   }
 
   /**
