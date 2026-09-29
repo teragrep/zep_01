@@ -843,9 +843,9 @@ public class NotebookTest extends AbstractInterpreterTest implements ParagraphJo
 
     note.runAll(anonymous, true, false, new HashMap<>());
 
-    String exportedNoteJson = note.toJson();
+    String noteJson = note.toJson();
 
-    Note importedNote = notebook.importNote(exportedNoteJson, "Title", anonymous);
+    Note importedNote = notebook.importNote(noteJson, "Title", anonymous);
 
     Paragraph p2 = importedNote.getParagraphs().get(0);
 
@@ -856,7 +856,7 @@ public class NotebookTest extends AbstractInterpreterTest implements ParagraphJo
 
     // Verify import note with subject
     AuthenticationInfo subject = new AuthenticationInfo("user1");
-    Note importedNote2 = notebook.importNote(exportedNoteJson, "Title2", subject);
+    Note importedNote2 = notebook.importNote(noteJson, "Title2", subject);
     assertNotNull(authorizationService.getOwners(importedNote2.getId()));
     assertEquals(1, authorizationService.getOwners(importedNote2.getId()).size());
     Set<String> owners = new HashSet<>();
