@@ -54,6 +54,27 @@ public class GUI implements Serializable {
     this.params = values;
   }
 
+  public void putFormValue(final String id, final Object value) throws DynamicFormException {
+    if(forms.containsKey(id)){
+      this.params.put(id,value);
+    }
+    else {
+      throw new DynamicFormException("Failed to set parameter "+id+" No form with matching id exists!");
+    }
+  }
+
+  public void removeFormValue(final String id) {
+    if(forms.containsKey(id)){
+      final Object defaultValue = forms.get(id).defaultValue;
+      if(defaultValue != null){
+        this.params.put(id,defaultValue);
+      }
+      else {
+        this.params.remove(id);
+      }
+    }
+  }
+
   public Map<String, Object> getParams() {
     return params;
   }

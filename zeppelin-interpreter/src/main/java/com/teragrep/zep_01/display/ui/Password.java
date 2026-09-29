@@ -31,6 +31,10 @@ public class Password extends Input<String> {
     this.displayName = name;
     this.defaultValue = "";
   }
+  @Override
+  public String inputType(){
+    return "password";
+  }
 
 }
 

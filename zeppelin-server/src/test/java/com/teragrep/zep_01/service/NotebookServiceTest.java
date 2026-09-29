@@ -68,6 +68,7 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
 import org.mockito.ArgumentCaptor;
 
 import com.google.gson.Gson;
@@ -360,6 +361,14 @@ public class NotebookServiceTest {
         new HashMap<>(), new HashMap<>(), context, callback);
     assertEquals("my_title", p.getTitle());
     assertEquals("my_text", p.getText());
+
+    // update paragraph with missing parameters, should be successful
+    reset(callback);
+    notebookService.updateParagraph(note1.getId(), p.getId(), "my_title", "my_text",
+            null, new HashMap<>(), context, callback);
+    Assertions.assertEquals("my_title",p.getTitle());
+    Assertions.assertEquals("my_text", p.getText());
+
 
     // move paragraph
     reset(callback);

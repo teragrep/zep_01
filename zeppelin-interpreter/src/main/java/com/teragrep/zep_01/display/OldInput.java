@@ -58,6 +58,10 @@ public class OldInput extends Input<Object> {
     this.options = options;
   }
 
+  public String inputType(){
+    return "oldinput";
+  }
+
   /**
    *
    */

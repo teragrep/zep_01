@@ -37,9 +37,13 @@ import java.util.Map;
 import java.util.Set;
 import javax.inject.Inject;
 
+import com.teragrep.zep_01.display.DynamicFormException;
+import com.teragrep.zep_01.display.GUI;
 import com.teragrep.zep_01.notebook.repo.Revision;
 import jakarta.json.Json;
 import jakarta.json.JsonObject;
+import com.teragrep.zep_01.display.DynamicFormException;
+import com.teragrep.zep_01.display.GUI;
 import org.apache.commons.lang3.StringUtils;
 import com.teragrep.zep_01.conf.ZeppelinConfiguration;
 import com.teragrep.zep_01.display.AngularObject;
@@ -650,13 +654,17 @@ public class NotebookService {
       return;
     }
 
-    p.settings.setParams(params);
+    if(params != null) {
+      p.settings.setParams(params);
+    }
     p.mergeConfig(config);
     p.setTitle(title);
     p.setText(text);
     if (note.isPersonalizedMode()) {
       p = p.getUserParagraph(context.getAutheInfo().getUser());
-      p.settings.setParams(params);
+      if(params != null){
+        p.settings.setParams(params);
+      }
       p.mergeConfig(config);
       p.setTitle(title);
       p.setText(text);
@@ -787,6 +795,47 @@ public class NotebookService {
     }
 
     return cronUpdated;
+  }
+
+
+  public void submitForm(final String noteId,
+                         final String paragraphId,
+                         final String formId,
+                         final Object value,
+                         final ServiceContext context,
+                         final ServiceCallback<GUI> callback) throws IOException{
+    if (!checkPermission(noteId, Permission.WRITER, Message.OP.SAVE_NOTE_FORMS, context,
+            callback)) {
+      return;
+    }
+
+    if(formId == null || value == null){
+      callback.onFailure(new DynamicFormException("Request must contain \"formId\" and \"value\" objects!"),context);
+      return;
+    }
+    final Note note = notebook.getNote(noteId);
+    if (note == null) {
+      callback.onFailure(new NoteNotFoundException(noteId), context);
+      return;
+    }
+    final Paragraph paragraph = note.getParagraph(paragraphId);
+    if(paragraph == null){
+      callback.onFailure(new ParagraphNotFoundException(paragraphId), context);
+      return;
+    }
+    final GUI settings = paragraph.settings;
+    if(settings == null){
+      callback.onFailure(new IllegalStateException("Failed to add form parameters! Paragraph "+paragraphId+" does not have an assigned settings object!"), context);
+      return;
+    }
+    try{
+      settings.putFormValue(formId,value);
+      callback.onSuccess(settings, context);
+      notebook.saveNote(note, context.getAutheInfo());
+    }
+    catch (DynamicFormException dynamicFormException){
+      callback.onFailure(dynamicFormException, context);
+    }
   }
 
   public void saveNoteForms(String noteId,
