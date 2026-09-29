@@ -55,7 +55,7 @@ public class RemoteInterpreter extends Interpreter {
   private String sessionId;
   private FormType formType;
 
-  private RemoteInterpreterProcess interpreterProcess;
+  private RemoteInterpreterProcess interpreterProcess = new StubRemoteInterpreterProcess();
   private volatile boolean isOpened = false;
   private volatile boolean isCreated = false;
 
@@ -91,7 +91,7 @@ public class RemoteInterpreter extends Interpreter {
   }
 
   public synchronized RemoteInterpreterProcess getOrCreateInterpreterProcess() throws IOException {
-    if (this.interpreterProcess != null) {
+    if (!this.interpreterProcess.isStub()) {
       return this.interpreterProcess;
     }
     ManagedInterpreterGroup intpGroup = getInterpreterGroup();
@@ -165,7 +165,6 @@ public class RemoteInterpreter extends Interpreter {
   @Override
   public void close() throws InterpreterException {
     if (isOpened) {
-      RemoteInterpreterProcess interpreterProcess = null;
       try {
         interpreterProcess = getOrCreateInterpreterProcess();
       } catch (IOException e) {
@@ -189,7 +188,6 @@ public class RemoteInterpreter extends Interpreter {
     }
 
     final FormType form = getFormType();
-    RemoteInterpreterProcess interpreterProcess = null;
     try {
       interpreterProcess = getOrCreateInterpreterProcess();
     } catch (IOException e) {
@@ -241,7 +239,6 @@ public class RemoteInterpreter extends Interpreter {
       LOGGER.warn("Cancel is called when RemoterInterpreter is not opened for {}", className);
       return;
     }
-    RemoteInterpreterProcess interpreterProcess = null;
     try {
       interpreterProcess = getOrCreateInterpreterProcess();
     } catch (IOException e) {
@@ -265,7 +262,6 @@ public class RemoteInterpreter extends Interpreter {
         open();
       }
     }
-    RemoteInterpreterProcess interpreterProcess = null;
     try {
       interpreterProcess = getOrCreateInterpreterProcess();
     } catch (IOException e) {
@@ -285,7 +281,6 @@ public class RemoteInterpreter extends Interpreter {
       LOGGER.warn("getProgress is called when RemoterInterpreter is not opened for {}", className);
       return 0;
     }
-    RemoteInterpreterProcess interpreterProcess = null;
     try {
       interpreterProcess = getOrCreateInterpreterProcess();
     } catch (IOException e) {
@@ -303,7 +298,6 @@ public class RemoteInterpreter extends Interpreter {
     if (!isOpened) {
       open();
     }
-    RemoteInterpreterProcess interpreterProcess = null;
     try {
       interpreterProcess = getOrCreateInterpreterProcess();
     } catch (IOException e) {
@@ -318,7 +312,6 @@ public class RemoteInterpreter extends Interpreter {
       LOGGER.warn("getStatus is called when RemoteInterpreter is not opened for {}", className);
       return Job.Status.UNKNOWN.name();
     }
-    RemoteInterpreterProcess interpreterProcess = null;
     try {
       interpreterProcess = getOrCreateInterpreterProcess();
     } catch (IOException e) {

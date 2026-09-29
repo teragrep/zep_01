@@ -57,7 +57,7 @@ public class RemoteAngularObjectRegistry extends AngularObjectRegistry {
                                                  final String paragraphId) {
 
     RemoteInterpreterProcess remoteInterpreterProcess = getRemoteInterpreterProcess();
-    if (null == remoteInterpreterProcess || !remoteInterpreterProcess.isRunning()) {
+    if (remoteInterpreterProcess.isStub() || !remoteInterpreterProcess.isRunning()) {
       return super.add(name, o, noteId, paragraphId, true);
     }
 
@@ -82,7 +82,7 @@ public class RemoteAngularObjectRegistry extends AngularObjectRegistry {
                                                     final String noteId,
                                                     final String paragraphId) {
     RemoteInterpreterProcess remoteInterpreterProcess = getRemoteInterpreterProcess();
-    if (remoteInterpreterProcess == null || !remoteInterpreterProcess.isRunning()) {
+    if (remoteInterpreterProcess.isStub() || !remoteInterpreterProcess.isRunning()) {
       return super.remove(name, noteId, paragraphId);
     }
     remoteInterpreterProcess.callRemoteFunction(client -> {
