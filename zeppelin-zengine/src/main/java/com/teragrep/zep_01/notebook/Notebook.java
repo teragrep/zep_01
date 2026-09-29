@@ -251,25 +251,6 @@ public class Notebook {
   }
 
   /**
-   * Export existing note.
-   *
-   * @param noteId - the note ID to clone
-   * @return Note JSON
-   * @throws IOException, IllegalArgumentException
-   */
-  public String exportNote(String noteId) throws IOException {
-    try {
-      Note note = getNote(noteId);
-      if (note == null) {
-        throw new IOException("Note " + noteId + " not found");
-      }
-      return note.toJson();
-    } catch (IOException e) {
-      throw new IOException(noteId + " not found");
-    }
-  }
-
-  /**
    * import JSON as a new note.
    *
    * @param sourceJson - the note JSON to import
