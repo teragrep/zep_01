@@ -686,6 +686,9 @@ public class NotebookServerTest extends AbstractTestRestApi {
     assertEquals(0, note.getParagraphCount());
   }
 
+  /**
+   * COLLABORATIVE_MODE_STATUS messages should be properly received when users join and leave each others' notebooks.
+   */
   @Test
   public void testCollaborativeModeStatus() {
       NotebookSocket sock1 = createWebSocket();
@@ -694,6 +697,11 @@ public class NotebookServerTest extends AbstractTestRestApi {
       notebookServer.onOpen(sock1);
       notebookServer.onOpen(sock2);
       notebookServer.onOpen(sock3);
+
+      // There should be no collaborative status messages to start with
+      Assertions.assertDoesNotThrow(()-> verify(sock1, times(0)).send(contains(OP.COLLABORATIVE_MODE_STATUS.toString())));
+      Assertions.assertDoesNotThrow(()-> verify(sock2, times(0)).send(contains(OP.COLLABORATIVE_MODE_STATUS.toString())));
+      Assertions.assertDoesNotThrow(()-> verify(sock3, times(0)).send(contains(OP.COLLABORATIVE_MODE_STATUS.toString())));
 
       String noteName = "Note with millis " + System.currentTimeMillis();
       String defaultInterpreterId = "";
@@ -707,30 +715,72 @@ public class NotebookServerTest extends AbstractTestRestApi {
                       .put("name", noteName)
                       .put("defaultInterpreterId", defaultInterpreterId).toJson());
 
-      // Make sure there is only one created notebook, and get its' ID.
-      Assertions.assertEquals(1,notebook.getAllNotes().size());
+      // NEW_NOTE sends one status message to User 1 only (creating a note automatically connects user to that note)
+      Assertions.assertDoesNotThrow(()-> verify(sock1, times(1)).send(contains(OP.COLLABORATIVE_MODE_STATUS.toString())));
+      Assertions.assertDoesNotThrow(()-> verify(sock2, times(0)).send(contains(OP.COLLABORATIVE_MODE_STATUS.toString())));
+      Assertions.assertDoesNotThrow(()-> verify(sock3, times(0)).send(contains(OP.COLLABORATIVE_MODE_STATUS.toString())));
+
+      // create note from sock3
+      notebookServer.onMessage(sock3,
+              new Message(OP.NEW_NOTE)
+                      .put("name3", noteName)
+                      .put("defaultInterpreterId", defaultInterpreterId).toJson());
+
+      // NEW_NOTE sends one status message to User 3 only (creating a note automatically connects user to that note)
+      Assertions.assertDoesNotThrow(()-> verify(sock1, times(1)).send(contains(OP.COLLABORATIVE_MODE_STATUS.toString())));
+      Assertions.assertDoesNotThrow(()-> verify(sock2, times(0)).send(contains(OP.COLLABORATIVE_MODE_STATUS.toString())));
+      Assertions.assertDoesNotThrow(()-> verify(sock3, times(1)).send(contains(OP.COLLABORATIVE_MODE_STATUS.toString())));
+
+      // Make sure the notebooks were created, and get their IDs.
+      Assertions.assertEquals(2,notebook.getAllNotes().size());
       String noteId = notebook.getAllNotes().get(0).getId();
+      String note3Id = notebook.getAllNotes().get(1).getId();
 
       // Expect correct number of COLLABORATIVE_MODE_STATUS messages when a number of users join the same notebook.
-      notebookServer.onMessage(sock1,new Message(OP.GET_NOTE)
+      // User 2 joins User 1's notebook
+      notebookServer.onMessage(sock2,new Message(OP.GET_NOTE)
               .put("id",noteId).toJson());
 
-      // User 1 shouldn't get a COLLABORATIVE_MODE_STATUS message when they join as the first user
-
-      Assertions.assertDoesNotThrow(()-> verify(sock1, times(0)).send(contains(OP.COLLABORATIVE_MODE_STATUS.toString())));
-      notebookServer.onMessage(sock2, new Message(OP.GET_NOTE)
-              .put("id", noteId).toJson());
-        // Both users 1 and 2 should receive a COLLABORATIVE_MODE_STATUS message when user 2 joins so that they both know about each other.
-      Assertions.assertDoesNotThrow(()-> verify(sock1, times(1)).send(contains(OP.COLLABORATIVE_MODE_STATUS.toString())));
-      Assertions.assertDoesNotThrow(()-> verify(sock2, times(1)).send(contains(OP.COLLABORATIVE_MODE_STATUS.toString())));
-
-      notebookServer.onMessage(sock3, new Message(OP.GET_NOTE)
-              .put("id", noteId).toJson());
-      // Both users 1 and 2 should receive a COLLABORATIVE_MODE_STATUS message when user 3 joins
+      // Each GET_NOTE should send one collaborative status update to each connected user.
       Assertions.assertDoesNotThrow(()-> verify(sock1, times(2)).send(contains(OP.COLLABORATIVE_MODE_STATUS.toString())));
-      Assertions.assertDoesNotThrow(()-> verify(sock2, times(2)).send(contains(OP.COLLABORATIVE_MODE_STATUS.toString())));
-      // User 3 should be notified about the other users by a COLLABORATIVE_MODE_STATUS message upon joining
+      Assertions.assertDoesNotThrow(()-> verify(sock2, times(1)).send(contains(OP.COLLABORATIVE_MODE_STATUS.toString())));
+      // User 3 should not get a message as they are in a different notebook
       Assertions.assertDoesNotThrow(()-> verify(sock3, times(1)).send(contains(OP.COLLABORATIVE_MODE_STATUS.toString())));
+
+
+      // User 2 joins User 3's notebook
+      notebookServer.onMessage(sock2, new Message(OP.GET_NOTE)
+              .put("id", note3Id).toJson());
+
+      // User 1 should be notified that User 2 has left their notebook
+      Assertions.assertDoesNotThrow(()-> verify(sock1, times(3)).send(contains(OP.COLLABORATIVE_MODE_STATUS.toString())));
+      // User 2 and 3 should both be notified that they are now collaborating with each other.
+      Assertions.assertDoesNotThrow(()-> verify(sock2, times(2)).send(contains(OP.COLLABORATIVE_MODE_STATUS.toString())));
+      Assertions.assertDoesNotThrow(()-> verify(sock3, times(2)).send(contains(OP.COLLABORATIVE_MODE_STATUS.toString())));
+
+      // User 1 disconnects
+      notebookServer.onClose(sock1,1,"disconnect");
+      // There should be no changes to number of status updates received, as User 1 no longer collaborates with anyone.
+      Assertions.assertDoesNotThrow(()-> verify(sock1, times(3)).send(contains(OP.COLLABORATIVE_MODE_STATUS.toString())));
+      Assertions.assertDoesNotThrow(()-> verify(sock2, times(2)).send(contains(OP.COLLABORATIVE_MODE_STATUS.toString())));
+      Assertions.assertDoesNotThrow(()-> verify(sock3, times(2)).send(contains(OP.COLLABORATIVE_MODE_STATUS.toString())));
+
+
+      // User 2 returns to home page
+      notebookServer.onMessage(sock2, new Message(OP.LIST_NOTES)
+              .toJson());
+      // User 3 should receive a COLLABORATIVE_MODE_STATUS message when user 2 disconnects when they were collaborating
+      Assertions.assertDoesNotThrow(()-> verify(sock1, times(3)).send(contains(OP.COLLABORATIVE_MODE_STATUS.toString())));
+      Assertions.assertDoesNotThrow(()-> verify(sock2, times(2)).send(contains(OP.COLLABORATIVE_MODE_STATUS.toString())));
+      Assertions.assertDoesNotThrow(()-> verify(sock3, times(3)).send(contains(OP.COLLABORATIVE_MODE_STATUS.toString())));
+
+
+    // User 2 disconnects
+    notebookServer.onClose(sock2,1,"disconnect");
+    // There should be no collaborative status messages sent as user 2 was not collaborating with anyone at the time
+    Assertions.assertDoesNotThrow(()-> verify(sock1, times(3)).send(contains(OP.COLLABORATIVE_MODE_STATUS.toString())));
+    Assertions.assertDoesNotThrow(()-> verify(sock2, times(2)).send(contains(OP.COLLABORATIVE_MODE_STATUS.toString())));
+    Assertions.assertDoesNotThrow(()-> verify(sock3, times(3)).send(contains(OP.COLLABORATIVE_MODE_STATUS.toString())));
   }
 
   @Test
