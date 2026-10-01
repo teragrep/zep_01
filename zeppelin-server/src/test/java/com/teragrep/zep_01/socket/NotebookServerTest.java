@@ -766,12 +766,21 @@ public class NotebookServerTest extends AbstractTestRestApi {
       Assertions.assertDoesNotThrow(()-> verify(sock3, times(2)).send(contains(OP.COLLABORATIVE_MODE_STATUS.toString())));
 
 
-      // User 2 disconnects
-      notebookServer.onClose(sock2,1,"disconnect");
+      // User 2 returns to home page
+      notebookServer.onMessage(sock2, new Message(OP.LIST_NOTES)
+              .toJson());
       // User 3 should receive a COLLABORATIVE_MODE_STATUS message when user 2 disconnects when they were collaborating
       Assertions.assertDoesNotThrow(()-> verify(sock1, times(3)).send(contains(OP.COLLABORATIVE_MODE_STATUS.toString())));
       Assertions.assertDoesNotThrow(()-> verify(sock2, times(2)).send(contains(OP.COLLABORATIVE_MODE_STATUS.toString())));
       Assertions.assertDoesNotThrow(()-> verify(sock3, times(3)).send(contains(OP.COLLABORATIVE_MODE_STATUS.toString())));
+
+
+    // User 2 disconnects
+    notebookServer.onClose(sock2,1,"disconnect");
+    // There should be no collaborative status messages sent as user 2 was not collaborating with anyone at the time
+    Assertions.assertDoesNotThrow(()-> verify(sock1, times(3)).send(contains(OP.COLLABORATIVE_MODE_STATUS.toString())));
+    Assertions.assertDoesNotThrow(()-> verify(sock2, times(2)).send(contains(OP.COLLABORATIVE_MODE_STATUS.toString())));
+    Assertions.assertDoesNotThrow(()-> verify(sock3, times(3)).send(contains(OP.COLLABORATIVE_MODE_STATUS.toString())));
   }
 
   @Test

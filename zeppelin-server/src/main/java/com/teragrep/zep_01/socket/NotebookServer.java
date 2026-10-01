@@ -650,6 +650,7 @@ public class NotebookServer extends WebSocketServlet
           public void onSuccess(List<NoteInfo> notesInfo,
                                 ServiceContext context) throws IOException {
             super.onSuccess(notesInfo, context);
+            getConnectionManager().removeConnectionFromAllNote(conn);
             getConnectionManager().unicast(new Message(OP.NOTES_INFO).put("notes", notesInfo), conn);
           }
         });
