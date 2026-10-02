@@ -24,6 +24,7 @@ import com.teragrep.zep_01.user.AuthenticationInfo;
 
 import java.io.IOException;
 import java.util.List;
+import java.util.Objects;
 
 /**
  * Notebook repository (persistence layer) abstraction
@@ -78,26 +79,5 @@ public interface NotebookRepoWithVersionControl extends NotebookRepo {
    */
   @ZeppelinApi Note setNoteRevision(String noteId, String notePath, String revId,
                                     AuthenticationInfo subject) throws IOException;
-
-  /**
-   * Represents the 'Revision' a point in life of the notebook
-   */
-  class Revision {
-    public static final Revision EMPTY = new Revision(StringUtils.EMPTY, StringUtils.EMPTY, 0);
-
-    public String id;
-    public String message;
-    public int time;
-
-    public Revision(String revId, String message, int time) {
-      this.id = revId;
-      this.message = message;
-      this.time = time;
-    }
-
-    public static boolean isEmpty(Revision revision) {
-      return revision == null || EMPTY.equals(revision);
-    }
-  }
 
 }

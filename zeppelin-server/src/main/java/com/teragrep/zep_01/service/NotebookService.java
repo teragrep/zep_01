@@ -37,6 +37,7 @@ import java.util.Map;
 import java.util.Set;
 import javax.inject.Inject;
 
+import com.teragrep.zep_01.notebook.repo.Revision;
 import jakarta.json.Json;
 import jakarta.json.JsonObject;
 import org.apache.commons.lang3.StringUtils;
@@ -829,11 +830,11 @@ public class NotebookService {
     callback.onSuccess(note, context);
   }
 
-  public NotebookRepoWithVersionControl.Revision checkpointNote(
+  public Revision checkpointNote(
       String noteId,
       String commitMessage,
       ServiceContext context,
-      ServiceCallback<NotebookRepoWithVersionControl.Revision> callback) throws IOException {
+      ServiceCallback<Revision> callback) throws IOException {
 
     Note note = notebook.getNote(noteId);
     if (note == null) {
@@ -846,16 +847,16 @@ public class NotebookService {
       return null;
     }
 
-    NotebookRepoWithVersionControl.Revision revision =
+    Revision revision =
         notebook.checkpointNote(noteId, note.getPath(), commitMessage, context.getAutheInfo());
     callback.onSuccess(revision, context);
     return revision;
   }
 
-  public List<NotebookRepoWithVersionControl.Revision> listRevisionHistory(
+  public List<Revision> listRevisionHistory(
       String noteId,
       ServiceContext context,
-      ServiceCallback<List<NotebookRepoWithVersionControl.Revision>> callback) throws IOException {
+      ServiceCallback<List<Revision>> callback) throws IOException {
 
     Note note = notebook.getNote(noteId);
     if (note == null) {
@@ -869,7 +870,7 @@ public class NotebookService {
     //        callback)) {
     //      return null;
     //    }
-    List<NotebookRepoWithVersionControl.Revision> revisions =
+    List<Revision> revisions =
         notebook.listRevisionHistory(noteId, note.getPath(), context.getAutheInfo());
     callback.onSuccess(revisions, context);
     return revisions;

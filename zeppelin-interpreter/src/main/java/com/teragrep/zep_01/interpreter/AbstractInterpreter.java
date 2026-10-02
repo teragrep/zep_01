@@ -17,12 +17,17 @@
 
 package com.teragrep.zep_01.interpreter;
 
+import com.teragrep.zep_01.display.AngularObject;
+import com.teragrep.zep_01.display.AngularObjectRegistry;
+import com.teragrep.zep_01.resource.Resource;
+import com.teragrep.zep_01.resource.ResourceSet;
 import org.apache.commons.text.StringSubstitutor;
 import com.teragrep.zep_01.interpreter.thrift.InterpreterCompletion;
 import com.teragrep.zep_01.resource.ResourcePool;
 import com.teragrep.zep_01.resource.ResourcePoolMap;
 
 import java.util.*;
+import java.util.stream.Stream;
 
 public abstract class AbstractInterpreter extends Interpreter {
   public AbstractInterpreter(Properties properties) {
@@ -42,16 +47,43 @@ public abstract class AbstractInterpreter extends Interpreter {
     boolean interpolate = isInterpolate() ||
             Boolean.parseBoolean(context.getLocalProperties().getOrDefault("interpolate", "false"));
     if (interpolate) {
-      st = interpolate(st, context.getResourcePool());
+      st = interpolate(st, context);
     }
     return internalInterpret(st, context);
   }
 
-  static String interpolate(String cmd, ResourcePool resourcePool) {
-    // StringSubstitutor wants Map so convert ResourcePool to it
-    ResourcePoolMap map = new ResourcePoolMap(resourcePool);
+  static String interpolate(final String cmd, final InterpreterContext context){
 
-    StringSubstitutor substitutor = new StringSubstitutor(map);
+    // Interpolation takes values either from ResourcePool or AngularObjectRegistry, prioritizing ResourcePool if duplicate keys are found.
+    final String noteId = context.getNoteId();
+    final String paragraphId = context.getParagraphId();
+    final Map<String,Object> replacementMap = new HashMap<>();
+
+    final AngularObjectRegistry registry = context.getAngularObjectRegistry();
+    final ResourcePool resourcePool = context.getResourcePool();
+
+    // Add all values from AngularObjectRegistry if it exists
+    if(registry != null){
+      final List<AngularObject> allObjects = new ArrayList<>();
+      allObjects.addAll(registry.getAll(null,null));
+      allObjects.addAll(registry.getAll(noteId,null));
+      allObjects.addAll(registry.getAll(noteId,paragraphId));
+
+      // Add each object to a Map from the List. Order of the List matters, value of a duplicated key in the Map will be the last occurrence of that key in the List.
+      for (final AngularObject angularObject : allObjects) {
+        replacementMap.put(angularObject.getName(),angularObject.get());
+      }
+    }
+
+    // StringSubstitutor wants Map so convert ResourcePool if exists
+    if(resourcePool != null){
+      final ResourceSet resources = resourcePool.getAll();
+      for (final Resource resource : resources) {
+        replacementMap.put(resource.getResourceId().getName(), resource.get());
+      }
+    }
+
+    final StringSubstitutor substitutor = new StringSubstitutor(replacementMap);
     // Recursive substitution is always disabled as that can lead to infinite recursion
     substitutor.setEnableSubstitutionInVariables(false);
     // Fail fast on undefined variables
@@ -60,10 +92,10 @@ public abstract class AbstractInterpreter extends Interpreter {
     try {
       return substitutor.replace(cmd);
     }
-    catch (IllegalArgumentException e) {
+    catch (final IllegalArgumentException e){
       throw new IllegalArgumentException(
               "Failure in interpolating variables. Ensure that all variables are resolvable or escape them as $${literal}.\n" +
-              "Original error message: " + e.getMessage()
+                      "Original error message: " + e.getMessage()
       );
     }
   }

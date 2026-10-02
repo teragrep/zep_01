@@ -46,6 +46,7 @@ import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 
+import com.teragrep.zep_01.notebook.repo.Revision;
 import org.apache.commons.io.IOUtils;
 import org.apache.thrift.TException;
 import com.teragrep.zep_01.conf.ZeppelinConfiguration;
@@ -661,27 +662,27 @@ public class NotebookServerTest extends AbstractTestRestApi {
   public void testNoteRevision() throws IOException {
     Note note = notebook.createNote("note1", anonymous);
     assertEquals(0, note.getParagraphCount());
-    NotebookRepoWithVersionControl.Revision firstRevision = notebook.checkpointNote(note.getId(), note.getPath(), "first commit", AuthenticationInfo.ANONYMOUS);
-    List<NotebookRepoWithVersionControl.Revision> revisionList = notebook.listRevisionHistory(note.getId(), note.getPath(), AuthenticationInfo.ANONYMOUS);
+    Revision firstRevision = notebook.checkpointNote(note.getId(), note.getPath(), "first commit", AuthenticationInfo.ANONYMOUS);
+    List<Revision> revisionList = notebook.listRevisionHistory(note.getId(), note.getPath(), AuthenticationInfo.ANONYMOUS);
     assertEquals(1, revisionList.size());
-    assertEquals(firstRevision.id, revisionList.get(0).id);
-    assertEquals("first commit", revisionList.get(0).message);
+    assertEquals(firstRevision.id(), revisionList.get(0).id());
+    assertEquals("first commit", revisionList.get(0).message());
 
     // add one new paragraph and commit it
     note.addNewParagraph(AuthenticationInfo.ANONYMOUS);
     notebook.saveNote(note, AuthenticationInfo.ANONYMOUS);
     assertEquals(1, note.getParagraphCount());
-    NotebookRepoWithVersionControl.Revision secondRevision = notebook.checkpointNote(note.getId(), note.getPath(), "second commit", AuthenticationInfo.ANONYMOUS);
+    Revision secondRevision = notebook.checkpointNote(note.getId(), note.getPath(), "second commit", AuthenticationInfo.ANONYMOUS);
 
     revisionList = notebook.listRevisionHistory(note.getId(), note.getPath(), AuthenticationInfo.ANONYMOUS);
     assertEquals(2, revisionList.size());
-    assertEquals(secondRevision.id, revisionList.get(0).id);
-    assertEquals("second commit", revisionList.get(0).message);
-    assertEquals(firstRevision.id, revisionList.get(1).id);
-    assertEquals("first commit", revisionList.get(1).message);
+    assertEquals(secondRevision.id(), revisionList.get(0).id());
+    assertEquals("second commit", revisionList.get(0).message());
+    assertEquals(firstRevision.id(), revisionList.get(1).id());
+    assertEquals("first commit", revisionList.get(1).message());
 
     // checkout the first commit
-    note = notebook.getNoteByRevision(note.getId(), note.getPath(), firstRevision.id, AuthenticationInfo.ANONYMOUS);
+    note = notebook.getNoteByRevision(note.getId(), note.getPath(), firstRevision.id(), AuthenticationInfo.ANONYMOUS);
     assertEquals(0, note.getParagraphCount());
   }
 

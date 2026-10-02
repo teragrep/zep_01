@@ -67,11 +67,18 @@ public class ConfInterpreter extends Interpreter {
       finalProperties.putAll(getProperties());
       Properties newProperties = new Properties();
       newProperties.load(new StringReader(st));
+      // Verify that every key to be added exists within the Interpreter's defined properties already.
+      for (String propertyName : newProperties.stringPropertyNames()){
+        if(!finalProperties.containsKey(propertyName)){
+          throw new InterpreterException("Tried to add an unknown key to Interpreter's properties: "+ propertyName + " Please make sure that the key is listed as a property in the Interpreters page.");
+        }
+      }
+
       finalProperties.putAll(newProperties);
       LOGGER.debug("Properties for InterpreterGroup: {} is {}", interpreterGroupId, finalProperties);
       interpreterSetting.setInterpreterGroupProperties(interpreterGroupId, finalProperties);
       return new InterpreterResult(InterpreterResult.Code.SUCCESS);
-    } catch (IOException e) {
+    } catch (IOException | InterpreterException e) {
       LOGGER.error("Fail to update interpreter setting", e);
       return new InterpreterResult(InterpreterResult.Code.ERROR, ExceptionUtils.getStackTrace(e));
     }

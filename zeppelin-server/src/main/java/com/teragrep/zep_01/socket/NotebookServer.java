@@ -55,7 +55,7 @@ import com.teragrep.zep_01.notebook.NotebookImportDeserializer;
 import com.teragrep.zep_01.notebook.Paragraph;
 import com.teragrep.zep_01.notebook.ParagraphJobListener;
 import com.teragrep.zep_01.notebook.AuthorizationService;
-import com.teragrep.zep_01.notebook.repo.NotebookRepoWithVersionControl.Revision;
+import com.teragrep.zep_01.notebook.repo.Revision;
 import com.teragrep.zep_01.common.Message;
 import com.teragrep.zep_01.common.Message.OP;
 import com.teragrep.zep_01.rest.exception.ForbiddenException;
@@ -1570,7 +1570,7 @@ public class NotebookServer extends WebSocketServlet
           @Override
           public void onSuccess(Revision revision, ServiceContext context) throws IOException {
             super.onSuccess(revision, context);
-            if (!Revision.isEmpty(revision)) {
+            if (revision != null && !revision.isEmpty()) {
               List<Revision> revisions =
                   getNotebook().listRevisionHistory(noteId, getNotebook().getNote(noteId).getPath(),
                       context.getAutheInfo());

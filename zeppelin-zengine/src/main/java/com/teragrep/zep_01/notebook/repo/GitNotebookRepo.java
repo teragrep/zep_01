@@ -24,13 +24,17 @@ import com.teragrep.zep_01.user.AuthenticationInfo;
 import org.eclipse.jgit.api.Git;
 import org.eclipse.jgit.api.errors.GitAPIException;
 import org.eclipse.jgit.api.errors.NoHeadException;
+import org.eclipse.jgit.diff.DiffConfig;
 import org.eclipse.jgit.diff.DiffEntry;
 import org.eclipse.jgit.dircache.DirCache;
 import org.eclipse.jgit.internal.storage.file.FileRepository;
+import org.eclipse.jgit.lib.Config;
 import org.eclipse.jgit.lib.Constants;
 import org.eclipse.jgit.lib.ObjectId;
 import org.eclipse.jgit.lib.Repository;
+import org.eclipse.jgit.revwalk.FollowFilter;
 import org.eclipse.jgit.revwalk.RevCommit;
+import org.eclipse.jgit.revwalk.RevWalk;
 import org.eclipse.jgit.treewalk.filter.PathFilter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -90,9 +94,9 @@ public class GitNotebookRepo extends VFSNotebookRepo implements NotebookRepoWith
     super.move(noteId, notePath, newNotePath, subject);
     String noteFileName = buildNoteFileName(noteId, notePath);
     String newNoteFileName = buildNoteFileName(noteId, newNotePath);
-    git.rm().addFilepattern(noteFileName);
-    git.add().addFilepattern(newNoteFileName);
     try {
+      git.rm().addFilepattern(noteFileName).call();
+      git.add().addFilepattern(newNoteFileName).call();
       git.commit().setMessage("Move note " + noteId + " from " + noteFileName + " to " +
           newNoteFileName).call();
     } catch (GitAPIException e) {
@@ -104,9 +108,9 @@ public class GitNotebookRepo extends VFSNotebookRepo implements NotebookRepoWith
   public void move(String folderPath, String newFolderPath,
                    AuthenticationInfo subject) throws IOException {
     super.move(folderPath, newFolderPath, subject);
-    git.rm().addFilepattern(folderPath.substring(1));
-    git.add().addFilepattern(newFolderPath.substring(1));
     try {
+      git.rm().addFilepattern(folderPath.substring(1)).call();
+      git.add().addFilepattern(newFolderPath.substring(1)).call();
       git.commit().setMessage("Move folder " + folderPath + " to " + newFolderPath).call();
     } catch (GitAPIException e) {
       throw new IOException(e);
@@ -126,7 +130,7 @@ public class GitNotebookRepo extends VFSNotebookRepo implements NotebookRepoWith
                              String commitMessage,
                              AuthenticationInfo subject) throws IOException {
     String noteFileName = buildNoteFileName(noteId, notePath);
-    Revision revision = Revision.EMPTY;
+    Revision revision = new Revision();
     try {
       List<DiffEntry> gitDiff = git.diff().call();
       boolean modified = gitDiff.parallelStream().anyMatch(diffEntry -> diffEntry.getNewPath().equals(noteFileName));
@@ -189,25 +193,35 @@ public class GitNotebookRepo extends VFSNotebookRepo implements NotebookRepoWith
     }
     return note;
   }
-
   @Override
   public List<Revision> revisionHistory(String noteId,
                                         String notePath,
                                         AuthenticationInfo subject) throws IOException {
-    List<Revision> history = new ArrayList<>();
-    String noteFileName = buildNoteFileName(noteId, notePath);
+    final List<Revision> history = new ArrayList<>();
+    final String noteFileName = buildNoteFileName(noteId, notePath);
     LOGGER.debug("Listing history for {}:", noteFileName);
-    try {
-      Iterable<RevCommit> logs = git.log().addPath(noteFileName).call();
-      for (RevCommit log: logs) {
-        history.add(new Revision(log.getName(), log.getShortMessage(), log.getCommitTime()));
-        LOGGER.debug(" - ({},{},{})", log.getName(), log.getCommitTime(), log.getFullMessage());
+
+    // git.log() command doesn't follow files through renames, so we use a RevWalk with a FollowFilter
+    final Repository repository = git.getRepository();
+    try (RevWalk walk = new RevWalk(repository)) {
+      final Config config = new Config();
+      final DiffConfig diffConfig = config.get(DiffConfig.KEY);
+      final FollowFilter followFilter = FollowFilter.create(noteFileName, diffConfig);
+      walk.setTreeFilter(followFilter);
+
+      // get commit from repository head if it exists and walk through every commit. FollowFilter adds commits to renamed files.
+      final ObjectId headId = repository.resolve(Constants.HEAD);
+      if (headId != null) {
+        final RevCommit startCommit = walk.parseCommit(headId);
+        walk.markStart(startCommit);
+        for (RevCommit commit : walk) {
+          history.add(new Revision(commit.getId().getName(),commit.getFullMessage(),commit.getCommitTime()));
+          LOGGER.debug(" - ({},{},{})", commit.getName(), commit.getCommitTime(), commit.getFullMessage());
+        }
       }
-    } catch (NoHeadException e) {
-      //when no initial commit exists
-      LOGGER.warn("No Head found for {}, {}", noteFileName, e.getMessage());
-    } catch (GitAPIException e) {
-      LOGGER.error("Failed to get logs for {}", noteFileName, e);
+      else {
+        LOGGER.warn("No Head found for {}", noteFileName);
+      }
     }
     return history;
   }
