@@ -1151,7 +1151,7 @@ public class NotebookServer extends WebSocketServlet
       }
       final ParagraphOutputResponseMessage paragraphOutputResponse = new ParagraphOutputResponseMessage(noteId, paragraphId, outputJson);
       final JsonMessage msg = new JsonMessage(new MessageIdImpl(msgId), OP.PARAGRAPH_OUTPUT, paragraphOutputResponse);
-      conn.send(msg.asJson().toString());
+      getConnectionManager().broadcast(noteId,msg.asJson().toString());
     } catch (InterpreterException e) {
       LOG.error("Failed to retrieve output for note: {} paragraph: {} cause: {}", noteId, paragraphId, e.getCause(), e);
       final JsonObject errorJson = Json.createObjectBuilder()
