@@ -1150,6 +1150,11 @@ public class NotebookServer extends WebSocketServlet
         outputJson = jsonReader.readObject();
       }
       final ParagraphOutputResponseMessage paragraphOutputResponse = new ParagraphOutputResponseMessage(noteId, paragraphId, outputJson);
+      // since UI-initiated reformatting requests does not trigger Job.completeWithSuccess(), we must update the paragraphs "result" property with the reformatted output here.
+      // this must be done in order to save the reformatted output to disk and have it be broadcast to others via PARAGRAPH messages.
+      InterpreterResult.Type type = InterpreterResult.Type.valueOf(outputJson.getString("type").toUpperCase());
+      paragraph.updateOutputBuffer(0, type,outputJson.toString());
+      paragraph.checkpointOutput();
       final JsonMessage msg = new JsonMessage(new MessageIdImpl(msgId), OP.PARAGRAPH_OUTPUT, paragraphOutputResponse);
       conn.send(msg.asJson().toString());
     } catch (InterpreterException e) {
