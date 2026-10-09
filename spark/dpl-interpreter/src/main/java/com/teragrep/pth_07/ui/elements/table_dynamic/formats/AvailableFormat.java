@@ -43,45 +43,19 @@
  * Teragrep, the applicable Commercial License may apply to this file if you as
  * a licensee so wish it.
  */
-package com.teragrep.pth_07.ui.elements.table_dynamic;
+package com.teragrep.pth_07.ui.elements.table_dynamic.formats;
 
-import java.util.List;
-import java.util.Objects;
 
-final class DTPagination {
+import com.teragrep.stb_01.Stubable;
+import org.apache.spark.sql.Dataset;
+import org.apache.spark.sql.Row;
 
-    private final List<String> rowList;
-    public DTPagination(List<String> rowList){
-        this.rowList = rowList;
-    }
-    public List<String> paginate(int pageSize, int pageStart) {
-        // ranges must be greater than 0
-        int fromIndex = Math.max(pageStart, 0);
-        int toIndex = Math.max(fromIndex + pageSize, 0);
+/**
+ * Implement this interface to declare a new RenderFormat to which a Spark Dataset may be formatted to.
+ * RenderFormats require a Spark Dataset to instantiate, but an AvailableFormat can be instantiated without one.
+ */
+public interface AvailableFormat extends Stubable {
 
-        // list must end at the maximum size
-        if (toIndex > rowList.size()) {
-            toIndex = rowList.size();
-        }
+    RenderFormat asRenderFormat(UIOption uiOption, Dataset<Row> rowDataset);
 
-        // list range must be positive
-        if (fromIndex > toIndex) {
-            fromIndex = toIndex;
-        }
-
-        return rowList.subList(fromIndex, toIndex);
-    }
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        DTPagination that = (DTPagination) o;
-        return Objects.equals(rowList, that.rowList);
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(rowList);
-    }
 }

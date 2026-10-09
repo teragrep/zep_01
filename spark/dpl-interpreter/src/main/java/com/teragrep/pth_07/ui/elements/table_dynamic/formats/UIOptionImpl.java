@@ -43,41 +43,64 @@
  * Teragrep, the applicable Commercial License may apply to this file if you as
  * a licensee so wish it.
  */
-package com.teragrep.pth_07.ui.elements;
+package com.teragrep.pth_07.ui.elements.table_dynamic.formats;
 
-import com.teragrep.zep_01.interpreter.InterpreterContext;
+import jakarta.json.Json;
+import jakarta.json.JsonObject;
+import jakarta.json.JsonReader;
 
-import java.io.IOException;
+import java.io.StringReader;
+import java.util.Objects;
 
-public class OutputContent extends AbstractUserInterfaceElement {
+public final class UIOptionImpl implements UIOption {
 
-    private String outputContent = "";
+    private final JsonObject json;
 
-    public OutputContent(InterpreterContext interpreterContext) {
-        super(interpreterContext);
+    public UIOptionImpl(){
+        this(Json.createObjectBuilder()
+                .add("type","dataTables")
+                .add("requestOptions",Json.createObjectBuilder()
+                        .add("draw",1)
+                        .add("start",0)
+                        .add("length",50)
+                        .add("search", Json.createObjectBuilder()
+                                .add("value","")
+                                .add("regex",false)
+                                .add("fixed", Json.createArrayBuilder().build()))
+                        .build())
+                .build());
+    }
+
+    public UIOptionImpl(final JsonObject jsonObject) {
+        this.json = jsonObject;
     }
 
     @Override
-    protected void draw() {
-        getInterpreterContext().out().clear(false);
-        try {
-            getInterpreterContext().out().write(outputContent);
-        } catch (IOException e) {
-            e.printStackTrace();
+    public JsonObject asJson() {
+        return json;
+    }
+    @Override
+    public String toString() {
+        return json.toString();
+    }
+
+    @Override
+    public boolean equals(final Object o) {
+        final boolean equals;
+        if (this == o) {
+            equals = true;
+        } else if (o == null || getClass() != o.getClass()) {
+            equals = false;
+        } else {
+            final UIOptionImpl uiOption = (UIOptionImpl) o;
+            equals = Objects.equals(json, uiOption.json);
         }
+        return equals;
     }
 
     @Override
-    public void emit() {
-        // no angular in this one
-    }
-
-    public void setOutputContent(String outputContent) {
-        this.outputContent = outputContent;
-        draw();
-    }
-
-    public void clear() {
-        getInterpreterContext().out().clear(true);
+    public int hashCode() {
+        return Objects.hash(json);
     }
 }
+

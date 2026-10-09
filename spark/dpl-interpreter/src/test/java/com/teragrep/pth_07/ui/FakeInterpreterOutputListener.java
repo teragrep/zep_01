@@ -43,42 +43,40 @@
  * Teragrep, the applicable Commercial License may apply to this file if you as
  * a licensee so wish it.
  */
+package com.teragrep.pth_07.ui;
 
-package com.teragrep.pth_07.ui.elements.table_dynamic.pojo;
+import com.teragrep.zep_01.interpreter.InterpreterOutput;
+import com.teragrep.zep_01.interpreter.InterpreterOutputListener;
+import com.teragrep.zep_01.interpreter.InterpreterResultMessage;
+import com.teragrep.zep_01.interpreter.InterpreterResultMessageOutput;
+import org.junit.jupiter.api.Assertions;
 
-import com.google.gson.annotations.Expose;
-import com.google.gson.annotations.SerializedName;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 
-public class Order {
+public final class FakeInterpreterOutputListener implements InterpreterOutputListener {
+        private List<InterpreterResultMessage> outputList = new ArrayList<>();
 
-    @SerializedName("column")
-    @Expose
-    private Integer column;
-    @SerializedName("dir")
-    @Expose
-    private String dir;
+        @Override
+        public void onUpdateAll(final InterpreterOutput out) {
+        }
 
-    public Integer getColumn() {
-        return column;
-    }
+        @Override
+        public void onAppend(final int index, final InterpreterResultMessageOutput out, final byte[] line) {
+        }
 
-    public void setColumn(Integer column) {
-        this.column = column;
-    }
+        @Override
+        public void onUpdate(final int index, final InterpreterResultMessageOutput out) {
+            try{
+                outputList.add(out.toInterpreterResultMessage());
+            }
+            catch (final IOException e){
+                throw new RuntimeException("IOException occurred while listening to output messages!",e);
+            }
+        }
 
-    public String getDir() {
-        return dir;
-    }
-
-    public void setDir(String dir) {
-        this.dir = dir;
-    }
-
-    @Override
-    public String toString() {
-        return "Order{" +
-                "column=" + column +
-                ", dir='" + dir + '\'' +
-                '}';
-    }
+        public List<InterpreterResultMessage> outputs(){
+            return outputList;
+        }
 }

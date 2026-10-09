@@ -43,52 +43,14 @@
  * Teragrep, the applicable Commercial License may apply to this file if you as
  * a licensee so wish it.
  */
-package com.teragrep.pth_07.ui.elements.table_dynamic;
+package com.teragrep.pth_07.ui.elements.table_dynamic.formats;
 
-import jakarta.json.Json;
-import jakarta.json.JsonArray;
-import jakarta.json.JsonArrayBuilder;
-import org.apache.spark.sql.types.StructField;
-import org.apache.spark.sql.types.StructType;
-import scala.collection.Iterator;
+import nl.jqno.equalsverifier.EqualsVerifier;
+import org.junit.Test;
 
-import java.util.Objects;
-
-public final class DTHeader {
-
-    private final StructType schema;
-    public DTHeader(){
-        this(new StructType());
-    }
-    public DTHeader(StructType schema){
-        this.schema = schema;
-    }
-
-    public JsonArray json() {
-
-        JsonArrayBuilder builder = Json.createArrayBuilder();
-        Iterator<StructField> it = schema.iterator();
-        while(it.hasNext()) {
-            StructField column = it.next();
-            builder.add(column.name());
-        }
-        return builder.build();
-    }
-
-    public StructType schema(){
-        return schema;
-    }
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        DTHeader dtHeader = (DTHeader) o;
-        return Objects.equals(schema, dtHeader.schema);
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(schema);
+public final class UPlotAvailableFormatTest {
+    @Test
+    public void testContract(){
+        EqualsVerifier.forClass(UPlotAvailableFormat.class).verify();
     }
 }

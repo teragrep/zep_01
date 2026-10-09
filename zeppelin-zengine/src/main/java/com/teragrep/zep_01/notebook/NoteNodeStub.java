@@ -1,8 +1,18 @@
 package com.teragrep.zep_01.notebook;
 
 import java.io.IOException;
+import java.util.Objects;
 
 public final class NoteNodeStub implements NoteNode {
+    private final boolean isStub;
+
+    public NoteNodeStub(){
+        this(true);
+    }
+
+    private NoteNodeStub(boolean isStub){
+        this.isStub = isStub;
+    }
 
     @Override
     public Note getNote() throws IOException {
@@ -56,6 +66,25 @@ public final class NoteNodeStub implements NoteNode {
 
     @Override
     public boolean isStub() {
-        return true;
+        return isStub;
+    }
+
+    @Override
+    public boolean equals(final Object o) {
+        final boolean equals;
+        if (this == o) {
+            equals = true;
+        } else if (o == null || getClass() != o.getClass()) {
+            equals = false;
+        } else {
+            final NoteNodeStub that = (NoteNodeStub) o;
+            equals = isStub == that.isStub;
+        }
+        return equals;
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(isStub);
     }
 }

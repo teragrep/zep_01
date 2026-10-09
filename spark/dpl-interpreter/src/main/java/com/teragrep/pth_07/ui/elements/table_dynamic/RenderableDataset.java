@@ -45,65 +45,46 @@
  */
 package com.teragrep.pth_07.ui.elements.table_dynamic;
 
-import jakarta.json.*;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import com.teragrep.pth_07.ui.elements.table_dynamic.formats.AvailableFormat;
+import com.teragrep.pth_07.ui.elements.table_dynamic.formats.RenderFormat;
+import com.teragrep.pth_07.ui.elements.table_dynamic.formats.RenderFormatStub;
+import com.teragrep.pth_07.ui.elements.table_dynamic.formats.UIOption;
+import org.apache.spark.sql.Dataset;
+import org.apache.spark.sql.Row;
+import org.apache.spark.storage.StorageLevel;
 
-import java.io.StringReader;
-import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
 
-public final class DTSearch {
-    protected static final Logger LOGGER = LoggerFactory.getLogger(DTSearch.class);
-    private final List<String> rowList;
+/**
+ * Represents a Dataset that can be rendered using some RenderFormat. Available RenderFormats are to be provided as AvailableFormat objects.
+ * Must contain a Dataset.
+ */
+public final class RenderableDataset {
 
-    public DTSearch(List<String> rowList){
-        this.rowList = rowList;
+    private static final RenderFormat renderFormatStub = new RenderFormatStub();
+    private final List<AvailableFormat> availableFormats;
+    private final Dataset<Row> rowDataset;
+
+    RenderableDataset(final List<AvailableFormat> availableFormats, Dataset<Row> rowDataset) {
+        this.availableFormats = availableFormats;
+        this.rowDataset = rowDataset;
     }
-    public List<String> search(String searchString){
-        List<String> searchedList = new ArrayList<>();
-        if (!"".equals(searchString)) {
-            try {
-                for (String row : rowList) {
-                    JsonReader reader = Json.createReader(new StringReader(row));
-                    JsonObject line = reader.readObject();
 
-                    // NOTE hard coded to _raw column
-                    JsonString _raw = line.getJsonString("_raw");
-                    if (_raw != null) {
-                        String _rawString = _raw.getString();
-                        if (_rawString != null) {
-                            if (_rawString.contains(searchString)) {
-                                // _raw matches, add whole row to result set
-                                searchedList.add(row);
-                            }
-                        }
-                    }
-                    reader.close();
-                }
-                return searchedList;
-            } catch (JsonException | IllegalStateException e) {
-                LOGGER.error(e.toString());
-                return searchedList;
+    public RenderFormat toRenderFormat(UIOption uiOption) {
+        RenderFormat rv = renderFormatStub;
+        for (AvailableFormat availableFormat : this.availableFormats) {
+            rv = availableFormat.asRenderFormat(uiOption, rowDataset);
+            if (!rv.isStub()) {
+                break;
             }
         }
-        else {
-            searchedList = rowList;
-        }
-        return searchedList;
+        return rv;
     }
 
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        DTSearch dtSearch = (DTSearch) o;
-        return Objects.equals(rowList, dtSearch.rowList);
+    public void persist(){
+        rowDataset.persist(StorageLevel.MEMORY_AND_DISK());
     }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(rowList);
+    public void unpersist(){
+        rowDataset.unpersist();
     }
 }

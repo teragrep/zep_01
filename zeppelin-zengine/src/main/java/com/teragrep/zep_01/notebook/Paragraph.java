@@ -24,11 +24,15 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import com.teragrep.zep_01.common.DefaultFormatDate;
+import com.teragrep.zep_01.common.Jsonable;
+import jakarta.json.Json;
+import jakarta.json.JsonObject;
+import jakarta.json.JsonObjectBuilder;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import com.teragrep.zep_01.common.JsonSerializable;
@@ -66,7 +70,7 @@ import com.google.common.annotations.VisibleForTesting;
  * Paragraph is a representation of an execution unit.
  */
 public class Paragraph extends JobWithProgressPoller<InterpreterResult> implements Cloneable,
-    JsonSerializable {
+    JsonSerializable, Jsonable {
 
   private static final Logger LOGGER = LoggerFactory.getLogger(Paragraph.class);
 
@@ -97,7 +101,6 @@ public class Paragraph extends JobWithProgressPoller<InterpreterResult> implemen
   private Map<String, ParagraphRuntimeInfo> runtimeInfos = new HashMap<>();
   private transient List<InterpreterResultMessage> outputBuffer = new ArrayList<>();
 
-
   @VisibleForTesting
   Paragraph() {
     super(generateId(), null);
@@ -125,6 +128,63 @@ public class Paragraph extends JobWithProgressPoller<InterpreterResult> implemen
     this.text = p2.text;
     this.results = p2.results;
     setStatus(p2.getStatus());
+  }
+
+
+  public JsonObject asJson(){
+    final JsonObjectBuilder builder = Json.createObjectBuilder();
+    if(title != null){
+      builder.add("title",title);
+    }
+    if(text != null){
+      builder.add("text",text);
+    }
+    if(user != null){
+      builder.add("user",user);
+    }
+    if(getId() != null){
+      builder.add("id",getId());
+    }
+    if(getJobName() != null){
+      builder.add("jobName",getJobName());
+    }
+
+    if(dateUpdated != null){
+      final String dateUpdated = new DefaultFormatDate(this.dateUpdated).asFormattedString();
+      builder.add("dateUpdated",dateUpdated);
+    }
+    if(getDateStarted() != null){
+      final String dateStarted = new DefaultFormatDate(getDateStarted()).asFormattedString();
+      builder.add("dateStarted",dateStarted);
+    }
+    if(getDateCreated() != null){
+      final String dateCreated = new DefaultFormatDate(getDateCreated()).asFormattedString();
+      builder.add("dateCreated",dateCreated);
+    }
+    if(getDateFinished() != null){
+      final String dateFinished = new DefaultFormatDate(getDateFinished()).asFormattedString();
+      builder.add("dateFinished",dateFinished);
+    }
+    if(runtimeInfos != null){
+      final JsonObject runtimeInfosJson = new ParagraphRuntimeInfos(runtimeInfos).asJson();
+      builder.add("runtimeInfos",runtimeInfosJson);
+    }
+    if(results != null){
+      final JsonObject resultJson = results.asJson();
+      builder.add("output",resultJson);
+    }
+    if(config != null){
+      final JsonObject configJson = new ParagraphConfig(config).asJson();
+      builder.add("config",configJson);
+    }
+    if(status != null){
+      builder.add("status",status.name());
+    }
+    if(settings != null){
+      builder.add("settings",settings.asJson());
+    }
+    builder.add("progress",progress);
+    return builder.build();
   }
 
   private static String generateId() {

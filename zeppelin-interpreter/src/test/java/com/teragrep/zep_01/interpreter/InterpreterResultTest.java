@@ -132,5 +132,4 @@ public class InterpreterResultTest {
     assertEquals("%html hello", new InterpreterResult(InterpreterResult.Code.SUCCESS,
         "%html hello").toString());
   }
-
 }
