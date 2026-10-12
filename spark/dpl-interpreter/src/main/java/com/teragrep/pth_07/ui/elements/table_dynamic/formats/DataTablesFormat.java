@@ -84,7 +84,7 @@ public final class DataTablesFormat implements RenderFormat{
      */
     @Override
     public JsonObject asJson(){
-        final JsonObject optionJson = option.asJson().getJsonObject("requestOptions");
+        final JsonObject optionJson = option.asJson().asJsonObject().getJsonObject("requestOptions");
         final List<String> rows = dataset.toJSON().collectAsList();
         final int pageStart = optionJson.getInt("start");
         final int pageLength = optionJson.getInt("length");

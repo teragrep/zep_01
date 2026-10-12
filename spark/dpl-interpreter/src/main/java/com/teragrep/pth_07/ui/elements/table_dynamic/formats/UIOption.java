@@ -49,7 +49,5 @@ import com.teragrep.zep_01.common.Jsonable;
 import jakarta.json.JsonObject;
 
 public interface UIOption extends Jsonable {
-    @Override
-    JsonObject asJson();
     String toString();
 }

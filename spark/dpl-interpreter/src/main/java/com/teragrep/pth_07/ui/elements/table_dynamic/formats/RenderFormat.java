@@ -55,8 +55,6 @@ import jakarta.json.JsonObject;
  */
 public interface RenderFormat extends Stubable, Jsonable {
 
-    JsonObject asJson();
-
     InterpreterResult.Type type();
 
 }
