@@ -48,7 +48,6 @@ package com.teragrep.pth_07.ui;
 import com.teragrep.pth_07.ui.elements.table_dynamic.DatasetStore;
 import com.teragrep.pth_07.ui.elements.table_dynamic.formats.*;
 import com.teragrep.pth_07.ui.elements.table_dynamic.testdata.TestDPLData;
-import com.teragrep.zep_01.display.FakeAngularObjectRegistryListener;
 import com.teragrep.zep_01.display.AngularObjectRegistry;
 import com.teragrep.zep_01.display.AngularObjectRegistryListener;
 import com.teragrep.zep_01.interpreter.*;
