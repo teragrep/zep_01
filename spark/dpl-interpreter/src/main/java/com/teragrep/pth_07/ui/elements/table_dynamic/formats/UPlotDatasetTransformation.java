@@ -55,6 +55,7 @@ import org.apache.spark.sql.types.StructField;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
+import java.util.UUID;
 
 public class UPlotDatasetTransformation {
 
@@ -62,19 +63,27 @@ public class UPlotDatasetTransformation {
     private final List<String> xAxisColumnNames;
     private final List<String> groupByColumnNames;
     private final List<String> valueColumnNames;
+    private final String transformationLabel;
 
     public UPlotDatasetTransformation(final Dataset<Row> dataset, final List<String> xAxisColumnNames, final List<String> groupByColumnNames, final List<String> valueColumnNames){
+        this(dataset,xAxisColumnNames,groupByColumnNames,valueColumnNames,UUID.randomUUID().toString());
+    }
+
+    public UPlotDatasetTransformation(final Dataset<Row> dataset, final List<String> xAxisColumnNames, final List<String> groupByColumnNames, final List<String> valueColumnNames, final String transformationLabel){
         this.dataset = dataset;
         this.xAxisColumnNames = xAxisColumnNames;
         this.groupByColumnNames = groupByColumnNames;
         this.valueColumnNames = valueColumnNames;
+        this.transformationLabel = transformationLabel;
     }
+
+
 
     public Dataset<Row> apply(){
         final Dataset<Row> datasetWithConcatenatedColumns = concatenateGroupByColumns(dataset,xAxisColumnNames);
         final Dataset<Row> transformedDataset;
         if(!groupByColumnNames.isEmpty()){
-            groupByColumnNames.add("label");
+            groupByColumnNames.add(transformationLabel);
             transformedDataset = pivotByColumns(datasetWithConcatenatedColumns,groupByColumnNames,valueColumnNames);
         }
         else {
@@ -98,7 +107,7 @@ public class UPlotDatasetTransformation {
         else {
             // Grouping columns as Column array for transformation
             final List<String> timechartGroupByColumnNames = new ArrayList<>(groupByColumnNames);
-            timechartGroupByColumnNames.remove("label");
+            timechartGroupByColumnNames.remove(transformationLabel);
 
             final List<Column> columns = new ArrayList<>();
             for (int i = 0; i < valueColumnNames.size(); i++) {
@@ -112,10 +121,11 @@ public class UPlotDatasetTransformation {
                 groupByColumns.add(org.apache.spark.sql.functions.col(timechartGroupByColumnNames.get(i)));
             }
             final Column[] groupByColumnArray = groupByColumns.toArray(new Column[0]);
+            String transformationPivot = UUID.randomUUID().toString();
             Dataset<Row> pivotedDataset = dataset
-                    .withColumn("pivot", org.apache.spark.sql.functions.concat_ws(".",groupByColumnArray))
-                    .groupBy("label")
-                    .pivot("pivot")
+                    .withColumn(transformationPivot, org.apache.spark.sql.functions.concat_ws(".",groupByColumnArray))
+                    .groupBy(transformationLabel)
+                    .pivot(transformationPivot)
                     .agg(first,rest);
 
             // pivot() uses an underscore as the separator when it creates new columns, and it cannot be overridden. To use "." as separator we have to rename the columns.
@@ -152,9 +162,9 @@ public class UPlotDatasetTransformation {
                 xAxisColumns.add(dataset.col(columnName));
             }
             // Create a Dataset containing the concatenated groupBy column. Copy metadata as well since it's being used later when creating labels.
-            datasetWithConcatenatedColumns = dataset.withColumn("label", functions.concat_ws(".",xAxisColumns.toArray(new Column[]{})))
+            datasetWithConcatenatedColumns = dataset.withColumn(transformationLabel, functions.concat_ws(".",xAxisColumns.toArray(new Column[]{})))
                     .drop(groupByColumnNames.toArray(new String[0]))
-                    .withMetadata("label",new MetadataBuilder().putBoolean("dpl_internal_isGroupByColumn",true).build());
+                    .withMetadata(transformationLabel,new MetadataBuilder().putBoolean("dpl_internal_isGroupByColumn",true).build());
         }
         else {
             datasetWithConcatenatedColumns = dataset;
