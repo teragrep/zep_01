@@ -82,9 +82,8 @@ public final class DataTablesFormat implements RenderFormat{
      * Operates on the cached rows of this DataTablesFormat object. Repeated calls paginates the same data with given parameter. If the cache needs to be updated, use .withDataset() to create a new DataTablesFormat object.
      * @return JsonObject formatted to the style expected by DataTables visualization library, with requested pagination performed.
      */
-    @Override
     public JsonObject asJson(){
-        final JsonObject optionJson = option.asJson().asJsonObject().getJsonObject("requestOptions");
+        final JsonObject optionJson = option.asJson().getJsonObject("requestOptions");
         final List<String> rows = dataset.toJSON().collectAsList();
         final int pageStart = optionJson.getInt("start");
         final int pageLength = optionJson.getInt("length");

@@ -62,7 +62,7 @@ public final class DataTablesAvailableFormat implements AvailableFormat {
     @Override
     public RenderFormat asRenderFormat(final UIOption uiOption, final Dataset<Row> rowDataset) {
         RenderFormat rv = renderFormatStub;
-        JsonObject json = uiOption.asJson().asJsonObject();
+        JsonObject json = uiOption.asJson();
         if(json.containsKey("type") && json.get("type").getValueType().equals(JsonValue.ValueType.STRING) && json.getString("type").equals("dataTables")){
             rv = new DataTablesFormat(uiOption, rowDataset);
         }
