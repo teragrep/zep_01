@@ -4,5 +4,4 @@ import com.teragrep.stb_01.Stubable;
 import jakarta.json.JsonValue;
 
 public interface MessageId extends Stubable, Jsonable {
-    public abstract JsonValue asJson();
 }
