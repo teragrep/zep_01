@@ -21,12 +21,16 @@ import com.teragrep.zep_01.display.ui.CheckBox;
 import com.teragrep.zep_01.display.ui.OptionInput.ParamOption;
 import com.teragrep.zep_01.display.ui.Select;
 import com.teragrep.zep_01.display.ui.TextBox;
+import jakarta.json.JsonObject;
 import org.junit.Before;
 import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
@@ -175,5 +179,27 @@ public class GUITest {
     assertEquals(1, gui.forms.size());
     assertTrue(gui.forms.get("marital") instanceof Select);
     assertEquals("single", gui.forms.get("marital").getDefaultValue());
+  }
+
+  @Test
+  public void testJson(){
+    final GUI gui = new GUI();
+    final Map<String, Object> params = new HashMap<>();
+    params.put("paramString","stringValue");
+    params.put("paramBoolean",true);
+    final Map<String, Input> forms = new HashMap<>();
+    forms.put("checkBox",new CheckBox());
+    forms.put("input",new Input());
+    gui.setParams(params);
+    gui.setForms(forms);
+    final JsonObject json = gui.asJson();
+
+    // Check that all GUI-related keys are added and that they contain the proper number of items
+    Assertions.assertTrue(json.containsKey("params"));
+    Assertions.assertTrue(json.containsKey("forms"));
+    final JsonObject paramsJson = json.getJsonObject("params");
+    Assertions.assertEquals(2,paramsJson.size());
+    final JsonObject formsJson = json.getJsonObject("forms");
+    Assertions.assertEquals(2,formsJson.size());
   }
 }

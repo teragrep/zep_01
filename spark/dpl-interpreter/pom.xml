@@ -292,6 +292,8 @@
             <!-- readme -->
             <exclude>README.adoc</exclude>
             <exclude>README.md</exclude>
+            <!-- test resource files -->
+            <exclude>src/test/resources/formatTestSourceData.csv</exclude>
           </excludes>
         </configuration>
       </plugin>
