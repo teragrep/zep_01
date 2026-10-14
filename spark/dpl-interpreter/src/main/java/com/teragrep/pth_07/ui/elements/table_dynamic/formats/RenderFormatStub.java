@@ -60,6 +60,7 @@ public final class RenderFormatStub implements RenderFormat {
         this.isStub = isStub;
     }
 
+    @Override
     public JsonObject asJson() {
         throw new IllegalArgumentException("No available formats found");
     }
