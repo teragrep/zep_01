@@ -177,18 +177,16 @@ public class ConnectionManager {
     if (!collaborativeModeEnable) {
       return;
     }
-    boolean collaborativeStatus = socketList.size() > 1;
-    if (collaborativeStatus) {
-      Message message = new Message(Message.OP.COLLABORATIVE_MODE_STATUS);
-      message.put("status", collaborativeStatus);
-      // Create a list of users for the response
-      HashSet<String> userList = new HashSet<>();
-      for (NotebookSocket noteSocket : socketList) {
-        userList.add(noteSocket.getUser());
-      }
-      message.put("users", userList);
-      broadcast(noteId, message);
+    boolean isCollaborative = socketList.size() > 1;
+    Message message = new Message(Message.OP.COLLABORATIVE_MODE_STATUS);
+    message.put("status", isCollaborative);
+    // Create a list of users for the response
+    HashSet<String> userList = new HashSet<>();
+    for (NotebookSocket noteSocket : socketList) {
+      userList.add(noteSocket.getUser());
     }
+    message.put("users", userList);
+    broadcast(noteId, message);
   }
 
 
