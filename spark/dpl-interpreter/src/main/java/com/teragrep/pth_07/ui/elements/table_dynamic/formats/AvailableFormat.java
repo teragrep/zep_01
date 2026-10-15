@@ -43,52 +43,19 @@
  * Teragrep, the applicable Commercial License may apply to this file if you as
  * a licensee so wish it.
  */
-package com.teragrep.pth_07.ui.elements.table_dynamic;
+package com.teragrep.pth_07.ui.elements.table_dynamic.formats;
 
-import jakarta.json.Json;
-import jakarta.json.JsonArray;
-import jakarta.json.JsonArrayBuilder;
-import org.apache.spark.sql.types.StructField;
-import org.apache.spark.sql.types.StructType;
-import scala.collection.Iterator;
 
-import java.util.Objects;
+import com.teragrep.stb_01.Stubable;
+import org.apache.spark.sql.Dataset;
+import org.apache.spark.sql.Row;
 
-public final class DTHeader {
+/**
+ * Implement this interface to declare a new RenderFormat to which a Spark Dataset may be formatted to.
+ * RenderFormats require a Spark Dataset to instantiate, but an AvailableFormat can be instantiated without one.
+ */
+public interface AvailableFormat extends Stubable {
 
-    private final StructType schema;
-    public DTHeader(){
-        this(new StructType());
-    }
-    public DTHeader(StructType schema){
-        this.schema = schema;
-    }
+    RenderFormat asRenderFormat(UIOption uiOption, Dataset<Row> rowDataset);
 
-    public JsonArray json() {
-
-        JsonArrayBuilder builder = Json.createArrayBuilder();
-        Iterator<StructField> it = schema.iterator();
-        while(it.hasNext()) {
-            StructField column = it.next();
-            builder.add(column.name());
-        }
-        return builder.build();
-    }
-
-    public StructType schema(){
-        return schema;
-    }
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        DTHeader dtHeader = (DTHeader) o;
-        return Objects.equals(schema, dtHeader.schema);
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(schema);
-    }
 }
