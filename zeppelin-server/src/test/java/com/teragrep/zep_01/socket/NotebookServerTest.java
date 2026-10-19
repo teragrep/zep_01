@@ -24,7 +24,6 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
-import static org.mockito.Matchers.contains;
 import static org.mockito.Mockito.*;
 
 import java.io.IOException;
@@ -65,9 +64,6 @@ import org.junit.jupiter.api.Assertions;
 
 
 /** Basic REST API tests for notebookServer. */
-@Ignore(value="[ERROR] Crashed tests:\n" +
-        "[ERROR] com.teragrep.zep_01.socket.NotebookServerTest\n" +
-        "[ERROR] ExecutionException The forked VM terminated without properly saying goodbye. VM crash or System.exit called?\n")
 public class NotebookServerTest extends AbstractTestRestApi {
   private static Notebook notebook;
   private static NotebookServer notebookServer;
@@ -90,12 +86,22 @@ public class NotebookServerTest extends AbstractTestRestApi {
     AbstractTestRestApi.shutDown();
   }
 
+  @After
+  public void cleanupNotebooks() throws IOException {
+    for(Note note : notebook.getAllNotes()){
+      notebook.removeNote(note,AuthenticationInfo.ANONYMOUS);
+    }
+  }
+
   @Before
   public void setUp() {
     mockRequest = mock(HttpServletRequest.class);
     anonymous = AuthenticationInfo.ANONYMOUS;
   }
 
+  @Ignore(value="[ERROR] Crashed tests:\n" +
+          "[ERROR] com.teragrep.zep_01.socket.NotebookServerTest\n" +
+          "[ERROR] ExecutionException The forked VM terminated without properly saying goodbye. VM crash or System.exit called?\n")
   @Test
   public void checkOrigin() throws UnknownHostException {
     String origin = "http://" + InetAddress.getLocalHost().getHostName() + ":8080";
@@ -103,11 +109,17 @@ public class NotebookServerTest extends AbstractTestRestApi {
           notebookServer.checkOrigin(mockRequest, origin));
   }
 
+  @Ignore(value="[ERROR] Crashed tests:\n" +
+          "[ERROR] com.teragrep.zep_01.socket.NotebookServerTest\n" +
+          "[ERROR] ExecutionException The forked VM terminated without properly saying goodbye. VM crash or System.exit called?\n")
   @Test
   public void checkInvalidOrigin(){
     assertFalse(notebookServer.checkOrigin(mockRequest, "http://evillocalhost:8080"));
   }
 
+  @Ignore(value="[ERROR] Crashed tests:\n" +
+          "[ERROR] com.teragrep.zep_01.socket.NotebookServerTest\n" +
+          "[ERROR] ExecutionException The forked VM terminated without properly saying goodbye. VM crash or System.exit called?\n")
   @Test
   public void testCollaborativeEditing() throws IOException {
     if (!ZeppelinConfiguration.create().isZeppelinNotebookCollaborativeModeEnable()) {
@@ -172,6 +184,9 @@ public class NotebookServerTest extends AbstractTestRestApi {
     notebookServer.onMessage(noteSocket, message.toJson());
   }
 
+  @Ignore(value="[ERROR] Crashed tests:\n" +
+          "[ERROR] com.teragrep.zep_01.socket.NotebookServerTest\n" +
+          "[ERROR] ExecutionException The forked VM terminated without properly saying goodbye. VM crash or System.exit called?\n")
   @Test
   public void testMakeSureNoAngularObjectBroadcastToWebsocketWhoFireTheEvent()
           throws IOException, InterruptedException {
@@ -237,6 +252,9 @@ public class NotebookServerTest extends AbstractTestRestApi {
     verify(sock2, times(1)).send(anyString());
   }
 
+  @Ignore(value="[ERROR] Crashed tests:\n" +
+          "[ERROR] com.teragrep.zep_01.socket.NotebookServerTest\n" +
+          "[ERROR] ExecutionException The forked VM terminated without properly saying goodbye. VM crash or System.exit called?\n")
   @Test
   public void testAngularObjectSaveToNote()
       throws IOException, InterruptedException {
@@ -335,6 +353,9 @@ public class NotebookServerTest extends AbstractTestRestApi {
     assertNull(ao2);
   }
 
+  @Ignore(value="[ERROR] Crashed tests:\n" +
+          "[ERROR] com.teragrep.zep_01.socket.NotebookServerTest\n" +
+          "[ERROR] ExecutionException The forked VM terminated without properly saying goodbye. VM crash or System.exit called?\n")
   @Test
   public void testLoadAngularObjectFromNote() throws IOException, InterruptedException {
     // create a notebook
@@ -390,6 +411,9 @@ public class NotebookServerTest extends AbstractTestRestApi {
     assertEquals("COMMAND_TYPE_VALUE", ao1.get());
   }
 
+  @Ignore(value="[ERROR] Crashed tests:\n" +
+          "[ERROR] com.teragrep.zep_01.socket.NotebookServerTest\n" +
+          "[ERROR] ExecutionException The forked VM terminated without properly saying goodbye. VM crash or System.exit called?\n")
   @Test
   public void testImportNotebook() throws IOException {
     String msg = "{\"op\":\"IMPORT_NOTE\",\"data\":" +
@@ -408,6 +432,9 @@ public class NotebookServerTest extends AbstractTestRestApi {
             .getText());
   }
 
+  @Ignore(value="[ERROR] Crashed tests:\n" +
+          "[ERROR] com.teragrep.zep_01.socket.NotebookServerTest\n" +
+          "[ERROR] ExecutionException The forked VM terminated without properly saying goodbye. VM crash or System.exit called?\n")
   @Test
   public void bindAngularObjectToRemoteForParagraphs() throws Exception {
     //Given
@@ -460,6 +487,9 @@ public class NotebookServerTest extends AbstractTestRestApi {
     verify(otherConn).send(mdMsg1);
   }
 
+  @Ignore(value="[ERROR] Crashed tests:\n" +
+          "[ERROR] com.teragrep.zep_01.socket.NotebookServerTest\n" +
+          "[ERROR] ExecutionException The forked VM terminated without properly saying goodbye. VM crash or System.exit called?\n")
   @Test
   public void unbindAngularObjectFromRemoteForParagraphs() throws Exception {
     //Given
@@ -507,6 +537,9 @@ public class NotebookServerTest extends AbstractTestRestApi {
     verify(otherConn).send(mdMsg1);
   }
 
+  @Ignore(value="[ERROR] Crashed tests:\n" +
+          "[ERROR] com.teragrep.zep_01.socket.NotebookServerTest\n" +
+          "[ERROR] ExecutionException The forked VM terminated without properly saying goodbye. VM crash or System.exit called?\n")
   @Test
   public void testCreateNoteWithDefaultInterpreterId() throws IOException {
     // create two sockets and open it
@@ -552,6 +585,9 @@ public class NotebookServerTest extends AbstractTestRestApi {
     }
   }
 
+  @Ignore(value="[ERROR] Crashed tests:\n" +
+          "[ERROR] com.teragrep.zep_01.socket.NotebookServerTest\n" +
+          "[ERROR] ExecutionException The forked VM terminated without properly saying goodbye. VM crash or System.exit called?\n")
   @Test
   public void testRuntimeInfos() throws IOException {
     // mock note
@@ -598,6 +634,9 @@ public class NotebookServerTest extends AbstractTestRestApi {
     assertEquals("jobLabel_value", map.get("jobLabel"));
   }
 
+  @Ignore(value="[ERROR] Crashed tests:\n" +
+          "[ERROR] com.teragrep.zep_01.socket.NotebookServerTest\n" +
+          "[ERROR] ExecutionException The forked VM terminated without properly saying goodbye. VM crash or System.exit called?\n")
   @Test
   public void testGetParagraphList() throws IOException {
     Note note = notebook.createNote("note1", anonymous);
@@ -645,6 +684,9 @@ public class NotebookServerTest extends AbstractTestRestApi {
     assertNotNull(user1Id + " can get " + user2Id + "'s shared note", paragraphList2);
   }
 
+  @Ignore(value="[ERROR] Crashed tests:\n" +
+          "[ERROR] com.teragrep.zep_01.socket.NotebookServerTest\n" +
+          "[ERROR] ExecutionException The forked VM terminated without properly saying goodbye. VM crash or System.exit called?\n")
   @Test
   public void testNoteRevision() throws IOException {
     Note note = notebook.createNote("note1", anonymous);
