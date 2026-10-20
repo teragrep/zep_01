@@ -725,7 +725,7 @@ public class NotebookServerTest extends AbstractTestRestApi {
     Assertions.assertTrue(alice.sentMessages().get(0).contains("COLLABORATIVE_MODE_STATUS"));
     Assertions.assertTrue(alice.sentMessages().get(0).contains("\"status\": false"));
     // alice should receive the NOTE details in a separate message
-    Assertions.assertTrue(alice.sentMessages().get(1).contains("NOTE"));
+    Assertions.assertTrue(alice.sentMessages().get(1).contains("NEW_NOTE"));
 
     // bob and charlie should not get Collaborative mode status messages
     Assertions.assertEquals(0,bob.sentMessages().size());
@@ -747,7 +747,7 @@ public class NotebookServerTest extends AbstractTestRestApi {
     Assertions.assertTrue(charlie.sentMessages().get(0).contains("COLLABORATIVE_MODE_STATUS"));
     Assertions.assertTrue(charlie.sentMessages().get(0).contains("\"status\": false"));
     // charlie should receive the NOTE details in a separate message
-    Assertions.assertTrue(charlie.sentMessages().get(1).contains("NOTE"));
+    Assertions.assertTrue(charlie.sentMessages().get(1).contains("NEW_NOTE"));
 
     // Make sure the notebooks were created successfully
     Assertions.assertEquals(2, notebook.getAllNotes().size());
