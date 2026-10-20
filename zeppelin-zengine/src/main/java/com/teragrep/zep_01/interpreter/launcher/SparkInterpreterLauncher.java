@@ -38,6 +38,9 @@ import org.apache.commons.lang3.StringUtils;
 import com.teragrep.zep_01.conf.ZeppelinConfiguration;
 import com.teragrep.zep_01.interpreter.recovery.RecoveryStorage;
 import com.teragrep.zep_01.interpreter.remote.RemoteInterpreterUtils;
+import org.apache.hadoop.conf.Configuration;
+import org.apache.hadoop.fs.FileSystem;
+import org.apache.hadoop.fs.permission.FsPermission;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -159,13 +162,27 @@ public class SparkInterpreterLauncher extends StandardInterpreterLauncher {
         }
         additionalJars.add("/opt/teragrep/pth_10/lib/pth_10-shaded.jar");
 
+        // Upload common files to a shared folder on hdfs.
+        Configuration hadoopConf = new Configuration();
+        hadoopConf.addResource(new org.apache.hadoop.fs.Path(getEnv("HADOOP_CONF_DIR")+"/core-site.xml"));
+        FileSystem fileSystem = FileSystem.get(hadoopConf);
+
+        List<String> sparkJars = new ArrayList<>();
+        for (String localPath:additionalJars) {
+          org.apache.hadoop.fs.Path sourcePath = new org.apache.hadoop.fs.Path(localPath);
+          org.apache.hadoop.fs.Path destinationPath = new org.apache.hadoop.fs.Path("/user/common-jars/"+localPath);
+          sparkJars.add(fileSystem.makeQualified(destinationPath).toString());
+          fileSystem.copyFromLocalFile(false,true,sourcePath,destinationPath);
+          fileSystem.setPermission(destinationPath,new FsPermission(FsPermission.valueOf("rwxrwxrwx")));
+        }
+
         if (sparkProperties.containsKey("spark.jars")) {
           sparkProperties.put("spark.jars", sparkProperties.getProperty("spark.jars") + "," +
-                  StringUtils.join(additionalJars, ","));
+                  StringUtils.join(sparkJars, ","));
         } else {
-          sparkProperties.put("spark.jars", StringUtils.join(additionalJars, ","));
+          sparkProperties.put("spark.jars", StringUtils.join(sparkJars, ","));
         }
-        LOGGER.debug("Added the following additional jars: <{}>", additionalJars);
+        LOGGER.debug("Added the following additional jars: <{}>", sparkJars);
       } catch (Exception e) {
         throw new IOException("Fail to set additional jars for spark interpreter", e);
       }
