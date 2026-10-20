@@ -799,7 +799,7 @@ public class JDBCInterpreter extends KerberosInterpreter {
           // so we need to trim it first in this case.
           sqlToExecute = sqlToExecute.trim();
         }
-        LOGGER.info("Execute sql: " + sqlToExecute);
+        LOGGER.info("Execute sql: " + sqlToExecute.trim());
         statement = connection.createStatement();
 
         // fetch n+1 rows in order to indicate there's more rows available (for large selects)
