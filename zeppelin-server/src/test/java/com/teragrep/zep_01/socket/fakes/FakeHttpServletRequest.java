@@ -161,7 +161,7 @@ public class FakeHttpServletRequest implements HttpServletRequest {
 
     @Override
     public Collection<Part> getParts() throws IOException, ServletException {
-        return new ArrayList();
+        return Collections.emptyList();
     }
 
     @Override
