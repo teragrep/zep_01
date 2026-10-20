@@ -9,7 +9,7 @@ import java.security.Principal;
 import java.util.*;
 
 /**
- * Fake implementation of HttpServletRequest for use in tests. Returns empty primitives or throws a RuntimeException if trying to access methods that return more complicated objects.
+ * Fake implementation of HttpServletRequest for use in tests. Returns empty primitives or throws a UnsupportedOperationException if trying to access methods that return more complicated objects.
  */
 
 public class FakeHttpServletRequest implements HttpServletRequest {
@@ -36,12 +36,12 @@ public class FakeHttpServletRequest implements HttpServletRequest {
 
     @Override
     public Enumeration<String> getHeaders(final String name) {
-        throw new RuntimeException("Fake does not implement this!");
+        throw new UnsupportedOperationException("Fake does not implement this!");
     }
 
     @Override
     public Enumeration<String> getHeaderNames() {
-        throw new RuntimeException("Fake does not implement this!");
+        throw new UnsupportedOperationException("Fake does not implement this!");
     }
 
     @Override
@@ -86,7 +86,7 @@ public class FakeHttpServletRequest implements HttpServletRequest {
 
     @Override
     public Principal getUserPrincipal() {
-        throw new RuntimeException("Fake does not implement this!");
+        throw new UnsupportedOperationException("Fake does not implement this!");
     }
 
     @Override
@@ -101,7 +101,7 @@ public class FakeHttpServletRequest implements HttpServletRequest {
 
     @Override
     public StringBuffer getRequestURL() {
-        throw new RuntimeException("Fake does not implement this!");
+        throw new UnsupportedOperationException("Fake does not implement this!");
     }
 
     @Override
@@ -111,12 +111,12 @@ public class FakeHttpServletRequest implements HttpServletRequest {
 
     @Override
     public HttpSession getSession(final boolean create) {
-        throw new RuntimeException("Fake does not implement this!");
+        throw new UnsupportedOperationException("Fake does not implement this!");
     }
 
     @Override
     public HttpSession getSession() {
-        throw new RuntimeException("Fake does not implement this!");
+        throw new UnsupportedOperationException("Fake does not implement this!");
     }
 
     @Override
@@ -166,22 +166,22 @@ public class FakeHttpServletRequest implements HttpServletRequest {
 
     @Override
     public Part getPart(final String name) throws IOException, ServletException {
-        throw new RuntimeException("Fake does not implement this!");
+        throw new UnsupportedOperationException("Fake does not implement this!");
     }
 
     @Override
     public <T extends HttpUpgradeHandler> T upgrade(final Class<T> handlerClass) throws IOException, ServletException {
-        throw new RuntimeException("Fake does not implement this!");
+        throw new UnsupportedOperationException("Fake does not implement this!");
     }
 
     @Override
     public Object getAttribute(final String name) {
-        throw new RuntimeException("Fake does not implement this!");
+        throw new UnsupportedOperationException("Fake does not implement this!");
     }
 
     @Override
     public Enumeration<String> getAttributeNames() {
-        throw new RuntimeException("Fake does not implement this!");
+        throw new UnsupportedOperationException("Fake does not implement this!");
     }
 
     @Override
@@ -211,7 +211,7 @@ public class FakeHttpServletRequest implements HttpServletRequest {
 
     @Override
     public ServletInputStream getInputStream() throws IOException {
-        throw new RuntimeException("Fake does not implement this!");
+        throw new UnsupportedOperationException("Fake does not implement this!");
     }
 
     @Override
@@ -221,7 +221,7 @@ public class FakeHttpServletRequest implements HttpServletRequest {
 
     @Override
     public Enumeration<String> getParameterNames() {
-        throw new RuntimeException("Fake does not implement this!");
+        throw new UnsupportedOperationException("Fake does not implement this!");
     }
 
     @Override
@@ -256,7 +256,7 @@ public class FakeHttpServletRequest implements HttpServletRequest {
 
     @Override
     public BufferedReader getReader() throws IOException {
-        throw new RuntimeException("Fake does not implement this!");
+        throw new UnsupportedOperationException("Fake does not implement this!");
     }
 
     @Override
@@ -281,12 +281,12 @@ public class FakeHttpServletRequest implements HttpServletRequest {
 
     @Override
     public Locale getLocale() {
-        throw new RuntimeException("Fake does not implement this!");
+        throw new UnsupportedOperationException("Fake does not implement this!");
     }
 
     @Override
     public Enumeration<Locale> getLocales() {
-        throw new RuntimeException("Fake does not implement this!");
+        throw new UnsupportedOperationException("Fake does not implement this!");
     }
 
     @Override
@@ -296,7 +296,7 @@ public class FakeHttpServletRequest implements HttpServletRequest {
 
     @Override
     public RequestDispatcher getRequestDispatcher(final String path) {
-        throw new RuntimeException("Fake does not implement this!");
+        throw new UnsupportedOperationException("Fake does not implement this!");
     }
 
     @Override
@@ -326,17 +326,17 @@ public class FakeHttpServletRequest implements HttpServletRequest {
 
     @Override
     public ServletContext getServletContext() {
-        throw new RuntimeException("Fake does not implement this!");
+        throw new UnsupportedOperationException("Fake does not implement this!");
     }
 
     @Override
     public AsyncContext startAsync() throws IllegalStateException {
-        throw new RuntimeException("Fake does not implement this!");
+        throw new UnsupportedOperationException("Fake does not implement this!");
     }
 
     @Override
     public AsyncContext startAsync(final ServletRequest servletRequest, final ServletResponse servletResponse) throws IllegalStateException {
-        throw new RuntimeException("Fake does not implement this!");
+        throw new UnsupportedOperationException("Fake does not implement this!");
     }
 
     @Override
@@ -351,11 +351,11 @@ public class FakeHttpServletRequest implements HttpServletRequest {
 
     @Override
     public AsyncContext getAsyncContext() {
-        throw new RuntimeException("Fake does not implement this!");
+        throw new UnsupportedOperationException("Fake does not implement this!");
     }
 
     @Override
     public DispatcherType getDispatcherType() {
-        throw new RuntimeException("Fake does not implement this!");
+        throw new UnsupportedOperationException("Fake does not implement this!");
     }
 }
