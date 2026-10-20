@@ -141,6 +141,7 @@ public abstract class AbstractTestRestApi {
   protected static File zeppelinHome;
   protected static File confDir;
   protected static File notebookDir;
+  protected static final String testAnnouncement = "Test announcement for Zeppelin";
 
   private static CloseableHttpClient httpClient;
 
@@ -213,6 +214,8 @@ public abstract class AbstractTestRestApi {
               new File("target/zeppelin-web-angular/dist").getAbsolutePath());
       System.setProperty(ZeppelinConfiguration.ConfVars.ZEPPELIN_CONF_DIR.getVarName(),
           confDir.getAbsolutePath());
+      System.setProperty(ZeppelinConfiguration.ConfVars.ZEPPELIN_ANNOUNCEMENT.getVarName(),
+              testAnnouncement);
       System.setProperty(
           ZeppelinConfiguration.ConfVars.ZEPPELIN_INTERPRETER_GROUP_DEFAULT.getVarName(),
           "spark");
