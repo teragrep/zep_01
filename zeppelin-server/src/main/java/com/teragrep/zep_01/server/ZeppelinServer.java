@@ -244,8 +244,6 @@ public class ZeppelinServer extends ResourceConfig {
     }
     LOG.info("Done, zeppelin server started");
 
-    runNoteOnStart(conf);
-
     Runtime.getRuntime().addShutdownHook(shutdown(conf));
 
     // Try to get Notebook from ServiceLocator, because Notebook instantiation is lazy, it is
@@ -365,47 +363,6 @@ public class ZeppelinServer extends ResourceConfig {
     connector.setHost(conf.getServerAddress());
     connector.addBean(new JettyConnectionMetrics(Metrics.globalRegistry, Tags.empty()));
     server.addConnector(connector);
-  }
-
-  private static void runNoteOnStart(ZeppelinConfiguration conf) throws IOException, InterruptedException {
-    String noteIdToRun = conf.getNotebookRunId();
-    if (!StringUtils.isEmpty(noteIdToRun)) {
-      LOG.info("Running note {} on start", noteIdToRun);
-      NotebookService notebookService = ServiceLocatorUtilities.getService(
-              sharedServiceLocator, NotebookService.class.getName());
-
-      ServiceContext serviceContext;
-      String base64EncodedJsonSerializedServiceContext = conf.getNotebookRunServiceContext();
-      if (StringUtils.isEmpty(base64EncodedJsonSerializedServiceContext)) {
-        LOG.info("No service context provided. use ANONYMOUS");
-        serviceContext = new ServiceContext(AuthenticationInfo.ANONYMOUS, new HashSet<String>() {});
-      } else {
-        serviceContext = new Gson().fromJson(
-                new String(Base64.getDecoder().decode(base64EncodedJsonSerializedServiceContext)),
-                ServiceContext.class);
-      }
-
-      boolean success = notebookService.runAllParagraphs(noteIdToRun, null, serviceContext, new ServiceCallback<Paragraph>() {
-        @Override
-        public void onStart(String message, ServiceContext context) throws IOException {
-        }
-
-        @Override
-        public void onSuccess(Paragraph result, ServiceContext context) throws IOException {
-        }
-
-        @Override
-        public void onFailure(Exception ex, ServiceContext context) throws IOException {
-        }
-      });
-
-      if (conf.getNotebookRunAutoShutdown()) {
-        Thread t = shutdown(conf);
-        t.start();
-        t.join();
-        System.exit(success ? 0 : 1);
-      }
-    }
   }
 
   private static void setupNotebookServer(
