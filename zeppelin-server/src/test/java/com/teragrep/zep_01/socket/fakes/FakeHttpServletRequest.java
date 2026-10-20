@@ -231,7 +231,7 @@ public class FakeHttpServletRequest implements HttpServletRequest {
 
     @Override
     public Map<String, String[]> getParameterMap() {
-        return new HashMap<>();
+        return Collections.emptyMap();
     }
 
     @Override
