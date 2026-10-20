@@ -38,22 +38,20 @@ import static org.mockito.Mockito.when;
 import java.io.IOException;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
+import java.time.Instant;
+import java.time.temporal.ChronoUnit;
+import java.util.*;
 
 import javax.servlet.http.HttpServletRequest;
 
+import com.teragrep.zep_01.interpreter.*;
 import com.teragrep.zep_01.notebook.repo.Revision;
+import jakarta.json.Json;
 import org.apache.commons.io.IOUtils;
 import org.apache.thrift.TException;
 import com.teragrep.zep_01.conf.ZeppelinConfiguration;
 import com.teragrep.zep_01.display.AngularObject;
 import com.teragrep.zep_01.display.AngularObjectBuilder;
-import com.teragrep.zep_01.interpreter.InterpreterGroup;
-import com.teragrep.zep_01.interpreter.InterpreterSetting;
 import com.teragrep.zep_01.interpreter.remote.RemoteAngularObjectRegistry;
 import com.teragrep.zep_01.interpreter.thrift.ParagraphInfo;
 import com.teragrep.zep_01.interpreter.thrift.ServiceException;
@@ -794,6 +792,66 @@ public class NotebookServerTest extends AbstractTestRestApi {
       Assertions.assertDoesNotThrow(()-> verify(sock2, times(1)).send(contains(OP.COLLABORATIVE_MODE_STATUS.toString())));
       // User 3 should not get a COLLABORATIVE_MODE_STATUS message upon joining their own separate notebook
       Assertions.assertDoesNotThrow(()-> verify(sock3, times(0)).send(contains(OP.COLLABORATIVE_MODE_STATUS.toString())));
+  }
+
+  @Test
+  public void testParagraphOutputSavesResult() {
+    final NotebookSocket alice = createWebSocket();
+    notebookServer.onOpen(alice);
+
+    final String defaultInterpreterId = "test";
+    notebookServer.onMessage(alice, new Message(OP.NEW_NOTE).put("defaultInterpreterGroup",defaultInterpreterId).toJson());
+    notebookServer.onMessage(alice, new Message(OP.INSERT_PARAGRAPH).put("index",0).toJson());
+    Assertions.assertEquals(1,notebook.getAllNotes().size());
+
+    final Note note = notebook.getAllNotes().get(0);
+    final Paragraph paragraph = note.getParagraph(0);
+
+    notebookServer.onMessage(alice, new Message(OP.COMMIT_PARAGRAPH)
+            .put("id",paragraph.getId())
+            .put("title","")
+            .put("config",new HashMap<>())
+            .put("params",new HashMap<>())
+            .put("paragraph","%test\nsomeText").toJson());
+    final Properties properties = new Properties();
+    // removing this property causes a ClassNotFoundException for RemoteInterpreterServer
+    properties.put("CLASSPATH", System.getProperty("java.class.path"));
+    Assertions.assertDoesNotThrow(()->notebook.getInterpreterSettingManager().getInterpreterGroupById("test-shared_process").getOrCreateInterpreterProcess("alice",properties));
+
+    // alice runs paragraph
+    // paragraph must be run before formatting, since interpreter instances are created on paragraph execution
+    final String expectedOutput = Json.createObjectBuilder().add("data","someData").add("type",InterpreterResult.Type.TEXT.label).build().toString();
+    notebookServer.onMessage(alice, new Message(OP.RUN_PARAGRAPH)
+            .put("id",paragraph.getId())
+            .put("noteId",note.getId())
+            .put("title","")
+            .put("config",new HashMap<>())
+            .put("params",new HashMap<>())
+            .put("paragraph","%test"+expectedOutput).toJson());
+
+    // Paragraph executes asynchronously, so we must wait for it to finish. If it takes too long, fail the test.
+    final int executionTimeoutMs = 5000;
+    final Instant endTime = Instant.now().plus(executionTimeoutMs, ChronoUnit.MILLIS);
+    while(!paragraph.getStatus().isCompleted()) {
+      if(Instant.now().isAfter(endTime)){
+        Assertions.fail("Test execution timed out!");
+      }
+    }
+
+    // EchoInterpreter execution should output proper data
+    Assertions.assertEquals(expectedOutput, paragraph.getReturn().message().get(0).getData());
+
+    // format note from alice
+    notebookServer.onMessage(alice,
+            new Message(OP.PARAGRAPH_OUTPUT_REQUEST)
+                    .put("noteId", note.getId())
+                    .put("paragraphId",paragraph.getId())
+                    .put("options", "{}")
+                    .withMsgId("msgId").toJson());
+
+    // new reformatted output data (created by EchoInterpreter.formatDataset()) should be within paragraph's result after reformatting
+    String expectedReformattedData = Json.createObjectBuilder().add("data","consider yourself reformatted").add("type",InterpreterResult.Type.TEXT.label).build().toString();
+    Assertions.assertEquals(expectedReformattedData, paragraph.getReturn().message().get(0).getData());
   }
 
   private NotebookSocket createWebSocket() {

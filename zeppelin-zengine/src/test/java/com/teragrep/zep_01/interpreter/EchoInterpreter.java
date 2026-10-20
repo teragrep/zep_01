@@ -18,6 +18,7 @@
 
 package com.teragrep.zep_01.interpreter;
 
+import jakarta.json.Json;
 import java.util.Properties;
 
 /**
@@ -61,5 +62,10 @@ public class EchoInterpreter extends Interpreter {
   @Override
   public int getProgress(InterpreterContext context) {
     return 0;
+  }
+
+  @Override
+  public String formatDataset(final String noteId, final String paragraphId, final String options) throws InterpreterException{
+    return Json.createObjectBuilder().add("data","consider yourself reformatted").add("type",InterpreterResult.Type.TEXT.label).build().toString();
   }
 }

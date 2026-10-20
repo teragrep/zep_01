@@ -141,6 +141,8 @@ public abstract class AbstractTestRestApi {
   protected static File zeppelinHome;
   protected static File confDir;
   protected static File notebookDir;
+  protected static File interpreterDir;
+  protected static File runnerDir;
 
   private static CloseableHttpClient httpClient;
 
@@ -203,6 +205,17 @@ public abstract class AbstractTestRestApi {
       confDir = new File(zeppelinHome, "conf_" + testClassName);
       LOG.debug("ZEPPELIN_CONF_DIR: " + confDir.getAbsolutePath());
       confDir.mkdirs();
+
+      interpreterDir = new File(zeppelinHome, "/interpreter/");
+      interpreterDir.mkdirs();
+      FileUtils.copyDirectory(new File("src/test/resources/interpreter"), interpreterDir);
+      System.setProperty(ZeppelinConfiguration.ConfVars.ZEPPELIN_INTERPRETER_DIR.getVarName(), interpreterDir.getAbsolutePath());
+
+      runnerDir = new File(zeppelinHome, "/bin");
+      runnerDir.mkdirs();
+      FileUtils.copyDirectory(new File("../bin/"), runnerDir);
+      System.setProperty(ZeppelinConfiguration.ConfVars.ZEPPELIN_INTERPRETER_REMOTE_RUNNER.getVarName(),
+              runnerDir.getAbsolutePath() + "/interpreter.sh");
 
       System.setProperty(ZeppelinConfiguration.ConfVars.ZEPPELIN_SEARCH_INDEX_PATH.getVarName(), zeppelinHome.getAbsolutePath() + "/lucene");
       System.setProperty(ZeppelinConfiguration.ConfVars.ZEPPELIN_HOME.getVarName(),
