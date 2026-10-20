@@ -16,11 +16,16 @@
  */
 package com.teragrep.zep_01.socket;
 
+import com.teragrep.zep_01.conf.ZeppelinConfiguration;
 import org.apache.commons.lang3.StringUtils;
 import org.eclipse.jetty.websocket.api.Session;
 import org.eclipse.jetty.websocket.api.WebSocketAdapter;
 
 import java.io.IOException;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.Future;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -65,10 +70,15 @@ public class NotebookSocket extends WebSocketAdapter {
   public String getProtocol() {
     return protocol;
   }
-
-  public synchronized void send(String serializeMessage) throws IOException {
-    connection.getRemote().sendStringByFuture(serializeMessage);
-  }
+       public synchronized void send(String serializeMessage) throws IOException {
+           Future future = connection.getRemote().sendStringByFuture(serializeMessage);
+           try {
+               future.get(ZeppelinConfiguration.ConfVars.ZEPPELIN_WEBSOCKET_TIMEOUT.getLongValue(), TimeUnit.MILLISECONDS); // Waits for the sendStringByFuture call to complete, timing out after configured time.
+             } catch (InterruptedException | ExecutionException | TimeoutException e) {
+             future.cancel(true);
+             throw new IOException("Failed to send message via Future",e);
+           }
+      }
 
   public String getUser() {
     return user;
