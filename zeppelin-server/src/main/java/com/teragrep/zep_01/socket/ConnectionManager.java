@@ -181,7 +181,7 @@ public class ConnectionManager {
     Message message = new Message(Message.OP.COLLABORATIVE_MODE_STATUS);
     message.put("status", isCollaborative);
     // Create a list of users for the response
-    HashSet<String> userList = new HashSet<>();
+    Set<String> userList = new HashSet<>();
     for (NotebookSocket noteSocket : socketList) {
       userList.add(noteSocket.getUser());
     }
