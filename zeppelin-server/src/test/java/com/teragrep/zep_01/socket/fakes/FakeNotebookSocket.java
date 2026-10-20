@@ -14,9 +14,9 @@ import java.util.stream.Collectors;
  */
 
 // Have to extend NotebookSocket instead of implementing an Interface as we rely on send(), which isn't declared in an Interface, but a concrete class
-public class FakeNotebookSocket extends NotebookSocket {
+public final class FakeNotebookSocket extends NotebookSocket {
 
-    List<String> sentMessages = new ArrayList<>();
+    private final List<String> sentMessages = new ArrayList<>();
 
     public FakeNotebookSocket(NotebookSocketListener listener) {
         super(new FakeHttpServletRequest(), "", listener);
