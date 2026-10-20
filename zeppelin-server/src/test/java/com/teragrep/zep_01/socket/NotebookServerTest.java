@@ -34,6 +34,7 @@ import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -726,11 +727,20 @@ public class NotebookServerTest extends AbstractTestRestApi {
     // alice should receive the NOTE details in a separate message
     Assertions.assertTrue(alice.sentMessages().get(1).contains("NOTE"));
 
+    // bob and charlie should not get Collaborative mode status messages
+    Assertions.assertEquals(0,bob.sentMessages().size());
+    Assertions.assertEquals(0,charlie.sentMessages().size());
+
+    final int alicesMessageCount = alice.sentMessages().stream().filter(content -> {return content.contains("COLLABORATIVE_MODE_STATUS");}).collect(Collectors.toList()).size();
     // create note from charlie
     notebookServer.onMessage(charlie,
             new Message(OP.NEW_NOTE)
                     .put("charliesNote", noteName)
                     .put("defaultInterpreterId", defaultInterpreterId).toJson());
+
+    // alice and bob should not get any additional COLLABORATIVE_MODE_STATUS messages when a user creates an unrelated note;
+    Assertions.assertEquals(alicesMessageCount,alice.sentMessages().stream().filter(msg -> msg.contains("COLLABORATIVE_MODE_STATUS")).count());
+    Assertions.assertEquals(0,bob.sentMessages().size());
 
     // NEW_NOTE sends one status message to charlie only (creating a note automatically connects user to that note)
     // charlie should get collaborative mode update
