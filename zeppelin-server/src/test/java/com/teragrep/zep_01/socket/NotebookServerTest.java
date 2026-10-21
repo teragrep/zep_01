@@ -39,7 +39,7 @@ import java.util.stream.Collectors;
 import javax.servlet.http.HttpServletRequest;
 
 import com.teragrep.zep_01.notebook.repo.Revision;
-import com.teragrep.zep_01.socket.fakes.FakeNotebookSocket;
+import com.teragrep.zep_01.socket.fakes.FilteringFakeNotebookSocket;
 import org.apache.thrift.TException;
 import com.teragrep.zep_01.conf.ZeppelinConfiguration;
 import com.teragrep.zep_01.display.AngularObject;
@@ -704,9 +704,11 @@ public class NotebookServerTest extends AbstractTestRestApi {
   @Test
   public void testCollaborativeNoteCreation() {
     // Create connections
-    final FakeNotebookSocket alice = new FakeNotebookSocket(notebookServer);
-    final FakeNotebookSocket bob = new FakeNotebookSocket(notebookServer);
-    final FakeNotebookSocket charlie = new FakeNotebookSocket(notebookServer);
+    final HashSet<Message.OP> collaborativeOPFilter = new HashSet<>();
+    collaborativeOPFilter.add(OP.COLLABORATIVE_MODE_STATUS);
+    final FilteringFakeNotebookSocket alice = new FilteringFakeNotebookSocket(notebookServer,collaborativeOPFilter);
+    final FilteringFakeNotebookSocket bob = new FilteringFakeNotebookSocket(notebookServer,collaborativeOPFilter);
+    final FilteringFakeNotebookSocket charlie = new FilteringFakeNotebookSocket(notebookServer,collaborativeOPFilter);
     notebookServer.onOpen(alice);
     notebookServer.onOpen(bob);
     notebookServer.onOpen(charlie);
@@ -722,16 +724,13 @@ public class NotebookServerTest extends AbstractTestRestApi {
 
     // NEW_NOTE sends one status message to alice only (creating a note automatically connects user to that note)
     // alice should get collaborative mode update
-    Assertions.assertTrue(alice.sentMessages().get(0).contains("COLLABORATIVE_MODE_STATUS"));
-    Assertions.assertTrue(alice.sentMessages().get(0).contains("\"status\": false"));
-    // alice should receive the NOTE details in a separate message
-    Assertions.assertTrue(alice.sentMessages().get(1).contains("NEW_NOTE"));
+    Assertions.assertTrue(alice.sentMessages().get(0).data.containsKey("status"));
+    Assertions.assertEquals(false,alice.sentMessages().get(0).data.get("status"));
 
     // bob and charlie should not get Collaborative mode status messages
     Assertions.assertEquals(0,bob.sentMessages().size());
     Assertions.assertEquals(0,charlie.sentMessages().size());
 
-    final int alicesMessageCount = alice.sentMessages().stream().filter(content -> {return content.contains("COLLABORATIVE_MODE_STATUS");}).collect(Collectors.toList()).size();
     // create note from charlie
     notebookServer.onMessage(charlie,
             new Message(OP.NEW_NOTE)
@@ -739,15 +738,13 @@ public class NotebookServerTest extends AbstractTestRestApi {
                     .put("defaultInterpreterId", defaultInterpreterId).toJson());
 
     // alice and bob should not get any additional COLLABORATIVE_MODE_STATUS messages when a user creates an unrelated note;
-    Assertions.assertEquals(alicesMessageCount,alice.sentMessages().stream().filter(msg -> msg.contains("COLLABORATIVE_MODE_STATUS")).count());
+    Assertions.assertEquals(1,alice.sentMessages().size());
     Assertions.assertEquals(0,bob.sentMessages().size());
 
     // NEW_NOTE sends one status message to charlie only (creating a note automatically connects user to that note)
     // charlie should get collaborative mode update
-    Assertions.assertTrue(charlie.sentMessages().get(0).contains("COLLABORATIVE_MODE_STATUS"));
-    Assertions.assertTrue(charlie.sentMessages().get(0).contains("\"status\": false"));
-    // charlie should receive the NOTE details in a separate message
-    Assertions.assertTrue(charlie.sentMessages().get(1).contains("NEW_NOTE"));
+    Assertions.assertTrue(charlie.sentMessages().get(0).data.containsKey("status"));
+    Assertions.assertEquals(false,charlie.sentMessages().get(0).data.get("status"));
 
     // Make sure the notebooks were created successfully
     Assertions.assertEquals(2, notebook.getAllNotes().size());
@@ -756,9 +753,11 @@ public class NotebookServerTest extends AbstractTestRestApi {
     @Test
     public void testCollaborativeNoteJoining() {
       // Create connections
-      final FakeNotebookSocket alice = new FakeNotebookSocket(notebookServer);
-      final FakeNotebookSocket bob = new FakeNotebookSocket(notebookServer);
-      final FakeNotebookSocket charlie = new FakeNotebookSocket(notebookServer);
+      final HashSet<Message.OP> collaborativeOPFilter = new HashSet<>();
+      collaborativeOPFilter.add(OP.COLLABORATIVE_MODE_STATUS);
+      final FilteringFakeNotebookSocket alice = new FilteringFakeNotebookSocket(notebookServer,collaborativeOPFilter);
+      final FilteringFakeNotebookSocket bob = new FilteringFakeNotebookSocket(notebookServer,collaborativeOPFilter);
+      final FilteringFakeNotebookSocket charlie = new FilteringFakeNotebookSocket(notebookServer,collaborativeOPFilter);
       notebookServer.onOpen(alice);
       notebookServer.onOpen(bob);
       notebookServer.onOpen(charlie);
@@ -778,10 +777,8 @@ public class NotebookServerTest extends AbstractTestRestApi {
 
       // Each GET_NOTE should send one collaborative status update to each connected user.
       // alice should get collaborative mode update
-      Assertions.assertTrue(alice.sentMessages().get(0).contains("COLLABORATIVE_MODE_STATUS"));
-      Assertions.assertTrue(alice.sentMessages().get(0).contains("\"status\": false"));
-      // alice should receive the NOTE details in a separate message
-      Assertions.assertTrue(alice.sentMessages().get(1).contains("NOTE"));
+      Assertions.assertTrue(alice.sentMessages().get(0).data.containsKey("status"));
+      Assertions.assertEquals(false,alice.sentMessages().get(0).data.get("status"));
 
 
       // Bob joins note1
@@ -790,40 +787,39 @@ public class NotebookServerTest extends AbstractTestRestApi {
 
       // Alice and Bob should each receive a status update informing them of each other's presence.
       // alice should get collaborative mode update
-      Assertions.assertTrue(alice.sentMessages().get(2).contains("COLLABORATIVE_MODE_STATUS"));
-      Assertions.assertTrue(alice.sentMessages().get(2).contains("\"status\": true"));
+      Assertions.assertTrue(alice.sentMessages().get(1).data.containsKey("status"));
+      Assertions.assertEquals(true,alice.sentMessages().get(1).data.get("status"));
 
       // bob should get collaborative mode update
-      Assertions.assertTrue(bob.sentMessages().get(0).contains("COLLABORATIVE_MODE_STATUS"));
-      Assertions.assertTrue(bob.sentMessages().get(0).contains("\"status\": true"));
-      // bob should receive the NOTE details in a separate message
-      Assertions.assertTrue(bob.sentMessages().get(1).contains("NOTE"));
+      Assertions.assertTrue(bob.sentMessages().get(0).data.containsKey("status"));
+      Assertions.assertEquals(true,bob.sentMessages().get(0).data.get("status"));
 
       // Charlie joins note1
       notebookServer.onMessage(charlie, new Message(OP.GET_NOTE)
               .put("id", note1.getId()).toJson());
 
       // alice should get collaborative mode update
-      Assertions.assertTrue(alice.sentMessages().get(3).contains("COLLABORATIVE_MODE_STATUS"));
-      Assertions.assertTrue(alice.sentMessages().get(3).contains("\"status\": true"));
+      Assertions.assertTrue(alice.sentMessages().get(2).data.containsKey("status"));
+      Assertions.assertEquals(true,alice.sentMessages().get(2).data.get("status"));
 
       // bob should get collaborative mode update
-      Assertions.assertTrue(bob.sentMessages().get(2).contains("COLLABORATIVE_MODE_STATUS"));
-      Assertions.assertTrue(bob.sentMessages().get(2).contains("\"status\": true"));
+      Assertions.assertTrue(bob.sentMessages().get(1).data.containsKey("status"));
+      Assertions.assertEquals(true,bob.sentMessages().get(1).data.get("status"));
 
       // charlie should get collaborative mode update
-      Assertions.assertTrue(charlie.sentMessages().get(0).contains("COLLABORATIVE_MODE_STATUS"));
-      Assertions.assertTrue(charlie.sentMessages().get(0).contains("\"status\": true"));
-      // charlie should receive the NOTE details in a separate message
-      Assertions.assertTrue(charlie.sentMessages().get(1).contains("NOTE"));
+      Assertions.assertTrue(charlie.sentMessages().get(0).data.containsKey("status"));
+      Assertions.assertEquals(true,charlie.sentMessages().get(0).data.get("status"));
+
     }
 
     @Test
     public void testCollaborativeNoteDisconnecting() {
       // Create connections
-      final FakeNotebookSocket alice = new FakeNotebookSocket(notebookServer);
-      final FakeNotebookSocket bob = new FakeNotebookSocket(notebookServer);
-      final FakeNotebookSocket charlie = new FakeNotebookSocket(notebookServer);
+      final HashSet<Message.OP> collaborativeOPFilter = new HashSet<>();
+      collaborativeOPFilter.add(OP.COLLABORATIVE_MODE_STATUS);
+      final FilteringFakeNotebookSocket alice = new FilteringFakeNotebookSocket(notebookServer,collaborativeOPFilter);
+      final FilteringFakeNotebookSocket bob = new FilteringFakeNotebookSocket(notebookServer,collaborativeOPFilter);
+      final FilteringFakeNotebookSocket charlie = new FilteringFakeNotebookSocket(notebookServer,collaborativeOPFilter);
       notebookServer.onOpen(alice);
       notebookServer.onOpen(bob);
       notebookServer.onOpen(charlie);
@@ -840,53 +836,73 @@ public class NotebookServerTest extends AbstractTestRestApi {
       notebookServer.onMessage(alice, new Message(OP.GET_NOTE)
               .put("id", note1.getId()).toJson());
       // alice should get collaborative mode update
-      Assertions.assertTrue(alice.sentMessages().get(0).contains("COLLABORATIVE_MODE_STATUS"));
-      Assertions.assertTrue(alice.sentMessages().get(0).contains("\"status\": false"));
-      // alice should receive the NOTE details in a separate message
-      Assertions.assertTrue(alice.sentMessages().get(1).contains("NOTE"));
+      Assertions.assertTrue(alice.sentMessages().get(0).data.containsKey("status"));
+      Assertions.assertEquals(false,alice.sentMessages().get(0).data.get("status"));
 
       notebookServer.onMessage(bob, new Message(OP.GET_NOTE)
               .put("id", note1.getId()).toJson());
-      // alice and bob should get collaborative mode update
-      Assertions.assertTrue(alice.sentMessages().get(2).contains("COLLABORATIVE_MODE_STATUS"));
-      Assertions.assertTrue(alice.sentMessages().get(2).contains("\"status\": true"));
 
-      Assertions.assertTrue(bob.sentMessages().get(0).contains("COLLABORATIVE_MODE_STATUS"));
-      Assertions.assertTrue(bob.sentMessages().get(0).contains("\"status\": true"));
-      // bob should receive the NOTE details in a separate message
-      Assertions.assertTrue(bob.sentMessages().get(1).contains("NOTE"));
+      // alice should get collaborative mode update
+      Assertions.assertTrue(alice.sentMessages().get(1).data.containsKey("status"));
+      Assertions.assertEquals(true,alice.sentMessages().get(1).data.get("status"));
+
+      // bob should get collaboratibe mode update
+      Assertions.assertTrue(bob.sentMessages().get(0).data.containsKey("status"));
+      Assertions.assertEquals(true,bob.sentMessages().get(0).data.get("status"));
 
       notebookServer.onMessage(charlie, new Message(OP.GET_NOTE)
               .put("id", note1.getId()).toJson());
-      // alice, bob and charlie should get collaborative mode update
-      Assertions.assertTrue(alice.sentMessages().get(3).contains("COLLABORATIVE_MODE_STATUS"));
-      Assertions.assertTrue(alice.sentMessages().get(3).contains("\"status\": true"));
 
-      Assertions.assertTrue(bob.sentMessages().get(2).contains("COLLABORATIVE_MODE_STATUS"));
-      Assertions.assertTrue(bob.sentMessages().get(2).contains("\"status\": true"));
+      // alice should get collaborative mode update
+      Assertions.assertTrue(alice.sentMessages().get(2).data.containsKey("status"));
+      Assertions.assertEquals(true,alice.sentMessages().get(2).data.get("status"));
 
-      Assertions.assertTrue(charlie.sentMessages().get(0).contains("COLLABORATIVE_MODE_STATUS"));
-      Assertions.assertTrue(charlie.sentMessages().get(0).contains("\"status\": true"));
-      // charlie should receive the NOTE details in a separate message
-      Assertions.assertTrue(charlie.sentMessages().get(1).contains("NOTE"));
+      // bob should get collaborative mode update
+      Assertions.assertTrue(bob.sentMessages().get(1).data.containsKey("status"));
+      Assertions.assertEquals(true,bob.sentMessages().get(1).data.get("status"));
+
+      // charlie should get collaborative mode update
+      Assertions.assertTrue(charlie.sentMessages().get(0).data.containsKey("status"));
+      Assertions.assertEquals(true,charlie.sentMessages().get(0).data.get("status"));
+
 
       // Alice disconnects
       notebookServer.onClose(alice, 1, "disconnect");
-      // Bob and Charlie should be notified that Alice has left.
-      Assertions.assertTrue(bob.sentMessages().get(3).contains("COLLABORATIVE_MODE_STATUS"));
-      Assertions.assertTrue(bob.sentMessages().get(3).contains("\"status\": true"));
+      // only Bob and Charlie should be notified that Alice has left.
 
-      Assertions.assertTrue(charlie.sentMessages().get(2).contains("COLLABORATIVE_MODE_STATUS"));
-      Assertions.assertTrue(charlie.sentMessages().get(2).contains("\"status\": true"));
+      // bob should get collaborative mode update
+      Assertions.assertTrue(bob.sentMessages().get(2).data.containsKey("status"));
+      Assertions.assertEquals(true,bob.sentMessages().get(2).data.get("status"));
 
+      // charlie should get collaborative mode update
+      Assertions.assertTrue(charlie.sentMessages().get(1).data.containsKey("status"));
+      Assertions.assertEquals(true,charlie.sentMessages().get(1).data.get("status"));
+
+      // alice should not get collaborative mode update
+      Assertions.assertEquals(3,alice.sentMessages().size());
+
+      // Bob disconnects
+      notebookServer.onClose(bob, 1, "disconnect");
+      // only charlie should be notified that Bob has left.
+
+      // charlie should get collaborative mode update
+      Assertions.assertTrue(charlie.sentMessages().get(2).data.containsKey("status"));
+      Assertions.assertEquals(false,charlie.sentMessages().get(2).data.get("status"));
+
+      // alice should not get collaborative mode update
+      Assertions.assertEquals(3,alice.sentMessages().size());
+      // bob should not get collaborative mode update
+      Assertions.assertEquals(3,bob.sentMessages().size());
     }
 
   @Test
   public void testCollaborativeNoteLeaving() {
     // Create connections
-    final FakeNotebookSocket alice = new FakeNotebookSocket(notebookServer);
-    final FakeNotebookSocket bob = new FakeNotebookSocket(notebookServer);
-    final FakeNotebookSocket charlie = new FakeNotebookSocket(notebookServer);
+    final HashSet<Message.OP> collaborativeOPFilter = new HashSet<>();
+    collaborativeOPFilter.add(OP.COLLABORATIVE_MODE_STATUS);
+    final FilteringFakeNotebookSocket alice = new FilteringFakeNotebookSocket(notebookServer,collaborativeOPFilter);
+    final FilteringFakeNotebookSocket bob = new FilteringFakeNotebookSocket(notebookServer,collaborativeOPFilter);
+    final FilteringFakeNotebookSocket charlie = new FilteringFakeNotebookSocket(notebookServer,collaborativeOPFilter);
     notebookServer.onOpen(alice);
     notebookServer.onOpen(bob);
     notebookServer.onOpen(charlie);
@@ -903,62 +919,65 @@ public class NotebookServerTest extends AbstractTestRestApi {
     notebookServer.onMessage(alice, new Message(OP.GET_NOTE)
             .put("id", note1.getId()).toJson());
     // alice should get collaborative mode update
-    Assertions.assertTrue(alice.sentMessages().get(0).contains("COLLABORATIVE_MODE_STATUS"));
-    Assertions.assertTrue(alice.sentMessages().get(0).contains("\"status\": false"));
-    // alice should receive the NOTE details in a separate message
-    Assertions.assertTrue(alice.sentMessages().get(1).contains("NOTE"));
+    Assertions.assertTrue(alice.sentMessages().get(0).data.containsKey("status"));
+    Assertions.assertEquals(false,alice.sentMessages().get(0).data.get("status"));
 
     notebookServer.onMessage(bob, new Message(OP.GET_NOTE)
             .put("id", note1.getId()).toJson());
     // alice and bob should get collaborative mode update
-    Assertions.assertTrue(alice.sentMessages().get(2).contains("COLLABORATIVE_MODE_STATUS"));
-    Assertions.assertTrue(alice.sentMessages().get(2).contains("\"status\": true"));
+    Assertions.assertTrue(alice.sentMessages().get(1).data.containsKey("status"));
+    Assertions.assertEquals(true,alice.sentMessages().get(1).data.get("status"));
 
-    Assertions.assertTrue(bob.sentMessages().get(0).contains("COLLABORATIVE_MODE_STATUS"));
-    Assertions.assertTrue(bob.sentMessages().get(0).contains("\"status\": true"));
-    // bob should receive the NOTE details in a separate message
-    Assertions.assertTrue(bob.sentMessages().get(1).contains("NOTE"));
+    Assertions.assertTrue(bob.sentMessages().get(0).data.containsKey("status"));
+    Assertions.assertEquals(true,bob.sentMessages().get(0).data.get("status"));
 
     notebookServer.onMessage(charlie, new Message(OP.GET_NOTE)
             .put("id", note1.getId()).toJson());
     // alice, bob and charlie should get collaborative mode update
-    Assertions.assertTrue(alice.sentMessages().get(3).contains("COLLABORATIVE_MODE_STATUS"));
-    Assertions.assertTrue(alice.sentMessages().get(3).contains("\"status\": true"));
 
-    Assertions.assertTrue(bob.sentMessages().get(2).contains("COLLABORATIVE_MODE_STATUS"));
-    Assertions.assertTrue(bob.sentMessages().get(2).contains("\"status\": true"));
+    Assertions.assertTrue(alice.sentMessages().get(2).data.containsKey("status"));
+    Assertions.assertEquals(true,alice.sentMessages().get(2).data.get("status"));
 
-    Assertions.assertTrue(charlie.sentMessages().get(0).contains("COLLABORATIVE_MODE_STATUS"));
-    Assertions.assertTrue(charlie.sentMessages().get(0).contains("\"status\": true"));
-    // charlie should receive the NOTE details in a separate message
-    Assertions.assertTrue(charlie.sentMessages().get(1).contains("NOTE"));
+    Assertions.assertTrue(bob.sentMessages().get(1).data.containsKey("status"));
+    Assertions.assertEquals(true,bob.sentMessages().get(1).data.get("status"));
+
+    Assertions.assertTrue(charlie.sentMessages().get(0).data.containsKey("status"));
+    Assertions.assertEquals(true,charlie.sentMessages().get(0).data.get("status"));
 
     // Alice returns to home page
     notebookServer.onMessage(alice, new Message(OP.LIST_NOTES)
             .toJson());
     // Bob and Charlie should be notified that Alice has left.
-    Assertions.assertTrue(bob.sentMessages().get(3).contains("COLLABORATIVE_MODE_STATUS"));
-    Assertions.assertTrue(bob.sentMessages().get(3).contains("\"status\": true"));
+    Assertions.assertTrue(bob.sentMessages().get(2).data.containsKey("status"));
+    Assertions.assertEquals(true,bob.sentMessages().get(2).data.get("status"));
 
-    Assertions.assertTrue(charlie.sentMessages().get(2).contains("COLLABORATIVE_MODE_STATUS"));
-    Assertions.assertTrue(charlie.sentMessages().get(2).contains("\"status\": true"));
+    Assertions.assertTrue(charlie.sentMessages().get(1).data.containsKey("status"));
+    Assertions.assertEquals(true,charlie.sentMessages().get(1).data.get("status"));
 
+    // alice should not get collaborative mode update
+    Assertions.assertEquals(3, alice.sentMessages().size());
     // Charlie returns to home page
     notebookServer.onMessage(charlie, new Message(OP.LIST_NOTES)
             .toJson());
 
     // Bob should be notified that Charlie has left.
-    Assertions.assertTrue(bob.sentMessages().get(4).contains("COLLABORATIVE_MODE_STATUS"));
-    Assertions.assertTrue(bob.sentMessages().get(4).contains("\"status\": false"));
+    Assertions.assertTrue(bob.sentMessages().get(3).data.containsKey("status"));
+    Assertions.assertEquals(false,bob.sentMessages().get(3).data.get("status"));
 
+    // alice should not get collaborative mode update
+    Assertions.assertEquals(3, alice.sentMessages().size());
+    // charlie should not get collaborative mode update
+    Assertions.assertEquals(2, charlie.sentMessages().size());
   }
 
     @Test
     public void testSwitchingCollaborativeNote(){
 
-      final FakeNotebookSocket alice = new FakeNotebookSocket(notebookServer);
-      final FakeNotebookSocket bob = new FakeNotebookSocket(notebookServer);
-      final FakeNotebookSocket charlie = new FakeNotebookSocket(notebookServer);
+      final HashSet<Message.OP> collaborativeOPFilter = new HashSet<>();
+      collaborativeOPFilter.add(OP.COLLABORATIVE_MODE_STATUS);
+      final FilteringFakeNotebookSocket alice = new FilteringFakeNotebookSocket(notebookServer,collaborativeOPFilter);
+      final FilteringFakeNotebookSocket bob = new FilteringFakeNotebookSocket(notebookServer,collaborativeOPFilter);
+      final FilteringFakeNotebookSocket charlie = new FilteringFakeNotebookSocket(notebookServer,collaborativeOPFilter);
       notebookServer.onOpen(alice);
       notebookServer.onOpen(bob);
       notebookServer.onOpen(charlie);
@@ -979,50 +998,39 @@ public class NotebookServerTest extends AbstractTestRestApi {
               .put("id", note1.getId()).toJson());
 
       // alice should get collaborative mode update
-      Assertions.assertTrue(alice.sentMessages().get(0).contains("COLLABORATIVE_MODE_STATUS"));
-      Assertions.assertTrue(alice.sentMessages().get(0).contains("\"status\": false"));
-      // should receive the NOTE details in a separate message
-      Assertions.assertTrue(alice.sentMessages().get(1).contains("NOTE"));
+      Assertions.assertTrue(alice.sentMessages().get(0).data.containsKey("status"));
+      Assertions.assertEquals(false,alice.sentMessages().get(0).data.get("status"));
 
       notebookServer.onMessage(bob, new Message(OP.GET_NOTE)
               .put("id", note1.getId()).toJson());
 
-      // bob should receive collaborative mode update
-      Assertions.assertTrue(bob.sentMessages().get(0).contains("COLLABORATIVE_MODE_STATUS"));
-      Assertions.assertTrue(bob.sentMessages().get(0).contains("\"status\": true"));
-      // should receive the NOTE details in a separate message
-      Assertions.assertTrue(bob.sentMessages().get(1).contains("NOTE"));
+      // alice and bob should get collaborative mode update
+      Assertions.assertTrue(alice.sentMessages().get(1).data.containsKey("status"));
+      Assertions.assertEquals(true,alice.sentMessages().get(1).data.get("status"));
 
-      // alice should get collaborative mode update too
-      Assertions.assertTrue(alice.sentMessages().get(2).contains("COLLABORATIVE_MODE_STATUS"));
-      Assertions.assertTrue(alice.sentMessages().get(2).contains("\"status\": true"));
-
+      Assertions.assertTrue(bob.sentMessages().get(0).data.containsKey("status"));
+      Assertions.assertEquals(true,bob.sentMessages().get(0).data.get("status"));
 
       // Connect Charlie to note2
       notebookServer.onMessage(charlie, new Message(OP.GET_NOTE)
               .put("id", note2.getId()).toJson());
 
-      Assertions.assertTrue(charlie.sentMessages().get(0).contains("COLLABORATIVE_MODE_STATUS"));
-      Assertions.assertTrue(charlie.sentMessages().get(0).contains("\"status\": false"));
-      // should receive the NOTE details in a separate message
-      Assertions.assertTrue(charlie.sentMessages().get(1).contains("NOTE"));
+      Assertions.assertTrue(charlie.sentMessages().get(0).data.containsKey("status"));
+      Assertions.assertEquals(false,charlie.sentMessages().get(0).data.get("status"));
 
       // Alice switches from note1 to note2
       notebookServer.onMessage(alice, new Message(OP.GET_NOTE)
               .put("id", note2.getId()).toJson());
 
-      // Alice and Charlie should both receive a COLLABORATIVE_STATUS_MESSAGE as they join the notebook with Charlie. Bob should receive one too as Alice left their notebook.
-      Assertions.assertTrue(alice.sentMessages().get(3).contains("COLLABORATIVE_MODE_STATUS"));
-      Assertions.assertTrue(alice.sentMessages().get(3).contains("\"status\": true"));
-      // should receive the NOTE details in a separate message
-      Assertions.assertTrue(alice.sentMessages().get(4).contains("NOTE"));
+      // Alice and Charlie should both receive a COLLABORATIVE_STATUS_MESSAGE as they join the notebook with Charlie.
+      Assertions.assertTrue(alice.sentMessages().get(2).data.containsKey("status"));
+      Assertions.assertEquals(true,alice.sentMessages().get(2).data.get("status"));
+      Assertions.assertTrue(charlie.sentMessages().get(1).data.containsKey("status"));
+      Assertions.assertEquals(true,charlie.sentMessages().get(1).data.get("status"));
 
-      Assertions.assertTrue(charlie.sentMessages().get(2).contains("COLLABORATIVE_MODE_STATUS"));
-      Assertions.assertTrue(charlie.sentMessages().get(2).contains("\"status\": true"));
-
-      Assertions.assertTrue(bob.sentMessages().get(2).contains("COLLABORATIVE_MODE_STATUS"));
-      Assertions.assertTrue(bob.sentMessages().get(2).contains("\"status\": false"));
-
+      // Bob should receive one too as Alice left their notebook.
+      Assertions.assertTrue(bob.sentMessages().get(1).data.containsKey("status"));
+      Assertions.assertEquals(false,bob.sentMessages().get(1).data.get("status"));
   }
 
   private NotebookSocket createWebSocket() {
