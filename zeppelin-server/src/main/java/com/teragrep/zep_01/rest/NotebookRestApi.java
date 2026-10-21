@@ -335,22 +335,6 @@ public class NotebookRestApi extends AbstractRestApi {
   }
 
   /**
-   * Export note REST API.
-   *
-   * @param noteId ID of Note
-   * @return note JSON with status.OK
-   * @throws IOException
-   */
-  @GET
-  @Path("export/{noteId}")
-  @ZeppelinApi
-  public Response exportNote(@PathParam("noteId") String noteId) throws IOException {
-    checkIfUserCanRead(noteId, "Insufficient privileges you cannot export this note");
-    String exportJson = notebook.exportNote(noteId);
-    return new JsonResponse<>(Status.OK, "", exportJson).build();
-  }
-
-  /**
    * Import new note REST API.
    * TODO(zjffdu) support to import jupyter note.
    *
