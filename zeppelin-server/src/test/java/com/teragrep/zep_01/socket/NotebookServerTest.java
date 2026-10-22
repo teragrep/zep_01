@@ -47,7 +47,6 @@ import java.util.Map;
 import javax.servlet.http.HttpServletRequest;
 
 import com.teragrep.zep_01.notebook.repo.Revision;
-import org.apache.commons.io.IOUtils;
 import org.apache.thrift.TException;
 import com.teragrep.zep_01.conf.ZeppelinConfiguration;
 import com.teragrep.zep_01.display.AngularObject;
@@ -56,19 +55,14 @@ import com.teragrep.zep_01.interpreter.InterpreterGroup;
 import com.teragrep.zep_01.interpreter.InterpreterSetting;
 import com.teragrep.zep_01.interpreter.remote.RemoteAngularObjectRegistry;
 import com.teragrep.zep_01.interpreter.thrift.ParagraphInfo;
-import com.teragrep.zep_01.interpreter.thrift.ServiceException;
 import com.teragrep.zep_01.notebook.AuthorizationService;
 import com.teragrep.zep_01.notebook.Note;
 import com.teragrep.zep_01.notebook.Notebook;
 import com.teragrep.zep_01.notebook.Paragraph;
-import com.teragrep.zep_01.notebook.repo.NotebookRepoWithVersionControl;
-import com.teragrep.zep_01.notebook.scheduler.QuartzSchedulerService;
-import com.teragrep.zep_01.notebook.scheduler.SchedulerService;
 import com.teragrep.zep_01.common.Message;
 import com.teragrep.zep_01.common.Message.OP;
 import com.teragrep.zep_01.rest.AbstractTestRestApi;
 import com.teragrep.zep_01.scheduler.Job;
-import com.teragrep.zep_01.service.ConfigurationService;
 import com.teragrep.zep_01.service.NotebookService;
 import com.teragrep.zep_01.service.ServiceContext;
 import com.teragrep.zep_01.user.AuthenticationInfo;
@@ -798,7 +792,6 @@ public class NotebookServerTest extends AbstractTestRestApi {
 
   private NotebookSocket createWebSocket() {
     NotebookSocket sock = mock(NotebookSocket.class);
-    when(sock.getRequest()).thenReturn(mockRequest);
     return sock;
   }
 }

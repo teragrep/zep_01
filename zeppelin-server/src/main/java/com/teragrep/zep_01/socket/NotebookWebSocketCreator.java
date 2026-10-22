@@ -16,11 +16,15 @@
  */
 package com.teragrep.zep_01.socket;
 
+import com.teragrep.zep_01.util.WatcherSecurityKey;
+import org.apache.commons.lang.StringUtils;
 import org.eclipse.jetty.websocket.servlet.ServletUpgradeRequest;
 import org.eclipse.jetty.websocket.servlet.ServletUpgradeResponse;
 import org.eclipse.jetty.websocket.servlet.WebSocketCreator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import javax.servlet.http.HttpServletRequest;
 
 import static com.teragrep.zep_01.conf.ZeppelinConfiguration.ConfVars.ZEPPELIN_ALLOWED_ORIGINS;
 
@@ -38,8 +42,17 @@ public class NotebookWebSocketCreator implements WebSocketCreator {
 
   public Object createWebSocket(ServletUpgradeRequest request, ServletUpgradeResponse response) {
     String origin = request.getHeader("Origin");
-    if (notebookServer.checkOrigin(request.getHttpServletRequest(), origin)) {
-      return new NotebookSocket(request.getHttpServletRequest(), "", notebookServer);
+    HttpServletRequest servletRequest = request.getHttpServletRequest();
+    if (notebookServer.checkOrigin(servletRequest, origin)) {
+      final String watcherKey = servletRequest.getHeader(WatcherSecurityKey.HTTP_HEADER);
+      final boolean watcherPermitted;
+      if(!StringUtils.isBlank(watcherKey)){
+        watcherPermitted = watcherKey.equals(WatcherSecurityKey.getKey());
+      }
+      else {
+        watcherPermitted = false;
+      }
+      return new NotebookSocketImpl(servletRequest.getRemoteHost(),servletRequest.getRemotePort(), notebookServer, watcherPermitted);
     } else {
       LOG.error("Websocket request is not allowed by {} settings. Origin: {}",
           ZEPPELIN_ALLOWED_ORIGINS, origin);
