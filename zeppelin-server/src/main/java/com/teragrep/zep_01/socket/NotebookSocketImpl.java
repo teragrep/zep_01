@@ -19,12 +19,21 @@ package com.teragrep.zep_01.socket;
 import org.apache.commons.lang3.StringUtils;
 import org.eclipse.jetty.websocket.api.Session;
 import org.eclipse.jetty.websocket.api.WebSocketAdapter;
+import org.eclipse.jetty.websocket.api.WebSocketListener;
 
 import java.io.IOException;
 
 /**
  * Notebook websocket.
- */
+ * Responsibilities:
+ * - Receives messages from websocket client via {@link WebSocketListener}
+ * - Sends messages to websocket client
+ * - Reports whether the connection is allowed to be turned into a Watcher
+ * - Sets a username for the connection
+ *
+ * Collaborators:
+ * - NotebookSocketListener - gets notified when a websocket message is received, a connection is opened or closed
+ **/
 public class NotebookSocketImpl extends WebSocketAdapter implements NotebookSocket {
   private Session connection;
   private final NotebookSocketListener listener;
