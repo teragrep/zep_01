@@ -4,10 +4,7 @@ import com.teragrep.zep_01.common.Message;
 import com.teragrep.zep_01.socket.NotebookSocket;
 import com.teragrep.zep_01.socket.NotebookSocketListener;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 /**
  * Represents a single connection to a NotebookServer. Captures Messages that have a matchin OpCode to the given filter
@@ -23,7 +20,7 @@ public final class FilteringFakeNotebookSocket extends NotebookSocket {
     public FilteringFakeNotebookSocket(NotebookSocketListener listener, Set<Message.OP> filter) {
         super(new FakeHttpServletRequest(), "", listener);
         this.sentMessages = new ArrayList<>();
-        this.filteredOps = filter;
+        this.filteredOps = Collections.unmodifiableSet(new HashSet<>(filter));
     }
 
     @Override
