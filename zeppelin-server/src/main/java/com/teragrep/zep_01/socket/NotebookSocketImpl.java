@@ -21,6 +21,7 @@ import org.eclipse.jetty.websocket.api.Session;
 import org.eclipse.jetty.websocket.api.WebSocketAdapter;
 import org.eclipse.jetty.websocket.api.WebSocketListener;
 
+import javax.servlet.http.HttpServletRequest;
 import java.io.IOException;
 
 /**
@@ -37,17 +38,13 @@ import java.io.IOException;
 public class NotebookSocketImpl extends WebSocketAdapter implements NotebookSocket {
   private Session connection;
   private final NotebookSocketListener listener;
-  private final String host;
-  private final int port;
   private String user;
-  private final boolean watcherPermitted;
+  private final HttpServletRequest request;
 
-  public NotebookSocketImpl(String host, int port,
-                        NotebookSocketListener listener, boolean watcherPermitted) {
+  public NotebookSocketImpl(final HttpServletRequest request,
+                        NotebookSocketListener listener) {
     this.listener = listener;
-    this.host = host;
-    this.port = port;
-    this.watcherPermitted = watcherPermitted;
+    this.request = request;
     this.user = StringUtils.EMPTY;
   }
 
@@ -78,13 +75,12 @@ public class NotebookSocketImpl extends WebSocketAdapter implements NotebookSock
   public void setUser(String user) {
     this.user = user;
   }
-
-  public boolean watcherPermitted(){
-    return watcherPermitted;
+  public HttpServletRequest getRequest() {
+    return request;
   }
 
   @Override
   public String toString() {
-    return host + ":" + port;
+    return request.getRemoteHost() + ":" + request.getRemoteHost();
   }
 }

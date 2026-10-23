@@ -792,6 +792,7 @@ public class NotebookServerTest extends AbstractTestRestApi {
 
   private NotebookSocket createWebSocket() {
     NotebookSocket sock = mock(NotebookSocket.class);
+    when(sock.getRequest()).thenReturn(mockRequest);
     return sock;
   }
 }
