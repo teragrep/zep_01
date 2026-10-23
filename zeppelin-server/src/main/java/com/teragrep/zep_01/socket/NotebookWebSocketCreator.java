@@ -39,7 +39,7 @@ public class NotebookWebSocketCreator implements WebSocketCreator {
   public Object createWebSocket(ServletUpgradeRequest request, ServletUpgradeResponse response) {
     String origin = request.getHeader("Origin");
     if (notebookServer.checkOrigin(request.getHttpServletRequest(), origin)) {
-      return new NotebookSocket(request.getHttpServletRequest(), "", notebookServer);
+      return new NotebookSocketImpl(request.getHttpServletRequest(), notebookServer);
     } else {
       LOG.error("Websocket request is not allowed by {} settings. Origin: {}",
           ZEPPELIN_ALLOWED_ORIGINS, origin);
