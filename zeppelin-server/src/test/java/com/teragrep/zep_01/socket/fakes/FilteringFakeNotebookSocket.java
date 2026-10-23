@@ -30,7 +30,7 @@ public final class FilteringFakeNotebookSocket extends NotebookSocket {
     public void send(String serializeMessage){
         final Message message = Message.fromJson(serializeMessage);
         if(filteredOps.contains(message.op)){
-            sentMessages.add(Message.fromJson(serializeMessage));
+            sentMessages.add(message);
         }
     }
 
