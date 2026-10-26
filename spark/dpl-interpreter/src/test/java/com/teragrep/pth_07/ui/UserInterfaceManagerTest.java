@@ -53,6 +53,7 @@ import com.teragrep.zep_01.display.AngularObjectRegistryListener;
 import com.teragrep.zep_01.interpreter.*;
 import jakarta.json.Json;
 import jakarta.json.JsonObject;
+import jakarta.json.JsonValue;
 import nl.jqno.equalsverifier.EqualsVerifier;
 import org.apache.spark.sql.Dataset;
 import org.apache.spark.sql.Row;
@@ -118,7 +119,9 @@ public final class UserInterfaceManagerTest {
                                 .add("value","")
                                 .add("regex",false)
                                 .add("fixed",Json.createArrayBuilder().build())
-                                .build()).build())
+                                .build())
+                        .add("order", JsonValue.EMPTY_JSON_ARRAY)
+                        .build())
                 .build();
         final UIOption defaultUIOption = new UIOptionImpl(json);
         final UserInterfaceManager userInterfaceManager = new UserInterfaceManager(context,emptyDataset,defaultUIOption,availableFormatList);
@@ -150,6 +153,7 @@ public final class UserInterfaceManagerTest {
                 .add("type", "uPlot")
                 .add("requestOptions",Json.createObjectBuilder()
                         .add("graphType","line")
+                        .add("order", JsonValue.EMPTY_JSON_ARRAY)
                         .build())
                 .build();
         final UIOption uPlotUIOption = new UIOptionImpl(uPlotOptionJson);
@@ -196,7 +200,9 @@ public final class UserInterfaceManagerTest {
                                 .add("value","")
                                 .add("regex",false)
                                 .add("fixed",Json.createArrayBuilder().build())
-                                .build()).build())
+                                .build())
+                        .add("order", JsonValue.EMPTY_JSON_ARRAY)
+                        .build())
                 .build();
         final UIOption defaultUIOption = new UIOptionImpl(defaultOptionJson);
         final UserInterfaceManager userInterfaceManager = new UserInterfaceManager(context,emptyDataset,defaultUIOption,availableFormatList);
