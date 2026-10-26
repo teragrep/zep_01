@@ -43,45 +43,40 @@
  * Teragrep, the applicable Commercial License may apply to this file if you as
  * a licensee so wish it.
  */
-package com.teragrep.pth_07.ui.elements.table_dynamic;
+package com.teragrep.pth_07.ui;
 
+import com.teragrep.zep_01.interpreter.InterpreterOutput;
+import com.teragrep.zep_01.interpreter.InterpreterOutputListener;
+import com.teragrep.zep_01.interpreter.InterpreterResultMessage;
+import com.teragrep.zep_01.interpreter.InterpreterResultMessageOutput;
+import org.junit.jupiter.api.Assertions;
+
+import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
 
-final class DTPagination {
+public final class FakeInterpreterOutputListener implements InterpreterOutputListener {
+        private List<InterpreterResultMessage> outputList = new ArrayList<>();
 
-    private final List<String> rowList;
-    public DTPagination(List<String> rowList){
-        this.rowList = rowList;
-    }
-    public List<String> paginate(int pageSize, int pageStart) {
-        // ranges must be greater than 0
-        int fromIndex = Math.max(pageStart, 0);
-        int toIndex = Math.max(fromIndex + pageSize, 0);
-
-        // list must end at the maximum size
-        if (toIndex > rowList.size()) {
-            toIndex = rowList.size();
+        @Override
+        public void onUpdateAll(final InterpreterOutput out) {
         }
 
-        // list range must be positive
-        if (fromIndex > toIndex) {
-            fromIndex = toIndex;
+        @Override
+        public void onAppend(final int index, final InterpreterResultMessageOutput out, final byte[] line) {
         }
 
-        return rowList.subList(fromIndex, toIndex);
-    }
+        @Override
+        public void onUpdate(final int index, final InterpreterResultMessageOutput out) {
+            try{
+                outputList.add(out.toInterpreterResultMessage());
+            }
+            catch (final IOException e){
+                throw new RuntimeException("IOException occurred while listening to output messages!",e);
+            }
+        }
 
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        DTPagination that = (DTPagination) o;
-        return Objects.equals(rowList, that.rowList);
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(rowList);
-    }
+        public List<InterpreterResultMessage> outputs(){
+            return outputList;
+        }
 }

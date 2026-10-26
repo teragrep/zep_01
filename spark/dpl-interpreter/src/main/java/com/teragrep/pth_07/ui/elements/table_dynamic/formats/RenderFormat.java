@@ -43,42 +43,16 @@
  * Teragrep, the applicable Commercial License may apply to this file if you as
  * a licensee so wish it.
  */
+package com.teragrep.pth_07.ui.elements.table_dynamic.formats;
 
-package com.teragrep.pth_07.ui.elements.table_dynamic.pojo;
+import com.teragrep.stb_01.Stubable;
+import com.teragrep.zep_01.common.Jsonable;
+import com.teragrep.zep_01.interpreter.InterpreterResult;
 
-import com.google.gson.annotations.Expose;
-import com.google.gson.annotations.SerializedName;
+/**
+ * RenderFormat represents a formatted Dataset. Implement formatting transformations in asJson() and provide an InterpreterResult.Type that matches with the format name
+ */
+public interface RenderFormat extends Stubable, Jsonable {
+    InterpreterResult.Type type();
 
-public class Order {
-
-    @SerializedName("column")
-    @Expose
-    private Integer column;
-    @SerializedName("dir")
-    @Expose
-    private String dir;
-
-    public Integer getColumn() {
-        return column;
-    }
-
-    public void setColumn(Integer column) {
-        this.column = column;
-    }
-
-    public String getDir() {
-        return dir;
-    }
-
-    public void setDir(String dir) {
-        this.dir = dir;
-    }
-
-    @Override
-    public String toString() {
-        return "Order{" +
-                "column=" + column +
-                ", dir='" + dir + '\'' +
-                '}';
-    }
 }

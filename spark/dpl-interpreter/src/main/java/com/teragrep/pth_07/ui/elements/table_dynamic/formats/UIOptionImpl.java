@@ -43,67 +43,64 @@
  * Teragrep, the applicable Commercial License may apply to this file if you as
  * a licensee so wish it.
  */
-package com.teragrep.pth_07.ui.elements.table_dynamic;
+package com.teragrep.pth_07.ui.elements.table_dynamic.formats;
 
-import jakarta.json.*;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import jakarta.json.Json;
+import jakarta.json.JsonObject;
+import jakarta.json.JsonReader;
 
 import java.io.StringReader;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Objects;
 
-public final class DTSearch {
-    protected static final Logger LOGGER = LoggerFactory.getLogger(DTSearch.class);
-    private final List<String> rowList;
+public final class UIOptionImpl implements UIOption {
 
-    public DTSearch(List<String> rowList){
-        this.rowList = rowList;
+    private final JsonObject json;
+
+    public UIOptionImpl(){
+        this(Json.createObjectBuilder()
+                .add("type","dataTables")
+                .add("requestOptions",Json.createObjectBuilder()
+                        .add("draw",1)
+                        .add("start",0)
+                        .add("length",50)
+                        .add("search", Json.createObjectBuilder()
+                                .add("value","")
+                                .add("regex",false)
+                                .add("fixed", Json.createArrayBuilder().build()))
+                        .build())
+                .build());
     }
-    public List<String> search(String searchString){
-        List<String> searchedList = new ArrayList<>();
-        if (!"".equals(searchString)) {
-            try {
-                for (String row : rowList) {
-                    JsonReader reader = Json.createReader(new StringReader(row));
-                    JsonObject line = reader.readObject();
 
-                    // NOTE hard coded to _raw column
-                    JsonString _raw = line.getJsonString("_raw");
-                    if (_raw != null) {
-                        String _rawString = _raw.getString();
-                        if (_rawString != null) {
-                            if (_rawString.contains(searchString)) {
-                                // _raw matches, add whole row to result set
-                                searchedList.add(row);
-                            }
-                        }
-                    }
-                    reader.close();
-                }
-                return searchedList;
-            } catch (JsonException | IllegalStateException e) {
-                LOGGER.error(e.toString());
-                return searchedList;
-            }
-        }
-        else {
-            searchedList = rowList;
-        }
-        return searchedList;
+    public UIOptionImpl(final JsonObject jsonObject) {
+        this.json = jsonObject;
     }
 
     @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        DTSearch dtSearch = (DTSearch) o;
-        return Objects.equals(rowList, dtSearch.rowList);
+    public JsonObject asJson() {
+        return json;
+    }
+    @Override
+    public String toString() {
+        return json.toString();
+    }
+
+    @Override
+    public boolean equals(final Object o) {
+        final boolean equals;
+        if (this == o) {
+            equals = true;
+        } else if (o == null || getClass() != o.getClass()) {
+            equals = false;
+        } else {
+            final UIOptionImpl uiOption = (UIOptionImpl) o;
+            equals = Objects.equals(json, uiOption.json);
+        }
+        return equals;
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(rowList);
+        return Objects.hash(json);
     }
 }
+

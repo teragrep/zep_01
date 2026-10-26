@@ -30,8 +30,11 @@ import com.teragrep.zep_01.notebook.repo.NotebookRepo;
 import com.teragrep.zep_01.scheduler.Scheduler;
 import com.teragrep.zep_01.user.AuthenticationInfo;
 import com.teragrep.zep_01.user.Credentials;
+import jakarta.json.JsonArray;
+import jakarta.json.JsonObject;
 import org.junit.Before;
 import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
@@ -207,5 +210,53 @@ public class NoteTest {
     // test Note Json
     Note note2 = Note.fromJson(null, note.toJson());
     assertEquals(note2, note);
+  }
+
+  @Test
+  public void testAsJson(){
+    final Note note = new Note("test", "", interpreterFactory, interpreterSettingManager, paragraphJobListener, credentials, noteEventListener);
+    note.setName("test_note");
+    note.getConfig().put("config_1", "value_1");
+    note.getInfo().put("info_1", "value_1");
+    final String pText = "%spark sc.version";
+    final Paragraph p = note.addNewParagraph(AuthenticationInfo.ANONYMOUS);
+    p.setText(pText);
+    p.setResult(new InterpreterResult(InterpreterResult.Code.SUCCESS, "1.6.2"));
+    p.settings.getForms().put("textbox_1", new TextBox("name", "default_name"));
+    p.settings.getParams().put("textbox_1", "my_name");
+    note.getAngularObjects().put("ao_1", Arrays.asList(new AngularObject("name_1", "value_1", note.getId(), p.getId(), null)));
+
+    final JsonObject noteJson = note.asJson();
+
+    // Assert that keys exist
+    Assertions.assertTrue(noteJson.containsKey("id"));
+    Assertions.assertTrue(noteJson.containsKey("name"));
+    Assertions.assertTrue(noteJson.containsKey("path"));
+    Assertions.assertTrue(noteJson.containsKey("config"));
+    Assertions.assertTrue(noteJson.containsKey("defaultInterpreterGroup"));
+    Assertions.assertTrue(noteJson.containsKey("paragraphs"));
+    Assertions.assertTrue(noteJson.containsKey("dynamicBindings"));
+
+    Assertions.assertEquals(note.getId(), noteJson.getString("id"));
+    Assertions.assertEquals("test_note", noteJson.getString("name"));
+    Assertions.assertEquals("/test_note", noteJson.getString("path"));
+    Assertions.assertEquals("",noteJson.getString("defaultInterpreterGroup"));
+    final JsonArray paragraphs = Assertions.assertDoesNotThrow(()->noteJson.getJsonArray("paragraphs"));
+    Assertions.assertEquals(1, paragraphs.size());
+    final JsonObject paragraph = paragraphs.getJsonObject(0);
+    Assertions.assertEquals(paragraph,p.asJson());
+
+    final JsonObject config = Assertions.assertDoesNotThrow(()->noteJson.getJsonObject("config"));
+    Assertions.assertEquals(1, config.size());
+    Assertions.assertEquals(false, config.getBoolean("isZeppelinNotebookCronEnable"));
+
+    final JsonObject dynamicBindings = Assertions.assertDoesNotThrow(()->noteJson.getJsonObject("dynamicBindings"));
+    Assertions.assertTrue(dynamicBindings.containsKey("ao_1"));
+    Assertions.assertEquals(1,dynamicBindings.getJsonArray("ao_1").size());
+    final JsonObject angularObject = Assertions.assertDoesNotThrow(()->dynamicBindings.getJsonArray("ao_1").getJsonObject(0));
+    Assertions.assertEquals("name_1", angularObject.getString("name"));
+    Assertions.assertEquals(note.getId(), angularObject.getString("noteId"));
+    Assertions.assertEquals(p.getId(), angularObject.getString("paragraphId"));
+    Assertions.assertEquals("value_1", angularObject.getString("object"));
   }
 }

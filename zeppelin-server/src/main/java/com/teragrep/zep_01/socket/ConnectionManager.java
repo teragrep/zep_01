@@ -228,6 +228,25 @@ public class ConnectionManager {
     }
   }
 
+  public void broadcast(final String noteId, final String message){
+    List<NotebookSocket> socketsToBroadcast = Collections.emptyList();
+    synchronized (noteSocketMap) {
+      broadcastToWatchers(noteId, StringUtils.EMPTY, message);
+      final List<NotebookSocket> socketLists = noteSocketMap.get(noteId);
+      if (socketLists == null || socketLists.size() == 0) {
+        return;
+      }
+      socketsToBroadcast = new ArrayList<>(socketLists);
+    }
+    for (final NotebookSocket conn : socketsToBroadcast) {
+      try {
+        conn.send(message);
+      } catch (final IOException | WebSocketException e) {
+        LOGGER.error("socket error", e);
+      }
+    }
+  }
+
   private void broadcastToWatchers(String noteId, String subject, Message message) {
     synchronized (watcherSockets) {
       for (NotebookSocket watcher : watcherSockets) {
@@ -239,6 +258,23 @@ public class ConnectionManager {
                   .build()
                   .toJson());
         } catch (IOException | WebSocketException e) {
+          LOGGER.error("Cannot broadcast message to watcher", e);
+        }
+      }
+    }
+  }
+
+  private void broadcastToWatchers(final String noteId, final String subject, final String message) {
+    synchronized (watcherSockets) {
+      for (final NotebookSocket watcher : watcherSockets) {
+        try {
+          watcher.send(
+                  WatcherMessage.builder(noteId)
+                          .subject(subject)
+                          .message(message)
+                          .build()
+                          .toJson());
+        } catch (final IOException | WebSocketException e) {
           LOGGER.error("Cannot broadcast message to watcher", e);
         }
       }
@@ -312,10 +348,29 @@ public class ConnectionManager {
     }
   }
 
+  public void multicastToUser(final String user, final String m) {
+    if (!userSocketMap.containsKey(user)) {
+      LOGGER.warn("Multicasting to user {} that is not in connections map", user);
+      return;
+    }
+
+    for (final NotebookSocket conn : userSocketMap.get(user)) {
+      unicast(m, conn);
+    }
+  }
+
   public void unicast(Message m, NotebookSocket conn) {
     try {
       conn.send(serializeMessage(m));
     } catch (IOException | WebSocketException e) {
+      LOGGER.error("socket error", e);
+    }
+    broadcastToWatchers(StringUtils.EMPTY, StringUtils.EMPTY, m);
+  }
+  public void unicast(final String m, final NotebookSocket conn) {
+    try {
+      conn.send(m);
+    } catch (final IOException | WebSocketException e) {
       LOGGER.error("socket error", e);
     }
     broadcastToWatchers(StringUtils.EMPTY, StringUtils.EMPTY, m);

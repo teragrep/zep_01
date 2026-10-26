@@ -43,41 +43,25 @@
  * Teragrep, the applicable Commercial License may apply to this file if you as
  * a licensee so wish it.
  */
-package com.teragrep.pth_07.ui.elements;
+package com.teragrep.pth_07.ui;
 
-import com.teragrep.zep_01.interpreter.InterpreterContext;
+import com.teragrep.zep_01.display.AngularObject;
+import com.teragrep.zep_01.display.AngularObjectRegistryListener;
 
-import java.io.IOException;
-
-public class OutputContent extends AbstractUserInterfaceElement {
-
-    private String outputContent = "";
-
-    public OutputContent(InterpreterContext interpreterContext) {
-        super(interpreterContext);
-    }
+public class FakeAngularObjectRegistryListener implements AngularObjectRegistryListener {
 
     @Override
-    protected void draw() {
-        getInterpreterContext().out().clear(false);
-        try {
-            getInterpreterContext().out().write(outputContent);
-        } catch (IOException e) {
-            e.printStackTrace();
+    public void onAddAngularObject(final String interpreterGroupId, final AngularObject angularObject) {
+        // no-op
         }
-    }
 
     @Override
-    public void emit() {
-        // no angular in this one
-    }
+    public void onUpdateAngularObject(final String interpreterGroupId, final AngularObject angularObject) {
+        // no-op
+        }
 
-    public void setOutputContent(String outputContent) {
-        this.outputContent = outputContent;
-        draw();
-    }
-
-    public void clear() {
-        getInterpreterContext().out().clear(true);
-    }
-}
+    @Override
+    public void onRemoveAngularObject(final String interpreterGroupId, final AngularObject angularObject) {
+        // no-op
+        }
+};
