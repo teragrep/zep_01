@@ -12,17 +12,16 @@ import java.time.Instant;
 import java.util.List;
 import java.util.concurrent.*;
 
-public class ZeppelinServerTest {
+public final class ZeppelinServerTest {
     private final ExecutorService executor = Executors.newSingleThreadExecutor();
     private final File zeppelinHome = new File("target/zeppelin");
     private final File confDir = new File(zeppelinHome, "/conf");
     private final File notebookDir = new File(zeppelinHome.getAbsolutePath() + "/notebook");
     private final File interpreterDir = new File(zeppelinHome, "/interpreter");
 
-    private Future startServer(){
+    private Future<Integer> startServer(){
         ZeppelinConfiguration.reset();
         // copy the resources files to a temp folder
-        confDir.mkdirs();
         Assertions.assertDoesNotThrow(()->FileUtils.copyDirectory(new File("src/test/resources/notebook"),notebookDir));
         Assertions.assertDoesNotThrow(()->FileUtils.copyDirectory(new File("src/test/resources/conf"), confDir));
         Assertions.assertDoesNotThrow(()->FileUtils.copyDirectory(new File("src/test/resources/interpreter"), interpreterDir));
@@ -69,7 +68,7 @@ public class ZeppelinServerTest {
 
         // store time of test start, then start the server.
         final Instant testStartTime = Instant.now();
-        final Future serverTask = startServer();
+        final Future<Integer> serverTask = startServer();
         // wait until server is started
         final long timeout = Instant.now().toEpochMilli() + 10000;
         while (Instant.now().toEpochMilli() < timeout) {
