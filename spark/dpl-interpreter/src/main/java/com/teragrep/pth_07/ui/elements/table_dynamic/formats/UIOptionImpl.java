@@ -48,6 +48,7 @@ package com.teragrep.pth_07.ui.elements.table_dynamic.formats;
 import jakarta.json.Json;
 import jakarta.json.JsonObject;
 import jakarta.json.JsonReader;
+import jakarta.json.JsonValue;
 
 import java.io.StringReader;
 import java.util.Objects;
@@ -63,6 +64,7 @@ public final class UIOptionImpl implements UIOption {
                         .add("draw",1)
                         .add("start",0)
                         .add("length",50)
+                        .add("order", JsonValue.EMPTY_JSON_ARRAY)
                         .add("search", Json.createObjectBuilder()
                                 .add("value","")
                                 .add("regex",false)
