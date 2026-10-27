@@ -36,7 +36,7 @@ import java.io.IOException;
  * Collaborators:
  * - NotebookSocketListener - gets notified when a websocket message is received, a connection is opened or closed
  **/
-public class NotebookSocketImpl implements NotebookSocket {
+public final class NotebookSocketImpl implements NotebookSocket {
   private Session connection;
   private final NotebookSocketListener listener;
   private String user;
