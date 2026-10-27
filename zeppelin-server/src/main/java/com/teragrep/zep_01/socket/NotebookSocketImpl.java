@@ -75,17 +75,22 @@ public class NotebookSocketImpl implements NotebookSocket {
     /* do nothing */
   }
 
+  @Override
   public synchronized void send(String serializeMessage) throws IOException {
     connection.getRemote().sendStringByFuture(serializeMessage);
   }
 
+  @Override
   public String getUser() {
     return user;
   }
 
+  @Override
   public void setUser(String user) {
     this.user = user;
   }
+
+  @Override
   public HttpServletRequest getRequest() {
     return request;
   }
