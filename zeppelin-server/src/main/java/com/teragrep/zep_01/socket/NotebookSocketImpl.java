@@ -17,6 +17,7 @@
 package com.teragrep.zep_01.socket;
 
 import org.apache.commons.lang3.StringUtils;
+import org.eclipse.jetty.websocket.api.RemoteEndpoint;
 import org.eclipse.jetty.websocket.api.Session;
 import org.eclipse.jetty.websocket.api.WebSocketAdapter;
 import org.eclipse.jetty.websocket.api.WebSocketListener;
@@ -35,7 +36,7 @@ import java.io.IOException;
  * Collaborators:
  * - NotebookSocketListener - gets notified when a websocket message is received, a connection is opened or closed
  **/
-public class NotebookSocketImpl extends WebSocketAdapter implements NotebookSocket {
+public class NotebookSocketImpl implements NotebookSocket {
   private Session connection;
   private final NotebookSocketListener listener;
   private String user;
@@ -62,6 +63,16 @@ public class NotebookSocketImpl extends WebSocketAdapter implements NotebookSock
   @Override
   public void onWebSocketText(String message) {
     listener.onMessage(this, message);
+  }
+
+  @Override
+  public void onWebSocketError(final Throwable cause) {
+    /* do nothing */
+  }
+
+  @Override
+  public void onWebSocketBinary(final byte[] payload, final int offset, final int len) {
+    /* do nothing */
   }
 
   public synchronized void send(String serializeMessage) throws IOException {
