@@ -102,11 +102,6 @@ public final class NotebookSocketImpl implements NotebookSocket {
   }
 
   @Override
-  public String toString() {
-    return request.getRemoteHost() + ":" + request.getRemotePort();
-  }
-
-  @Override
   public boolean equals(final Object o) {
     final boolean equals;
     if (this == o) {

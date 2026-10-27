@@ -224,7 +224,7 @@ public class NotebookServer extends WebSocketServlet
 
   @Override
   public void onOpen(NotebookSocket conn) {
-    LOG.info("New connection from {}", conn);
+    LOG.info("New connection from {}:{}", conn.getRequest().getRemoteHost(), conn.getRequest().getRemotePort());
     getConnectionManager().addConnection(conn);
   }
 
@@ -469,7 +469,7 @@ public class NotebookServer extends WebSocketServlet
 
   @Override
   public void onClose(NotebookSocket conn, int code, String reason) {
-    LOG.info("Closed connection to {} ({}) {}", conn, code, reason);
+    LOG.info("Closed connection to {}:{} ({}) {}", conn.getRequest().getRemoteHost(),conn.getRequest().getRemotePort(), code, reason);
     getConnectionManager().removeConnection(conn);
     getConnectionManager().removeConnectionFromAllNote(conn);
     getConnectionManager().removeUserConnection(conn.username().asString(), conn);
