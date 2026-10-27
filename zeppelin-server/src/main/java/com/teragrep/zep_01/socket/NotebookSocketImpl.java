@@ -81,6 +81,6 @@ public class NotebookSocketImpl extends WebSocketAdapter implements NotebookSock
 
   @Override
   public String toString() {
-    return request.getRemoteHost() + ":" + request.getRemoteHost();
+    return request.getRemoteHost() + ":" + request.getRemotePort();
   }
 }
