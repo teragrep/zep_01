@@ -16,37 +16,43 @@
  */
 package com.teragrep.zep_01.socket;
 
-import org.apache.commons.lang3.StringUtils;
-import org.eclipse.jetty.websocket.api.RemoteEndpoint;
 import org.eclipse.jetty.websocket.api.Session;
-import org.eclipse.jetty.websocket.api.WebSocketAdapter;
 import org.eclipse.jetty.websocket.api.WebSocketListener;
 
 import javax.servlet.http.HttpServletRequest;
 import java.io.IOException;
+import java.util.Objects;
+import java.util.concurrent.atomic.AtomicReference;
 
 /**
  * Notebook websocket.
  * Responsibilities:
  * - Receives messages from websocket client via {@link WebSocketListener}
+ * - Assigns a {@link Session} via {@link org.eclipse.jetty.websocket.api.WebSocketConnectionListener} to facilitate communication with client
  * - Sends messages to websocket client
- * - Reports whether the connection is allowed to be turned into a Watcher
- * - Sets a username for the connection
  *
  * Collaborators:
- * - NotebookSocketListener - gets notified when a websocket message is received, a connection is opened or closed
+ * - {@link NotebookSocketListener} - Gets notified when a websocket message is received, a connection is opened or closed
+ * - {@link HttpServletRequest} - HTTP request that was upgraded to a Websocket connection
  **/
 public final class NotebookSocketImpl implements NotebookSocket {
-  private Session connection;
+  private final AtomicReference<Session> connection;  // use of AtomicReference here due to Jetty's WebSocketConnectionListener assigns a Session object via onWebSocketConnect()
   private final NotebookSocketListener listener;
-  private String user;
+  private final Username username;
   private final HttpServletRequest request;
 
   public NotebookSocketImpl(final HttpServletRequest request,
                             final NotebookSocketListener listener) {
+    this(request,listener,new UsernameStub());
+  }
+
+  public NotebookSocketImpl(final HttpServletRequest request,
+                            final NotebookSocketListener listener,
+                            final Username username) {
+    this.connection = new AtomicReference<>();
     this.listener = listener;
     this.request = request;
-    this.user = StringUtils.EMPTY;
+    this.username = username;
   }
 
   @Override
@@ -56,7 +62,7 @@ public final class NotebookSocketImpl implements NotebookSocket {
 
   @Override
   public void onWebSocketConnect(final Session connection) {
-    this.connection = connection;
+    this.connection.set(connection);
     listener.onOpen(this);
   }
 
@@ -77,17 +83,17 @@ public final class NotebookSocketImpl implements NotebookSocket {
 
   @Override
   public synchronized void send(final String serializeMessage) throws IOException {
-    connection.getRemote().sendStringByFuture(serializeMessage);
+    if(connection.get() == null){
+      throw new IOException("Tried to send a message to a Websocket connection with no established Session!");
+    }
+    else {
+      connection.get().getRemote().sendStringByFuture(serializeMessage);
+    }
   }
 
   @Override
-  public String getUser() {
-    return user;
-  }
-
-  @Override
-  public void setUser(final String user) {
-    this.user = user;
+  public Username username() {
+    return username;
   }
 
   @Override
@@ -98,5 +104,24 @@ public final class NotebookSocketImpl implements NotebookSocket {
   @Override
   public String toString() {
     return request.getRemoteHost() + ":" + request.getRemotePort();
+  }
+
+  @Override
+  public boolean equals(final Object o) {
+    final boolean equals;
+    if (this == o) {
+      equals = true;
+    } else if (o == null || getClass() != o.getClass()) {
+      equals = false;
+    } else {
+      final NotebookSocketImpl that = (NotebookSocketImpl) o;
+      equals = Objects.equals(connection, that.connection) && Objects.equals(listener, that.listener) && Objects.equals(username, that.username) && Objects.equals(request, that.request);
+    }
+    return equals;
+  }
+
+  @Override
+  public int hashCode() {
+    return Objects.hash(connection, listener, username, request);
   }
 }

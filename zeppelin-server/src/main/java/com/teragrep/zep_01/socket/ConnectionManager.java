@@ -127,13 +127,13 @@ public class ConnectionManager {
     }
   }
 
-  public void addUserConnection(String user, NotebookSocket conn) {
+  public void addUserConnection(NamedNotebookSocket conn) {
+    final String user = conn.username().asString();
     LOGGER.debug("Add user connection {} for user: {}", conn, user);
-    conn.setUser(user);
     if (userSocketMap.containsKey(user)) {
       userSocketMap.get(user).add(conn);
     } else {
-      Queue<NotebookSocket> socketQueue = new ConcurrentLinkedQueue<>();
+      final Queue<NotebookSocket> socketQueue = new ConcurrentLinkedQueue<>();
       socketQueue.add(conn);
       userSocketMap.put(user, socketQueue);
     }
@@ -184,7 +184,7 @@ public class ConnectionManager {
       // Create a list of users for the response
       HashSet<String> userList = new HashSet<>();
       for (NotebookSocket noteSocket : socketList) {
-        userList.add(noteSocket.getUser());
+        userList.add(noteSocket.username().asString());
       }
       message.put("users", userList);
       broadcast(noteId, message);
@@ -331,7 +331,7 @@ public class ConnectionManager {
   public Set<String> getConnectedUsers() {
     Set<String> connectedUsers = new HashSet<>();
     for (NotebookSocket notebookSocket : connectedSockets) {
-      connectedUsers.add(notebookSocket.getUser());
+      connectedUsers.add(notebookSocket.username().asString());
     }
     return connectedUsers;
   }
@@ -487,7 +487,7 @@ public class ConnectionManager {
     // remove this connection from regular zeppelin ws usage.
     removeConnection(conn);
     removeConnectionFromAllNote(conn);
-    removeUserConnection(conn.getUser(), conn);
+    removeUserConnection(conn.username().asString(), conn);
   }
 
   private boolean isSessionAllowedToSwitchToWatcher(NotebookSocket session) {

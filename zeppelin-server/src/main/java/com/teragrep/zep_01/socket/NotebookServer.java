@@ -278,8 +278,11 @@ public class NotebookServer extends WebSocketServlet
         }
       }
 
-      if (StringUtils.isEmpty(conn.getUser())) {
-        getConnectionManager().addUserConnection(receivedMessage.principal, conn);
+      // If this is the first message a websocket connection sends, username has not yet been set.
+      if (conn.username().isStub()) {
+        final NamedNotebookSocket namedConn = new NamedNotebookSocket(conn, receivedMessage.principal);
+        getConnectionManager().addUserConnection(namedConn);
+        conn = namedConn;
       }
 
       ServiceContext context = getServiceContext(ticketEntry);
@@ -469,7 +472,7 @@ public class NotebookServer extends WebSocketServlet
     LOG.info("Closed connection to {} ({}) {}", conn, code, reason);
     getConnectionManager().removeConnection(conn);
     getConnectionManager().removeConnectionFromAllNote(conn);
-    getConnectionManager().removeUserConnection(conn.getUser(), conn);
+    getConnectionManager().removeUserConnection(conn.username().asString(), conn);
   }
 
   protected Message deserializeMessage(String msg) {

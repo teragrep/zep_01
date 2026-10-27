@@ -6,20 +6,19 @@ import javax.servlet.http.HttpServletRequest;
 import java.io.IOException;
 
 /**
+ * Represents a Websocket connectionn to a single client
  * Responsibilities:
  * - Receives messages from websocket client via {@link WebSocketListener}
  * - Sends messages to websocket client
- * - Provides access to the HttpServletRequest that was used to create the websocket connection
- * - Sets a username for the connection
+ * - Provides access to the {@link HttpServletRequest} that was used to create the websocket connection
+ * - Provides access to a {@link Username} that is associated with this connection
  **/
 
 public interface NotebookSocket extends WebSocketListener {
 
     public abstract void send(String serializeMessage) throws IOException;
 
-    public abstract String getUser();
-
-    public abstract void setUser(String user);
+    public abstract Username username();
 
     public abstract HttpServletRequest getRequest();
 }
