@@ -43,25 +43,25 @@ public final class NotebookSocketImpl implements NotebookSocket {
   private final HttpServletRequest request;
 
   public NotebookSocketImpl(final HttpServletRequest request,
-                        NotebookSocketListener listener) {
+                            final NotebookSocketListener listener) {
     this.listener = listener;
     this.request = request;
     this.user = StringUtils.EMPTY;
   }
 
   @Override
-  public void onWebSocketClose(int closeCode, String message) {
+  public void onWebSocketClose(final int closeCode, final String message) {
     listener.onClose(this, closeCode, message);
   }
 
   @Override
-  public void onWebSocketConnect(Session connection) {
+  public void onWebSocketConnect(final Session connection) {
     this.connection = connection;
     listener.onOpen(this);
   }
 
   @Override
-  public void onWebSocketText(String message) {
+  public void onWebSocketText(final String message) {
     listener.onMessage(this, message);
   }
 
@@ -76,7 +76,7 @@ public final class NotebookSocketImpl implements NotebookSocket {
   }
 
   @Override
-  public synchronized void send(String serializeMessage) throws IOException {
+  public synchronized void send(final String serializeMessage) throws IOException {
     connection.getRemote().sendStringByFuture(serializeMessage);
   }
 
@@ -86,7 +86,7 @@ public final class NotebookSocketImpl implements NotebookSocket {
   }
 
   @Override
-  public void setUser(String user) {
+  public void setUser(final String user) {
     this.user = user;
   }
 
