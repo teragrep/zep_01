@@ -98,7 +98,7 @@ public class ConnectionManager {
   }
 
   public void addNoteConnection(String noteId, NotebookSocket socket) {
-    LOGGER.debug("Add connection {} to note: {}", socket, noteId);
+    LOGGER.debug("Add connection {} : {} to note: {}", socket.getRequest().getRemoteHost(),socket.getRequest().getRemotePort(), noteId);
     synchronized (noteSocketMap) {
       // make sure a socket relates only an single note.
       removeConnectionFromAllNote(socket);
@@ -117,7 +117,7 @@ public class ConnectionManager {
   }
 
   public void removeNoteConnection(String noteId, NotebookSocket socket) {
-    LOGGER.debug("Remove connection {} from note: {}", socket, noteId);
+    LOGGER.debug("Remove connection {} : {} from note: {}", socket.getRequest().getRemoteHost(),socket.getRequest().getRemotePort(), noteId);
     synchronized (noteSocketMap) {
       List<NotebookSocket> socketList = noteSocketMap.get(noteId);
       if (socketList != null && socketList.contains(socket)) {
@@ -127,20 +127,20 @@ public class ConnectionManager {
     }
   }
 
-  public void addUserConnection(String user, NotebookSocket conn) {
-    LOGGER.debug("Add user connection {} for user: {}", conn, user);
-    conn.setUser(user);
+  public void addUserConnection(NamedNotebookSocket conn) {
+    final String user = conn.username().asString();
+    LOGGER.debug("Add user connection {} : {} for user: {}", conn.getRequest().getRemoteHost(),conn.getRequest().getRemotePort(), user);
     if (userSocketMap.containsKey(user)) {
       userSocketMap.get(user).add(conn);
     } else {
-      Queue<NotebookSocket> socketQueue = new ConcurrentLinkedQueue<>();
+      final Queue<NotebookSocket> socketQueue = new ConcurrentLinkedQueue<>();
       socketQueue.add(conn);
       userSocketMap.put(user, socketQueue);
     }
   }
 
   public void removeUserConnection(String user, NotebookSocket conn) {
-    LOGGER.debug("Remove user connection {} for user: {}", conn, user);
+    LOGGER.debug("Remove user connection {} : {} for user: {}", conn.getRequest().getRemoteHost(),conn.getRequest().getRemotePort(), user);
     if (userSocketMap.containsKey(user)) {
       userSocketMap.get(user).remove(conn);
     } else {
@@ -184,7 +184,7 @@ public class ConnectionManager {
       // Create a list of users for the response
       HashSet<String> userList = new HashSet<>();
       for (NotebookSocket noteSocket : socketList) {
-        userList.add(noteSocket.getUser());
+        userList.add(noteSocket.username().asString());
       }
       message.put("users", userList);
       broadcast(noteId, message);
@@ -331,7 +331,7 @@ public class ConnectionManager {
   public Set<String> getConnectedUsers() {
     Set<String> connectedUsers = new HashSet<>();
     for (NotebookSocket notebookSocket : connectedSockets) {
-      connectedUsers.add(notebookSocket.getUser());
+      connectedUsers.add(notebookSocket.username().asString());
     }
     return connectedUsers;
   }
@@ -487,7 +487,7 @@ public class ConnectionManager {
     // remove this connection from regular zeppelin ws usage.
     removeConnection(conn);
     removeConnectionFromAllNote(conn);
-    removeUserConnection(conn.getUser(), conn);
+    removeUserConnection(conn.username().asString(), conn);
   }
 
   private boolean isSessionAllowedToSwitchToWatcher(NotebookSocket session) {
