@@ -20,13 +20,13 @@ import com.google.gson.Gson;
 import com.teragrep.zep_01.common.JsonSerializable;
 
 import java.util.Collection;
-import java.util.LinkedList;
+import java.util.ArrayList;
 import java.util.regex.Pattern;
 
 /**
  * List of resources
  */
-public class ResourceSet extends LinkedList<Resource> implements JsonSerializable {
+public class ResourceSet extends ArrayList<Resource> implements JsonSerializable {
 
   private static final Gson gson = new Gson();
 
