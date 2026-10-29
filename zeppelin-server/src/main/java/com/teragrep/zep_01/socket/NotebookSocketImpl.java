@@ -83,12 +83,11 @@ public final class NotebookSocketImpl implements NotebookSocket {
 
   @Override
   public synchronized void send(final String serializeMessage) throws IOException {
-    if(connection.get() == null){
+    final Session connection = this.connection.get();
+    if(connection == null || !connection.isOpen()){
       throw new IOException("Tried to send a message to a Websocket connection with no established Session!");
     }
-    else {
-      connection.get().getRemote().sendStringByFuture(serializeMessage);
-    }
+    connection.getRemote().sendStringByFuture(serializeMessage);
   }
 
   @Override
