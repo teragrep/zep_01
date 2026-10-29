@@ -15,9 +15,9 @@ import java.util.concurrent.*;
 public final class ZeppelinServerTest {
     private final ExecutorService executor = Executors.newSingleThreadExecutor();
     private final File zeppelinHome = new File("target/zeppelin");
-    private final File confDir = new File(zeppelinHome, "/conf");
+    private final File confDir = new File(zeppelinHome.getAbsolutePath(), "/conf");
     private final File notebookDir = new File(zeppelinHome.getAbsolutePath() + "/notebook");
-    private final File interpreterDir = new File(zeppelinHome, "/interpreter");
+    private final File interpreterDir = new File(zeppelinHome.getAbsolutePath(), "/interpreter");
 
     private Future<Integer> startServer(){
         ZeppelinConfiguration.reset();
