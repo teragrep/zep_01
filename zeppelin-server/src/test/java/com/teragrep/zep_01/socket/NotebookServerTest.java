@@ -24,16 +24,7 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
-import static org.mockito.Matchers.contains;
-import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
-import static org.mockito.Mockito.anyString;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.never;
-import static org.mockito.Mockito.reset;
-import static org.mockito.Mockito.spy;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
 import java.io.IOException;
 import java.net.InetAddress;
@@ -43,11 +34,12 @@ import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 import javax.servlet.http.HttpServletRequest;
 
 import com.teragrep.zep_01.notebook.repo.Revision;
-import org.apache.commons.io.IOUtils;
+import com.teragrep.zep_01.socket.fakes.FilteringFakeNotebookSocket;
 import org.apache.thrift.TException;
 import com.teragrep.zep_01.conf.ZeppelinConfiguration;
 import com.teragrep.zep_01.display.AngularObject;
@@ -56,19 +48,14 @@ import com.teragrep.zep_01.interpreter.InterpreterGroup;
 import com.teragrep.zep_01.interpreter.InterpreterSetting;
 import com.teragrep.zep_01.interpreter.remote.RemoteAngularObjectRegistry;
 import com.teragrep.zep_01.interpreter.thrift.ParagraphInfo;
-import com.teragrep.zep_01.interpreter.thrift.ServiceException;
 import com.teragrep.zep_01.notebook.AuthorizationService;
 import com.teragrep.zep_01.notebook.Note;
 import com.teragrep.zep_01.notebook.Notebook;
 import com.teragrep.zep_01.notebook.Paragraph;
-import com.teragrep.zep_01.notebook.repo.NotebookRepoWithVersionControl;
-import com.teragrep.zep_01.notebook.scheduler.QuartzSchedulerService;
-import com.teragrep.zep_01.notebook.scheduler.SchedulerService;
 import com.teragrep.zep_01.common.Message;
 import com.teragrep.zep_01.common.Message.OP;
 import com.teragrep.zep_01.rest.AbstractTestRestApi;
 import com.teragrep.zep_01.scheduler.Job;
-import com.teragrep.zep_01.service.ConfigurationService;
 import com.teragrep.zep_01.service.NotebookService;
 import com.teragrep.zep_01.service.ServiceContext;
 import com.teragrep.zep_01.user.AuthenticationInfo;
@@ -78,9 +65,6 @@ import org.junit.jupiter.api.Assertions;
 
 
 /** Basic REST API tests for notebookServer. */
-@Ignore(value="[ERROR] Crashed tests:\n" +
-        "[ERROR] com.teragrep.zep_01.socket.NotebookServerTest\n" +
-        "[ERROR] ExecutionException The forked VM terminated without properly saying goodbye. VM crash or System.exit called?\n")
 public class NotebookServerTest extends AbstractTestRestApi {
   private static Notebook notebook;
   private static NotebookServer notebookServer;
@@ -101,6 +85,13 @@ public class NotebookServerTest extends AbstractTestRestApi {
   @AfterClass
   public static void destroy() throws Exception {
     AbstractTestRestApi.shutDown();
+  }
+
+  @After
+  public void cleanupNotebooks() throws IOException {
+    for(Note note : notebook.getAllNotes()){
+      notebook.removeNote(note,AuthenticationInfo.ANONYMOUS);
+    }
   }
 
   @Before
@@ -185,6 +176,9 @@ public class NotebookServerTest extends AbstractTestRestApi {
     notebookServer.onMessage(noteSocket, message.toJson());
   }
 
+  @Ignore(value="[ERROR] Crashed tests:\n" +
+          "[ERROR] com.teragrep.zep_01.socket.NotebookServerTest\n" +
+          "[ERROR] ExecutionException The forked VM terminated without properly saying goodbye. VM crash or System.exit called?\n")
   @Test
   public void testMakeSureNoAngularObjectBroadcastToWebsocketWhoFireTheEvent()
           throws IOException, InterruptedException {
@@ -250,6 +244,9 @@ public class NotebookServerTest extends AbstractTestRestApi {
     verify(sock2, times(1)).send(anyString());
   }
 
+  @Ignore(value="[ERROR] Crashed tests:\n" +
+          "[ERROR] com.teragrep.zep_01.socket.NotebookServerTest\n" +
+          "[ERROR] ExecutionException The forked VM terminated without properly saying goodbye. VM crash or System.exit called?\n")
   @Test
   public void testAngularObjectSaveToNote()
       throws IOException, InterruptedException {
@@ -348,6 +345,9 @@ public class NotebookServerTest extends AbstractTestRestApi {
     assertNull(ao2);
   }
 
+  @Ignore(value="[ERROR] Crashed tests:\n" +
+          "[ERROR] com.teragrep.zep_01.socket.NotebookServerTest\n" +
+          "[ERROR] ExecutionException The forked VM terminated without properly saying goodbye. VM crash or System.exit called?\n")
   @Test
   public void testLoadAngularObjectFromNote() throws IOException, InterruptedException {
     // create a notebook
@@ -403,6 +403,9 @@ public class NotebookServerTest extends AbstractTestRestApi {
     assertEquals("COMMAND_TYPE_VALUE", ao1.get());
   }
 
+  @Ignore(value="[ERROR] Crashed tests:\n" +
+          "[ERROR] com.teragrep.zep_01.socket.NotebookServerTest\n" +
+          "[ERROR] ExecutionException The forked VM terminated without properly saying goodbye. VM crash or System.exit called?\n")
   @Test
   public void testImportNotebook() throws IOException {
     String msg = "{\"op\":\"IMPORT_NOTE\",\"data\":" +
@@ -565,6 +568,9 @@ public class NotebookServerTest extends AbstractTestRestApi {
     }
   }
 
+  @Ignore(value="[ERROR] Crashed tests:\n" +
+          "[ERROR] com.teragrep.zep_01.socket.NotebookServerTest\n" +
+          "[ERROR] ExecutionException The forked VM terminated without properly saying goodbye. VM crash or System.exit called?\n")
   @Test
   public void testRuntimeInfos() throws IOException {
     // mock note
@@ -611,6 +617,9 @@ public class NotebookServerTest extends AbstractTestRestApi {
     assertEquals("jobLabel_value", map.get("jobLabel"));
   }
 
+  @Ignore(value="[ERROR] Crashed tests:\n" +
+          "[ERROR] com.teragrep.zep_01.socket.NotebookServerTest\n" +
+          "[ERROR] ExecutionException The forked VM terminated without properly saying goodbye. VM crash or System.exit called?\n")
   @Test
   public void testGetParagraphList() throws IOException {
     Note note = notebook.createNote("note1", anonymous);
@@ -658,6 +667,9 @@ public class NotebookServerTest extends AbstractTestRestApi {
     assertNotNull(user1Id + " can get " + user2Id + "'s shared note", paragraphList2);
   }
 
+  @Ignore(value="[ERROR] Crashed tests:\n" +
+          "[ERROR] com.teragrep.zep_01.socket.NotebookServerTest\n" +
+          "[ERROR] ExecutionException The forked VM terminated without properly saying goodbye. VM crash or System.exit called?\n")
   @Test
   public void testNoteRevision() throws IOException {
     Note note = notebook.createNote("note1", anonymous);
@@ -686,114 +698,339 @@ public class NotebookServerTest extends AbstractTestRestApi {
     assertEquals(0, note.getParagraphCount());
   }
 
+  /**
+   * COLLABORATIVE_MODE_STATUS messages should be sent when a user creates a notebook due to automatic connection
+   */
   @Test
-  public void testCollaborativeModeStatus() {
-      NotebookSocket sock1 = createWebSocket();
-      NotebookSocket sock2 = createWebSocket();
-      NotebookSocket sock3 = createWebSocket();
-      notebookServer.onOpen(sock1);
-      notebookServer.onOpen(sock2);
-      notebookServer.onOpen(sock3);
+  public void testCollaborativeNoteCreation() {
+    // Create connections
+    final HashSet<Message.OP> collaborativeOPFilter = new HashSet<>();
+    collaborativeOPFilter.add(OP.COLLABORATIVE_MODE_STATUS);
+    final FilteringFakeNotebookSocket alice = new FilteringFakeNotebookSocket(notebookServer,collaborativeOPFilter);
+    final FilteringFakeNotebookSocket bob = new FilteringFakeNotebookSocket(notebookServer,collaborativeOPFilter);
+    final FilteringFakeNotebookSocket charlie = new FilteringFakeNotebookSocket(notebookServer,collaborativeOPFilter);
+    notebookServer.onOpen(alice);
+    notebookServer.onOpen(bob);
+    notebookServer.onOpen(charlie);
 
-      String noteName = "Note with millis " + System.currentTimeMillis();
-      String defaultInterpreterId = "";
-      List<InterpreterSetting> settings = notebook.getInterpreterSettingManager().get();
-      if (settings.size() > 1) {
-        defaultInterpreterId = settings.get(0).getId();
-      }
-      // create note from sock1
-      notebookServer.onMessage(sock1,
-              new Message(OP.NEW_NOTE)
-                      .put("name", noteName)
-                      .put("defaultInterpreterId", defaultInterpreterId).toJson());
+    final String noteName = "Note with millis " + System.currentTimeMillis();
+    final List<InterpreterSetting> settings = notebook.getInterpreterSettingManager().get();
+    final String defaultInterpreterId = settings.size() > 1 ? settings.get(0).getId() : "";
+    // alice creates note
+    notebookServer.onMessage(alice,
+            new Message(OP.NEW_NOTE)
+                    .put("alicesNote", noteName)
+                    .put("defaultInterpreterId", defaultInterpreterId).toJson());
 
-      // Make sure there is only one created notebook, and get its' ID.
-      Assertions.assertEquals(1,notebook.getAllNotes().size());
-      String noteId = notebook.getAllNotes().get(0).getId();
+    // NEW_NOTE sends one status message to alice only (creating a note automatically connects user to that note)
+    // alice should get collaborative mode update
+    Assertions.assertTrue(alice.sentMessages().get(0).data.containsKey("status"));
+    Assertions.assertEquals(false,alice.sentMessages().get(0).data.get("status"));
 
-      // Expect correct number of COLLABORATIVE_MODE_STATUS messages when a number of users join the same notebook.
-      notebookServer.onMessage(sock1,new Message(OP.GET_NOTE)
-              .put("id",noteId).toJson());
+    // bob and charlie should not get Collaborative mode status messages
+    Assertions.assertEquals(0,bob.sentMessages().size());
+    Assertions.assertEquals(0,charlie.sentMessages().size());
 
-      // User 1 shouldn't get a COLLABORATIVE_MODE_STATUS message when they join as the first user
+    // create note from charlie
+    notebookServer.onMessage(charlie,
+            new Message(OP.NEW_NOTE)
+                    .put("charliesNote", noteName)
+                    .put("defaultInterpreterId", defaultInterpreterId).toJson());
 
-      Assertions.assertDoesNotThrow(()-> verify(sock1, times(0)).send(contains(OP.COLLABORATIVE_MODE_STATUS.toString())));
-      notebookServer.onMessage(sock2, new Message(OP.GET_NOTE)
-              .put("id", noteId).toJson());
-        // Both users 1 and 2 should receive a COLLABORATIVE_MODE_STATUS message when user 2 joins so that they both know about each other.
-      Assertions.assertDoesNotThrow(()-> verify(sock1, times(1)).send(contains(OP.COLLABORATIVE_MODE_STATUS.toString())));
-      Assertions.assertDoesNotThrow(()-> verify(sock2, times(1)).send(contains(OP.COLLABORATIVE_MODE_STATUS.toString())));
+    // alice and bob should not get any additional COLLABORATIVE_MODE_STATUS messages when a user creates an unrelated note;
+    Assertions.assertEquals(1,alice.sentMessages().size());
+    Assertions.assertEquals(0,bob.sentMessages().size());
 
-      notebookServer.onMessage(sock3, new Message(OP.GET_NOTE)
-              .put("id", noteId).toJson());
-      // Both users 1 and 2 should receive a COLLABORATIVE_MODE_STATUS message when user 3 joins
-      Assertions.assertDoesNotThrow(()-> verify(sock1, times(2)).send(contains(OP.COLLABORATIVE_MODE_STATUS.toString())));
-      Assertions.assertDoesNotThrow(()-> verify(sock2, times(2)).send(contains(OP.COLLABORATIVE_MODE_STATUS.toString())));
-      // User 3 should be notified about the other users by a COLLABORATIVE_MODE_STATUS message upon joining
-      Assertions.assertDoesNotThrow(()-> verify(sock3, times(1)).send(contains(OP.COLLABORATIVE_MODE_STATUS.toString())));
+    // NEW_NOTE sends one status message to charlie only (creating a note automatically connects user to that note)
+    // charlie should get collaborative mode update
+    Assertions.assertTrue(charlie.sentMessages().get(0).data.containsKey("status"));
+    Assertions.assertEquals(false,charlie.sentMessages().get(0).data.get("status"));
+
+    // Make sure the notebooks were created successfully
+    Assertions.assertEquals(2, notebook.getAllNotes().size());
   }
 
+    @Test
+    public void testCollaborativeNoteJoining() {
+      // Create connections
+      final HashSet<Message.OP> collaborativeOPFilter = new HashSet<>();
+      collaborativeOPFilter.add(OP.COLLABORATIVE_MODE_STATUS);
+      final FilteringFakeNotebookSocket alice = new FilteringFakeNotebookSocket(notebookServer,collaborativeOPFilter);
+      final FilteringFakeNotebookSocket bob = new FilteringFakeNotebookSocket(notebookServer,collaborativeOPFilter);
+      final FilteringFakeNotebookSocket charlie = new FilteringFakeNotebookSocket(notebookServer,collaborativeOPFilter);
+      notebookServer.onOpen(alice);
+      notebookServer.onOpen(bob);
+      notebookServer.onOpen(charlie);
+
+      // create one notebook
+      final List<InterpreterSetting> settings = notebook.getInterpreterSettingManager().get();
+      final String defaultInterpreterId = settings.size() > 1 ? settings.get(0).getId() : "";
+      final Note note1 = Assertions.assertDoesNotThrow(() -> notebook.createNote("collaborativeNote1", defaultInterpreterId, AuthenticationInfo.ANONYMOUS));
+
+      // Make sure the notebook was created successfully
+      Assertions.assertEquals(1, notebook.getAllNotes().size());
+
+      // Expect correct number of COLLABORATIVE_MODE_STATUS messages when a number of users join the same notebook.
+      // Alice joins note1
+      notebookServer.onMessage(alice, new Message(OP.GET_NOTE)
+              .put("id", note1.getId()).toJson());
+
+      // Each GET_NOTE should send one collaborative status update to each connected user.
+      // alice should get collaborative mode update
+      Assertions.assertTrue(alice.sentMessages().get(0).data.containsKey("status"));
+      Assertions.assertEquals(false,alice.sentMessages().get(0).data.get("status"));
+
+
+      // Bob joins note1
+      notebookServer.onMessage(bob, new Message(OP.GET_NOTE)
+              .put("id", note1.getId()).toJson());
+
+      // Alice and Bob should each receive a status update informing them of each other's presence.
+      // alice should get collaborative mode update
+      Assertions.assertTrue(alice.sentMessages().get(1).data.containsKey("status"));
+      Assertions.assertEquals(true,alice.sentMessages().get(1).data.get("status"));
+
+      // bob should get collaborative mode update
+      Assertions.assertTrue(bob.sentMessages().get(0).data.containsKey("status"));
+      Assertions.assertEquals(true,bob.sentMessages().get(0).data.get("status"));
+
+      // Charlie joins note1
+      notebookServer.onMessage(charlie, new Message(OP.GET_NOTE)
+              .put("id", note1.getId()).toJson());
+
+      // alice should get collaborative mode update
+      Assertions.assertTrue(alice.sentMessages().get(2).data.containsKey("status"));
+      Assertions.assertEquals(true,alice.sentMessages().get(2).data.get("status"));
+
+      // bob should get collaborative mode update
+      Assertions.assertTrue(bob.sentMessages().get(1).data.containsKey("status"));
+      Assertions.assertEquals(true,bob.sentMessages().get(1).data.get("status"));
+
+      // charlie should get collaborative mode update
+      Assertions.assertTrue(charlie.sentMessages().get(0).data.containsKey("status"));
+      Assertions.assertEquals(true,charlie.sentMessages().get(0).data.get("status"));
+
+    }
+
+    @Test
+    public void testCollaborativeNoteDisconnecting() {
+      // Create connections
+      final HashSet<Message.OP> collaborativeOPFilter = new HashSet<>();
+      collaborativeOPFilter.add(OP.COLLABORATIVE_MODE_STATUS);
+      final FilteringFakeNotebookSocket alice = new FilteringFakeNotebookSocket(notebookServer,collaborativeOPFilter);
+      final FilteringFakeNotebookSocket bob = new FilteringFakeNotebookSocket(notebookServer,collaborativeOPFilter);
+      final FilteringFakeNotebookSocket charlie = new FilteringFakeNotebookSocket(notebookServer,collaborativeOPFilter);
+      notebookServer.onOpen(alice);
+      notebookServer.onOpen(bob);
+      notebookServer.onOpen(charlie);
+
+      // create one notebook
+      final List<InterpreterSetting> settings = notebook.getInterpreterSettingManager().get();
+      final String defaultInterpreterId = settings.size() > 1 ? settings.get(0).getId() : "";
+      final Note note1 = Assertions.assertDoesNotThrow(() -> notebook.createNote("collaborativeNote1", defaultInterpreterId, AuthenticationInfo.ANONYMOUS));
+
+      // Make sure the notebook was created successfully
+      Assertions.assertEquals(1, notebook.getAllNotes().size());
+
+      // Connect each user to note1
+      notebookServer.onMessage(alice, new Message(OP.GET_NOTE)
+              .put("id", note1.getId()).toJson());
+      // alice should get collaborative mode update
+      Assertions.assertTrue(alice.sentMessages().get(0).data.containsKey("status"));
+      Assertions.assertEquals(false,alice.sentMessages().get(0).data.get("status"));
+
+      notebookServer.onMessage(bob, new Message(OP.GET_NOTE)
+              .put("id", note1.getId()).toJson());
+
+      // alice should get collaborative mode update
+      Assertions.assertTrue(alice.sentMessages().get(1).data.containsKey("status"));
+      Assertions.assertEquals(true,alice.sentMessages().get(1).data.get("status"));
+
+      // bob should get collaboratibe mode update
+      Assertions.assertTrue(bob.sentMessages().get(0).data.containsKey("status"));
+      Assertions.assertEquals(true,bob.sentMessages().get(0).data.get("status"));
+
+      notebookServer.onMessage(charlie, new Message(OP.GET_NOTE)
+              .put("id", note1.getId()).toJson());
+
+      // alice should get collaborative mode update
+      Assertions.assertTrue(alice.sentMessages().get(2).data.containsKey("status"));
+      Assertions.assertEquals(true,alice.sentMessages().get(2).data.get("status"));
+
+      // bob should get collaborative mode update
+      Assertions.assertTrue(bob.sentMessages().get(1).data.containsKey("status"));
+      Assertions.assertEquals(true,bob.sentMessages().get(1).data.get("status"));
+
+      // charlie should get collaborative mode update
+      Assertions.assertTrue(charlie.sentMessages().get(0).data.containsKey("status"));
+      Assertions.assertEquals(true,charlie.sentMessages().get(0).data.get("status"));
+
+
+      // Alice disconnects
+      notebookServer.onClose(alice, 1, "disconnect");
+      // only Bob and Charlie should be notified that Alice has left.
+
+      // bob should get collaborative mode update
+      Assertions.assertTrue(bob.sentMessages().get(2).data.containsKey("status"));
+      Assertions.assertEquals(true,bob.sentMessages().get(2).data.get("status"));
+
+      // charlie should get collaborative mode update
+      Assertions.assertTrue(charlie.sentMessages().get(1).data.containsKey("status"));
+      Assertions.assertEquals(true,charlie.sentMessages().get(1).data.get("status"));
+
+      // alice should not get collaborative mode update
+      Assertions.assertEquals(3,alice.sentMessages().size());
+
+      // Bob disconnects
+      notebookServer.onClose(bob, 1, "disconnect");
+      // only charlie should be notified that Bob has left.
+
+      // charlie should get collaborative mode update
+      Assertions.assertTrue(charlie.sentMessages().get(2).data.containsKey("status"));
+      Assertions.assertEquals(false,charlie.sentMessages().get(2).data.get("status"));
+
+      // alice should not get collaborative mode update
+      Assertions.assertEquals(3,alice.sentMessages().size());
+      // bob should not get collaborative mode update
+      Assertions.assertEquals(3,bob.sentMessages().size());
+    }
+
   @Test
-  public void testCollaborativeModeBetweenNotebooks() {
-      NotebookSocket sock1 = createWebSocket();
-      NotebookSocket sock2 = createWebSocket();
-      NotebookSocket sock3 = createWebSocket();
-      notebookServer.onOpen(sock1);
-      notebookServer.onOpen(sock2);
-      notebookServer.onOpen(sock3);
+  public void testCollaborativeNoteLeaving() {
+    // Create connections
+    final HashSet<Message.OP> collaborativeOPFilter = new HashSet<>();
+    collaborativeOPFilter.add(OP.COLLABORATIVE_MODE_STATUS);
+    final FilteringFakeNotebookSocket alice = new FilteringFakeNotebookSocket(notebookServer,collaborativeOPFilter);
+    final FilteringFakeNotebookSocket bob = new FilteringFakeNotebookSocket(notebookServer,collaborativeOPFilter);
+    final FilteringFakeNotebookSocket charlie = new FilteringFakeNotebookSocket(notebookServer,collaborativeOPFilter);
+    notebookServer.onOpen(alice);
+    notebookServer.onOpen(bob);
+    notebookServer.onOpen(charlie);
 
-      String noteName = "Note with millis " + System.currentTimeMillis();
-      String defaultInterpreterId = "";
-      List<InterpreterSetting> settings = notebook.getInterpreterSettingManager().get();
-      if (settings.size() > 1) {
-        defaultInterpreterId = settings.get(0).getId();
-      }
-      // create note from sock1
-      notebookServer.onMessage(sock1,
-              new Message(OP.NEW_NOTE)
-                      .put("name", noteName)
-                      .put("defaultInterpreterId", defaultInterpreterId).toJson());
+    // create one notebook
+    final List<InterpreterSetting> settings = notebook.getInterpreterSettingManager().get();
+    final String defaultInterpreterId = settings.size() > 1 ? settings.get(0).getId() : "";
+    final Note note1 = Assertions.assertDoesNotThrow(() -> notebook.createNote("collaborativeNote1", defaultInterpreterId, AuthenticationInfo.ANONYMOUS));
 
-      // Make sure there is only one created notebook, and get its' ID.
-      Assertions.assertEquals(1,notebook.getAllNotes().size());
-      String noteId = notebook.getAllNotes().get(0).getId();
+    // Make sure the notebook was created successfully
+    Assertions.assertEquals(1, notebook.getAllNotes().size());
 
-      // create another note from sock1
-      String note2Name = "Note with millis " + System.currentTimeMillis();
-      notebookServer.onMessage(sock1,
-              new Message(OP.NEW_NOTE)
-                      .put("name", note2Name)
-                      .put("defaultInterpreterId", defaultInterpreterId).toJson());
+    // Connect each user to note1
+    notebookServer.onMessage(alice, new Message(OP.GET_NOTE)
+            .put("id", note1.getId()).toJson());
+    // alice should get collaborative mode update
+    Assertions.assertTrue(alice.sentMessages().get(0).data.containsKey("status"));
+    Assertions.assertEquals(false,alice.sentMessages().get(0).data.get("status"));
 
-      String note2Id = "";
-      for (Note note : notebook.getAllNotes()) {
-        if (note.getName().equals(note2Name)) {
-          note2Id = note.getId();
-          break;
-        }
-      }
+    notebookServer.onMessage(bob, new Message(OP.GET_NOTE)
+            .put("id", note1.getId()).toJson());
+    // alice and bob should get collaborative mode update
+    Assertions.assertTrue(alice.sentMessages().get(1).data.containsKey("status"));
+    Assertions.assertEquals(true,alice.sentMessages().get(1).data.get("status"));
 
-      // Expect no COLLABORATIVE_MODE_STATUS messages when users join an unrelated notebook.
-      notebookServer.onMessage(sock1,new Message(OP.GET_NOTE)
-              .put("id",noteId).toJson());
+    Assertions.assertTrue(bob.sentMessages().get(0).data.containsKey("status"));
+    Assertions.assertEquals(true,bob.sentMessages().get(0).data.get("status"));
 
-      // User 1 shouldn't get a COLLABORATIVE_MODE_STATUS message when they join as the first user
-      Assertions.assertDoesNotThrow(()-> verify(sock1, times(0)).send(contains(OP.COLLABORATIVE_MODE_STATUS.toString())));
-      notebookServer.onMessage(sock2,new Message(OP.GET_NOTE)
-              .put("id",noteId).toJson());
+    notebookServer.onMessage(charlie, new Message(OP.GET_NOTE)
+            .put("id", note1.getId()).toJson());
+    // alice, bob and charlie should get collaborative mode update
 
-      // Both users 1 and 2 should receive a COLLABORATIVE_MODE_STATUS message when user 2 joins so that they both know about each other.
-      Assertions.assertDoesNotThrow(()-> verify(sock1, times(1)).send(contains(OP.COLLABORATIVE_MODE_STATUS.toString())));
-      Assertions.assertDoesNotThrow(()-> verify(sock2, times(1)).send(contains(OP.COLLABORATIVE_MODE_STATUS.toString())));
+    Assertions.assertTrue(alice.sentMessages().get(2).data.containsKey("status"));
+    Assertions.assertEquals(true,alice.sentMessages().get(2).data.get("status"));
 
-      notebookServer.onMessage(sock3,new Message(OP.GET_NOTE)
-              .put("id",note2Id).toJson());
+    Assertions.assertTrue(bob.sentMessages().get(1).data.containsKey("status"));
+    Assertions.assertEquals(true,bob.sentMessages().get(1).data.get("status"));
 
-      // Both users 1 and 2 shouldn't receive a COLLABORATIVE_MODE_STATUS message when user 3 joins some other notebook
-      Assertions.assertDoesNotThrow(()-> verify(sock1, times(1)).send(contains(OP.COLLABORATIVE_MODE_STATUS.toString())));
-      Assertions.assertDoesNotThrow(()-> verify(sock2, times(1)).send(contains(OP.COLLABORATIVE_MODE_STATUS.toString())));
-      // User 3 should not get a COLLABORATIVE_MODE_STATUS message upon joining their own separate notebook
-      Assertions.assertDoesNotThrow(()-> verify(sock3, times(0)).send(contains(OP.COLLABORATIVE_MODE_STATUS.toString())));
+    Assertions.assertTrue(charlie.sentMessages().get(0).data.containsKey("status"));
+    Assertions.assertEquals(true,charlie.sentMessages().get(0).data.get("status"));
+
+    // Alice returns to home page
+    notebookServer.onMessage(alice, new Message(OP.LIST_NOTES)
+            .toJson());
+    // Bob and Charlie should be notified that Alice has left.
+    Assertions.assertTrue(bob.sentMessages().get(2).data.containsKey("status"));
+    Assertions.assertEquals(true,bob.sentMessages().get(2).data.get("status"));
+
+    Assertions.assertTrue(charlie.sentMessages().get(1).data.containsKey("status"));
+    Assertions.assertEquals(true,charlie.sentMessages().get(1).data.get("status"));
+
+    // alice should not get collaborative mode update
+    Assertions.assertEquals(3, alice.sentMessages().size());
+    // Charlie returns to home page
+    notebookServer.onMessage(charlie, new Message(OP.LIST_NOTES)
+            .toJson());
+
+    // Bob should be notified that Charlie has left.
+    Assertions.assertTrue(bob.sentMessages().get(3).data.containsKey("status"));
+    Assertions.assertEquals(false,bob.sentMessages().get(3).data.get("status"));
+
+    // alice should not get collaborative mode update
+    Assertions.assertEquals(3, alice.sentMessages().size());
+    // charlie should not get collaborative mode update
+    Assertions.assertEquals(2, charlie.sentMessages().size());
+  }
+
+    @Test
+    public void testSwitchingCollaborativeNote(){
+
+      final HashSet<Message.OP> collaborativeOPFilter = new HashSet<>();
+      collaborativeOPFilter.add(OP.COLLABORATIVE_MODE_STATUS);
+      final FilteringFakeNotebookSocket alice = new FilteringFakeNotebookSocket(notebookServer,collaborativeOPFilter);
+      final FilteringFakeNotebookSocket bob = new FilteringFakeNotebookSocket(notebookServer,collaborativeOPFilter);
+      final FilteringFakeNotebookSocket charlie = new FilteringFakeNotebookSocket(notebookServer,collaborativeOPFilter);
+      notebookServer.onOpen(alice);
+      notebookServer.onOpen(bob);
+      notebookServer.onOpen(charlie);
+
+      // create two notebooks
+      final List<InterpreterSetting> settings = notebook.getInterpreterSettingManager().get();
+      final String defaultInterpreterId = settings.size() > 1 ? settings.get(0).getId() : "";
+      final Note note1 = Assertions.assertDoesNotThrow(() -> notebook.createNote("collaborativeNote1", defaultInterpreterId, AuthenticationInfo.ANONYMOUS));
+      final Note note2 = Assertions.assertDoesNotThrow(() -> notebook.createNote("collaborativeNote2", defaultInterpreterId, AuthenticationInfo.ANONYMOUS));
+
+      // Make sure the notebook was created successfully
+      Assertions.assertEquals(2, notebook.getAllNotes().size());
+
+
+      // Each user should receive one update as they join the notebooks. Alice should receive one extra from Bob joining
+      // Connect Alice and Bob to note1
+      notebookServer.onMessage(alice, new Message(OP.GET_NOTE)
+              .put("id", note1.getId()).toJson());
+
+      // alice should get collaborative mode update
+      Assertions.assertTrue(alice.sentMessages().get(0).data.containsKey("status"));
+      Assertions.assertEquals(false,alice.sentMessages().get(0).data.get("status"));
+
+      notebookServer.onMessage(bob, new Message(OP.GET_NOTE)
+              .put("id", note1.getId()).toJson());
+
+      // alice and bob should get collaborative mode update
+      Assertions.assertTrue(alice.sentMessages().get(1).data.containsKey("status"));
+      Assertions.assertEquals(true,alice.sentMessages().get(1).data.get("status"));
+
+      Assertions.assertTrue(bob.sentMessages().get(0).data.containsKey("status"));
+      Assertions.assertEquals(true,bob.sentMessages().get(0).data.get("status"));
+
+      // Connect Charlie to note2
+      notebookServer.onMessage(charlie, new Message(OP.GET_NOTE)
+              .put("id", note2.getId()).toJson());
+
+      Assertions.assertTrue(charlie.sentMessages().get(0).data.containsKey("status"));
+      Assertions.assertEquals(false,charlie.sentMessages().get(0).data.get("status"));
+
+      // Alice switches from note1 to note2
+      notebookServer.onMessage(alice, new Message(OP.GET_NOTE)
+              .put("id", note2.getId()).toJson());
+
+      // Alice and Charlie should both receive a COLLABORATIVE_STATUS_MESSAGE as they join the notebook with Charlie.
+      Assertions.assertTrue(alice.sentMessages().get(2).data.containsKey("status"));
+      Assertions.assertEquals(true,alice.sentMessages().get(2).data.get("status"));
+      Assertions.assertTrue(charlie.sentMessages().get(1).data.containsKey("status"));
+      Assertions.assertEquals(true,charlie.sentMessages().get(1).data.get("status"));
+
+      // Bob should receive one too as Alice left their notebook.
+      Assertions.assertTrue(bob.sentMessages().get(1).data.containsKey("status"));
+      Assertions.assertEquals(false,bob.sentMessages().get(1).data.get("status"));
   }
 
   private NotebookSocket createWebSocket() {
