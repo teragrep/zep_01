@@ -15,21 +15,15 @@ import java.util.concurrent.*;
 public final class ZeppelinServerTest {
     private final ExecutorService executor = Executors.newSingleThreadExecutor();
     private final File zeppelinHome = new File("target/zeppelin");
-    private final File confDir = new File(zeppelinHome.getAbsolutePath(), "/conf");
     private final File notebookDir = new File(zeppelinHome.getAbsolutePath() + "/notebook");
-    private final File interpreterDir = new File(zeppelinHome.getAbsolutePath(), "/interpreter");
 
     private Future<Integer> startServer(){
         ZeppelinConfiguration.reset();
         // copy the resources files to a temp folder
         Assertions.assertDoesNotThrow(()->FileUtils.copyDirectory(new File("src/test/resources/notebook"),notebookDir));
-        Assertions.assertDoesNotThrow(()->FileUtils.copyDirectory(new File("src/test/resources/conf"), confDir));
-        Assertions.assertDoesNotThrow(()->FileUtils.copyDirectory(new File("src/test/resources/interpreter"), interpreterDir));
 
         System.setProperty(ZeppelinConfiguration.ConfVars.ZEPPELIN_HOME.getVarName(),
                 zeppelinHome.getAbsolutePath());
-        System.setProperty(ZeppelinConfiguration.ConfVars.ZEPPELIN_CONF_DIR.getVarName(),
-                confDir.getAbsolutePath());
         System.setProperty(
                 ZeppelinConfiguration.ConfVars.ZEPPELIN_INTERPRETER_GROUP_DEFAULT.getVarName(),
                 "spark");
