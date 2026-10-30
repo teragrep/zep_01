@@ -114,13 +114,13 @@ public final class NotebookSocketImpl implements NotebookSocket {
       equals = false;
     } else {
       final NotebookSocketImpl that = (NotebookSocketImpl) o;
-      equals = Objects.equals(connection != null ? this.connection.get() : null, that.connection != null ? that.connection.get() : null) && Objects.equals(listener, that.listener) && Objects.equals(username != null ? this.username.get() : null, that.username != null ? that.username.get() : null) && Objects.equals(request, that.request);
+      equals = Objects.equals(listener, that.listener) && Objects.equals(request, that.request);
     }
     return equals;
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(connection != null ? connection.get() : null, listener, username != null ? username.get() : null, request);
+    return Objects.hash(listener, request);
   }
 }

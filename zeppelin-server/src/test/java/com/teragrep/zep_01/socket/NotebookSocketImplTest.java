@@ -14,7 +14,7 @@ class NotebookSocketImplTest {
 
     @Test
     public void testContract(){
-        EqualsVerifier.forClass(NotebookSocketImpl.class).verify();
+        EqualsVerifier.forClass(NotebookSocketImpl.class).withIgnoredFields("username","connection").verify();
     }
     // calling send() before a call to onWebSocketConnect() is received should result in an IOException
     @Test
