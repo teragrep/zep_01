@@ -279,10 +279,9 @@ public class NotebookServer extends WebSocketServlet
       }
 
       // If this is the first message a websocket connection sends, username has not yet been set.
-      if (conn.username().isStub()) {
-        final NamedNotebookSocket namedConn = new NamedNotebookSocket(conn, receivedMessage.principal);
-        getConnectionManager().addUserConnection(namedConn);
-        conn = namedConn;
+      if (conn.username().isAnonymous()) {
+        conn.rename(new UsernameImpl(receivedMessage.principal));
+        getConnectionManager().addUserConnection(conn);
       }
 
       ServiceContext context = getServiceContext(ticketEntry);

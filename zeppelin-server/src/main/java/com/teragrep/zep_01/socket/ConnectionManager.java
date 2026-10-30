@@ -127,7 +127,7 @@ public class ConnectionManager {
     }
   }
 
-  public void addUserConnection(NamedNotebookSocket conn) {
+  public void addUserConnection(NotebookSocket conn) {
     final String user = conn.username().asString();
     LOGGER.debug("Add user connection {} : {} for user: {}", conn.getRequest().getRemoteHost(),conn.getRequest().getRemotePort(), user);
     if (userSocketMap.containsKey(user)) {

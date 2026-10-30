@@ -25,5 +25,7 @@ public interface NotebookSocket extends WebSocketListener {
 
     public abstract Username username();
 
+    public abstract void rename(Username username);
+
     public abstract HttpServletRequest getRequest();
 }

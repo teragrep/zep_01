@@ -16,7 +16,7 @@ public final class UsernameImpl implements Username {
     }
 
     @Override
-    public boolean isStub() {
+    public boolean isAnonymous() {
         return false;
     }
 

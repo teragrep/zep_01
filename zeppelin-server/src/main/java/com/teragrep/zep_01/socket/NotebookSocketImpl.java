@@ -38,12 +38,12 @@ import java.util.concurrent.atomic.AtomicReference;
 public final class NotebookSocketImpl implements NotebookSocket {
   private final AtomicReference<Session> connection;  // use of AtomicReference here due to Jetty's WebSocketConnectionListener assigns a Session object via onWebSocketConnect()
   private final NotebookSocketListener listener;
-  private final Username username;
+  private final AtomicReference<Username> username;
   private final HttpServletRequest request;
 
   public NotebookSocketImpl(final HttpServletRequest request,
                             final NotebookSocketListener listener) {
-    this(request,listener,new UsernameStub());
+    this(request,listener,new UsernameAnonymous());
   }
 
   public NotebookSocketImpl(final HttpServletRequest request,
@@ -52,7 +52,7 @@ public final class NotebookSocketImpl implements NotebookSocket {
     this.connection = new AtomicReference<>();
     this.listener = listener;
     this.request = request;
-    this.username = username;
+    this.username = new AtomicReference<>(username);
   }
 
   @Override
@@ -92,7 +92,12 @@ public final class NotebookSocketImpl implements NotebookSocket {
 
   @Override
   public Username username() {
-    return username;
+    return username.get();
+  }
+
+  @Override
+  public void rename(Username username) {
+    this.username.set(username);
   }
 
   @Override
@@ -109,13 +114,13 @@ public final class NotebookSocketImpl implements NotebookSocket {
       equals = false;
     } else {
       final NotebookSocketImpl that = (NotebookSocketImpl) o;
-      equals = Objects.equals(connection != null ? this.connection.get() : null, that.connection != null ? that.connection.get() : null) && Objects.equals(listener, that.listener) && Objects.equals(username, that.username) && Objects.equals(request, that.request);
+      equals = Objects.equals(connection != null ? this.connection.get() : null, that.connection != null ? that.connection.get() : null) && Objects.equals(listener, that.listener) && Objects.equals(username != null ? this.username.get() : null, that.username != null ? that.username.get() : null) && Objects.equals(request, that.request);
     }
     return equals;
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(connection != null ? connection.get() : null, listener, username, request);
+    return Objects.hash(connection != null ? connection.get() : null, listener, username != null ? username.get() : null, request);
   }
 }
