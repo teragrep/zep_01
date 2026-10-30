@@ -16,6 +16,11 @@ import java.io.IOException;
 
 public interface NotebookSocket extends WebSocketListener {
 
+    /**
+     * Send a string payload to the remote client.
+     * @param serializeMessage String payload to send
+     * @throws IOException If an immediate Exception occurs that prevents transmitting
+     */
     public abstract void send(String serializeMessage) throws IOException;
 
     public abstract Username username();
