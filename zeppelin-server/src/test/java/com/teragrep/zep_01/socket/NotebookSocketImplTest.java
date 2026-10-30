@@ -18,7 +18,7 @@ class NotebookSocketImplTest {
     }
     // calling send() before a call to onWebSocketConnect() is received should result in an IOException
     @Test
-    public void testUnitializedConnection(){
+    public void testCallingSendWithUninitializedConnectionThrowsIOException(){
         NotebookSocketImpl socket = new NotebookSocketImpl(null,new FakeNotebookSocketListener());
         Throwable error = Assertions.assertThrows(IOException.class,()->{socket.send("lol");});
         Assertions.assertEquals("Tried to send a message to a Websocket connection with no established Session!",error.getMessage());
