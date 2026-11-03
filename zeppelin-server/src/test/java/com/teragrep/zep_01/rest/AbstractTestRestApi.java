@@ -141,6 +141,7 @@ public abstract class AbstractTestRestApi {
   protected static File zeppelinHome;
   protected static File confDir;
   protected static File notebookDir;
+  protected static File interpreterDir;
 
   private static CloseableHttpClient httpClient;
 
@@ -222,6 +223,16 @@ public abstract class AbstractTestRestApi {
           ZeppelinConfiguration.ConfVars.ZEPPELIN_NOTEBOOK_DIR.getVarName(),
           notebookDir.getPath()
       );
+      interpreterDir = new File(zeppelinHome.getAbsolutePath() + "/interpreter/" + testClassName);
+      System.setProperty(
+              ZeppelinConfiguration.ConfVars.ZEPPELIN_INTERPRETER_DIR.getVarName(),
+              interpreterDir.getPath()
+      );
+      File testInterpreterDir = new File(interpreterDir,"test");
+      testInterpreterDir.mkdirs();
+
+      File interpreterSetting = new File(testInterpreterDir,"interpreter-setting.json");
+      FileUtils.copyFile(new File("src/test/resources/interpreter/test/interpreter-setting.json"),interpreterSetting);
 
       // some test profile does not build zeppelin-web.
       // to prevent zeppelin starting up fail, create zeppelin-web/dist directory
