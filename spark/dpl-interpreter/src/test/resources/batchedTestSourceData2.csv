@@ -1,0 +1,11 @@
+_time,operation,success,filesModified
+2025-01-01 12:00:00,create,true,1
+2025-01-01 12:00:00,delete,true,2
+2025-01-01 12:00:00,update,true,1
+2025-01-01 12:00:00,create,true,1
+2025-01-01 12:00:00,delete,true,1
+2025-01-01 12:00:00,delete,false,4
+2025-01-02 12:00:00,delete,false,5
+2025-01-02 12:00:00,delete,false,2
+2025-01-02 12:00:00,delete,false,3
+2025-01-02 12:00:00,delete,false,1
