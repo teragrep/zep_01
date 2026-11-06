@@ -16,70 +16,91 @@
  */
 package com.teragrep.zep_01.socket;
 
-import org.apache.commons.lang3.StringUtils;
 import org.eclipse.jetty.websocket.api.Session;
-import org.eclipse.jetty.websocket.api.WebSocketAdapter;
-
-import java.io.IOException;
+import org.eclipse.jetty.websocket.api.WebSocketListener;
 
 import javax.servlet.http.HttpServletRequest;
+import java.io.IOException;
+import java.util.concurrent.atomic.AtomicReference;
 
 /**
- * Notebook websocket.
- */
-public class NotebookSocket extends WebSocketAdapter {
-  private Session connection;
+ * Notebook websocket. Capable of listening to and sending websocket messages to a single remote client
+ * Responsibilities:
+ * - Receives messages from websocket client via {@link WebSocketListener}
+ * - Assigns a {@link Session} via {@link org.eclipse.jetty.websocket.api.WebSocketConnectionListener} to facilitate communication with client
+ * - Sends messages to websocket client via {@link WebSocketEndpoint}
+ *
+ * Collaborators:
+ * - {@link NotebookSocketListener} - Gets notified when a websocket message is received, a connection is opened or closed
+ * - {@link HttpServletRequest} - HTTP request that was upgraded to a Websocket connection
+ **/
+public final class NotebookSocket implements WebSocketEndpoint, WebSocketListener {
+  private final AtomicReference<Session> connection;  // use of AtomicReference here due to Jetty's WebSocketConnectionListener assigns a Session object via onWebSocketConnect()
   private final NotebookSocketListener listener;
+  private final AtomicReference<Username> username;
   private final HttpServletRequest request;
-  private final String protocol;
-  private String user;
 
-  public NotebookSocket(HttpServletRequest req, String protocol,
-      NotebookSocketListener listener) {
+  public NotebookSocket(final HttpServletRequest request,
+                        final NotebookSocketListener listener) {
+    this(request,listener,new UsernameAnonymous());
+  }
+
+  public NotebookSocket(final HttpServletRequest request,
+                        final NotebookSocketListener listener,
+                        final Username username) {
+    this.connection = new AtomicReference<>();
     this.listener = listener;
-    this.request = req;
-    this.protocol = protocol;
-    this.user = StringUtils.EMPTY;
+    this.request = request;
+    this.username = new AtomicReference<>(username);
   }
 
   @Override
-  public void onWebSocketClose(int closeCode, String message) {
+  public void onWebSocketClose(final int closeCode, final String message) {
     listener.onClose(this, closeCode, message);
   }
 
   @Override
-  public void onWebSocketConnect(Session connection) {
-    this.connection = connection;
+  public void onWebSocketConnect(final Session connection) {
+    this.connection.set(connection);
     listener.onOpen(this);
   }
 
   @Override
-  public void onWebSocketText(String message) {
+  public void onWebSocketText(final String message) {
     listener.onMessage(this, message);
   }
 
-  public HttpServletRequest getRequest() {
-    return request;
-  }
-
-  public String getProtocol() {
-    return protocol;
-  }
-
-  public synchronized void send(String serializeMessage) throws IOException {
-    connection.getRemote().sendStringByFuture(serializeMessage);
-  }
-
-  public String getUser() {
-    return user;
-  }
-
-  public void setUser(String user) {
-    this.user = user;
+  @Override
+  public void onWebSocketError(final Throwable cause) {
+    /* do nothing */
   }
 
   @Override
-  public String toString() {
-    return request.getRemoteHost() + ":" + request.getRemotePort();
+  public void onWebSocketBinary(final byte[] payload, final int offset, final int len) {
+    /* do nothing */
+  }
+
+  @Override
+  public synchronized void send(final String serializeMessage) throws IOException {
+    final Session connection = this.connection.get();
+    if(connection == null || !connection.isOpen()){
+      throw new IOException("Tried to send a message to a Websocket connection with no established Session!");
+    }
+    connection.getRemote().sendStringByFuture(serializeMessage);
+  }
+
+  @Override
+  public Username username() {
+    return username.get();
+  }
+
+  @Override
+  public void rename(Username username) {
+    this.username.set(username);
+  }
+
+  @Override
+  public HttpServletRequest getRequest() {
+    return request;
   }
 }

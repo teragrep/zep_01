@@ -20,7 +20,7 @@ package com.teragrep.zep_01.socket;
  * NoteboookSocket listener.
  */
 public interface NotebookSocketListener {
-  void onClose(NotebookSocket socket, int code, String message);
-  void onOpen(NotebookSocket socket);
-  void onMessage(NotebookSocket socket, String message);
+  void onClose(WebSocketEndpoint socket, int code, String message);
+  void onOpen(WebSocketEndpoint socket);
+  void onMessage(WebSocketEndpoint socket, String message);
 }
