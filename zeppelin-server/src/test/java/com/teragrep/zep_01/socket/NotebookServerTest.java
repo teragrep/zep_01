@@ -1069,7 +1069,7 @@ public class NotebookServerTest extends AbstractTestRestApi {
             .put("title","")
             .put("config",new HashMap<>())
             .put("params",new HashMap<>())
-            .put("paragraph","%test\nsomeText").toJson());
+            .put("paragraph","%test.dpl\nsomeText").toJson());
     final Properties properties = new Properties();
     // removing this property causes a ClassNotFoundException for RemoteInterpreterServer
     properties.put("CLASSPATH", System.getProperty("java.class.path"));
@@ -1084,7 +1084,7 @@ public class NotebookServerTest extends AbstractTestRestApi {
             .put("title","")
             .put("config",new HashMap<>())
             .put("params",new HashMap<>())
-            .put("paragraph","%test"+expectedOutput).toJson());
+            .put("paragraph","%test.dpl"+expectedOutput).toJson());
 
     // Paragraph executes asynchronously, so we must wait for it to finish. If it takes too long, fail the test.
     final int executionTimeoutMs = 5000;
@@ -1146,7 +1146,7 @@ public class NotebookServerTest extends AbstractTestRestApi {
             .put("title","")
             .put("config",new HashMap<>())
             .put("params",new HashMap<>())
-            .put("paragraph","%test"+expectedOutput).toJson());
+            .put("paragraph","%test.dpl"+expectedOutput).toJson());
 
     // Paragraph executes asynchronously, so we must wait for it to finish. If it takes too long, fail the test.
     final int executionTimeoutMs = 5000;
