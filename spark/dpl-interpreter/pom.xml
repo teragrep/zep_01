@@ -294,6 +294,8 @@
             <exclude>README.md</exclude>
             <!-- test resource files -->
             <exclude>src/test/resources/formatTestSourceData.csv</exclude>
+            <exclude>src/test/resources/batchedTestSourceData1.csv</exclude>
+            <exclude>src/test/resources/batchedTestSourceData2.csv</exclude>
           </excludes>
         </configuration>
       </plugin>
