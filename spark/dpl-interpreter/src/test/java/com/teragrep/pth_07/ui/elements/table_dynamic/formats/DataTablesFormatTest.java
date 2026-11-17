@@ -49,6 +49,7 @@ import com.teragrep.zep_01.interpreter.InterpreterResult;
 import jakarta.json.Json;
 import jakarta.json.JsonArray;
 import jakarta.json.JsonObject;
+import jakarta.json.JsonValue;
 import nl.jqno.equalsverifier.EqualsVerifier;
 import org.apache.spark.sql.Dataset;
 import org.apache.spark.sql.Row;
@@ -89,7 +90,8 @@ public final class DataTablesFormatTest {
                 .add("requestOptions",Json.createObjectBuilder()
                         .add("draw",draw)
                         .add("start",start)
-                        .add("length",length))
+                        .add("length",length)
+                        .add("order", JsonValue.EMPTY_JSON_ARRAY))
                 .build();
 
         final UIOption formattingOptions = new UIOptionImpl(optionsJson);
@@ -164,7 +166,8 @@ public final class DataTablesFormatTest {
                 .add("requestOptions",Json.createObjectBuilder()
                         .add("draw",draw)
                         .add("start",start)
-                        .add("length",length))
+                        .add("length",length)
+                        .add("order", JsonValue.EMPTY_JSON_ARRAY))
                 .build();
 
         final UIOption formattingOptions = new UIOptionImpl(optionsJson);
@@ -231,7 +234,8 @@ public final class DataTablesFormatTest {
                 .add("requestOptions",Json.createObjectBuilder()
                         .add("draw",draw)
                         .add("start",start)
-                        .add("length",length))
+                        .add("length",length)
+                        .add("order", JsonValue.EMPTY_JSON_ARRAY))
                 .build();
 
         final UIOption formattingOptions = new UIOptionImpl(optionsJson);
@@ -284,7 +288,8 @@ public final class DataTablesFormatTest {
                 .add("requestOptions",Json.createObjectBuilder()
                         .add("draw",draw1)
                         .add("start",start1)
-                        .add("length",length1))
+                        .add("length",length1)
+                        .add("order", JsonValue.EMPTY_JSON_ARRAY))
                 .build();
 
         final UIOption formattingOptions1 = new UIOptionImpl(optionsJson);
@@ -332,7 +337,8 @@ public final class DataTablesFormatTest {
                 .add("requestOptions",Json.createObjectBuilder()
                         .add("draw",draw2)
                         .add("start",start2)
-                        .add("length",length2))
+                        .add("length",length2)
+                        .add("order", JsonValue.EMPTY_JSON_ARRAY))
                 .build();
 
         final UIOption formattingOptions2 = new UIOptionImpl(optionsJson2);
