@@ -1065,7 +1065,7 @@ public class NotebookServerTest extends AbstractTestRestApi {
     notebookServer.onMessage(bob, new Message(OP.GET_NOTE).put("id",note.getId()).toJson());
 
     notebookServer.onMessage(alice, new Message(OP.COMMIT_PARAGRAPH)
-            .put("id",paragraph.getId())
+            .put("paragraphId",paragraph.getId())
             .put("title","")
             .put("config",new HashMap<>())
             .put("params",new HashMap<>())
@@ -1079,7 +1079,7 @@ public class NotebookServerTest extends AbstractTestRestApi {
     // paragraph must be run before formatting, since interpreter instances are created on paragraph execution
     final String expectedOutput = Json.createObjectBuilder().add("data","someData").add("type", InterpreterResult.Type.TEXT.label).build().toString();
     notebookServer.onMessage(alice, new Message(OP.RUN_PARAGRAPH)
-            .put("id",paragraph.getId())
+            .put("paragraphId",paragraph.getId())
             .put("noteId",note.getId())
             .put("title","")
             .put("config",new HashMap<>())
@@ -1127,7 +1127,7 @@ public class NotebookServerTest extends AbstractTestRestApi {
     final Paragraph paragraph = note.getParagraph(0);
 
     notebookServer.onMessage(alice, new Message(OP.COMMIT_PARAGRAPH)
-            .put("id",paragraph.getId())
+            .put("paragraphId",paragraph.getId())
             .put("title","")
             .put("config",new HashMap<>())
             .put("params",new HashMap<>())
@@ -1141,7 +1141,7 @@ public class NotebookServerTest extends AbstractTestRestApi {
     // paragraph must be run before formatting, since interpreter instances are created on paragraph execution
     final String expectedOutput = Json.createObjectBuilder().add("data","someData").add("type",InterpreterResult.Type.TEXT.label).build().toString();
     notebookServer.onMessage(alice, new Message(OP.RUN_PARAGRAPH)
-            .put("id",paragraph.getId())
+            .put("paragraphId",paragraph.getId())
             .put("noteId",note.getId())
             .put("title","")
             .put("config",new HashMap<>())
