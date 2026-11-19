@@ -48,6 +48,7 @@ package com.teragrep.pth_07.ui.elements.table_dynamic;
 import com.teragrep.pth_07.ui.elements.table_dynamic.formats.*;
 import com.teragrep.zep_01.interpreter.InterpreterContext;
 import com.teragrep.zep_01.interpreter.InterpreterException;
+import com.teragrep.zep_01.interpreter.InterpreterResult;
 import org.apache.spark.sql.Dataset;
 import org.apache.spark.sql.Row;
 
@@ -83,17 +84,7 @@ public final class DatasetStore {
         datasetRef.set(rd);
         rd.persist();
         RenderFormat renderFormat = toRenderFormat(uiOptionsRef.get());
-        StringBuilder output = new StringBuilder();
-        // Prepend "%{InterpreterResult.Type}\n so that InterpreterOutput.write() parses the type correctly instead of treating the output as TEXT
-        output.append("%"+renderFormat.type().label.toLowerCase());
-        output.append("\n");
-        output.append(renderFormat.asJson().toString());
-        try{
-            writeToDisk(output.toString());
-        }
-        catch (IOException e){
-            throw new InterpreterException("Failed to write dataset update to disk!",e);
-        }
+        saveOutput(renderFormat.type(),renderFormat.asJson().toString());
     }
 
     // Switch output format for subsequent batches
@@ -106,10 +97,20 @@ public final class DatasetStore {
         return datasetRef.get().toRenderFormat(uiOption);
     }
 
-    // Write given String to disk via InterpreterOutput. NotebookServer catches this event in onOutputUpdate() / onOutputAppend()
-    private void writeToDisk(String output) throws IOException {
-        interpreterContext.out.clear(false);
-        interpreterContext.out.write(output);
-        interpreterContext.out.flush();
+    public void saveOutput(InterpreterResult.Type type, String payload) throws InterpreterException{
+        // Prepend with "%{InterpreterResult.Type}\n" so that InterpreterOutput.write() parses the type correctly instead of treating the output as TEXT
+        saveOutput("%"+type.label.toLowerCase()+"\n"+payload);
+    }
+
+    // Save output via InterpreterOutput. NotebookServer catches this event in onOutputUpdate() / onOutputAppend()
+    private void saveOutput(String output) throws InterpreterException {
+        try{
+            interpreterContext.out.clear(false);
+            interpreterContext.out.write(output);
+            interpreterContext.out.flush();
+        }
+        catch (IOException e){
+            throw new InterpreterException("Failed to write dataset update to disk!",e);
+        }
     }
 }

@@ -47,7 +47,12 @@
       "editOnDblClick": false
     }
   },
-
+  {
+    "group": "test",
+    "name": "dpl",
+    "className": "com.teragrep.zep_01.interpreter.FakeRemoteInterpreter",
+    "properties": {}
+  },
   {
     "group": "test",
     "name": "sleep_this_should_not_be_used",
